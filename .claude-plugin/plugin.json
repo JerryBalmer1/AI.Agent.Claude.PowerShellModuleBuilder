@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "psmodule",
+  "displayName": "PowerShell Module Builder",
+  "description": "Builds, tests, and releases PowerShell modules to a fixed set of conventions enforced by a conformance suite.",
+  "author": {
+    "name": "Jerry Balmer"
+  },
+  "repository": "https://github.com/JerryBalmer1/AI.Agent.Claude.PowerShellModuleBuilder",
+  "license": "MIT",
+  "keywords": ["powershell", "module", "invokebuild", "pester"]
+}

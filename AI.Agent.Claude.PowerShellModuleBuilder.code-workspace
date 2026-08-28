@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../PSAzureDevOpsGraph"
+		},
+		{
+			"path": "../../PSModuleGraph"
+		}
+	],
+	"settings": {}
+}
