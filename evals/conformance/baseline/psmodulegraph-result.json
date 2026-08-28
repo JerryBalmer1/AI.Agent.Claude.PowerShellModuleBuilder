@@ -1,39 +1,20 @@
 {
-  "Target": "C:\\__Code\\PSModuleGraph",
+  "Target": "C:\\__Code\\__AI.Agent.Claude.PowerShellModuleBuilder\\AI.Agent.Claude.PowerShellModuleBuilder\\scratch\\PSModuleGraph",
   "Tags": [
     "Universal",
     "HouseStyle"
   ],
-  "RunAt": "2026-08-28T16:04:22.6711598-07:00",
+  "RunAt": "2026-08-28T16:45:11.2466347-07:00",
   "Total": 81,
-  "Passed": 69,
-  "Failed": 6,
+  "Passed": 74,
+  "Failed": 1,
   "Skipped": 0,
-  "ScorePct": 85.19,
+  "NotRun": 6,
+  "ScorePct": 98.67,
   "Failures": [
     {
-      "Name": "Repository shape.has a test file for the exported command Enable-PSModuleGraphEditorLink",
-      "Message": "Expected the actual value to be greater than 0, but got 0."
-    },
-    {
-      "Name": "Repository shape.has a test file for the exported command Export-PSModuleDependencyGraph",
-      "Message": "Expected the actual value to be greater than 0, but got 0."
-    },
-    {
-      "Name": "Repository shape.has a test file for the exported command Get-PSModuleAssembly",
-      "Message": "Expected the actual value to be greater than 0, but got 0."
-    },
-    {
-      "Name": "Repository shape.has a test file for the exported command Test-PSModuleGraphEditorLink",
-      "Message": "Expected the actual value to be greater than 0, but got 0."
-    },
-    {
-      "Name": "Repository shape.has a test file for the exported command Update-KnowledgePatternSubject",
-      "Message": "Expected the actual value to be greater than 0, but got 0."
-    },
-    {
-      "Name": "Repository shape.has a test file for the exported command Update-KnowledgeStore",
-      "Message": "Expected the actual value to be greater than 0, but got 0."
+      "Name": "Repository shape.exercises the exported command Get-PSModuleAssembly somewhere in tests",
+      "Message": "Expected $true, because an exported command no test ever calls is untested, but got $false."
     }
   ]
 }

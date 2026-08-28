@@ -53,7 +53,7 @@ turns exactly the expected assertion red and nothing else.
 | Add `src/PSModuleGraph/Public/Sub/Get-Thing.ps1` | keeps `Public/` flat |
 | Put two `function` definitions in one `Public/*.ps1` | defines exactly one function |
 | Strip the `<# .SYNOPSIS #>` block from one public file | comment-based help with a synopsis |
-| Delete `tests/Public/Get-PSModuleFunction.Tests.ps1` | has a test file for the exported command |
+| Remove every invocation of one command from the test tree | exercises the exported command &lt;name&gt; somewhere in tests |
 | Change `Run.Throw` to `Run.Exit` in the build file | throws rather than exits |
 | Remove the `throw` after the coverage comparison | throws on coverage below target |
 | Remove `Filter.ExcludeTag = 'PreTag'` | excludes PreTag-tagged tests |
@@ -63,6 +63,11 @@ turns exactly the expected assertion red and nothing else.
 
 Record the result of this pass. An assertion that stays green through its own
 break is worse than no assertion, because it will be counted as evidence.
+
+The pass against the reference is recorded in
+[`baseline/FALSIFICATION.md`](baseline/FALSIFICATION.md): 10 of 12 breaks fire
+cleanly, one over-fires, and `throws on coverage below target` does not fire at
+all.
 
 ## Known limits
 
