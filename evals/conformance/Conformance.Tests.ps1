@@ -193,9 +193,22 @@ Describe 'Repository shape' -Tag 'Universal' {
         Test-Path -LiteralPath $TestsRoot | Should -BeTrue
     }
 
-    It 'has a test file for the exported command <_.BaseName>' -ForEach $PublicFiles {
-        $candidates = @(Get-ChildItem -Path $TestsRoot -Filter "$($_.BaseName).Tests.ps1" -File -Recurse -ErrorAction SilentlyContinue)
-        $candidates.Count | Should -BeGreaterThan 0
+    It 'exercises the exported command <_.BaseName> somewhere in tests' -ForEach $PublicFiles {
+        # Not a filename convention and not a text search. A command named in a
+        # string - the export list in Module.Quality.Tests.ps1, for instance - is
+        # not a command under test. Only an actual invocation counts.
+        $name = $_.BaseName
+        $invoked = $false
+        foreach ($file in (Get-ChildItem -Path $TestsRoot -Filter *.ps1 -File -Recurse -ErrorAction SilentlyContinue)) {
+            $tokens = $null; $errors = $null
+            $ast = [System.Management.Automation.Language.Parser]::ParseFile($file.FullName, [ref]$tokens, [ref]$errors)
+            if ($errors) { continue }
+            $calls = @($ast.FindAll({
+                param($n) $n -is [System.Management.Automation.Language.CommandAst]
+            }, $true))
+            if ($calls | Where-Object { $_.GetCommandName() -eq $name }) { $invoked = $true; break }
+        }
+        $invoked | Should -BeTrue -Because 'an exported command no test ever calls is untested'
     }
 }
 
