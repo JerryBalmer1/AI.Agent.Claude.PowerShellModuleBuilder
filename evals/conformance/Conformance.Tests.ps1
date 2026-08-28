@@ -30,11 +30,33 @@ BeforeDiscovery {
     # Find the module manifest without assuming the layout, so the Universal
     # tags can run against a repository that does not follow the house style.
     # A manifest is a .psd1 whose base name matches its own directory name.
-    $script:Manifest = Get-ChildItem -Path $Target -Filter *.psd1 -File -Recurse -ErrorAction SilentlyContinue |
-        Where-Object { $_.BaseName -eq $_.Directory.Name } |
-        Where-Object { $_.FullName -notmatch '[\\/](output|scratch|\.git)[\\/]' } |
-        Sort-Object { $_.FullName.Length } |
-        Select-Object -First 1
+    # Build output, scratch, vendored galleries and test fixtures all contain
+    # well-formed manifests that are not the repository's own module.
+    # Matched against the path RELATIVE to the target, not the absolute path.
+    # The harness runs targets from ./scratch/runs/<id>/, so an absolute match
+    # let the target's own container exclude every candidate inside it.
+    $candidates = @(
+        Get-ChildItem -Path $Target -Filter *.psd1 -File -Recurse -ErrorAction SilentlyContinue |
+            Where-Object { $_.BaseName -eq $_.Directory.Name } |
+            Where-Object {
+                $_.FullName.Substring($Target.Length) -notmatch
+                    '[\\/](output|scratch|\.git|gallery|fixtures|node_modules)[\\/]'
+            }
+    )
+
+    # Shortest path is not a sufficient tie-break: a repository can carry a
+    # second module at a shallower path than its own (PSModuleGraph vendors
+    # corpus/PSCorpus/, which wins on length over src/PSModuleGraph/). The
+    # repository's own module is the one named for the repository; fall back to
+    # shortest path only when nothing matches, so a repository whose directory
+    # has been renamed still resolves.
+    # Select-Object -First 1, not [0]: indexing an empty array throws under
+    # Set-StrictMode -Version Latest, which the runner sets.
+    $repoName = Split-Path -Leaf $Target
+    $script:Manifest = $candidates | Where-Object { $_.BaseName -eq $repoName } | Select-Object -First 1
+    if (-not $Manifest) {
+        $script:Manifest = $candidates | Sort-Object { $_.FullName.Length } | Select-Object -First 1
+    }
 
     $script:ModuleName   = if ($Manifest) { $Manifest.BaseName } else { $null }
     $script:SrcRoot      = if ($Manifest) { $Manifest.Directory.FullName } else { $null }
@@ -143,9 +165,15 @@ Describe 'Public surface' -Tag 'Universal' {
         $missing | Should -BeNullOrEmpty -Because 'an exported function that does not exist fails at import, not at call'
     }
 
-    It 'gives <_> comment-based help with a synopsis' -ForEach $PublicFiles {
+    # <_.Name>, not <_>: expanding a FileInfo stamps its absolute FullName into
+    # the test name, so the name recorded in result.json changed with the
+    # target's location and scores could not be diffed between runs.
+    It 'gives <_.Name> comment-based help with a synopsis' -ForEach $PublicFiles {
         # $_ is the FileInfo for one public function file.
-        (Get-HelpComment -Path $_.FullName).Count |
+        # @() around the call: a function returning a one-element array has it
+        # unrolled to a scalar by the pipeline, and .Count on a scalar throws
+        # under Set-StrictMode -Version Latest.
+        @(Get-HelpComment -Path $_.FullName).Count |
             Should -BeGreaterThan 0 -Because 'Get-Help on an exported command should return something'
     }
 }
@@ -185,7 +213,9 @@ Describe 'House style: source layout' -Tag 'HouseStyle' {
     }
 
     It 'defines exactly one function in <_.Name>, named for the file' -ForEach $PublicFiles {
-        $names = Get-DefinedFunctionName -Path $_.FullName
+        # @(): see the note on comment-based help above. Without it a file
+        # defining exactly one function returns a scalar and .Count throws.
+        $names = @(Get-DefinedFunctionName -Path $_.FullName)
         $names.Count | Should -Be 1
         $names[0] | Should -Be $_.BaseName
     }
@@ -260,7 +290,12 @@ Describe 'House style: build file' -Tag 'HouseStyle' {
     }
 }
 
-Describe 'House style: generated module' -Tag 'HouseStyle', 'RequiresBuild' {
+# RequiresBuild only. Pester's tag filter is an OR: carrying 'HouseStyle' here
+# too made this block run under the documented no-build invocation
+# (-Tag Universal,HouseStyle), where every assertion reads an absent psm1 as
+# empty string and fails. The README's own tag matrix says this block needs a
+# build, so the tag has to be the one that gates it.
+Describe 'House style: generated module' -Tag 'RequiresBuild' {
 
     BeforeAll {
         $script:Psm1Text = if ($BuiltPsm1 -and (Test-Path -LiteralPath $BuiltPsm1)) {

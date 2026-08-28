@@ -1,0 +1,39 @@
+{
+  "Target": "C:\\__Code\\PSModuleGraph",
+  "Tags": [
+    "Universal",
+    "HouseStyle"
+  ],
+  "RunAt": "2026-08-28T16:04:22.6711598-07:00",
+  "Total": 81,
+  "Passed": 69,
+  "Failed": 6,
+  "Skipped": 0,
+  "ScorePct": 85.19,
+  "Failures": [
+    {
+      "Name": "Repository shape.has a test file for the exported command Enable-PSModuleGraphEditorLink",
+      "Message": "Expected the actual value to be greater than 0, but got 0."
+    },
+    {
+      "Name": "Repository shape.has a test file for the exported command Export-PSModuleDependencyGraph",
+      "Message": "Expected the actual value to be greater than 0, but got 0."
+    },
+    {
+      "Name": "Repository shape.has a test file for the exported command Get-PSModuleAssembly",
+      "Message": "Expected the actual value to be greater than 0, but got 0."
+    },
+    {
+      "Name": "Repository shape.has a test file for the exported command Test-PSModuleGraphEditorLink",
+      "Message": "Expected the actual value to be greater than 0, but got 0."
+    },
+    {
+      "Name": "Repository shape.has a test file for the exported command Update-KnowledgePatternSubject",
+      "Message": "Expected the actual value to be greater than 0, but got 0."
+    },
+    {
+      "Name": "Repository shape.has a test file for the exported command Update-KnowledgeStore",
+      "Message": "Expected the actual value to be greater than 0, but got 0."
+    }
+  ]
+}
