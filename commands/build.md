@@ -1,12 +1,12 @@
 ---
-description: Build a PowerShell module repository to the house conventions, using the module-scaffold and build-script skills.
+description: Build a PowerShell module repository to the house conventions, using the powershell-module-scaffold and powershell-module-build skills.
 argument-hint: [module name] [target directory]
 ---
 
 # /build — build a module to the house conventions
 
 Build or extend the PowerShell module at `$2` (default: the current directory),
-named `$1`. Follow the `module-scaffold` and `build-script` skills; where a
+named `$1`. Follow the `powershell-module-scaffold` and `powershell-module-build` skills; where a
 skill and the conformance suite disagree, the suite is the oracle and the
 disagreement is a finding worth reporting.
 
@@ -17,7 +17,7 @@ disagreement is a finding worth reporting.
    - `evals/functional/BRIEF.md` — what the module is for, if one exists.
    Do not infer the conventions from memory. They are graded exactly.
 
-2. **Scaffold**, per `module-scaffold`:
+2. **Scaffold**, per `powershell-module-scaffold`:
    `src/<Name>/{<Name>.psd1,Public/,Private/}`, `tests/`, `build.ps1`,
    `<Name>.build.ps1`, `PSScriptAnalyzerSettings.psd1`, `Requirements.psd1`.
    `Public/` is flat, one function per file named for the file, each with

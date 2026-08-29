@@ -1,5 +1,5 @@
 ---
-name: graph-assembly
+name: azdo-graph-assembly
 description: Assemble a pipeline dependency graph — nodes keyed by identity not traversal position, cycle-safe walk that reports the cycle, orphans kept, unreferenced repositories excluded. Use when building or debugging the graph a module emits, or a node/edge count that disagrees with an oracle.
 ---
 
@@ -143,4 +143,4 @@ real ones: they are the answer the tool exists to give.
 
 ## Related
 
-- `pipeline-yaml-refs` — where the edges come from.
+- `azdo-pipeline-yaml-refs` — where the edges come from.

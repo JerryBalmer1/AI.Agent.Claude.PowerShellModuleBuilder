@@ -1,5 +1,5 @@
 ---
-name: module-scaffold
+name: powershell-module-scaffold
 description: Lay out a PowerShell module repository — src/<Name>/Public flat one-function-per-file, Private nested, manifest with explicit exports, tests mirroring src. Use when creating a new PowerShell module repository, adding a command to one, or fixing a conformance failure about layout, manifest, or exports.
 ---
 
@@ -13,7 +13,7 @@ somewhere in `evals/conformance/Conformance.Tests.ps1`; none of it is taste.
 ```
 <Repo>/
   build.ps1                     # entrypoint — Repository tag asserts this exact name
-  <Name>.build.ps1              # InvokeBuild file — see the build-script skill
+  <Name>.build.ps1              # InvokeBuild file — see the powershell-module-build skill
   PSScriptAnalyzerSettings.psd1 # at the ROOT, so editors and CI lint identically
   Requirements.psd1             # the only place build dependencies are pinned
   src/<Name>/
@@ -112,5 +112,5 @@ Write tests that call the command, even when the call is inside
 
 ## Related
 
-- `build-script` — the `build.ps1` and `<Name>.build.ps1` this layout expects.
-- `azdo-rest`, `pipeline-yaml-refs`, `graph-assembly` — what goes *in* the files.
+- `powershell-module-build` — the `build.ps1` and `<Name>.build.ps1` this layout expects.
+- `azdo-rest`, `azdo-pipeline-yaml-refs`, `azdo-graph-assembly` — what goes *in* the files.

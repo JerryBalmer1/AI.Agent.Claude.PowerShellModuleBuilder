@@ -71,11 +71,38 @@ must flip a coin, and different runs flip differently. Those coin-flips are
 recorded by name — run 002 found five field conventions the specification never
 states — because removing that variance is precisely what the plugin is for.
 
+## The skills
+
+Named by scope, per [decision 0007](decisions/0007-skill-taxonomy-and-naming.md):
+`powershell-module-<role>` for anything generic to building a PowerShell module,
+`azdo-<role>` for what is specific to the Azure DevOps target. Dots are not legal
+in skill names, which is what rules out the `powershell.module.x` form.
+
+Rule 9 governs what goes where inside one: judgment is the `SKILL.md`,
+deterministic mechanics are scripts under the skill's `scripts/`, and user entry
+points are commands.
+
+| Skill | Role |
+|---|---|
+| `powershell-module-plan` | Intake and planning. A fixed question set, a plan file generated into the target, and a definition-of-done section that must name how the work will be tested before the work starts. |
+| `powershell-module-architect` | Command-surface design — verb-noun, one command one question, parameter sets, when to split, `Public/` versus `Private/`. |
+| `powershell-module-scaffold` | The repository layout the conformance suite grades: manifest, `Public/` flat, `Private/` nested, explicit exports. |
+| `powershell-module-build` | `build.ps1` and `<Name>.build.ps1` — InvokeBuild tasks, the analyzer severity list including `ParseError`, the coverage gate, exit-code discipline. |
+| `powershell-module-test` | The Pester suite, and `scripts/Invoke-OrderedTests.ps1` — five layers in dependency order, stopping at the first failure so one defect reports as one file. |
+| `powershell-module-analyzer` | AST-driven analysis that never runs the code it reads, and writes `docs/knowledge/<tool>.md` when a dependency turns up that nothing has documented. |
+| `powershell-module-docs` | Comment-based help, `about_` topics and the culture directory the build must copy, README structure, examples that are real. |
+| `powershell-module-deploy` | Staging and output layout, prerequisites verified before anything ships, and why `Publish-Module` is the operator's alone. |
+| `powershell-module-release` | Semver against a module surface, release notes by change type, changelog and worklog conventions, what a release checklist verifies. |
+| `azdo-rest` | The Azure DevOps REST API, read-only. `$env:AZDO_PAT` and nothing else, ever. |
+| `azdo-pipeline-yaml-refs` | Extracting and resolving pipeline YAML references, with parsing separated from resolution. |
+| `azdo-graph-assembly` | Turning those references into a graph — identity by what a node is, never by where a traversal reached it. |
+| `task-tree-reporting` | Response formatting during multi-skill work. Markdown structure only, so the tree survives transcripts and commits. |
+
 ## Layout
 
 | Path | What |
 |---|---|
-| `skills/` | The plugin's skills — `module-scaffold`, `build-script`, `azdo-rest`, `pipeline-yaml-refs`, `graph-assembly` |
+| `skills/` | The plugin's thirteen skills — see [the roster](#the-skills) above |
 | `commands/` | `/build` and `/test` |
 | `evals/conformance/` | The shape oracle: `Conformance.Tests.ps1`, its runner, and the falsification record |
 | `evals/functional/` | The behaviour oracle: `BRIEF.md`, `fixture/`, the comparator, the seed |

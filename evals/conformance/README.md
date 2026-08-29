@@ -43,10 +43,25 @@ it.
 ./Invoke-Conformance.ps1 -Path ../../../PSModuleGraph
 
 # Against a generated run, after its build has been run.
-./Invoke-Conformance.ps1 -Path ./scratch/runs/<id>/PSAzureDevOpsGraph `
+./Invoke-Conformance.ps1 -Path ./scratch/runs/<id> `
                          -Tag Universal,HouseStyle,RequiresBuild `
                          -ResultPath ./scratch/runs/<id>/result.json
 ```
+
+**The run path is the run directory itself.** It used to be documented as
+`./scratch/runs/<id>/PSAzureDevOpsGraph`, which no run has ever had:
+`Reset-Target.ps1` materialises the seed *at* the destination, so the module
+lives at `<id>/src/<Name>/` and there is no `<id>/<Name>/` to point at. The
+documented command could not work against a directory `Reset-Target` produced.
+That is finding F-8 from run 002, and both halves of it are fixed here.
+
+`-ModuleName` is no longer needed for a run directory. When the suite's own two
+rules cannot fire, the runner derives it from `src/<Name>/<Name>.psd1` and says
+which manifest it read. Two manifests under `src/` is undecidable and stops,
+naming both — the derivation is a rule about a known location, not the
+lone-candidate fallback this suite deleted and is not getting back. Pass
+`-ModuleName` to override, and to answer an ambiguity the runner refuses to
+guess at.
 
 The runner does not use `Run.Throw`. A red conformance run is data, not a build
 failure — the harness records the score and moves to the next run.

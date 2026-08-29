@@ -1,0 +1,104 @@
+Invoke-OrderedTests.ps1 against a fresh clone of PSAzureDevOpsGraph run-002-first-build
+(79e02fba9dffd976bccf507d531f59303cc58f9d), and then against the same clone with one
+deliberate parse error added to one src file. The sabotage was never committed anywhere;
+the clone it lived in was deleted after this transcript was taken.
+
+$env:AZDO_PAT is not required by any layer here: run 002's only PAT-related test sets and
+restores the variable itself. No layer was skipped.
+
+===========================================================================
+RUN 1 - pristine clone, all layers green
+===========================================================================
+
+$ pwsh -NoProfile -File skills/powershell-module-test/scripts/Invoke-OrderedTests.ps1 \
+      -Path scratch/0017-ordered -Build
+
+
+Ordered test run: PSAzureDevOpsGraph
+  target:   C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\scratch\0017-ordered
+  manifest: src\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psd1
+
+LAYER manifest-parses  PASSED       1 case(s)
+LAYER files-parse      PASSED       17 case(s)
+  building (-Build): C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\scratch\0017-ordered\build.ps1
+
+LAYER module-imports   PASSED       1 case(s)  (PSAzureDevOpsGraph)
+LAYER unit             PASSED       37 case(s)
+LAYER integration      INAPPLICABLE 0 case(s)  (no test in Integration/Contract and none tagged Integration/Contract)
+
+ALL LAYERS GREEN — 4 passed, 1 inapplicable.
+  inapplicable (graded nothing, not a pass): integration
+
+exit code: 0
+
+===========================================================================
+RUN 2 - same clone, one unclosed brace appended to
+        src/PSAzureDevOpsGraph/Public/Get-AzDoPipelineReference.ps1
+===========================================================================
+
+$ pwsh -NoProfile -File skills/powershell-module-test/scripts/Invoke-OrderedTests.ps1 \
+      -Path scratch/0017-ordered -Build
+
+
+Ordered test run: PSAzureDevOpsGraph
+  target:   C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\scratch\0017-ordered
+  manifest: src\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psd1
+
+LAYER manifest-parses  PASSED       1 case(s)
+LAYER files-parse      FAILED       17 case(s)
+
+STOPPED AT LAYER files-parse
+
+  src\PSAzureDevOpsGraph\Public\Get-AzDoPipelineReference.ps1:65:16: Missing closing '}' in statement block or type definition.
+  src\PSAzureDevOpsGraph\Public\Get-AzDoPipelineReference.ps1:64:29: Missing closing '}' in statement block or type definition.
+
+NOT RUN (a failing layer is a precondition for these): module-imports, unit, integration
+
+exit code: 1
+
+===========================================================================
+CONTRAST - the same sabotaged tree through ./build.ps1
+===========================================================================
+
+Run 002 already carries the F-3 correction, so its analyzer settings list
+ParseError explicitly and the Lint gate does go red. The contrast is not
+that the build misses the defect - it is that the build never says which
+file. Eighteen lines of InvokeBuild and PowerShell error-record chrome name
+three files: PSAzureDevOpsGraph.build.ps1 twice and build.ps1 once. None of
+them is the broken one. The findings table the Lint task writes goes to the
+host and is absent from the captured stream entirely.
+
+The ordered runner's one line above is the whole diagnosis:
+  src\PSAzureDevOpsGraph\Public\Get-AzDoPipelineReference.ps1:65:16
+
+$ pwsh -NoProfile -File scratch/0017-ordered/build.ps1
+
+Build . C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\scratch\0017-ordered\PSAzureDevOpsGraph.build.ps1
+Task /./Clean
+Done /./Clean 00:00:00.0208568
+Task /./Lint
+
+ERROR: PSScriptAnalyzer reported 2 finding(s).
+At C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\scratch\0017-ordered\PSAzureDevOpsGraph.build.ps1:37 char:9
++         throw "PSScriptAnalyzer reported $($findings.Count) finding(s .
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+At C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\scratch\0017-ordered\PSAzureDevOpsGraph.build.ps1:29 char:1
++ task Lint {
++ ~~~~~~~~~~~
+Build FAILED. 3 tasks, 1 errors, 0 warnings 00:00:02.8261350
+Exception: C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\scratch\0017-ordered\build.ps1:41
+Line |
+  41 |      Write-Error -ErrorRecord $_
+     |      ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     | PSScriptAnalyzer reported 2 finding(s).
+
+build exit code: 1
+
+===========================================================================
+CLEANUP
+===========================================================================
+
+The sabotage existed only in scratch/0017-ordered, which is not committed
+and was removed immediately after this transcript was taken. Nothing was
+written to PSAzureDevOpsGraph: this pass makes no commit there, only the
+annotated tag v0.1.0 on the existing commit 79e02fb.

@@ -137,4 +137,4 @@ object. When in doubt, do not include the request URL in an error message either
 
 ## Related
 
-- `pipeline-yaml-refs` — what to do with the YAML once fetched.
+- `azdo-pipeline-yaml-refs` — what to do with the YAML once fetched.

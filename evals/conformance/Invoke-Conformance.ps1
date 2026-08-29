@@ -18,6 +18,12 @@
     Discovery stops rather than guessing if more than one candidate manifest
     survives and none is preferred; this is the way to answer it. Grading the
     wrong module silently is worse than grading nothing.
+
+    Defaulted from src/<Name>/<Name>.psd1 when omitted and the suite's own two
+    rules cannot fire - which is the case for every run directory, because a
+    directory named 002-first-build matches no manifest name and holds no
+    manifest at its root. See the derivation block below for why that is a rule
+    and not a fallback.
 .PARAMETER PassExitCode
     Exit with the failure count instead of 0. Off by default: a red conformance
     run is data, and the harness reads the score from result.json, not from an
@@ -49,6 +55,83 @@ $ErrorActionPreference = 'Stop'
 $target = (Resolve-Path -LiteralPath $Path).Path
 if (-not $ResultPath) {
     $ResultPath = Join-Path (Get-Location) 'conformance-result.json'
+}
+
+# ---------------------------------------------------------------------------
+# -ModuleName default, for a target the suite's own rules cannot resolve.
+#
+# F-8. The suite prefers a manifest named for the target directory, then one
+# sitting directly in the target, and has NO third rule on purpose: "if exactly
+# one candidate survives, take it" once graded a vendored corpus module after the
+# reference's own manifest was deleted, silently and confidently. That fallback
+# is not coming back.
+#
+# A run directory fires neither rule. It is named for the run (002-first-build)
+# and its manifest is at src/<Name>/<Name>.psd1, so every assertion failed for a
+# reason that looked like the module's fault. Passing -ModuleName worked and was
+# mandatory for every run.
+#
+# What is added here is a rule, not a fallback, and the difference is the whole
+# point: src/<Name>/<Name>.psd1 is the layout this plugin's scaffold mandates and
+# the conformance suite grades. Reading it is a positive claim about a known
+# location. A lone survivor anywhere in the tree is not.
+#
+# It is deliberately the LAST rule tried. When either of the suite's rules can
+# fire, nothing is passed and the suite decides exactly as before - so the
+# reference, the gallery corpus, and every published-package target are
+# untouched by this. Two manifests under src/ is undecidable and stops, naming
+# both.
+# ---------------------------------------------------------------------------
+
+if (-not $ModuleName) {
+    # The same candidate test the suite applies, so the two agree on what a
+    # candidate is: a manifest named for its own directory, or one under a
+    # version directory named for its grandparent. Same exclusions, matched
+    # against the path RELATIVE to the target.
+    $allCandidates = @(
+        Get-ChildItem -Path $target -Filter *.psd1 -File -Recurse -ErrorAction SilentlyContinue |
+            Where-Object {
+                $_.BaseName -eq $_.Directory.Name -or
+                ($_.Directory.Name -match '^\d+(\.\d+)*([-+].*)?$' -and
+                    $_.Directory.Parent -and $_.BaseName -eq $_.Directory.Parent.Name)
+            } |
+            Where-Object {
+                $_.FullName.Substring($target.Length) -notmatch
+                    '[\/](output|scratch|\.git|gallery|fixtures|node_modules)[\/]'
+            }
+    )
+
+    $targetLeaf = Split-Path -Leaf $target
+    $suiteCanDecide =
+        @($allCandidates | Where-Object { $_.BaseName -eq $targetLeaf }).Count -eq 1 -or
+        @($allCandidates | Where-Object { $_.Directory.FullName -eq $target }).Count -eq 1
+
+    if (-not $suiteCanDecide) {
+        $srcRoot = Join-Path $target 'src'
+        $underSrc = @($allCandidates | Where-Object {
+                $_.FullName.StartsWith($srcRoot + [System.IO.Path]::DirectorySeparatorChar,
+                    [StringComparison]::OrdinalIgnoreCase)
+            })
+
+        if ($underSrc.Count -eq 1) {
+            $ModuleName = $underSrc[0].BaseName
+            Write-Host ("Derived -ModuleName '$ModuleName' from " +
+                "$($underSrc[0].FullName.Substring($target.Length).TrimStart('\','/')).")
+        }
+        elseif ($underSrc.Count -gt 1) {
+            # Rule 11. The operator gets an explicit way to answer the question
+            # the runner could not, and the runner does not answer it for them.
+            $names = @($underSrc | ForEach-Object {
+                    $_.FullName.Substring($target.Length).TrimStart('\', '/')
+                })
+            throw ("Cannot derive -ModuleName: $($underSrc.Count) manifests under " +
+                "'$srcRoot', none preferred. Candidates: $($names -join '; '). " +
+                'Pass -ModuleName to choose.')
+        }
+        # Zero under src/ is absence, not ambiguity. Nothing is passed and the
+        # suite reports it - either as a missing manifest, or with its own
+        # ambiguity throw when the tree holds more than one candidate elsewhere.
+    }
 }
 
 $pester = Get-Module -Name Pester -ListAvailable |

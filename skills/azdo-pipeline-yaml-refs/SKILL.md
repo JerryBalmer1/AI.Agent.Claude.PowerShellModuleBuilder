@@ -1,5 +1,5 @@
 ---
-name: pipeline-yaml-refs
+name: azdo-pipeline-yaml-refs
 description: Extract and resolve Azure Pipelines YAML references — template, extends, resources.repositories, resources.pipelines, checkout — with parsing separated from resolution and unresolved references carried with a reason. Use when building a pipeline dependency graph or debugging a wrong or missing edge.
 ---
 
@@ -136,5 +136,5 @@ repository.
 
 ## Related
 
-- `graph-assembly` — turning these references into nodes and edges.
+- `azdo-graph-assembly` — turning these references into nodes and edges.
 - `azdo-rest` — fetching the YAML.
