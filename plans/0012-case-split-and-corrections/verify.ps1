@@ -17,6 +17,21 @@
     second, independently written case-declaration reader, so that agreement
     between the two is evidence rather than a tautology.
 
+
+    EDITED DURING PASS 0013, BEFORE DECISION 0004 EXISTED.
+
+    Pass 0013 modified this script: it corrected the PAT-shape scan, and (in
+    0012's copy) changed the pinned Fixture.Tests.ps1 case count from 346 to
+    352 after adding six assertions to that suite.
+
+    Under decisions/0004-plan-artifacts-are-frozen.md those edits would not be
+    made today: a plan and its verify script are valid against the commit that
+    pass pushed and are not maintained forward. The edits are not reverted -
+    reverting them would make this script red for a reason decision 0004 says
+    is not a fault - but they are recorded here so that nobody reads the
+    current contents as what this pass originally asserted. The originals are
+    in the history, at the commit that pass pushed.
+
     Exit 0 when everything agrees, 1 otherwise, naming each check that did not.
 #>
 [CmdletBinding()]

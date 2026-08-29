@@ -311,6 +311,22 @@ case-insensitive absence check that matches a negated sentence, and a line-wise
 presence check that misses a wrapped phrase, are the same species as hazard 6:
 an expectation that is confidently wrong and never says so.
 
+**The diagnostic rule.** *A phrase check returning zero matches for text known to
+be present is a defect in the check, not evidence about the file.* Reach for
+that reading first, before concluding anything about the document. The instinct
+runs the other way - a zero result looks like an answer - and following the
+instinct is how a wrapped phrase becomes "the file does not say that".
+
+This hazard recurred inside the falsification of its own fix, which is the
+reason the rule is stated as an instruction rather than as an observation. Pass
+0013 fixed `FixtureCase.ps1` to capture a whole `**checked by:**` paragraph
+rather than its first line, because a quoted test name was straddling a line
+break. Minutes later, the `grep -c` written to confirm that a falsification
+probe had been applied returned 0 for a phrase that was demonstrably in the
+file - because the phrase spanned a line break. The check for the hazard was
+written with the hazard in it. Knowing about it is not sufficient protection;
+collapsing whitespace before matching is.
+
 ## What a run must record
 
 Enough that the score can be read months later without rerunning it:

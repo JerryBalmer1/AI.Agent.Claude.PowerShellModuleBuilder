@@ -13,3 +13,16 @@
 *.json text eol=lf
 *.md   text eol=lf
 *.ps1  text eol=lf
+
+# Git's own dotfiles match no extension rule above and would fall to
+# `* text=auto`, meaning CRLF on a Windows checkout.
+.gitattributes text eol=lf
+.gitignore     text eol=lf
+
+# The functional seed is copied byte-for-byte into a run directory by
+# Reset-Target.ps1, so its bytes must not depend on where this repository was
+# checked out. Three of its four files - .gitattributes, .gitignore and LICENSE
+# - match none of the extension rules above and fell to `* text=auto`, which
+# means CRLF on any Windows clone. Measured with `git check-attr text eol`:
+# README.md resolved to eol=lf and the other three to eol unspecified.
+evals/functional/seed/** text eol=lf

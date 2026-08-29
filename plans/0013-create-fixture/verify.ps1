@@ -58,6 +58,36 @@ $suiteFixture = Join-Path $fixtureDir 'Fixture.Tests.ps1'
 $suiteReadBack= Join-Path $fixtureDir 'ReadBack.Tests.ps1'
 $summaryPath  = Join-Path $RepoRoot 'runs/001-fixture-create/create-summary.json'
 
+# ============================================ frozen at a commit (decision 0004)
+#
+# This script verifies Pass 0013, which described one set of changes and landed
+# at one commit. It is valid against that commit and is not maintained forward.
+#
+# Running it against a later HEAD is a legitimate thing to do - it is how you
+# find out what has moved. Reading its red as "Pass 0013 was wrong" is the
+# category error decision 0004 exists to prevent. The pinned case count below is
+# not edited as the suite grows: a pin that no longer matches is information
+# about drift, which is what the pin is for.
+
+$WrittenAgainstSha = '82eae2da2f2040751dc95939c415f490b2dfedad'
+
+$currentSha = $null
+try {
+    Push-Location $RepoRoot
+    try { $currentSha = (& git rev-parse HEAD 2>$null).Trim() } finally { Pop-Location }
+}
+catch { $currentSha = $null }
+
+if ($currentSha -and $currentSha -ne $WrittenAgainstSha) {
+    Write-Host ''
+    Write-Host 'NOTE: the repository has moved since this script was written.' -ForegroundColor Yellow
+    Write-Host ("  written against : {0}" -f $WrittenAgainstSha) -ForegroundColor Yellow
+    Write-Host ("  current HEAD    : {0}" -f $currentSha) -ForegroundColor Yellow
+    Write-Host '  Any disagreement below may be the repository having moved on rather' -ForegroundColor Yellow
+    Write-Host '  than Pass 0013 having been wrong. See decisions/0004-plan-artifacts-are-frozen.md.' -ForegroundColor Yellow
+    Write-Host ''
+}
+
 $failures = [System.Collections.Generic.List[string]]::new()
 $skipped  = [System.Collections.Generic.List[string]]::new()
 
