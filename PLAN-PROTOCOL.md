@@ -104,8 +104,19 @@ green test would be worse than not having one.
 
 ### 9. Verify script (full tier)
 
-`verify.ps1`, in a fenced block in the plan and committed beside it. It
-must:
+`verify.ps1`, committed beside the plan, and reproduced in a fenced block
+only when short enough that no reader will diff the two copies. Otherwise
+the plan names its path and says what it checks.
+
+The reason for the exception: a second copy of an executable in the same
+commit can disagree with the first, and nothing makes them agree again.
+That is hazard 6 in `evals/HARNESS.md` — a stale expectation reporting the
+wrong answer confidently — applied to the one artifact whose job is to
+disprove the plan. A reader who diffs a fenced excerpt against the
+committed script and finds them different has learned nothing about
+either.
+
+It must:
 
 - assume nothing but a fresh clone of this repository and the tools
 - re-derive rather than read: re-run the suite and compare against the
@@ -139,7 +150,14 @@ negative was itself nearly a false positive.
 
 ### 11. Cost
 
-Wall-clock for the pass and an approximate token count.
+Wall-clock for the pass, plus any run counts the pass produced — suite
+runs, probe rows, build invocations.
+
+No token count. The agent cannot measure one from inside the session, and a
+field it cannot measure is a field it guesses at. This project's own rule
+is that a number without an artifact behind it does not belong in a plan,
+and that rule does not stop applying because the number is about the agent.
+If a token count is wanted it has to come from the host.
 
 ## Formatting
 

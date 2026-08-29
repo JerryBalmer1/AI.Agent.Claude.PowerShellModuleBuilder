@@ -102,7 +102,7 @@ facts and averaging them would destroy both.
 ## The fixture
 
 `fixture/repos/` holds the YAML of four Azure DevOps repositories, and is the
-source of truth for them. Pass 0012 pushes these files to Azure DevOps and
+source of truth for them. Pass 0013 pushes these files to Azure DevOps and
 registers fifteen pipeline definitions against them; it does not author anything
 there. `AZDO-FIXTURE.md` is that creation plan.
 

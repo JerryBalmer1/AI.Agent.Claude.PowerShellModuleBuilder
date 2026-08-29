@@ -214,6 +214,34 @@ Two implementation notes, both learned the hard way:
   `-Only` filter selected zero rows and reported a clean run. A run of zero rows
   is not a pass, and an unrecognised row name is an error.
 
+**A third instance, from Pass 0011: the probe that never applied.** A control
+probe against `verify.ps1` was meant to inject an external stylesheet reference
+into a rendered HTML file and confirm the check went red. The substitution was
+written like this:
+
+```powershell
+Set-Content $html -Value ($text -replace '<style>', '<link ...>' + "`n" + '<style>')
+```
+
+which is a parse error: `-replace` takes two operands, and the concatenation
+after the comma supplies a third. The injection never happened. The
+script then ran against an unmodified file and printed **all checks agree**, and
+reading that line alone would have recorded the check as falsified when it had
+never been exercised.
+
+The tell was not the exit code, which was correct for the file as it actually
+stood. The tell was that the failure list was empty. A check reporting agreement
+while the probe that was supposed to break it did not apply is a false green, and
+it looks exactly like a real one.
+
+This is the same hazard as the stale expectation and the same as hazard 4's
+silent regex: the bookkeeping around a probe fails, and the probe's result is
+reported as though the probe ran. **Requirement:** a probe asserts that it
+changed the file — content hash, or byte length, or an explicit re-read and
+compare — *before* the check under test is run, and aborts the row if nothing
+changed. The guard belongs at the probe, not at the check; a check cannot know
+whether the thing it is reading was supposed to be different.
+
 ### 7. A red probe alone does not finish an assertion
 
 **Failure it causes:** an assertion scoped too widely passes every break aimed at

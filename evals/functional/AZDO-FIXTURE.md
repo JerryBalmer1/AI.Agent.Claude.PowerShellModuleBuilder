@@ -1,10 +1,10 @@
-# AZDO-FIXTURE — the creation plan for Pass 0012
+# AZDO-FIXTURE — the creation plan for Pass 0013
 
-What Pass 0012 creates in Azure DevOps, in what order, and under what
+What Pass 0013 creates in Azure DevOps, in what order, and under what
 constraints. Nothing in this file has been executed. Pass 0011 made no network
 call, created nothing, and did not read the PAT.
 
-The YAML in `fixture/repos/` is the source of truth. Pass 0012 **pushes** it. It
+The YAML in `fixture/repos/` is the source of truth. Pass 0013 **pushes** it. It
 does not author pipeline YAML in Azure DevOps and then copy it back; if the two
 ever disagree, the repository wins and Azure DevOps is rebuilt.
 
@@ -34,8 +34,36 @@ repository and this fixture will outlive the conversation that asked for it.
   duplicated one, so that the fixture can be rebuilt after a wipe.
 
 `ClaudeTesting` is assumed to be a scratch project whose contents are
-disposable. If it turns out to hold anything else, Pass 0012 stops rather than
-adding to it.
+disposable. If it turns out to hold anything beyond the one repository named
+below, Pass 0013 stops rather than adding to it.
+
+## The pre-existing `ClaudeTesting` repository
+
+The project already contains a Git repository named `ClaudeTesting`, created
+with the project and empty. It is not part of the fixture and never becomes part
+of it.
+
+**Pass 0013 must not delete it, modify it, push to it, or create any pipeline
+definition in it.** It is left exactly as found. The expected state before
+creation is one repository, `ClaudeTesting`, and zero definitions; any other
+state is a hard stop and a finding for the operator rather than something to
+tidy up.
+
+It is not merely tolerated — it is load-bearing. **Its presence is case 12**, an
+absence case: a repository that exists in the project, that no pipeline
+references, and that must therefore not appear in the graph. It discriminates
+against an implementation that builds its repository nodes by calling the
+repositories endpoint instead of deriving them from pipeline references. The
+four `repo` nodes in `expected-graph.json` are there because pipeline YAML names
+them through `resources.repositories` or `checkout`; `ClaudeTesting` is named by
+neither, so a graph with five repository nodes is answering a different question
+— "what is in this project" rather than "what do these pipelines depend on".
+
+Because it is an absence case, nothing in `expected-graph.json` carries a
+`case-12` tag; tagging a node with it would assert the opposite of the claim.
+Its checks live elsewhere, and `fixture/cases.md` names them on case 12's
+`**checked by:**` line: an assertion in `Fixture.Tests.ps1` that no node has an
+id, name or repo equal to `ClaudeTesting`, and read-back assertion 8 below.
 
 ## Repositories
 
@@ -121,7 +149,7 @@ definition with no trigger at all is a slightly different object in the Azure
 DevOps API, and the fixture should contain both shapes.
 
 **A push to a repository will therefore queue `p01-simple-include` and
-`x01-consumer-build` unless CI is suppressed.** Pass 0012 must either disable CI
+`x01-consumer-build` unless CI is suppressed.** Pass 0013 must either disable CI
 triggers at the definition level after creation, or push with a commit message
 containing `***NO_CI***`, or create the definitions only after the final push.
 The last is simplest and is the recommended order: push all four repositories
@@ -149,16 +177,23 @@ and do not treat it as harmless.
 
 ## Read-back verification
 
-Pass 0012 is verified by reading Azure DevOps, not by trusting that the create
+Pass 0013 is verified by reading Azure DevOps, not by trusting that the create
 calls returned 200.
 
-1. Four repositories exist, named exactly as above, and no others.
+1. **Five** repositories exist: the four above, plus the pre-existing
+   `ClaudeTesting`. No others. The count is five and not four on purpose — see
+   *The pre-existing `ClaudeTesting` repository*, and note that an earlier
+   version of this file said "four ... and no others", which would have failed
+   the read-back against a correct project.
 2. Each repository's file list on `main` equals `fixture/repos/<name>/` exactly —
    same paths, no extras, 30 files in total.
 3. Every file's content on `main` is byte-identical to the committed file.
 4. Fifteen definitions exist, named exactly as above, and no others.
 5. Each definition's repository and YAML path match the table above.
 6. Every definition's run history is empty.
+7. The `ClaudeTesting` repository still exists, is still empty, and no
+   definition targets it. This is read-back assertion 8 and it is case 12's
+   external check: it is what makes "nothing carries the tag" mean something.
 
 Check 3 is the one that matters. Checks 1, 2, 4 and 5 confirm that the right
 names exist; only 3 confirms that what was pushed is what the module will later

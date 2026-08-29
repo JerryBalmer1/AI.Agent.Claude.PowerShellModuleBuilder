@@ -19,6 +19,8 @@
 #>
 
 BeforeDiscovery {
+    . (Join-Path $PSScriptRoot 'FixtureCase.ps1')
+
     $script:FixtureRoot = Join-Path $PSScriptRoot 'fixture'
     $script:ReposRoot = Join-Path $script:FixtureRoot 'repos'
     $script:GraphPath = Join-Path $script:FixtureRoot 'expected-graph.json'
@@ -84,9 +86,15 @@ BeforeDiscovery {
     }
 
     $script:UnresolvedEdgeCases = @($script:EdgeCases | Where-Object { $_.Kind -eq 'unresolved' })
+
+    $script:CaseDeclarations = @(Get-FixtureCaseDeclaration -Path $script:CasesPath)
+    $script:PresenceCases = @($script:CaseDeclarations | Where-Object Kind -EQ 'presence')
+    $script:AbsenceCases = @($script:CaseDeclarations | Where-Object Kind -EQ 'absence')
 }
 
 BeforeAll {
+    . (Join-Path $PSScriptRoot 'FixtureCase.ps1')
+
     $script:FixtureRoot = Join-Path $PSScriptRoot 'fixture'
     $script:ReposRoot = Join-Path $script:FixtureRoot 'repos'
     $script:GraphPath = Join-Path $script:FixtureRoot 'expected-graph.json'
@@ -479,16 +487,24 @@ Describe 'Functional fixture' {
         }
     }
 
-    Context 'Assertion 7 — the cases are all present on both sides' {
+    Context 'Assertion 7 — the cases are declared on both sides, by kind' {
+
+        # A case is either a claim that something is in the graph, or a claim
+        # that something is NOT. The original form of this assertion — every
+        # case id appears on at least one node or edge — can only express the
+        # first, and an absence case tagged onto a node would be the opposite
+        # of what it claims. So the kind is declared in cases.md and this
+        # assertion enforces it in the direction the kind names.
+        #
+        # An absence case must also name, in cases.md, the assertion that does
+        # check it. Otherwise "nothing carries this tag" is satisfied by a case
+        # that nothing checks at all.
 
         BeforeAll {
-            $script:DeclaredCaseIds = @()
-            if (Test-Path -LiteralPath $script:CasesPath) {
-                $script:DeclaredCaseIds = @(
-                    [regex]::Matches((Get-Content -LiteralPath $script:CasesPath -Raw), '(?m)^##\s+(case-\d{2})\b') |
-                        ForEach-Object { $_.Groups[1].Value }
-                )
-            }
+            $script:CaseDeclarations = @(Get-FixtureCaseDeclaration -Path $script:CasesPath)
+            $script:DeclaredCaseIds = @($script:CaseDeclarations | ForEach-Object Id)
+            $script:PresenceIds = @($script:CaseDeclarations | Where-Object Kind -EQ 'presence' | ForEach-Object Id)
+            $script:AbsenceIds = @($script:CaseDeclarations | Where-Object Kind -EQ 'absence' | ForEach-Object Id)
             $script:GraphCaseIds = @(
                 @($script:Nodes) + @($script:Edges) |
                     Where-Object { $_ -and $_.PSObject.Properties.Name -contains 'cases' } |
@@ -497,17 +513,63 @@ Describe 'Functional fixture' {
             )
         }
 
-        It 'cases.md declares exactly ten cases' {
-            $script:DeclaredCaseIds.Count | Should -Be 10
+        It 'cases.md declares exactly twelve cases' {
+            $script:DeclaredCaseIds.Count | Should -Be 12
         }
 
         It 'cases.md declares no duplicate case id' {
             @($script:DeclaredCaseIds | Sort-Object -Unique).Count | Should -Be $script:DeclaredCaseIds.Count
         }
 
-        It 'every case id in cases.md is carried by at least one node or edge' {
-            $orphanCases = @($script:DeclaredCaseIds | Where-Object { $_ -notin $script:GraphCaseIds })
-            $orphanCases -join ', ' | Should -BeNullOrEmpty
+        It 'case <_.Id> declares exactly one kind marker' -ForEach $script:CaseDeclarations {
+            $_.KindCount | Should -Be 1 -Because 'a case with no kind, or two, cannot be checked in either direction'
+        }
+
+        It 'presence and absence partition the declared cases' {
+            ($script:PresenceIds.Count + $script:AbsenceIds.Count) | Should -Be $script:DeclaredCaseIds.Count
+        }
+
+        It 'there is at least one presence case' {
+            $script:PresenceIds.Count | Should -BeGreaterThan 0
+        }
+
+        It 'there is at least one absence case' {
+            $script:AbsenceIds.Count | Should -BeGreaterThan 0
+        }
+
+        # -AllowNullOrEmptyForEach on these three, guarded by the two counts
+        # above. Left to fail on an empty list they would abort discovery and
+        # take assertions 1 to 6 down with them, which hides more than it
+        # reports; the count guards are what keep zero cases from passing.
+        It 'presence case <_.Id> is carried by at least one node or edge' -ForEach $script:PresenceCases -AllowNullOrEmptyForEach {
+            $script:GraphCaseIds | Should -Contain $_.Id
+        }
+
+        It 'absence case <_.Id> is carried by no node or edge' -ForEach $script:AbsenceCases -AllowNullOrEmptyForEach {
+            $script:GraphCaseIds | Should -Not -Contain $_.Id -Because 'the case is that nothing carries it'
+        }
+
+        It 'absence case <_.Id> names the assertion that checks it' -ForEach $script:AbsenceCases -AllowNullOrEmptyForEach {
+            $_.CheckedBy | Should -Not -BeNullOrEmpty -Because 'an absence nobody checks is not a case'
+        }
+
+        It 'the case declarations survive CRLF line endings' {
+            # A regression guard, not a formality. core.autocrlf is true in this
+            # repository and there is no .gitattributes, so cases.md arrives
+            # CRLF in a fresh clone on Windows. Before the reader normalised
+            # line endings, that turned 12 kind markers into 0 and failed all of
+            # assertion 7 — for everyone except the machine that authored it.
+            $crlfCopy = Join-Path ([System.IO.Path]::GetTempPath()) "cases-crlf-$([guid]::NewGuid()).md"
+            try {
+                $raw = Get-Content -LiteralPath $script:CasesPath -Raw
+                [System.IO.File]::WriteAllText($crlfCopy, ($raw -replace "`r`n", "`n" -replace "`n", "`r`n"))
+                $fromCrlf = @(Get-FixtureCaseDeclaration -Path $crlfCopy)
+                ($fromCrlf | ForEach-Object { "$($_.Id)=$($_.Kind)" }) -join ',' |
+                    Should -Be (($script:CaseDeclarations | ForEach-Object { "$($_.Id)=$($_.Kind)" }) -join ',')
+            }
+            finally {
+                Remove-Item -LiteralPath $crlfCopy -ErrorAction SilentlyContinue
+            }
         }
 
         It 'every case id in the graph is declared in cases.md' {
@@ -515,8 +577,24 @@ Describe 'Functional fixture' {
             $inventedCases -join ', ' | Should -BeNullOrEmpty
         }
 
-        It 'the graph carries all ten case ids' {
-            $script:GraphCaseIds.Count | Should -Be 10
+        It 'the graph carries every presence case id and nothing else' {
+            ($script:GraphCaseIds -join ',') | Should -Be (($script:PresenceIds | Sort-Object) -join ',')
+        }
+
+        # case-12's own check. The Azure DevOps project contains a repository
+        # named ClaudeTesting, created with the project, referenced by no
+        # pipeline. An implementation that enumerates project repositories
+        # instead of deriving them from pipeline references would add it.
+        It 'no node is the pre-existing ClaudeTesting repository' {
+            $offenders = @(
+                $script:Nodes | Where-Object {
+                    $_.id -eq 'ClaudeTesting' -or
+                    $_.id -eq 'repo:ClaudeTesting' -or
+                    $_.name -eq 'ClaudeTesting' -or
+                    ($_.PSObject.Properties.Name -contains 'repo' -and $_.repo -eq 'ClaudeTesting')
+                } | ForEach-Object { $_.id }
+            )
+            $offenders -join ', ' | Should -BeNullOrEmpty -Because 'case-12: the project repository is referenced by no pipeline and must not appear in the graph'
         }
     }
 }

@@ -19,7 +19,7 @@
     { "id": "pipeline:p08-cycle", "kind": "pipeline", "name": "p08-cycle", "repo": "pipelines-main", "cases": ["case-08"], "note": "Would fail if run. Never run." },
     { "id": "pipeline:p09-unresolved", "kind": "pipeline", "name": "p09-unresolved", "repo": "pipelines-main", "cases": ["case-09"], "note": "Would fail if run. Never run." },
     { "id": "pipeline:p10-orphan", "kind": "pipeline", "name": "p10-orphan", "repo": "pipelines-main", "cases": ["case-10"], "note": "Isolated: one definition edge and nothing else. Its whole point is to be present." },
-    { "id": "pipeline:x01-consumer-build", "kind": "pipeline", "name": "x01-consumer-build", "repo": "consumer-app", "cases": ["case-10"] },
+    { "id": "pipeline:x01-consumer-build", "kind": "pipeline", "name": "x01-consumer-build", "repo": "consumer-app", "cases": ["case-11"] },
     { "id": "pipeline:x02-platform-release", "kind": "pipeline", "name": "x02-platform-release", "repo": "consumer-app", "cases": ["case-05"] },
     { "id": "pipeline:x03-shared-nightly", "kind": "pipeline", "name": "x03-shared-nightly", "repo": "templates-shared" },
     { "id": "pipeline:x04-cross-trigger", "kind": "pipeline", "name": "x04-cross-trigger", "repo": "templates-platform", "cases": ["case-05"] },
@@ -54,7 +54,7 @@
     { "id": "yaml:templates-platform/jobs/release.yml", "kind": "yaml", "name": "jobs/release.yml", "repo": "templates-platform", "path": "repos/templates-platform/jobs/release.yml", "cases": ["case-03"] },
     { "id": "yaml:templates-platform/pipelines/trigger.yml", "kind": "yaml", "name": "pipelines/trigger.yml", "repo": "templates-platform", "path": "repos/templates-platform/pipelines/trigger.yml" },
 
-    { "id": "yaml:consumer-app/azure-pipelines.yml", "kind": "yaml", "name": "azure-pipelines.yml", "repo": "consumer-app", "path": "repos/consumer-app/azure-pipelines.yml", "cases": ["case-10"] },
+    { "id": "yaml:consumer-app/azure-pipelines.yml", "kind": "yaml", "name": "azure-pipelines.yml", "repo": "consumer-app", "path": "repos/consumer-app/azure-pipelines.yml", "cases": ["case-11"] },
     { "id": "yaml:consumer-app/pipelines/release.yml", "kind": "yaml", "name": "pipelines/release.yml", "repo": "consumer-app", "path": "repos/consumer-app/pipelines/release.yml" },
     { "id": "yaml:consumer-app/templates/app-steps.yml", "kind": "yaml", "name": "templates/app-steps.yml", "repo": "consumer-app", "path": "repos/consumer-app/templates/app-steps.yml", "cases": ["case-01"] }
   ],
@@ -108,8 +108,8 @@
     { "from": "yaml:pipelines-main/pipelines/p09.yml", "to": "yaml:@ghostTemplates/steps/common.yml", "kind": "unresolved", "refKind": "template", "ref": "steps/common.yml@ghostTemplates", "reason": "alias-not-declared: 'ghostTemplates' is not in resources.repositories of pipelines/p09.yml, so the repository is unknown and the path cannot be resolved at all", "cases": ["case-09"] },
 
     { "from": "yaml:consumer-app/azure-pipelines.yml", "to": "repo:pipelines-main", "kind": "repositoryResource", "ref": "ClaudeTesting/pipelines-main", "alias": "mainPipelines" },
-    { "from": "yaml:consumer-app/azure-pipelines.yml", "to": "repo:templates-shared", "kind": "repositoryResource", "ref": "ClaudeTesting/templates-shared", "alias": "sharedTemplates", "cases": ["case-10"] },
-    { "from": "yaml:consumer-app/azure-pipelines.yml", "to": "repo:templates-shared", "kind": "checkout", "ref": "sharedTemplates", "cases": ["case-10"], "note": "A repository dependency. Nothing in templates-shared is included by this pipeline, so there is no template edge here to invent." },
+    { "from": "yaml:consumer-app/azure-pipelines.yml", "to": "repo:templates-shared", "kind": "repositoryResource", "ref": "ClaudeTesting/templates-shared", "alias": "sharedTemplates", "cases": ["case-11"] },
+    { "from": "yaml:consumer-app/azure-pipelines.yml", "to": "repo:templates-shared", "kind": "checkout", "ref": "sharedTemplates", "cases": ["case-11"], "note": "A repository dependency. Nothing in templates-shared is included by this pipeline, so there is no template edge here to invent." },
     { "from": "yaml:consumer-app/azure-pipelines.yml", "to": "yaml:consumer-app/templates/app-steps.yml", "kind": "template", "ref": "templates/app-steps.yml", "cases": ["case-01"], "note": "Local. Same path text as the reference below, different repository." },
     { "from": "yaml:consumer-app/azure-pipelines.yml", "to": "yaml:pipelines-main/templates/steps-build.yml", "kind": "template", "ref": "templates/steps-build.yml@mainPipelines", "cases": ["case-01"], "note": "Cross-repo, so resolved from the root of pipelines-main. This is the file p01 must NOT reach." },
 

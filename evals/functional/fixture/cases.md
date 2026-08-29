@@ -1,21 +1,43 @@
-# The ten cases
+# The twelve cases
 
 Each case is a claim about what a correct dependency graph of the fixture
-contains. A case is not a test of the fixture; it is a test of whatever reads
-the fixture. `Fixture.Tests.ps1` only checks that the fixture and
-`expected-graph.json` describe the same thing.
+contains — or, for an absence case, about what it must not contain. A case is
+not a test of the fixture; it is a test of whatever reads the fixture.
+`Fixture.Tests.ps1` only checks that the fixture and `expected-graph.json`
+describe the same thing.
 
-Every case names the specific way a naive implementation fails it. That column
+Every case names the specific way a naive implementation fails it. That section
 is the reason the case exists: a case that no plausible wrong implementation
 fails is a case that cannot discriminate, and is worth nothing.
 
-Case ids are the strings in the `cases` array of `expected-graph.json`. The
-acceptance test requires every id here to be carried by at least one node or
-edge, and every id in the graph to appear here.
+## Presence and absence
+
+Every case declares a **kind**, on its own line, as `**kind:** presence` or
+`**kind:** absence`.
+
+A **presence** case claims something is in the graph. Its id appears in the
+`cases` array of at least one node or edge in `expected-graph.json`, and the
+acceptance test checks that it does.
+
+An **absence** case claims something is *not* in the graph. Nothing can carry
+its id — tagging a node with it would assert the opposite of the case. So an
+absence case must instead name, on a `**checked by:**` line, the assertion
+elsewhere that does check it. "Nothing carries this tag" is otherwise satisfied
+by a case that nothing checks at all, which is the failure mode this rule
+exists to prevent.
+
+The acceptance test enforces the split in the direction the kind names: every
+presence id tagged at least once, every absence id tagged never, and every
+absence case carrying a `**checked by:**` line.
+
+A case id mentioned in prose is not a declaration. Declarations are anchored on
+the `##` heading, so this paragraph does not create a case.
 
 ---
 
 ## case-01 — Same-repo step template resolves relative to the including file
+
+**kind:** presence
 
 **Tests.** A template reference with no `@alias` is resolved relative to the
 directory of the file that contains it, not to the root of the repository.
@@ -43,6 +65,8 @@ from the root and correctly lands there. The same text, two rules, two files.
 
 ## case-02 — A three-level chain is followed all the way down
 
+**kind:** presence
+
 **Tests.** Transitive resolution. `p02 → chain-a → chain-b → chain-c`, all in
 one repository, each reference relative to the file that makes it.
 
@@ -59,6 +83,8 @@ first attempt, and it looks right on a fixture where nothing nests.
 ---
 
 ## case-03 — `extends` is its own edge kind, and a parameter is not an edge
+
+**kind:** presence
 
 **Tests.** Two things at once. `extends.template` is an `extends` edge rather
 than a `template` edge; and a parameter whose *value* looks like a template path
@@ -84,6 +110,8 @@ looks correct.
 ---
 
 ## case-04 — A cross-repo template resolves through the alias, in the right repo
+
+**kind:** presence
 
 **Tests.** `path@alias` is resolved from the **root** of the repository the
 alias names, and the alias is looked up in the `resources.repositories` of the
@@ -112,6 +140,8 @@ merely wrong but visibly wrong: `steps/deploy.yml` exists in
 
 ## case-05 — A pipeline resource is a pipeline-to-pipeline edge
 
+**kind:** presence
+
 **Tests.** `resources.pipelines` with a completion trigger produces an edge from
 the consuming pipeline's YAML to another **pipeline definition**, not to a file,
 and of a different kind from a template edge.
@@ -137,6 +167,8 @@ outward and two from outside it inward — so an implementation that only walks
 
 ## case-06 — A template in the `variables` block is still a template edge
 
+**kind:** presence
+
 **Tests.** Template references are found wherever they occur, not only under
 `steps`, `jobs` and `stages`.
 
@@ -154,6 +186,8 @@ repositories that missing them silently is a serious answer to give.
 ---
 
 ## case-07 — A diamond shares one node, with in-degree 2
+
+**kind:** presence
 
 **Tests.** Two pipelines include the same template, which includes a third. The
 shared template is one node reached twice, not two nodes.
@@ -176,6 +210,8 @@ change break" — is then wrong in the direction that looks busiest.
 
 ## case-08 — A cycle is reported as a cycle, and the traversal ends
 
+**kind:** presence
+
 **Tests.** `cycle-a` includes `cycle-b`, which includes `cycle-a`. Both edges
 appear, the traversal terminates, and the cycle is reported rather than hidden.
 
@@ -193,6 +229,8 @@ would fail if it were ever run. It is never run.
 ---
 
 ## case-09 — Unresolved references are reported, with a reason
+
+**kind:** presence
 
 **Tests.** Two references that cannot be resolved, for two different reasons: a
 file that does not exist in a repository that does, and an alias that was never
@@ -220,29 +258,94 @@ never run.
 
 ---
 
-## case-10 — An orphan is still a node, and a `checkout` is not a template edge
+## case-10 — An orphan is still a node
 
-**Tests.** Two claims. A pipeline that references nothing and is referenced by
-nothing still appears. And `checkout:` of a second repository is a repository
-dependency, not a template reference.
+**kind:** presence
+
+**Tests.** A pipeline that references nothing, and that nothing references,
+still appears in the graph.
+
+**Nodes and edges.** `pipeline:p10-orphan` and
+`yaml:pipelines-main/pipelines/p10.yml`, joined by one `definition` edge and
+nothing else. No `template`, `extends`, `checkout` or resource edge touches
+either.
+
+**A wrong answer.** A graph with 47 nodes instead of 49.
+
+**How a naive implementation fails.** By building the node set from the edge
+list, so anything with no edges ceases to exist. That is the one pipeline a
+reader might most want to find: nothing references it, so nothing in a
+reference-derived graph will produce it, and its absence looks exactly like a
+correct answer.
+
+This case was one half of a larger case-10 in Pass 0011, which also carried the
+`checkout` claim now in case-11. The two cannot live on one definition: a
+pipeline that checks out a second repository has a `resources.repositories`
+entry and a `checkout` edge, so it is not isolated, so it cannot be the orphan.
+
+---
+
+## case-11 — A `checkout` is a repository dependency, not a template edge
+
+**kind:** presence
+
+**Tests.** `checkout:` of a repository other than `self` is a dependency on that
+repository. It is not a template reference, and no `template` edge may be
+invented from it.
 
 **Nodes and edges.**
 
-- `pipeline:p10-orphan` and `yaml:pipelines-main/pipelines/p10.yml`, joined by
-  one `definition` edge and nothing else
 - `yaml:consumer-app/azure-pipelines.yml` → `repo:templates-shared`,
-  `kind: checkout`, `ref: sharedTemplates` — with **no** template edge into
-  `templates-shared` from that file
+  `kind: checkout`, `ref: sharedTemplates`
+- the `repositoryResource` edge from the same file to `repo:templates-shared`,
+  which is what makes the alias exist
+- **no** `template` edge from `azure-pipelines.yml` into `templates-shared`.
+  Nothing in that repository is included by this pipeline
 
-**A wrong answer.** A graph with 48 nodes instead of 49; or a `template` edge
-from `azure-pipelines.yml` into `templates-shared`.
+**A wrong answer.** A `template` edge from `azure-pipelines.yml` into
+`templates-shared`; or a `checkout` edge collapsed into the `template` kind; or
+no edge at all, losing the dependency.
 
-**How a naive implementation fails.** By building the node set from the edge
-list, so anything with no edges ceases to exist — which is the one pipeline a
-reader might most want to find. The `checkout` half fails the other way: by
-treating every repository mentioned in a pipeline as a source of templates, so
-checking out a repository to read a file from it invents a dependency that is
-not there.
+**How a naive implementation fails.** By treating every repository a pipeline
+mentions as a source of templates. Checking out a repository to read a data file
+or a script from it is ordinary, and inventing a template dependency from it
+produces an edge that is plausible, resolves, and is wrong. `checkout: self`
+appears in the same file and must produce nothing at all, which is the control
+on the same mechanism.
 
-The two halves are on different pipelines on purpose. p10 has to have no edges
-at all to be an orphan, so it cannot also carry the `checkout` claim.
+---
+
+## case-12 — A repository nothing references is not in the graph
+
+**kind:** absence
+
+**checked by:** `Fixture.Tests.ps1` assertion 7, "no node is the pre-existing
+ClaudeTesting repository"; and read-back assertion 8 in Pass 0013, that the
+repository exists in the project, is empty, and no definition targets it.
+
+**Tests.** The Azure DevOps project contains a repository named
+`ClaudeTesting`, created with the project and empty. No pipeline references it,
+no definition points at it, and it must not appear in the graph.
+
+**Nodes and edges.** None, and that is the case. Nothing in
+`expected-graph.json` carries a `case-12` tag; a node tagged `case-12` would
+assert the opposite of the claim. The four `repo` nodes that *are* in the graph
+are there because pipeline YAML references them through
+`resources.repositories` or `checkout`, and `ClaudeTesting` is referenced by
+neither.
+
+**A wrong answer.** A fifth `repo` node, `repo:ClaudeTesting`. Five repository
+nodes where the pipelines justify four.
+
+**How a naive implementation fails.** By calling the repositories endpoint and
+turning the result into nodes. It is the obvious first implementation — the
+project knows its repositories, so why derive them — and it is wrong in a way
+that gets worse with scale. A real project has repositories that no pipeline
+touches, and a graph that includes them answers "what is in this project"
+rather than "what do these pipelines depend on". The second question is the one
+the module exists for, and only the second question makes
+"if I change this template, which pipelines break" answerable.
+
+The absence is deliberately not empty scenery: the repository is really there,
+in the same project, visible to any call that lists repositories. An
+implementation has to *not* use it.

@@ -237,7 +237,9 @@ dependency paths, tool versions, shell availability.
   not part of the grader.
 - It is expensive up front. Several passes produce a grader and no
   capability. On a small project, use the minimum: an oracle, falsification
-  with controls, and a journal. Skip the corpus, the harness, and the
-  decisions log.
+  with controls, and a journal. Skip the harness and the decisions log. Do
+  not skip the corpus: it is the cheapest part of the method when one
+  already exists, and it is what breaks the closed loop — here it cost one
+  pass and invalidated five of ten assertions in the tag it tested.
 - It assumes one operator and one machine until a second person runs it.
   Absolute paths, tool versions, and install scopes are untested until then.
