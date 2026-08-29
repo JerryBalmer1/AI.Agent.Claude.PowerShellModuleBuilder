@@ -1,0 +1,15 @@
+# Line endings are load-bearing in this repository.
+#
+# The functional fixture under evals/functional/fixture/repos/ is pushed to
+# Azure DevOps and then read back and compared byte-for-byte. A checkout that
+# translates LF to CRLF changes those bytes and fails the comparison, so the
+# checkout must not translate. core.autocrlf=true is the Git for Windows
+# installer default and arrives at system scope on every Windows clone; these
+# rules override it per path rather than asking each clone to reconfigure.
+
+* text=auto
+
+*.yml  text eol=lf
+*.json text eol=lf
+*.md   text eol=lf
+*.ps1  text eol=lf

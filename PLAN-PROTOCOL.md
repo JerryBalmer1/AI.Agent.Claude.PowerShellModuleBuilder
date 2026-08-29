@@ -47,6 +47,50 @@ summary, deviations, cost. No acceptance test and no verify script. A test
 asserting that a document contains a heading proves only that a heading
 exists, and invites writing to the test.
 
+### What decides the tier
+
+The tier is decided by whether the pass changes executable behaviour. It is
+not decided by whether the pass writes documents, nor by how many, nor by
+their length. A pass that writes six documents and touches no executable is
+light. A pass that writes six documents and amends one assertion is full,
+and the six documents do not make it any less so.
+
+The failure mode this rule prevents is a pass whose bulk is prose acquiring
+the tier of its bulk rather than the tier of its risk, so that the one
+change that could break something ships without a red-first test or a
+verify script.
+
+**Worked example — pass 0012.** The prompt labelled it light. Its visible
+bulk was documents: it split the case set by presence and absence and
+corrected four of them. But it also amended an assertion in
+`Fixture.Tests.ps1`. That single amendment made it a full-tier pass
+mislabelled as light, and it shipped without the red-first test the tier
+requires. The pass flagged the mislabel in Deviations rather than absorbing
+it, which is the correct behaviour and the reason the rule is written down
+here.
+
+A pass that believes its stated tier is wrong says so in Deviations and
+executes at the higher tier. Tier is a floor, never a ceiling.
+
+## Uncommitted changes the pass did not make
+
+A pass begins on a clean working tree. When the tree is dirty at
+preconditions with a change the pass did not make and which is not pass
+work — an editor-written setting, a stray local edit — that change is
+committed on its own, before the pass begins, with a message naming it as
+unrelated.
+
+Not reverted: it may be deliberate, and the pass does not get to decide
+that.
+
+Not stashed: a mid-pass failure strands it in the stash, where the next
+session will not find it.
+
+Not carried: staging paths individually to keep it out of the pass commit
+puts it one mistake away from being in the pass commit, and the pass commit
+is the record of what the pass did. That record is worth more than the
+convenience of not making a second commit.
+
 ## plan.md structure
 
 ### 1. Prompt
