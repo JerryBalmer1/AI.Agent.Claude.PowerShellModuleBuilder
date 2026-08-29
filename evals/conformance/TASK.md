@@ -205,13 +205,28 @@ count. Verify both paths via `$LASTEXITCODE` after a green run and a red one.
 minimum the five hazards, each with the failure it causes. Specification only,
 no code.
 
+## Pass 2 outcome
+
+- **G1.** Replaced with an AST-scoped assertion: `task Test` command -> its body
+  scriptblock -> `IfStatementAst` whose condition reads the coverage percentage
+  -> a `ThrowStatementAst` in that if's own body. Finds 1 gate and 1 throw
+  against the reference, out of 9 throws in the build file.
+- **G1 probes.** 8a red, 8b red, 8c (control) green. All three correct. The
+  other 10 rows re-run unchanged to confirm no regression; the rebuild row too.
+- **G2.** `exit 0` by default, `-PassExitCode` for the failure count. Verified:
+  green/default 0, red/default 0, green/`-PassExitCode` 0, red/`-PassExitCode` 1.
+  The summary object is still returned.
+- **G3.** Both result files regenerated: 74/75 (98.67%) and 80/81 (98.77%) —
+  numerically unchanged, but now every assertion in them is falsified.
+- **G4.** `evals/HARNESS.md`, six hazards, specification only.
+
 ## Pass 2 checklist
 
-- [ ] Standing rule added to README
-- [ ] G1 assertion replaced
-- [ ] G1 probes a, b, c all give the right answer
-- [ ] G2 exit code fixed and both paths verified
-- [ ] G3 records updated, both result files regenerated
-- [ ] G4 HARNESS.md written
-- [ ] Commits made
-- [ ] Reported back
+- [x] Standing rule added to README
+- [x] G1 assertion replaced
+- [x] G1 probes a, b, c all give the right answer
+- [x] G2 exit code fixed and both paths verified
+- [x] G3 records updated, both result files regenerated
+- [x] G4 HARNESS.md written
+- [x] Commits made
+- [x] Reported back

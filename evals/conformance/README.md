@@ -39,12 +39,29 @@ deliberately, and only after a second target has passed it.
 The runner does not use `Run.Throw`. A red conformance run is data, not a build
 failure — the harness records the score and moves to the next run.
 
+It exits `0` on a red run too, which is the same claim made where a caller can
+act on it. `Invoke-Pester` sets `$LASTEXITCODE` to the failure count even with
+`Run.Throw` and `Run.Exit` both off, so until this was fixed the runner
+contradicted itself: the comment said a red run is data, the exit code said the
+run crashed. Pass `-PassExitCode` if you want the failure count — for a CI step
+that should genuinely go red, and nothing else. Read the score from
+`result.json`.
+
 ## Falsification protocol
 
 A gate that has only ever been green is indistinguishable from a gate that
 cannot go red. Before this suite grades anything, break the reference in a
 scratch clone — one break at a time, restore between — and confirm each break
 turns exactly the expected assertion red and nothing else.
+
+**An assertion does not count until it has a falsification row.** Any assertion
+that is added or changed gets a break, a confirmed red, and a restore before any
+score including it is recorded. This is not a style preference. Two assertions
+have already gone into a scoring run without a confirmed red: the invocation
+check, which was new, and `throws on coverage below target`, which was inert
+from the day it was written and passed every green run for free. Same defect
+both times. A score containing an unfalsified assertion is not a measurement of
+the target; it is partly a measurement of nothing.
 
 | Break in a scratch clone of PSModuleGraph | Expect red |
 |---|---|
@@ -55,7 +72,8 @@ turns exactly the expected assertion red and nothing else.
 | Strip the `<# .SYNOPSIS #>` block from one public file | comment-based help with a synopsis |
 | Remove every invocation of one command from the test tree | exercises the exported command &lt;name&gt; somewhere in tests |
 | Change `Run.Throw` to `Run.Exit` in the build file | throws rather than exits |
-| Remove the `throw` after the coverage comparison | throws on coverage below target |
+| Remove the `throw` after the coverage comparison, with or without the comment above it | throws on coverage below target |
+| Delete an unrelated `throw` elsewhere in the build file — control, must stay **green** | throws on coverage below target |
 | Remove `Filter.ExcludeTag = 'PreTag'` | excludes PreTag-tagged tests |
 | Delete the `$script:ModuleRoot` line from the psm1 emitter, rebuild | sets `$script:ModuleRoot` |
 | Remove `RequiredVersion` from one `Requirements.psd1` entry | pins build dependencies only in Requirements.psd1 |
@@ -64,10 +82,15 @@ turns exactly the expected assertion red and nothing else.
 Record the result of this pass. An assertion that stays green through its own
 break is worse than no assertion, because it will be counted as evidence.
 
+A control row — a break that must leave a named assertion **green** — is as much
+a part of the protocol as a break that must turn it red. An assertion scoped too
+widely passes every red probe and is still wrong; only a control catches it.
+
 The pass against the reference is recorded in
-[`baseline/FALSIFICATION.md`](baseline/FALSIFICATION.md): 10 of 12 breaks fire
-cleanly, one over-fires, and `throws on coverage below target` does not fire at
-all.
+[`baseline/FALSIFICATION.md`](baseline/FALSIFICATION.md). All 13 rows now behave:
+12 breaks turn exactly their assertion red, one control stays green, and one
+break over-fires by design — `FunctionsToExport = '*'` genuinely violates three
+assertions and they are deliberately left coupled.
 
 ## Known limits
 

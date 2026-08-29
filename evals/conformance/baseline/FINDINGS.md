@@ -13,6 +13,13 @@ the reference, not fallout from a broken build.
 
 Before the B1 replacement, the same no-build invocation scored 69/75 — 92%.
 
+**Read the Pass 1 figure of 74/75 as 73/74 plus one unknown.** It included
+`throws on coverage below target`, an assertion that could not fail — see A7. Its
+pass was not earned and carried no information about the target either way. The
+number above is numerically identical but is now the whole of it: every
+assertion in it has a falsification row, and the coverage one has a confirmed
+red and a green control.
+
 ---
 
 ## Bucket A — suite bugs
@@ -113,6 +120,44 @@ whose command name matches. A command named in a string — the export list in
 Five of the six failures were convention noise and disappeared. The sixth,
 `Get-PSModuleAssembly`, survived and is Bucket B below.
 
+### A7. `throws on coverage below target` could not fail
+
+**Was:**
+
+```powershell
+$BuildText | Should -Match '(?s)CoveragePercent.*throw'
+```
+
+**Symptom:** `(?s)` makes `.` match newlines and `.*` is unbounded, so any
+`throw` anywhere after the first mention of `CoveragePercent` satisfied it.
+There are nine `throw` statements in the reference's build file and the
+assertion accepted all of them. Three probes, all confirmed against the clone:
+
+- delete the coverage `throw`, keep the comment → still green, matching the word
+  "throw" in the comment that explains the throw
+- delete the `throw` and that comment → still green, matching
+  `throw 'Pester 6.x is required'` in the `PreTag` task thirty lines down
+- there is no edit to the coverage gate that turns it red
+
+Not a weak assertion — an inert one. It passed in every green run since it was
+written, including Pass 1's baseline, and contributed a point to a score while
+testing nothing.
+
+**Fix:** structure instead of text. Parse the build file, find the `task Test`
+command, take its body scriptblock, find the `IfStatementAst` whose *condition*
+reads the coverage percentage — a `percent`-ish variable, or a
+`.CoveragePercent` member — and assert that if's own body contains a
+`ThrowStatementAst`. Matching the condition is what stops a comment counting;
+searching only that if's body is what stops the eight unrelated throws counting.
+
+Falsified before the score was recorded, with all three probes that defeated the
+old form plus a control. See [FALSIFICATION.md](FALSIFICATION.md) rows 8a-8c.
+
+**This is why the standing rule in the suite README exists.** Two assertions had
+by then entered a scoring run without a confirmed red: A6, which was new, and
+this one, inert since it was written. An assertion does not count until it has a
+falsification row.
+
 ---
 
 ## Bucket B — real findings
@@ -166,18 +211,30 @@ reverse — it will not call something exercised when nothing invokes it — whi
 is the direction that matters for a floor. Do not read a pass as evidence the
 command is *well* tested; read it as evidence it is called at all.
 
-### An assertion in the suite cannot currently fail
+### The remaining build-file assertions are still text matches
 
-`throws on coverage below target rather than only reporting it` matches
-`(?s)CoveragePercent.*throw` against the build file. `(?s)` plus `.*` spans the
-whole file, so any `throw` anywhere after the first mention of `CoveragePercent`
-satisfies it. Deleting the coverage `throw` outright leaves it green. See
-[FALSIFICATION.md](FALSIFICATION.md), row 8 — it is the one assertion that does
-not fire under its own break.
+The coverage assertion is now AST-scoped (A7), but the rest of the
+`House style: build file` Describe still matches regexes against the file as
+text: the task declarations, the default task composition, `Run.Throw`,
+`Should.DisableV5`, `Filter.ExcludeTag`, and the coverage *path*. A build file
+that satisfies those regexes and does something else passes.
 
-This is a suite bug, not a finding about the reference, but it is **not fixed**
-in this pass: Step F is explicit that non-firing assertions are recorded and
-left alone here. It belongs in the next pass's Bucket A.
+They all fire under their own breaks, so none is inert in the way A7 was. But
+they are checking that some text appears, not that the build does something, and
+the difference is exactly the one A7 was hiding in. Each is a candidate for the
+same treatment; none has yet shown a reason to need it.
+
+### Coupled assertions on the manifest export list, kept coupled
+
+`FunctionsToExport = '*'` turns three assertions red: the wildcard check, `defines
+every function the manifest exports somewhere in source`, and `agrees three
+ways`. This is expected coupling, not a fault — a wildcard export genuinely
+violates all three, and each of the three is independently worth asserting.
+Decoupling them would mean special-casing `'*'` in two places to produce a
+tidier failure list, which buys nothing and costs suite complexity.
+
+Recorded so a future three-red run is read as one defect. See
+[FALSIFICATION.md](FALSIFICATION.md) row 1.
 
 ### Everything under `Universal` has been validated against one repository
 

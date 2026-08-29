@@ -22,6 +22,11 @@ Outcomes: **Fires** — the expected assertion goes red and nothing else does.
 **Does not fire** — the assertion stays green through its own break.
 **Over-fires** — other assertions go red too.
 
+Control rows invert the requirement: the break is one the named assertion must
+*not* notice, and the required outcome is **correctly stays green**. Row 8c is
+one. Every assertion narrow enough to be worth having should be able to carry
+one.
+
 ## Results
 
 | # | Break applied | Expected assertion | Outcome | Collateral reds | Notes |
@@ -33,17 +38,26 @@ Outcomes: **Fires** — the expected assertion goes red and nothing else does.
 | 5 | Strip the `<# .SYNOPSIS #>` block from `Public/Get-PSModuleEnum.ps1` | gives `Get-PSModuleEnum.ps1` comment-based help with a synopsis | Fires | — | |
 | 6 | Remove every invocation of `Get-PSModuleEnum` from the test tree | exercises the exported command `Get-PSModuleEnum` somewhere in tests | Fires | — | Replaces the obsolete filename-convention row. |
 | 7 | Change `Run.Throw` to `Run.Exit` in the build file | throws rather than exits when tests fail | Fires | — | |
-| 8 | Remove the `throw` after the coverage comparison | throws on coverage below target rather than only reporting it | **Does not fire** | — | The important one. See below. |
+| 8a | Delete the coverage `throw`, keep the comment above it | throws on coverage below target rather than only reporting it | Fires | — | Defeated the old text-match form. |
+| 8b | Delete the coverage `throw` and the comment above it | throws on coverage below target rather than only reporting it | Fires | — | Defeated the old form. |
+| 8c | **Control.** Coverage gate intact; delete both `throw 'Pester 6.x is required'` guards | throws on coverage below target rather than only reporting it | **Correctly stays green** | — | One of the two is inside the Test task, outside the gate. |
 | 9 | Remove `Filter.ExcludeTag = 'PreTag'` | excludes PreTag-tagged tests from the Test task | Fires | — | |
 | 10 | Remove `RequiredVersion` from the Pester entry in `Requirements.psd1` | pins build dependencies only in Requirements.psd1 | Fires | — | |
 | 11 | Rename `PSScriptAnalyzerSettings.psd1` | has analyzer settings at the repository root | Fires | — | |
 | 12 | Delete the `$script:ModuleRoot` line from the psm1 emitter, rebuild | sets `$script:ModuleRoot` | Fires | — | **rebuild** |
 
-10 fire cleanly, 1 over-fires, 1 does not fire.
+12 breaks turn exactly their assertion red, 1 control correctly stays green,
+1 break over-fires by design. Nothing is inert.
 
-## Row 8 — does not fire
+Rows 8a-8c were run in Pass 2, against the replacement assertion, before any
+score containing it was recorded. The rest were run in Pass 1 and re-run
+unchanged in Pass 2 to confirm the replacement did not disturb them — in
+particular that a break editing the build file does not make the new
+AST-parsing assertion fail for the wrong reason.
 
-The assertion is:
+## Row 8 — was inert, now fixed
+
+### What it used to be
 
 ```powershell
 It 'throws on coverage below target rather than only reporting it' {
@@ -51,26 +65,62 @@ It 'throws on coverage below target rather than only reporting it' {
 }
 ```
 
-`(?s)` makes `.` match newlines and `.*` is unbounded, so this is satisfied by
+`(?s)` makes `.` match newlines and `.*` is unbounded, so this was satisfied by
 *any* `throw` anywhere after the first mention of `CoveragePercent` in the file.
-Deleting the coverage gate outright leaves it green.
+There are nine `throw` statements in the reference's build file. The assertion
+accepted all of them:
 
-Two further checks, past what the row required, to establish how far the
-assertion is from working:
-
-- With the `throw` statement removed, the regex matches on the word "throw"
-  inside the comment directly above it — the comment explaining why the throw
-  exists satisfies the assertion that the throw exists.
-- With the statement *and* that comment removed, it still matches, on
+- With the `throw` statement removed, the regex matched the word "throw" inside
+  the comment directly above it — the comment explaining why the throw exists
+  satisfied the assertion that the throw exists.
+- With the statement *and* that comment removed, it still matched, on
   `throw 'Pester 6.x is required. Run ./build.ps1 -Bootstrap'` in the `PreTag`
-  task, 30-odd lines further down.
+  task thirty-odd lines further down.
 
-So the assertion cannot fail against this build file by any edit to the thing
-it is about. It is not weak; it is inert. It has been counted as evidence in
-every green run to date, including this baseline's 74/75.
+No edit to the coverage gate could turn it red. Not weak — inert. It passed in
+every green run from the day it was written, including Pass 1's baseline of
+74/75, contributing a point while testing nothing.
 
-Left unfixed in this pass by instruction. Recorded in
-[FINDINGS.md](FINDINGS.md) as a known limit and as the next pass's Bucket A.
+### What replaced it
+
+Structure, not text:
+
+- Parse the build file. Find the `CommandAst` for `task` whose second command
+  element is `Test`. (InvokeBuild spells a task `task <Name> [<deps>,] { ... }`,
+  so the name is element 1 whether or not dependencies follow.)
+- Take its body: the first `ScriptBlockExpressionAst` under that command.
+  `FindAll` is pre-order so the task's own body precedes anything nested in it,
+  and it must be found by search rather than by indexing `CommandElements` —
+  when dependencies are present the body sits inside an array literal, not at
+  the top level.
+- Within that body only, find `IfStatementAst`s whose **condition** contains
+  either a variable matching `percent` or a `.CoveragePercent` member access.
+  Matching the condition is what stops a comment counting.
+- Assert that gate's own clause body contains a `ThrowStatementAst`. Searching
+  only that body is what stops the eight unrelated throws counting.
+
+Against the unbroken reference this finds one gate, at the `if ($percent -lt
+$target)` on line 238, containing one throw on line 239 — out of nine in the
+file.
+
+### The three probes
+
+The replacement was falsified before any score containing it was recorded, with
+the two probes that defeated the old form and a control the old form would also
+have passed:
+
+| Probe | Break | Required | Actual |
+|---|---|---|---|
+| 8a | Delete the throw, keep the comment | red | **red** |
+| 8b | Delete the throw and the comment | red | **red** |
+| 8c | Gate intact, delete both `Pester 6.x is required` throws | green | **green** |
+
+8c is the one that distinguishes a correctly scoped assertion from a merely
+narrower one. One of those two deleted throws is *inside the Test task*, outside
+the gate. An assertion scoped to the task rather than to the if-statement would
+pass 8a and 8b and fail here. A control row that must stay green is not
+optional; without it, "goes red when broken" is compatible with matching far
+too much.
 
 ## Row 1 — over-fires
 
@@ -87,12 +137,12 @@ wildcards its exports. But it means one defect produces three reds, and the
 score drops 4 points for a single edit. Anyone reading a future run's failure
 list will be counting symptoms rather than causes.
 
-Worth knowing rather than worth fixing: `defines every function the manifest
-exports` and `agrees three ways` are both meaningful assertions that happen to
-share an input with the wildcard check. Coupling them out would mean
-special-casing `'*'` in two places to preserve a nicer failure list, which is
-more suite complexity than the confusion costs. Recorded so that a three-red
-run is recognised as one defect.
+**Expected coupling, not a fault. Do not decouple them.** A wildcard export
+genuinely violates all three assertions, and each of the three is independently
+worth asserting — none is a duplicate of another, they simply share an input.
+Decoupling would mean special-casing `'*'` in two places to produce a tidier
+failure list, buying nothing and costing suite complexity. Recorded here so that
+a future three-red run is read as one defect rather than three.
 
 ## What was fiddly
 
@@ -138,7 +188,13 @@ Not built now.
    the pass exists to detect. Each break asserts the file changed before the
    suite is re-run. Two breaks were caught by this guard during development.
 
-7. **A PowerShell parse trap, for whoever writes the driver.**
+7. **A red probe alone does not finish an assertion.** An assertion scoped to
+   the Test task rather than to the coverage gate passes probes 8a and 8b and is
+   still wrong. Only the green control, 8c, separates them. The driver needs an
+   explicit "this must stay green" outcome type, or control rows get recorded as
+   "does not fire" and read as failures.
+
+8. **A PowerShell parse trap, for whoever writes the driver.**
    `-ForegroundColor ( if ($x) { 'Green' } else { 'Yellow' } )` parses `if` as a
    command name and fails at runtime, not at parse time, so it survives a
    `Parser::ParseFile` check and dies mid-row. Assign the value first. Cost one
