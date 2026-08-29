@@ -47,7 +47,7 @@ $ErrorActionPreference = 'Stop'
 # the SHA into this file is its immediate child, so a difference of exactly one
 # commit immediately after the pass is expected and is not drift.
 
-$WrittenAgainstSha = 'PASS-0014-WORK-COMMIT'
+$WrittenAgainstSha = '57a449b3c7fd1a72354054f2496a35b1246ead02'
 
 $currentSha = $null
 try {
