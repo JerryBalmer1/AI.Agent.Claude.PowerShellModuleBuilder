@@ -86,10 +86,17 @@ BeforeDiscovery {
         # and so matches no name.
         $atRoot = @($candidates | Where-Object { $_.Directory.FullName -eq $Target })
 
+        # Two rules, and no fallback beyond them. There used to be a third -
+        # "if exactly one candidate survives, take it" - and the polarity-correct
+        # control for the Manifest assertion caught what it did: delete the
+        # reference's own manifest and the suite did not report a missing
+        # manifest, it graded the vendored corpus/PSCorpus/ module instead,
+        # silently, reporting on src/PSCorpus/ and PSCorpus.build.ps1. A lone
+        # surviving candidate is not evidence that it is the right one. Same
+        # defect as the SqlServerDsc misgrade, one rule further down.
         $script:Manifest =
             if ($byRepoName.Count -eq 1) { $byRepoName[0] }
             elseif ($atRoot.Count -eq 1) { $atRoot[0] }
-            elseif ($candidates.Count -eq 1) { $candidates[0] }
             else { $null }
 
         # No candidates at all is not ambiguity - it is absence, and the
@@ -640,6 +647,32 @@ Describe 'House style: generated module' -Tag 'RequiresBuild' {
         $script:Psm1Text = if ($BuiltPsm1 -and (Test-Path -LiteralPath $BuiltPsm1)) {
             Get-Content -LiteralPath $BuiltPsm1 -Raw
         } else { '' }
+
+        # The generated module as syntax, not as text. Three assertions here
+        # matched regexes against $Psm1Text and all three were satisfied by a
+        # comment: emitting '# Export-ModuleMember -Function ...' instead of the
+        # call, '# $script:ModuleRoot = $PSScriptRoot' instead of the
+        # assignment, and '# function <name>' instead of a private function's
+        # body each left the assertion green. A generated file is the one place
+        # a comment is cheapest to emit by accident.
+        $script:Psm1Ast = $null
+        if ($BuiltPsm1 -and (Test-Path -LiteralPath $BuiltPsm1)) {
+            $psm1Tokens = $null
+            $psm1Errors = $null
+            $script:Psm1Ast = [System.Management.Automation.Language.Parser]::ParseFile(
+                $BuiltPsm1, [ref]$psm1Tokens, [ref]$psm1Errors)
+            if ($psm1Errors) { $script:Psm1Ast = $null }
+        }
+
+        $script:Psm1FunctionName = @(
+            if ($Psm1Ast) {
+                $Psm1Ast.FindAll({
+                        param($n) $n -is [System.Management.Automation.Language.FunctionDefinitionAst]
+                    }, $true) | ForEach-Object {
+                    $_.Name -replace '^(global|script|local|private):', ''
+                }
+            }
+        )
     }
 
     It 'produced output/<ModuleName>/<ModuleName>.psm1' {
@@ -653,14 +686,35 @@ Describe 'House style: generated module' -Tag 'RequiresBuild' {
     It 'sets $script:ModuleRoot' {
         # Concatenation moves what $PSScriptRoot means, so assets must resolve
         # from a variable that is the same under the build and the dev loader.
-        $Psm1Text | Should -Match '\$script:ModuleRoot\s*=\s*\$PSScriptRoot'
+        $Psm1Ast | Should -Not -BeNullOrEmpty -Because 'the generated module must parse'
+
+        @($Psm1Ast.FindAll({
+                    param($n) $n -is [System.Management.Automation.Language.AssignmentStatementAst]
+                }, $true) | Where-Object {
+                $_.Left -is [System.Management.Automation.Language.VariableExpressionAst] -and
+                $_.Left.VariablePath.UserPath -eq 'script:ModuleRoot' -and
+                $_.Right.Extent.Text -match '\$PSScriptRoot'
+            }).Count | Should -BeGreaterThan 0 -Because 'a comment naming the variable is not an assignment'
     }
 
     It 'exports exactly the manifest surface' {
-        $Psm1Text | Should -Match 'Export-ModuleMember\s+-Function'
-        foreach ($fn in $ExportedFunctions) {
-            $Psm1Text | Should -Match ([regex]::Escape("'$fn'"))
-        }
+        $Psm1Ast | Should -Not -BeNullOrEmpty -Because 'the generated module must parse'
+
+        $exportCalls = @($Psm1Ast.FindAll({
+                    param($n)
+                    $n -is [System.Management.Automation.Language.CommandAst] -and
+                    $n.GetCommandName() -eq 'Export-ModuleMember'
+                }, $true))
+        $exportCalls.Count | Should -BeGreaterThan 0 -Because 'a commented-out export exports nothing'
+
+        # The names as string constants inside the call, not anywhere in the file.
+        $exported = @($exportCalls | ForEach-Object {
+                $_.FindAll({
+                        param($n) $n -is [System.Management.Automation.Language.StringConstantExpressionAst]
+                    }, $true) | ForEach-Object { $_.Value }
+            })
+        $missing = @($ExportedFunctions | Where-Object { $_ -notin $exported })
+        $missing | Should -BeNullOrEmpty -Because 'every manifest export must be exported by the psm1'
     }
 
     It 'includes functions from Private subfolders' {
@@ -672,11 +726,11 @@ Describe 'House style: generated module' -Tag 'RequiresBuild' {
             Set-ItResult -Skipped -Because 'this module has no nested Private subfolders'
             return
         }
-        foreach ($file in $nestedPrivate) {
-            foreach ($name in (Get-DefinedFunctionName -Path $file.FullName)) {
-                $Psm1Text | Should -Match ([regex]::Escape("function $name"))
-            }
-        }
+        $Psm1Ast | Should -Not -BeNullOrEmpty -Because 'the generated module must parse'
+
+        $expected = @($nestedPrivate | ForEach-Object { Get-DefinedFunctionName -Path $_.FullName })
+        $missing = @($expected | Where-Object { $_ -notin $Psm1FunctionName })
+        $missing | Should -BeNullOrEmpty -Because 'a comment naming a function is not a definition'
     }
 
     It 'copies culture directories so Get-Help finds about_ topics' {
