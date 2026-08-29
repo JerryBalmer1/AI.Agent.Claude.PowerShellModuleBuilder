@@ -5,6 +5,18 @@
 		},
 		{
 			"path": "../PSAzureDevOpsGraph"
+		},
+		{
+			"path": "../PSGraphRender"
+		},
+		{
+			"path": "../PSGraphRenderToHtml"
+		},
+		{
+			"path": "../PSModuleGraph"
+		},
+		{
+			"path": "../PSTerraformGraph"
 		}
 	],
 	"settings": {
