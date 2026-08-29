@@ -1,0 +1,385 @@
+{
+  "expected": "C:\\__Code\\__AI.Agent.Claude.PowerShellModuleBuilder\\AI.Agent.Claude.PowerShellModuleBuilder\\evals\\functional\\fixture\\expected-graph.json",
+  "candidate": "C:\\__Code\\__AI.Agent.Claude.PowerShellModuleBuilder\\AI.Agent.Claude.PowerShellModuleBuilder\\runs\\003-baseline-off\\graph.json",
+  "agree": false,
+  "differenceCount": 29,
+  "cases": [
+    "case-01",
+    "case-02",
+    "case-03",
+    "case-04",
+    "case-05",
+    "case-06",
+    "case-07",
+    "case-08",
+    "case-09",
+    "case-10",
+    "case-11",
+    "case-12"
+  ],
+  "countsByKind": {
+    "extraEdge": 1,
+    "extraNode": 1,
+    "wrongEdgeAttribute": 10,
+    "wrongEdgeTarget": 2,
+    "wrongNodeAttribute": 15
+  },
+  "excluded": [
+    {
+      "reason": "An oracle annotation. A module has never read cases.md and cannot produce case tags, so requiring them would fail every candidate for something it cannot know.",
+      "field": "cases"
+    },
+    {
+      "reason": "Human prose explaining a node or edge to a reader. Carries no graph content.",
+      "field": "note"
+    },
+    {
+      "reason": "Names the command that produced a run graph. Absent from the oracle by design, per graph.schema.json, so comparing it would fail every real candidate.",
+      "field": "generatedBy"
+    },
+    {
+      "reason": "Nodes and edges are sets. A graph is not more correct for having been assembled in a particular order.",
+      "field": "(array order)"
+    }
+  ],
+  "differences": [
+    {
+      "detail": "node 'pipeline:p01-simple-include' has repo '', expected 'pipelines-main'",
+      "field": "repo",
+      "expectedValue": "pipelines-main",
+      "kind": "wrongNodeAttribute",
+      "actualValue": "",
+      "id": "pipeline:p01-simple-include",
+      "cases": [
+        "case-01"
+      ]
+    },
+    {
+      "detail": "node 'pipeline:p02-nested-chain' has repo '', expected 'pipelines-main'",
+      "field": "repo",
+      "expectedValue": "pipelines-main",
+      "kind": "wrongNodeAttribute",
+      "actualValue": "",
+      "id": "pipeline:p02-nested-chain",
+      "cases": [
+        "case-02"
+      ]
+    },
+    {
+      "detail": "node 'pipeline:p03-extends-params' has repo '', expected 'pipelines-main'",
+      "field": "repo",
+      "expectedValue": "pipelines-main",
+      "kind": "wrongNodeAttribute",
+      "actualValue": "",
+      "id": "pipeline:p03-extends-params",
+      "cases": [
+        "case-03"
+      ]
+    },
+    {
+      "detail": "node 'pipeline:p04-cross-repo-template' has repo '', expected 'pipelines-main'",
+      "field": "repo",
+      "expectedValue": "pipelines-main",
+      "kind": "wrongNodeAttribute",
+      "actualValue": "",
+      "id": "pipeline:p04-cross-repo-template",
+      "cases": [
+        "case-04"
+      ]
+    },
+    {
+      "detail": "node 'pipeline:p05-pipeline-resource' has repo '', expected 'pipelines-main'",
+      "field": "repo",
+      "expectedValue": "pipelines-main",
+      "kind": "wrongNodeAttribute",
+      "actualValue": "",
+      "id": "pipeline:p05-pipeline-resource",
+      "cases": [
+        "case-05"
+      ]
+    },
+    {
+      "detail": "node 'pipeline:p06-variable-template' has repo '', expected 'pipelines-main'",
+      "field": "repo",
+      "expectedValue": "pipelines-main",
+      "kind": "wrongNodeAttribute",
+      "actualValue": "",
+      "id": "pipeline:p06-variable-template",
+      "cases": [
+        "case-06"
+      ]
+    },
+    {
+      "detail": "node 'pipeline:p07-diamond-a' has repo '', expected 'pipelines-main'",
+      "field": "repo",
+      "expectedValue": "pipelines-main",
+      "kind": "wrongNodeAttribute",
+      "actualValue": "",
+      "id": "pipeline:p07-diamond-a",
+      "cases": [
+        "case-07"
+      ]
+    },
+    {
+      "detail": "node 'pipeline:p07-diamond-b' has repo '', expected 'pipelines-main'",
+      "field": "repo",
+      "expectedValue": "pipelines-main",
+      "kind": "wrongNodeAttribute",
+      "actualValue": "",
+      "id": "pipeline:p07-diamond-b",
+      "cases": [
+        "case-07"
+      ]
+    },
+    {
+      "detail": "node 'pipeline:p08-cycle' has repo '', expected 'pipelines-main'",
+      "field": "repo",
+      "expectedValue": "pipelines-main",
+      "kind": "wrongNodeAttribute",
+      "actualValue": "",
+      "id": "pipeline:p08-cycle",
+      "cases": [
+        "case-08"
+      ]
+    },
+    {
+      "detail": "node 'pipeline:p09-unresolved' has repo '', expected 'pipelines-main'",
+      "field": "repo",
+      "expectedValue": "pipelines-main",
+      "kind": "wrongNodeAttribute",
+      "actualValue": "",
+      "id": "pipeline:p09-unresolved",
+      "cases": [
+        "case-09"
+      ]
+    },
+    {
+      "detail": "node 'pipeline:p10-orphan' has repo '', expected 'pipelines-main'",
+      "field": "repo",
+      "expectedValue": "pipelines-main",
+      "kind": "wrongNodeAttribute",
+      "actualValue": "",
+      "id": "pipeline:p10-orphan",
+      "cases": [
+        "case-10"
+      ]
+    },
+    {
+      "detail": "node 'pipeline:x01-consumer-build' has repo '', expected 'consumer-app'",
+      "field": "repo",
+      "expectedValue": "consumer-app",
+      "kind": "wrongNodeAttribute",
+      "actualValue": "",
+      "id": "pipeline:x01-consumer-build",
+      "cases": [
+        "case-11"
+      ]
+    },
+    {
+      "detail": "node 'pipeline:x02-platform-release' has repo '', expected 'consumer-app'",
+      "field": "repo",
+      "expectedValue": "consumer-app",
+      "kind": "wrongNodeAttribute",
+      "actualValue": "",
+      "id": "pipeline:x02-platform-release",
+      "cases": [
+        "case-05"
+      ]
+    },
+    {
+      "detail": "node 'pipeline:x03-shared-nightly' has repo '', expected 'templates-shared'",
+      "field": "repo",
+      "expectedValue": "templates-shared",
+      "kind": "wrongNodeAttribute",
+      "actualValue": "",
+      "id": "pipeline:x03-shared-nightly",
+      "cases": [
+        null
+      ]
+    },
+    {
+      "detail": "node 'pipeline:x04-cross-trigger' has repo '', expected 'templates-platform'",
+      "field": "repo",
+      "expectedValue": "templates-platform",
+      "kind": "wrongNodeAttribute",
+      "actualValue": "",
+      "id": "pipeline:x04-cross-trigger",
+      "cases": [
+        "case-05"
+      ]
+    },
+    {
+      "detail": "node 'repo:ClaudeTesting' is in the candidate and not in the expected graph",
+      "name": "ClaudeTesting",
+      "kind": "extraNode",
+      "nodeKind": "repo",
+      "id": "repo:ClaudeTesting",
+      "cases": [
+        "case-12"
+      ]
+    },
+    {
+      "ref": "steps/common.yml@ghostTemplates",
+      "actualTo": "unresolved:steps/common.yml@ghostTemplates",
+      "from": "yaml:pipelines-main/pipelines/p09.yml",
+      "kind": "wrongEdgeTarget",
+      "edgeKind": "unresolved",
+      "expectedTo": "yaml:@ghostTemplates/steps/common.yml",
+      "detail": "edge 'yaml:pipelines-main/pipelines/p09.yml' -[unresolved]-> resolves to 'unresolved:steps/common.yml@ghostTemplates', expected 'yaml:@ghostTemplates/steps/common.yml'",
+      "cases": [
+        "case-09"
+      ]
+    },
+    {
+      "ref": "templates/missing-steps.yml",
+      "actualTo": "unresolved:templates/missing-steps.yml",
+      "from": "yaml:pipelines-main/pipelines/p09.yml",
+      "kind": "wrongEdgeTarget",
+      "edgeKind": "unresolved",
+      "expectedTo": "yaml:pipelines-main/pipelines/templates/missing-steps.yml",
+      "detail": "edge 'yaml:pipelines-main/pipelines/p09.yml' -[unresolved]-> resolves to 'unresolved:templates/missing-steps.yml', expected 'yaml:pipelines-main/pipelines/templates/missing-steps.yml'",
+      "cases": [
+        "case-09"
+      ]
+    },
+    {
+      "detail": "edge 'yaml:consumer-app/azure-pipelines.yml' -[checkout]-> 'repo:consumer-app' is in the candidate and not in the expected graph",
+      "from": "yaml:consumer-app/azure-pipelines.yml",
+      "to": "repo:consumer-app",
+      "edgeKind": "checkout",
+      "kind": "extraEdge",
+      "cases": [],
+      "ref": "self"
+    },
+    {
+      "from": "yaml:templates-shared/pipelines/nightly.yml",
+      "edgeKind": "template",
+      "detail": "edge 'yaml:templates-shared/pipelines/nightly.yml' -[template]-> 'yaml:pipelines-main/templates/steps-build.yml' has alias 'mainPipelines', expected ''",
+      "actualValue": "mainPipelines",
+      "kind": "wrongEdgeAttribute",
+      "to": "yaml:pipelines-main/templates/steps-build.yml",
+      "field": "alias",
+      "expectedValue": "",
+      "cases": [
+        "case-01"
+      ]
+    },
+    {
+      "from": "yaml:consumer-app/pipelines/release.yml",
+      "edgeKind": "template",
+      "detail": "edge 'yaml:consumer-app/pipelines/release.yml' -[template]-> 'yaml:templates-platform/jobs/release.yml' has alias 'platformTemplates', expected ''",
+      "actualValue": "platformTemplates",
+      "kind": "wrongEdgeAttribute",
+      "to": "yaml:templates-platform/jobs/release.yml",
+      "field": "alias",
+      "expectedValue": "",
+      "cases": [
+        null
+      ]
+    },
+    {
+      "from": "yaml:consumer-app/azure-pipelines.yml",
+      "edgeKind": "template",
+      "detail": "edge 'yaml:consumer-app/azure-pipelines.yml' -[template]-> 'yaml:pipelines-main/templates/steps-build.yml' has alias 'mainPipelines', expected ''",
+      "actualValue": "mainPipelines",
+      "kind": "wrongEdgeAttribute",
+      "to": "yaml:pipelines-main/templates/steps-build.yml",
+      "field": "alias",
+      "expectedValue": "",
+      "cases": [
+        "case-01"
+      ]
+    },
+    {
+      "from": "yaml:consumer-app/azure-pipelines.yml",
+      "edgeKind": "checkout",
+      "detail": "edge 'yaml:consumer-app/azure-pipelines.yml' -[checkout]-> 'repo:templates-shared' has alias 'sharedTemplates', expected ''",
+      "actualValue": "sharedTemplates",
+      "kind": "wrongEdgeAttribute",
+      "to": "repo:templates-shared",
+      "field": "alias",
+      "expectedValue": "",
+      "cases": [
+        "case-11"
+      ]
+    },
+    {
+      "from": "yaml:pipelines-main/pipelines/p04.yml",
+      "edgeKind": "template",
+      "detail": "edge 'yaml:pipelines-main/pipelines/p04.yml' -[template]-> 'yaml:templates-platform/steps/deploy.yml' has alias 'platformTemplates', expected ''",
+      "actualValue": "platformTemplates",
+      "kind": "wrongEdgeAttribute",
+      "to": "yaml:templates-platform/steps/deploy.yml",
+      "field": "alias",
+      "expectedValue": "",
+      "cases": [
+        "case-04"
+      ]
+    },
+    {
+      "from": "yaml:pipelines-main/pipelines/p04.yml",
+      "edgeKind": "template",
+      "detail": "edge 'yaml:pipelines-main/pipelines/p04.yml' -[template]-> 'yaml:templates-shared/steps/common.yml' has alias 'sharedTemplates', expected ''",
+      "actualValue": "sharedTemplates",
+      "kind": "wrongEdgeAttribute",
+      "to": "yaml:templates-shared/steps/common.yml",
+      "field": "alias",
+      "expectedValue": "",
+      "cases": [
+        "case-04"
+      ]
+    },
+    {
+      "from": "yaml:pipelines-main/pipelines/p03.yml",
+      "edgeKind": "extends",
+      "detail": "edge 'yaml:pipelines-main/pipelines/p03.yml' -[extends]-> 'yaml:templates-platform/jobs/release.yml' has alias 'platformTemplates', expected ''",
+      "actualValue": "platformTemplates",
+      "kind": "wrongEdgeAttribute",
+      "to": "yaml:templates-platform/jobs/release.yml",
+      "field": "alias",
+      "expectedValue": "",
+      "cases": [
+        "case-03"
+      ]
+    },
+    {
+      "from": "yaml:pipelines-main/pipelines/p09.yml",
+      "edgeKind": "unresolved",
+      "detail": "edge 'yaml:pipelines-main/pipelines/p09.yml' -[unresolved]-> 'yaml:@ghostTemplates/steps/common.yml' has alias 'ghostTemplates', expected ''",
+      "actualValue": "ghostTemplates",
+      "kind": "wrongEdgeAttribute",
+      "to": "yaml:@ghostTemplates/steps/common.yml",
+      "field": "alias",
+      "expectedValue": "",
+      "cases": [
+        "case-09"
+      ]
+    },
+    {
+      "from": "yaml:pipelines-main/pipelines/p09.yml",
+      "edgeKind": "unresolved",
+      "detail": "edge 'yaml:pipelines-main/pipelines/p09.yml' -[unresolved]-> 'yaml:@ghostTemplates/steps/common.yml' has reason 'alias 'ghostTemplates' is not declared in resources.repositories', expected 'alias-not-declared: 'ghostTemplates' is not in resources.repositories of pipelines/p09.yml, so the repository is unknown and the path cannot be resolved at all'",
+      "actualValue": "alias 'ghostTemplates' is not declared in resources.repositories",
+      "kind": "wrongEdgeAttribute",
+      "to": "yaml:@ghostTemplates/steps/common.yml",
+      "field": "reason",
+      "expectedValue": "alias-not-declared: 'ghostTemplates' is not in resources.repositories of pipelines/p09.yml, so the repository is unknown and the path cannot be resolved at all",
+      "cases": [
+        "case-09"
+      ]
+    },
+    {
+      "from": "yaml:pipelines-main/pipelines/p09.yml",
+      "edgeKind": "unresolved",
+      "detail": "edge 'yaml:pipelines-main/pipelines/p09.yml' -[unresolved]-> 'yaml:pipelines-main/pipelines/templates/missing-steps.yml' has reason 'file 'pipelines/templates/missing-steps.yml' does not exist in repository 'pipelines-main'', expected 'file-not-found: resolved to pipelines/templates/missing-steps.yml in pipelines-main, which does not exist'",
+      "actualValue": "file 'pipelines/templates/missing-steps.yml' does not exist in repository 'pipelines-main'",
+      "kind": "wrongEdgeAttribute",
+      "to": "yaml:pipelines-main/pipelines/templates/missing-steps.yml",
+      "field": "reason",
+      "expectedValue": "file-not-found: resolved to pipelines/templates/missing-steps.yml in pipelines-main, which does not exist",
+      "cases": [
+        "case-09"
+      ]
+    }
+  ]
+}

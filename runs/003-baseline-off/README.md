@@ -1,0 +1,86 @@
+# Run 003 — baseline, plugin off
+
+The control for the plugin: the same seed and the same brief as run 002, scored
+the same way, with the plugin's content unread throughout Phase 1.
+
+    plugin:            none (baseline-off)
+    target-sha:        d852abcff0efae39978000f48190c7240c5418bd
+    seed-sha:          dee5c6980cd8c6f32cbdcead63452aa094c0ad6b
+    brief-sha:         93c5cec3299da0ac27d3aea67f4fbcf0000001ec
+    harness-sha:       42c717b98ba048a1c8c134a480e308c310c19e9d
+    phase-1-minutes:   32.6
+    build:             ./build.ps1 -Task All — exit 0, 61/61 tests, analyzer clean
+    conformance:       39 / 55
+    functional:        0 / 12
+
+Target branch: `run-003-baseline-off` in `PSAzureDevOpsGraph`. No tag, no
+target `main` — this is a measurement line, per decision 0008's amendment.
+
+## Scores
+
+**Conformance 39 / 55 (70.91%)**, all four tags
+(Universal, Repository, HouseStyle, RequiresBuild). Sixteen failures, all
+house-convention: the build file's name and shape, the generated psm1, the two
+missing root files, one-function-per-file, and three exported commands no test
+invokes.
+
+**Functional 0 / 12.** Every case failed:
+case-01, case-02, case-03, case-04, case-05, case-06, case-07, case-08,
+case-09, case-10, case-11, case-12.
+
+The score is 0, and the shape of the 29 differences is the actual finding:
+
+| Kind | Count |
+|---|---|
+| wrongNodeAttribute | 15 |
+| wrongEdgeAttribute | 10 |
+| wrongEdgeTarget | 2 |
+| extraNode | 1 |
+| extraEdge | 1 |
+| **missingNode** | **0** |
+| **missingEdge** | **0** |
+
+Nothing is absent. The graph has every node and every edge the oracle has; it
+records some of them differently. Fifteen of the differences are one omitted
+property — `repo` on `pipeline` nodes — and because the case tags live on
+those nodes, that single omission fails all twelve cases on its own.
+
+The dependency computation itself held up: the relative-versus-aliased anchoring
+rules resolved to the right files, the cycle terminated, the diamond collapsed to
+one node with two in-edges, and the missing-file case resolved to
+`pipelines/templates/missing-steps.yml` in `pipelines-main` — the oracle's exact
+repository and path, recorded under an id convention that could not match.
+
+See [findings.md](findings.md) for the five mechanisms.
+
+## Baseline caveat
+
+The session was opened with the pass prompt only, skills unread; the builder is
+still the same model family that wrote the skills. What reads as derivation from
+the brief may in part be recall of the reasoning that produced the plugin. This
+run cannot separate the two, and its result should not be read as though it
+could.
+
+## Contents
+
+| File | What |
+|---|---|
+| `graph.json` | The module's answer for the fixture. 50 nodes, 52 edges, 2 unresolved. Validates against `fixture/graph.schema.json`. |
+| `diff.txt` | Compare-Graph output, verbatim. |
+| `003.html` | Render-Graph rendering. 50 `data-node-id`, 2 pseudo-nodes, no network reference. |
+| `findings.md` | Findings by mechanism, observed vs inferred. |
+| `compare-report.json` | Structured difference report. |
+| `conformance-result.json` | Conformance result. |
+
+## Provenance
+
+- Phase 1 (blind build): 2026-08-29T09:44:07Z → 2026-08-29T10:16:44Z, 32.6 min.
+- Allowlist breaches: **1**, itemised in the plan's Deviations — a `git ls-tree`
+  run to assert the oracle blob printed the *names* of files under
+  `fixture/repos/`. No file content was read. What the names disclosed, and why
+  it cannot be argued away, is recorded there.
+- Azure DevOps was read-only throughout: the REST helper's method is `Get` and is
+  not a parameter. The empty `ClaudeTesting` repository was enumerated and never
+  written.
+- No assertion was weakened, and no score was re-run after seeing it.
+- Tools: pwsh 7.6.5, git 2.41.0.windows.1, Pester 6.1.0, Windows 10.0.26200.

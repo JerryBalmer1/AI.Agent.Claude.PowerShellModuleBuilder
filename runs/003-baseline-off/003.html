@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>yaml:templates-shared/steps/common.yml  --[template]--&amp;gt;  yaml:templates-shared/steps/notify.yml — pipeline dependency graph</title>
+<style>
+  :root { color-scheme: light; }
+  body { margin: 0; background: #f6f7f9; color: #1c1d20;
+         font: 14px/1.45 ui-sans-serif, "Segoe UI", system-ui, sans-serif; }
+  header { padding: 20px 24px 12px; }
+  h1 { margin: 0 0 4px; font-size: 19px; }
+  .counts { color: #55585f; font-size: 12.5px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 28px; padding: 0 24px 14px; }
+  .legend h2 { margin: 0 0 6px; font-size: 12px; text-transform: uppercase;
+               letter-spacing: .06em; color: #55585f; }
+  .legend ul { margin: 0; padding: 0; list-style: none; font-size: 12.5px; }
+  .legend li { display: flex; align-items: center; gap: 8px; margin: 3px 0; }
+  .swatch { width: 22px; height: 12px; border-radius: 3px; border: 1.4px solid; display: inline-block; }
+  .line { flex: 0 0 auto; }
+  .canvas { overflow-x: auto; padding: 0 24px 32px; }
+  svg.graph { display: block; background: #ffffff; border: 1px solid #e2e4e8; border-radius: 8px; }
+  .n-label { font: 600 11.5px ui-monospace, "Cascadia Mono", Consolas, monospace; }
+  .n-sub { font: 10px ui-monospace, "Cascadia Mono", Consolas, monospace; opacity: .72; }
+  path.edge { opacity: .85; }
+  footer { padding: 0 24px 28px; color: #7a7d84; font-size: 12px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>yaml:templates-shared/steps/common.yml  --[template]--&amp;gt;  yaml:templates-shared/steps/notify.yml</h1>
+  <div class="counts">50 nodes (pipeline 15 &middot; repo 5 &middot; yaml 30) &nbsp;|&nbsp; 52 edges (checkout 2 &middot; definition 15 &middot; extends 1 &middot; pipelineResource 3 &middot; repositoryResource 8 &middot; template 21 &middot; unresolved 2)</div>
+</header>
+<div class="legend">
+  <div>
+    <h2>Nodes</h2>
+    <ul>
+        <li><span class="swatch" style="background:#dbe7fb;border-color:#2f5fb5"></span>pipeline definition</li>
+        <li><span class="swatch" style="background:#fdeccd;border-color:#a86b12"></span>repository</li>
+        <li><span class="swatch" style="background:#fadbd8;border-color:#b3261e"></span>unresolved target (not a node)</li>
+        <li><span class="swatch" style="background:#dff0e0;border-color:#2e7d32"></span>YAML file</li>
+    </ul>
+  </div>
+  <div>
+    <h2>Edges</h2>
+    <ul>
+        <li><svg class="line" viewBox="0 0 44 8" width="44" height="8"><line x1="1" y1="4" x2="43" y2="4" stroke="#8d8d8d" stroke-width="1.4" style="" /></svg>definition -&gt; its YAML</li>
+        <li><svg class="line" viewBox="0 0 44 8" width="44" height="8"><line x1="1" y1="4" x2="43" y2="4" stroke="#2e7d32" stroke-width="1.6" style="" /></svg>template</li>
+        <li><svg class="line" viewBox="0 0 44 8" width="44" height="8"><line x1="1" y1="4" x2="43" y2="4" stroke="#6a1b9a" stroke-width="2.6" style="" /></svg>extends</li>
+        <li><svg class="line" viewBox="0 0 44 8" width="44" height="8"><line x1="1" y1="4" x2="43" y2="4" stroke="#2f5fb5" stroke-width="1.8" style="stroke-dasharray:7 4" /></svg>resources.pipelines</li>
+        <li><svg class="line" viewBox="0 0 44 8" width="44" height="8"><line x1="1" y1="4" x2="43" y2="4" stroke="#a86b12" stroke-width="1.5" style="stroke-dasharray:2 3" /></svg>resources.repositories</li>
+        <li><svg class="line" viewBox="0 0 44 8" width="44" height="8"><line x1="1" y1="4" x2="43" y2="4" stroke="#00727f" stroke-width="2" style="stroke-dasharray:1 4" /></svg>checkout (repo dependency, not a template)</li>
+        <li><svg class="line" viewBox="0 0 44 8" width="44" height="8"><line x1="1" y1="4" x2="43" y2="4" stroke="#b3261e" stroke-width="2.2" style="stroke-dasharray:5 4" /></svg>unresolved reference</li>
+    </ul>
+  </div>
+</div>
+<div class="canvas">
+<svg class="graph" viewBox="0 0 1834 940" width="1834" height="940" role="img" aria-label="Pipeline dependency graph">
+  <defs>
+    <marker id="arrow-definition" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#8d8d8d" /></marker>
+    <marker id="arrow-template" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#2e7d32" /></marker>
+    <marker id="arrow-extends" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#6a1b9a" /></marker>
+    <marker id="arrow-pipelineResource" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#2f5fb5" /></marker>
+    <marker id="arrow-repositoryResource" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#a86b12" /></marker>
+    <marker id="arrow-checkout" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#00727f" /></marker>
+    <marker id="arrow-unresolved" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#b3261e" /></marker>
+  </defs>
+  <g class="edges">
+    <path class="edge" d="M 1042 149 C 1107 149 1107 197 1172 197" fill="none" stroke="#8d8d8d" stroke-width="1.4" marker-end="url(#arrow-definition)"><title>pipeline:p01-simple-include  --[definition]--&gt;  yaml:pipelines-main/pipelines/p01.yml</title></path>
+    <path class="edge" d="M 282 149 C 347 149 347 197 412 197" fill="none" stroke="#8d8d8d" stroke-width="1.4" marker-end="url(#arrow-definition)"><title>pipeline:p02-nested-chain  --[definition]--&gt;  yaml:pipelines-main/pipelines/p02.yml</title></path>
+    <path class="edge" d="M 282 197 C 347 197 347 245 412 245" fill="none" stroke="#8d8d8d" stroke-width="1.4" marker-end="url(#arrow-definition)"><title>pipeline:p03-extends-params  --[definition]--&gt;  yaml:pipelines-main/pipelines/p03.yml</title></path>
+    <path class="edge" d="M 282 245 C 347 245 347 293 412 293" fill="none" stroke="#8d8d8d" stroke-width="1.4" marker-end="url(#arrow-definition)"><title>pipeline:p04-cross-repo-template  --[definition]--&gt;  yaml:pipelines-main/pipelines/p04.yml</title></path>
+    <path class="edge" d="M 282 293 C 347 293 347 341 412 341" fill="none" stroke="#8d8d8d" stroke-width="1.4" marker-end="url(#arrow-definition)"><title>pipeline:p05-pipeline-resource  --[definition]--&gt;  yaml:pipelines-main/pipelines/p05.yml</title></path>
+    <path class="edge" d="M 282 341 C 347 341 347 389 412 389" fill="none" stroke="#8d8d8d" stroke-width="1.4" marker-end="url(#arrow-definition)"><title>pipeline:p06-variable-template  --[definition]--&gt;  yaml:pipelines-main/pipelines/p06.yml</title></path>
+    <path class="edge" d="M 282 389 C 347 389 347 437 412 437" fill="none" stroke="#8d8d8d" stroke-width="1.4" marker-end="url(#arrow-definition)"><title>pipeline:p07-diamond-a  --[definition]--&gt;  yaml:pipelines-main/pipelines/p07a.yml</title></path>
+    <path class="edge" d="M 282 437 C 347 437 347 485 412 485" fill="none" stroke="#8d8d8d" stroke-width="1.4" marker-end="url(#arrow-definition)"><title>pipeline:p07-diamond-b  --[definition]--&gt;  yaml:pipelines-main/pipelines/p07b.yml</title></path>
+    <path class="edge" d="M 282 485 C 347 485 347 533 412 533" fill="none" stroke="#8d8d8d" stroke-width="1.4" marker-end="url(#arrow-definition)"><title>pipeline:p08-cycle  --[definition]--&gt;  yaml:pipelines-main/pipelines/p08.yml</title></path>
+    <path class="edge" d="M 282 533 C 347 533 347 581 412 581" fill="none" stroke="#8d8d8d" stroke-width="1.4" marker-end="url(#arrow-definition)"><title>pipeline:p09-unresolved  --[definition]--&gt;  yaml:pipelines-main/pipelines/p09.yml</title></path>
+    <path class="edge" d="M 282 581 C 347 581 347 629 412 629" fill="none" stroke="#8d8d8d" stroke-width="1.4" marker-end="url(#arrow-definition)"><title>pipeline:p10-orphan  --[definition]--&gt;  yaml:pipelines-main/pipelines/p10.yml</title></path>
+    <path class="edge" d="M 1042 197 C 1107 197 1107 149 1172 149" fill="none" stroke="#8d8d8d" stroke-width="1.4" marker-end="url(#arrow-definition)"><title>pipeline:x01-consumer-build  --[definition]--&gt;  yaml:consumer-app/azure-pipelines.yml</title></path>
+    <path class="edge" d="M 282 629 C 347 629 347 677 412 677" fill="none" stroke="#8d8d8d" stroke-width="1.4" marker-end="url(#arrow-definition)"><title>pipeline:x02-platform-release  --[definition]--&gt;  yaml:consumer-app/pipelines/release.yml</title></path>
+    <path class="edge" d="M 282 677 C 347 677 347 149 412 149" fill="none" stroke="#8d8d8d" stroke-width="1.4" marker-end="url(#arrow-definition)"><title>pipeline:x03-shared-nightly  --[definition]--&gt;  yaml:templates-shared/pipelines/nightly.yml</title></path>
+    <path class="edge" d="M 282 725 C 347 725 347 725 412 725" fill="none" stroke="#8d8d8d" stroke-width="1.4" marker-end="url(#arrow-definition)"><title>pipeline:x04-cross-trigger  --[definition]--&gt;  yaml:templates-platform/pipelines/trigger.yml</title></path>
+    <path class="edge" d="M 1422 149 C 1487 149 1487 149 1552 149" fill="none" stroke="#00727f" stroke-width="2" stroke-dasharray="1 4" marker-end="url(#arrow-checkout)"><title>yaml:consumer-app/azure-pipelines.yml  --[checkout]--&gt;  repo:consumer-app</title></path>
+    <path class="edge" d="M 1172 149 C 1048 149 668 341 792 341" fill="none" stroke="#00727f" stroke-width="2" stroke-dasharray="1 4" marker-end="url(#arrow-checkout)"><title>yaml:consumer-app/azure-pipelines.yml  --[checkout]--&gt;  repo:templates-shared</title></path>
+    <path class="edge" d="M 1172 149 C 1080 149 700 245 792 245" fill="none" stroke="#a86b12" stroke-width="1.5" stroke-dasharray="2 3" marker-end="url(#arrow-repositoryResource)"><title>yaml:consumer-app/azure-pipelines.yml  --[repositoryResource]--&gt;  repo:pipelines-main</title></path>
+    <path class="edge" d="M 1172 149 C 1048 149 668 341 792 341" fill="none" stroke="#a86b12" stroke-width="1.5" stroke-dasharray="2 3" marker-end="url(#arrow-repositoryResource)"><title>yaml:consumer-app/azure-pipelines.yml  --[repositoryResource]--&gt;  repo:templates-shared</title></path>
+    <path class="edge" d="M 1422 149 C 1487 149 1487 245 1552 245" fill="none" stroke="#2e7d32" stroke-width="1.6" marker-end="url(#arrow-template)"><title>yaml:consumer-app/azure-pipelines.yml  --[template]--&gt;  yaml:consumer-app/templates/app-steps.yml</title></path>
+    <path class="edge" d="M 1172 149 C 872 149 492 869 792 869" fill="none" stroke="#2e7d32" stroke-width="1.6" marker-end="url(#arrow-template)"><title>yaml:consumer-app/azure-pipelines.yml  --[template]--&gt;  yaml:pipelines-main/templates/steps-build.yml</title></path>
+    <path class="edge" d="M 662 677 C 727 677 727 197 792 197" fill="none" stroke="#2f5fb5" stroke-width="1.8" stroke-dasharray="7 4" marker-end="url(#arrow-pipelineResource)"><title>yaml:consumer-app/pipelines/release.yml  --[pipelineResource]--&gt;  pipeline:x01-consumer-build</title></path>
+    <path class="edge" d="M 662 677 C 727 677 727 293 792 293" fill="none" stroke="#a86b12" stroke-width="1.5" stroke-dasharray="2 3" marker-end="url(#arrow-repositoryResource)"><title>yaml:consumer-app/pipelines/release.yml  --[repositoryResource]--&gt;  repo:templates-platform</title></path>
+    <path class="edge" d="M 662 677 C 727 677 727 485 792 485" fill="none" stroke="#2e7d32" stroke-width="1.6" marker-end="url(#arrow-template)"><title>yaml:consumer-app/pipelines/release.yml  --[template]--&gt;  yaml:templates-platform/jobs/release.yml</title></path>
+    <path class="edge" d="M 1422 197 C 1487 197 1487 197 1552 197" fill="none" stroke="#2e7d32" stroke-width="1.6" marker-end="url(#arrow-template)"><title>yaml:pipelines-main/pipelines/p01.yml  --[template]--&gt;  yaml:pipelines-main/pipelines/templates/steps-build.yml</title></path>
+    <path class="edge" d="M 662 197 C 727 197 727 533 792 533" fill="none" stroke="#2e7d32" stroke-width="1.6" marker-end="url(#arrow-template)"><title>yaml:pipelines-main/pipelines/p02.yml  --[template]--&gt;  yaml:pipelines-main/pipelines/templates/chain-a.yml</title></path>
+    <path class="edge" d="M 662 245 C 727 245 727 485 792 485" fill="none" stroke="#6a1b9a" stroke-width="2.6" marker-end="url(#arrow-extends)"><title>yaml:pipelines-main/pipelines/p03.yml  --[extends]--&gt;  yaml:templates-platform/jobs/release.yml</title></path>
+    <path class="edge" d="M 662 245 C 727 245 727 293 792 293" fill="none" stroke="#a86b12" stroke-width="1.5" stroke-dasharray="2 3" marker-end="url(#arrow-repositoryResource)"><title>yaml:pipelines-main/pipelines/p03.yml  --[repositoryResource]--&gt;  repo:templates-platform</title></path>
+    <path class="edge" d="M 662 293 C 727 293 727 293 792 293" fill="none" stroke="#a86b12" stroke-width="1.5" stroke-dasharray="2 3" marker-end="url(#arrow-repositoryResource)"><title>yaml:pipelines-main/pipelines/p04.yml  --[repositoryResource]--&gt;  repo:templates-platform</title></path>
+    <path class="edge" d="M 662 293 C 727 293 727 341 792 341" fill="none" stroke="#a86b12" stroke-width="1.5" stroke-dasharray="2 3" marker-end="url(#arrow-repositoryResource)"><title>yaml:pipelines-main/pipelines/p04.yml  --[repositoryResource]--&gt;  repo:templates-shared</title></path>
+    <path class="edge" d="M 662 293 C 727 293 727 773 792 773" fill="none" stroke="#2e7d32" stroke-width="1.6" marker-end="url(#arrow-template)"><title>yaml:pipelines-main/pipelines/p04.yml  --[template]--&gt;  yaml:templates-shared/steps/common.yml</title></path>
+    <path class="edge" d="M 662 293 C 727 293 727 821 792 821" fill="none" stroke="#2e7d32" stroke-width="1.6" marker-end="url(#arrow-template)"><title>yaml:pipelines-main/pipelines/p04.yml  --[template]--&gt;  yaml:templates-platform/steps/deploy.yml</title></path>
+    <path class="edge" d="M 662 341 C 727 341 727 149 792 149" fill="none" stroke="#2f5fb5" stroke-width="1.8" stroke-dasharray="7 4" marker-end="url(#arrow-pipelineResource)"><title>yaml:pipelines-main/pipelines/p05.yml  --[pipelineResource]--&gt;  pipeline:p01-simple-include</title></path>
+    <path class="edge" d="M 662 341 C 727 341 727 581 792 581" fill="none" stroke="#2e7d32" stroke-width="1.6" marker-end="url(#arrow-template)"><title>yaml:pipelines-main/pipelines/p05.yml  --[template]--&gt;  yaml:pipelines-main/pipelines/templates/chain-c.yml</title></path>
+    <path class="edge" d="M 662 389 C 727 389 727 725 792 725" fill="none" stroke="#2e7d32" stroke-width="1.6" marker-end="url(#arrow-template)"><title>yaml:pipelines-main/pipelines/p06.yml  --[template]--&gt;  yaml:pipelines-main/pipelines/templates/vars-common.yml</title></path>
+    <path class="edge" d="M 662 437 C 727 437 727 677 792 677" fill="none" stroke="#2e7d32" stroke-width="1.6" marker-end="url(#arrow-template)"><title>yaml:pipelines-main/pipelines/p07a.yml  --[template]--&gt;  yaml:pipelines-main/pipelines/templates/diamond-shared.yml</title></path>
+    <path class="edge" d="M 662 485 C 727 485 727 677 792 677" fill="none" stroke="#2e7d32" stroke-width="1.6" marker-end="url(#arrow-template)"><title>yaml:pipelines-main/pipelines/p07b.yml  --[template]--&gt;  yaml:pipelines-main/pipelines/templates/diamond-shared.yml</title></path>
+    <path class="edge" d="M 662 533 C 727 533 727 629 792 629" fill="none" stroke="#2e7d32" stroke-width="1.6" marker-end="url(#arrow-template)"><title>yaml:pipelines-main/pipelines/p08.yml  --[template]--&gt;  yaml:pipelines-main/pipelines/templates/cycle-a.yml</title></path>
+    <path class="edge" d="M 662 581 C 727 581 727 341 792 341" fill="none" stroke="#a86b12" stroke-width="1.5" stroke-dasharray="2 3" marker-end="url(#arrow-repositoryResource)"><title>yaml:pipelines-main/pipelines/p09.yml  --[repositoryResource]--&gt;  repo:templates-shared</title></path>
+    <path class="edge" d="M 662 581 C 727 581 727 389 792 389" fill="none" stroke="#b3261e" stroke-width="2.2" stroke-dasharray="5 4" marker-end="url(#arrow-unresolved)"><title>yaml:pipelines-main/pipelines/p09.yml  --[unresolved]--&gt;  unresolved:steps/common.yml@ghostTemplates</title></path>
+    <path class="edge" d="M 662 581 C 727 581 727 437 792 437" fill="none" stroke="#b3261e" stroke-width="2.2" stroke-dasharray="5 4" marker-end="url(#arrow-unresolved)"><title>yaml:pipelines-main/pipelines/p09.yml  --[unresolved]--&gt;  unresolved:templates/missing-steps.yml</title></path>
+    <path class="edge" d="M 1042 533 C 1107 533 1107 245 1172 245" fill="none" stroke="#2e7d32" stroke-width="1.6" marker-end="url(#arrow-template)"><title>yaml:pipelines-main/pipelines/templates/chain-a.yml  --[template]--&gt;  yaml:pipelines-main/pipelines/templates/chain-b.yml</title></path>
+    <path class="edge" d="M 1172 245 C 1000 245 620 581 792 581" fill="none" stroke="#2e7d32" stroke-width="1.6" marker-end="url(#arrow-template)"><title>yaml:pipelines-main/pipelines/templates/chain-b.yml  --[template]--&gt;  yaml:pipelines-main/pipelines/templates/chain-c.yml</title></path>
+    <path class="edge" d="M 1042 629 C 1107 629 1107 293 1172 293" fill="none" stroke="#2e7d32" stroke-width="1.6" marker-end="url(#arrow-template)"><title>yaml:pipelines-main/pipelines/templates/cycle-a.yml  --[template]--&gt;  yaml:pipelines-main/pipelines/templates/cycle-b.yml</title></path>
+    <path class="edge" d="M 1172 293 C 1000 293 620 629 792 629" fill="none" stroke="#2e7d32" stroke-width="1.6" marker-end="url(#arrow-template)"><title>yaml:pipelines-main/pipelines/templates/cycle-b.yml  --[template]--&gt;  yaml:pipelines-main/pipelines/templates/cycle-a.yml</title></path>
+    <path class="edge" d="M 1042 677 C 1107 677 1107 341 1172 341" fill="none" stroke="#2e7d32" stroke-width="1.6" marker-end="url(#arrow-template)"><title>yaml:pipelines-main/pipelines/templates/diamond-shared.yml  --[template]--&gt;  yaml:pipelines-main/pipelines/templates/diamond-leaf.yml</title></path>
+    <path class="edge" d="M 662 725 C 727 725 727 149 792 149" fill="none" stroke="#2f5fb5" stroke-width="1.8" stroke-dasharray="7 4" marker-end="url(#arrow-pipelineResource)"><title>yaml:templates-platform/pipelines/trigger.yml  --[pipelineResource]--&gt;  pipeline:p01-simple-include</title></path>
+    <path class="edge" d="M 662 725 C 727 725 727 821 792 821" fill="none" stroke="#2e7d32" stroke-width="1.6" marker-end="url(#arrow-template)"><title>yaml:templates-platform/pipelines/trigger.yml  --[template]--&gt;  yaml:templates-platform/steps/deploy.yml</title></path>
+    <path class="edge" d="M 662 149 C 727 149 727 245 792 245" fill="none" stroke="#a86b12" stroke-width="1.5" stroke-dasharray="2 3" marker-end="url(#arrow-repositoryResource)"><title>yaml:templates-shared/pipelines/nightly.yml  --[repositoryResource]--&gt;  repo:pipelines-main</title></path>
+    <path class="edge" d="M 662 149 C 727 149 727 773 792 773" fill="none" stroke="#2e7d32" stroke-width="1.6" marker-end="url(#arrow-template)"><title>yaml:templates-shared/pipelines/nightly.yml  --[template]--&gt;  yaml:templates-shared/steps/common.yml</title></path>
+    <path class="edge" d="M 662 149 C 727 149 727 869 792 869" fill="none" stroke="#2e7d32" stroke-width="1.6" marker-end="url(#arrow-template)"><title>yaml:templates-shared/pipelines/nightly.yml  --[template]--&gt;  yaml:pipelines-main/templates/steps-build.yml</title></path>
+    <path class="edge" d="M 1042 773 C 1107 773 1107 389 1172 389" fill="none" stroke="#2e7d32" stroke-width="1.6" marker-end="url(#arrow-template)"><title>yaml:templates-shared/steps/common.yml  --[template]--&gt;  yaml:templates-shared/steps/notify.yml</title></path>
+  </g>
+  <g class="nodes">
+    <g data-node-id="pipeline:p01-simple-include">
+      <title>pipeline:p01-simple-include</title>
+      <rect x="792" y="132" width="250" height="34" rx="6" fill="#dbe7fb" stroke="#2f5fb5" stroke-width="1.4" />
+      <text x="802" y="146" class="n-label" fill="#16305e">p01-simple-include</text>
+      <text x="802" y="158" class="n-sub" fill="#16305e">pipeline</text>
+    </g>
+    <g data-node-id="pipeline:p02-nested-chain">
+      <title>pipeline:p02-nested-chain</title>
+      <rect x="32" y="132" width="250" height="34" rx="6" fill="#dbe7fb" stroke="#2f5fb5" stroke-width="1.4" />
+      <text x="42" y="146" class="n-label" fill="#16305e">p02-nested-chain</text>
+      <text x="42" y="158" class="n-sub" fill="#16305e">pipeline</text>
+    </g>
+    <g data-node-id="pipeline:p03-extends-params">
+      <title>pipeline:p03-extends-params</title>
+      <rect x="32" y="180" width="250" height="34" rx="6" fill="#dbe7fb" stroke="#2f5fb5" stroke-width="1.4" />
+      <text x="42" y="194" class="n-label" fill="#16305e">p03-extends-params</text>
+      <text x="42" y="206" class="n-sub" fill="#16305e">pipeline</text>
+    </g>
+    <g data-node-id="pipeline:p04-cross-repo-template">
+      <title>pipeline:p04-cross-repo-template</title>
+      <rect x="32" y="228" width="250" height="34" rx="6" fill="#dbe7fb" stroke="#2f5fb5" stroke-width="1.4" />
+      <text x="42" y="242" class="n-label" fill="#16305e">p04-cross-repo-template</text>
+      <text x="42" y="254" class="n-sub" fill="#16305e">pipeline</text>
+    </g>
+    <g data-node-id="pipeline:p05-pipeline-resource">
+      <title>pipeline:p05-pipeline-resource</title>
+      <rect x="32" y="276" width="250" height="34" rx="6" fill="#dbe7fb" stroke="#2f5fb5" stroke-width="1.4" />
+      <text x="42" y="290" class="n-label" fill="#16305e">p05-pipeline-resource</text>
+      <text x="42" y="302" class="n-sub" fill="#16305e">pipeline</text>
+    </g>
+    <g data-node-id="pipeline:p06-variable-template">
+      <title>pipeline:p06-variable-template</title>
+      <rect x="32" y="324" width="250" height="34" rx="6" fill="#dbe7fb" stroke="#2f5fb5" stroke-width="1.4" />
+      <text x="42" y="338" class="n-label" fill="#16305e">p06-variable-template</text>
+      <text x="42" y="350" class="n-sub" fill="#16305e">pipeline</text>
+    </g>
+    <g data-node-id="pipeline:p07-diamond-a">
+      <title>pipeline:p07-diamond-a</title>
+      <rect x="32" y="372" width="250" height="34" rx="6" fill="#dbe7fb" stroke="#2f5fb5" stroke-width="1.4" />
+      <text x="42" y="386" class="n-label" fill="#16305e">p07-diamond-a</text>
+      <text x="42" y="398" class="n-sub" fill="#16305e">pipeline</text>
+    </g>
+    <g data-node-id="pipeline:p07-diamond-b">
+      <title>pipeline:p07-diamond-b</title>
+      <rect x="32" y="420" width="250" height="34" rx="6" fill="#dbe7fb" stroke="#2f5fb5" stroke-width="1.4" />
+      <text x="42" y="434" class="n-label" fill="#16305e">p07-diamond-b</text>
+      <text x="42" y="446" class="n-sub" fill="#16305e">pipeline</text>
+    </g>
+    <g data-node-id="pipeline:p08-cycle">
+      <title>pipeline:p08-cycle</title>
+      <rect x="32" y="468" width="250" height="34" rx="6" fill="#dbe7fb" stroke="#2f5fb5" stroke-width="1.4" />
+      <text x="42" y="482" class="n-label" fill="#16305e">p08-cycle</text>
+      <text x="42" y="494" class="n-sub" fill="#16305e">pipeline</text>
+    </g>
+    <g data-node-id="pipeline:p09-unresolved">
+      <title>pipeline:p09-unresolved</title>
+      <rect x="32" y="516" width="250" height="34" rx="6" fill="#dbe7fb" stroke="#2f5fb5" stroke-width="1.4" />
+      <text x="42" y="530" class="n-label" fill="#16305e">p09-unresolved</text>
+      <text x="42" y="542" class="n-sub" fill="#16305e">pipeline</text>
+    </g>
+    <g data-node-id="pipeline:p10-orphan">
+      <title>pipeline:p10-orphan</title>
+      <rect x="32" y="564" width="250" height="34" rx="6" fill="#dbe7fb" stroke="#2f5fb5" stroke-width="1.4" />
+      <text x="42" y="578" class="n-label" fill="#16305e">p10-orphan</text>
+      <text x="42" y="590" class="n-sub" fill="#16305e">pipeline</text>
+    </g>
+    <g data-node-id="pipeline:x01-consumer-build">
+      <title>pipeline:x01-consumer-build</title>
+      <rect x="792" y="180" width="250" height="34" rx="6" fill="#dbe7fb" stroke="#2f5fb5" stroke-width="1.4" />
+      <text x="802" y="194" class="n-label" fill="#16305e">x01-consumer-build</text>
+      <text x="802" y="206" class="n-sub" fill="#16305e">pipeline</text>
+    </g>
+    <g data-node-id="pipeline:x02-platform-release">
+      <title>pipeline:x02-platform-release</title>
+      <rect x="32" y="612" width="250" height="34" rx="6" fill="#dbe7fb" stroke="#2f5fb5" stroke-width="1.4" />
+      <text x="42" y="626" class="n-label" fill="#16305e">x02-platform-release</text>
+      <text x="42" y="638" class="n-sub" fill="#16305e">pipeline</text>
+    </g>
+    <g data-node-id="pipeline:x03-shared-nightly">
+      <title>pipeline:x03-shared-nightly</title>
+      <rect x="32" y="660" width="250" height="34" rx="6" fill="#dbe7fb" stroke="#2f5fb5" stroke-width="1.4" />
+      <text x="42" y="674" class="n-label" fill="#16305e">x03-shared-nightly</text>
+      <text x="42" y="686" class="n-sub" fill="#16305e">pipeline</text>
+    </g>
+    <g data-node-id="pipeline:x04-cross-trigger">
+      <title>pipeline:x04-cross-trigger</title>
+      <rect x="32" y="708" width="250" height="34" rx="6" fill="#dbe7fb" stroke="#2f5fb5" stroke-width="1.4" />
+      <text x="42" y="722" class="n-label" fill="#16305e">x04-cross-trigger</text>
+      <text x="42" y="734" class="n-sub" fill="#16305e">pipeline</text>
+    </g>
+    <g data-node-id="repo:ClaudeTesting">
+      <title>repo:ClaudeTesting</title>
+      <rect x="32" y="756" width="250" height="34" rx="6" fill="#fdeccd" stroke="#a86b12" stroke-width="1.4" />
+      <text x="42" y="770" class="n-label" fill="#573604">ClaudeTesting</text>
+      <text x="42" y="782" class="n-sub" fill="#573604">repo</text>
+    </g>
+    <g data-node-id="repo:consumer-app">
+      <title>repo:consumer-app</title>
+      <rect x="1552" y="132" width="250" height="34" rx="6" fill="#fdeccd" stroke="#a86b12" stroke-width="1.4" />
+      <text x="1562" y="146" class="n-label" fill="#573604">consumer-app</text>
+      <text x="1562" y="158" class="n-sub" fill="#573604">repo</text>
+    </g>
+    <g data-node-id="repo:pipelines-main">
+      <title>repo:pipelines-main</title>
+      <rect x="792" y="228" width="250" height="34" rx="6" fill="#fdeccd" stroke="#a86b12" stroke-width="1.4" />
+      <text x="802" y="242" class="n-label" fill="#573604">pipelines-main</text>
+      <text x="802" y="254" class="n-sub" fill="#573604">repo</text>
+    </g>
+    <g data-node-id="repo:templates-platform">
+      <title>repo:templates-platform</title>
+      <rect x="792" y="276" width="250" height="34" rx="6" fill="#fdeccd" stroke="#a86b12" stroke-width="1.4" />
+      <text x="802" y="290" class="n-label" fill="#573604">templates-platform</text>
+      <text x="802" y="302" class="n-sub" fill="#573604">repo</text>
+    </g>
+    <g data-node-id="repo:templates-shared">
+      <title>repo:templates-shared</title>
+      <rect x="792" y="324" width="250" height="34" rx="6" fill="#fdeccd" stroke="#a86b12" stroke-width="1.4" />
+      <text x="802" y="338" class="n-label" fill="#573604">templates-shared</text>
+      <text x="802" y="350" class="n-sub" fill="#573604">repo</text>
+    </g>
+    <g data-unresolved-id="unresolved:steps/common.yml@ghostTemplates">
+      <title>unresolved:steps/common.yml@ghostTemplates</title>
+      <rect x="792" y="372" width="250" height="34" rx="6" fill="#fadbd8" stroke="#b3261e" stroke-width="1.4" stroke-dasharray="5 3" />
+      <text x="802" y="386" class="n-label" fill="#5d1310">unresolved:steps/common.yml@ghostTemplates</text>
+      <text x="802" y="398" class="n-sub" fill="#5d1310">unresolved</text>
+    </g>
+    <g data-unresolved-id="unresolved:templates/missing-steps.yml">
+      <title>unresolved:templates/missing-steps.yml</title>
+      <rect x="792" y="420" width="250" height="34" rx="6" fill="#fadbd8" stroke="#b3261e" stroke-width="1.4" stroke-dasharray="5 3" />
+      <text x="802" y="434" class="n-label" fill="#5d1310">unresolved:templates/missing-steps.yml</text>
+      <text x="802" y="446" class="n-sub" fill="#5d1310">unresolved</text>
+    </g>
+    <g data-node-id="yaml:consumer-app/azure-pipelines.yml">
+      <title>yaml:consumer-app/azure-pipelines.yml</title>
+      <rect x="1172" y="132" width="250" height="34" rx="6" fill="#dff0e0" stroke="#2e7d32" stroke-width="1.4" />
+      <text x="1182" y="146" class="n-label" fill="#17431a">azure-pipelines.yml</text>
+      <text x="1182" y="158" class="n-sub" fill="#17431a">consumer-app</text>
+    </g>
+    <g data-node-id="yaml:consumer-app/pipelines/release.yml">
+      <title>yaml:consumer-app/pipelines/release.yml</title>
+      <rect x="412" y="660" width="250" height="34" rx="6" fill="#dff0e0" stroke="#2e7d32" stroke-width="1.4" />
+      <text x="422" y="674" class="n-label" fill="#17431a">pipelines/release.yml</text>
+      <text x="422" y="686" class="n-sub" fill="#17431a">consumer-app</text>
+    </g>
+    <g data-node-id="yaml:consumer-app/templates/app-steps.yml">
+      <title>yaml:consumer-app/templates/app-steps.yml</title>
+      <rect x="1552" y="228" width="250" height="34" rx="6" fill="#dff0e0" stroke="#2e7d32" stroke-width="1.4" />
+      <text x="1562" y="242" class="n-label" fill="#17431a">templates/app-steps.yml</text>
+      <text x="1562" y="254" class="n-sub" fill="#17431a">consumer-app</text>
+    </g>
+    <g data-node-id="yaml:pipelines-main/pipelines/p01.yml">
+      <title>yaml:pipelines-main/pipelines/p01.yml</title>
+      <rect x="1172" y="180" width="250" height="34" rx="6" fill="#dff0e0" stroke="#2e7d32" stroke-width="1.4" />
+      <text x="1182" y="194" class="n-label" fill="#17431a">pipelines/p01.yml</text>
+      <text x="1182" y="206" class="n-sub" fill="#17431a">pipelines-main</text>
+    </g>
+    <g data-node-id="yaml:pipelines-main/pipelines/p02.yml">
+      <title>yaml:pipelines-main/pipelines/p02.yml</title>
+      <rect x="412" y="180" width="250" height="34" rx="6" fill="#dff0e0" stroke="#2e7d32" stroke-width="1.4" />
+      <text x="422" y="194" class="n-label" fill="#17431a">pipelines/p02.yml</text>
+      <text x="422" y="206" class="n-sub" fill="#17431a">pipelines-main</text>
+    </g>
+    <g data-node-id="yaml:pipelines-main/pipelines/p03.yml">
+      <title>yaml:pipelines-main/pipelines/p03.yml</title>
+      <rect x="412" y="228" width="250" height="34" rx="6" fill="#dff0e0" stroke="#2e7d32" stroke-width="1.4" />
+      <text x="422" y="242" class="n-label" fill="#17431a">pipelines/p03.yml</text>
+      <text x="422" y="254" class="n-sub" fill="#17431a">pipelines-main</text>
+    </g>
+    <g data-node-id="yaml:pipelines-main/pipelines/p04.yml">
+      <title>yaml:pipelines-main/pipelines/p04.yml</title>
+      <rect x="412" y="276" width="250" height="34" rx="6" fill="#dff0e0" stroke="#2e7d32" stroke-width="1.4" />
+      <text x="422" y="290" class="n-label" fill="#17431a">pipelines/p04.yml</text>
+      <text x="422" y="302" class="n-sub" fill="#17431a">pipelines-main</text>
+    </g>
+    <g data-node-id="yaml:pipelines-main/pipelines/p05.yml">
+      <title>yaml:pipelines-main/pipelines/p05.yml</title>
+      <rect x="412" y="324" width="250" height="34" rx="6" fill="#dff0e0" stroke="#2e7d32" stroke-width="1.4" />
+      <text x="422" y="338" class="n-label" fill="#17431a">pipelines/p05.yml</text>
+      <text x="422" y="350" class="n-sub" fill="#17431a">pipelines-main</text>
+    </g>
+    <g data-node-id="yaml:pipelines-main/pipelines/p06.yml">
+      <title>yaml:pipelines-main/pipelines/p06.yml</title>
+      <rect x="412" y="372" width="250" height="34" rx="6" fill="#dff0e0" stroke="#2e7d32" stroke-width="1.4" />
+      <text x="422" y="386" class="n-label" fill="#17431a">pipelines/p06.yml</text>
+      <text x="422" y="398" class="n-sub" fill="#17431a">pipelines-main</text>
+    </g>
+    <g data-node-id="yaml:pipelines-main/pipelines/p07a.yml">
+      <title>yaml:pipelines-main/pipelines/p07a.yml</title>
+      <rect x="412" y="420" width="250" height="34" rx="6" fill="#dff0e0" stroke="#2e7d32" stroke-width="1.4" />
+      <text x="422" y="434" class="n-label" fill="#17431a">pipelines/p07a.yml</text>
+      <text x="422" y="446" class="n-sub" fill="#17431a">pipelines-main</text>
+    </g>
+    <g data-node-id="yaml:pipelines-main/pipelines/p07b.yml">
+      <title>yaml:pipelines-main/pipelines/p07b.yml</title>
+      <rect x="412" y="468" width="250" height="34" rx="6" fill="#dff0e0" stroke="#2e7d32" stroke-width="1.4" />
+      <text x="422" y="482" class="n-label" fill="#17431a">pipelines/p07b.yml</text>
+      <text x="422" y="494" class="n-sub" fill="#17431a">pipelines-main</text>
+    </g>
+    <g data-node-id="yaml:pipelines-main/pipelines/p08.yml">
+      <title>yaml:pipelines-main/pipelines/p08.yml</title>
+      <rect x="412" y="516" width="250" height="34" rx="6" fill="#dff0e0" stroke="#2e7d32" stroke-width="1.4" />
+      <text x="422" y="530" class="n-label" fill="#17431a">pipelines/p08.yml</text>
+      <text x="422" y="542" class="n-sub" fill="#17431a">pipelines-main</text>
+    </g>
+    <g data-node-id="yaml:pipelines-main/pipelines/p09.yml">
+      <title>yaml:pipelines-main/pipelines/p09.yml</title>
+      <rect x="412" y="564" width="250" height="34" rx="6" fill="#dff0e0" stroke="#2e7d32" stroke-width="1.4" />
+      <text x="422" y="578" class="n-label" fill="#17431a">pipelines/p09.yml</text>
+      <text x="422" y="590" class="n-sub" fill="#17431a">pipelines-main</text>
+    </g>
+    <g data-node-id="yaml:pipelines-main/pipelines/p10.yml">
+      <title>yaml:pipelines-main/pipelines/p10.yml</title>
+      <rect x="412" y="612" width="250" height="34" rx="6" fill="#dff0e0" stroke="#2e7d32" stroke-width="1.4" />
+      <text x="422" y="626" class="n-label" fill="#17431a">pipelines/p10.yml</text>
+      <text x="422" y="638" class="n-sub" fill="#17431a">pipelines-main</text>
+    </g>
+    <g data-node-id="yaml:pipelines-main/pipelines/templates/chain-a.yml">
+      <title>yaml:pipelines-main/pipelines/templates/chain-a.yml</title>
+      <rect x="792" y="516" width="250" height="34" rx="6" fill="#dff0e0" stroke="#2e7d32" stroke-width="1.4" />
+      <text x="802" y="530" class="n-label" fill="#17431a">pipelines/templates/chain-a.yml</text>
+      <text x="802" y="542" class="n-sub" fill="#17431a">pipelines-main</text>
+    </g>
+    <g data-node-id="yaml:pipelines-main/pipelines/templates/chain-b.yml">
+      <title>yaml:pipelines-main/pipelines/templates/chain-b.yml</title>
+      <rect x="1172" y="228" width="250" height="34" rx="6" fill="#dff0e0" stroke="#2e7d32" stroke-width="1.4" />
+      <text x="1182" y="242" class="n-label" fill="#17431a">pipelines/templates/chain-b.yml</text>
+      <text x="1182" y="254" class="n-sub" fill="#17431a">pipelines-main</text>
+    </g>
+    <g data-node-id="yaml:pipelines-main/pipelines/templates/chain-c.yml">
+      <title>yaml:pipelines-main/pipelines/templates/chain-c.yml</title>
+      <rect x="792" y="564" width="250" height="34" rx="6" fill="#dff0e0" stroke="#2e7d32" stroke-width="1.4" />
+      <text x="802" y="578" class="n-label" fill="#17431a">pipelines/templates/chain-c.yml</text>
+      <text x="802" y="590" class="n-sub" fill="#17431a">pipelines-main</text>
+    </g>
+    <g data-node-id="yaml:pipelines-main/pipelines/templates/cycle-a.yml">
+      <title>yaml:pipelines-main/pipelines/templates/cycle-a.yml</title>
+      <rect x="792" y="612" width="250" height="34" rx="6" fill="#dff0e0" stroke="#2e7d32" stroke-width="1.4" />
+      <text x="802" y="626" class="n-label" fill="#17431a">pipelines/templates/cycle-a.yml</text>
+      <text x="802" y="638" class="n-sub" fill="#17431a">pipelines-main</text>
+    </g>
+    <g data-node-id="yaml:pipelines-main/pipelines/templates/cycle-b.yml">
+      <title>yaml:pipelines-main/pipelines/templates/cycle-b.yml</title>
+      <rect x="1172" y="276" width="250" height="34" rx="6" fill="#dff0e0" stroke="#2e7d32" stroke-width="1.4" />
+      <text x="1182" y="290" class="n-label" fill="#17431a">pipelines/templates/cycle-b.yml</text>
+      <text x="1182" y="302" class="n-sub" fill="#17431a">pipelines-main</text>
+    </g>
+    <g data-node-id="yaml:pipelines-main/pipelines/templates/diamond-leaf.yml">
+      <title>yaml:pipelines-main/pipelines/templates/diamond-leaf.yml</title>
+      <rect x="1172" y="324" width="250" height="34" rx="6" fill="#dff0e0" stroke="#2e7d32" stroke-width="1.4" />
+      <text x="1182" y="338" class="n-label" fill="#17431a">pipelines/templates/diamond-leaf.yml</text>
+      <text x="1182" y="350" class="n-sub" fill="#17431a">pipelines-main</text>
+    </g>
+    <g data-node-id="yaml:pipelines-main/pipelines/templates/diamond-shared.yml">
+      <title>yaml:pipelines-main/pipelines/templates/diamond-shared.yml</title>
+      <rect x="792" y="660" width="250" height="34" rx="6" fill="#dff0e0" stroke="#2e7d32" stroke-width="1.4" />
+      <text x="802" y="674" class="n-label" fill="#17431a">pipelines/templates/diamond-shared.yml</text>
+      <text x="802" y="686" class="n-sub" fill="#17431a">pipelines-main</text>
+    </g>
+    <g data-node-id="yaml:pipelines-main/pipelines/templates/steps-build.yml">
+      <title>yaml:pipelines-main/pipelines/templates/steps-build.yml</title>
+      <rect x="1552" y="180" width="250" height="34" rx="6" fill="#dff0e0" stroke="#2e7d32" stroke-width="1.4" />
+      <text x="1562" y="194" class="n-label" fill="#17431a">pipelines/templates/steps-build.yml</text>
+      <text x="1562" y="206" class="n-sub" fill="#17431a">pipelines-main</text>
+    </g>
+    <g data-node-id="yaml:pipelines-main/pipelines/templates/vars-common.yml">
+      <title>yaml:pipelines-main/pipelines/templates/vars-common.yml</title>
+      <rect x="792" y="708" width="250" height="34" rx="6" fill="#dff0e0" stroke="#2e7d32" stroke-width="1.4" />
+      <text x="802" y="722" class="n-label" fill="#17431a">pipelines/templates/vars-common.yml</text>
+      <text x="802" y="734" class="n-sub" fill="#17431a">pipelines-main</text>
+    </g>
+    <g data-node-id="yaml:pipelines-main/templates/steps-build.yml">
+      <title>yaml:pipelines-main/templates/steps-build.yml</title>
+      <rect x="792" y="852" width="250" height="34" rx="6" fill="#dff0e0" stroke="#2e7d32" stroke-width="1.4" />
+      <text x="802" y="866" class="n-label" fill="#17431a">templates/steps-build.yml</text>
+      <text x="802" y="878" class="n-sub" fill="#17431a">pipelines-main</text>
+    </g>
+    <g data-node-id="yaml:templates-platform/jobs/release.yml">
+      <title>yaml:templates-platform/jobs/release.yml</title>
+      <rect x="792" y="468" width="250" height="34" rx="6" fill="#dff0e0" stroke="#2e7d32" stroke-width="1.4" />
+      <text x="802" y="482" class="n-label" fill="#17431a">jobs/release.yml</text>
+      <text x="802" y="494" class="n-sub" fill="#17431a">templates-platform</text>
+    </g>
+    <g data-node-id="yaml:templates-platform/pipelines/trigger.yml">
+      <title>yaml:templates-platform/pipelines/trigger.yml</title>
+      <rect x="412" y="708" width="250" height="34" rx="6" fill="#dff0e0" stroke="#2e7d32" stroke-width="1.4" />
+      <text x="422" y="722" class="n-label" fill="#17431a">pipelines/trigger.yml</text>
+      <text x="422" y="734" class="n-sub" fill="#17431a">templates-platform</text>
+    </g>
+    <g data-node-id="yaml:templates-platform/steps/deploy.yml">
+      <title>yaml:templates-platform/steps/deploy.yml</title>
+      <rect x="792" y="804" width="250" height="34" rx="6" fill="#dff0e0" stroke="#2e7d32" stroke-width="1.4" />
+      <text x="802" y="818" class="n-label" fill="#17431a">steps/deploy.yml</text>
+      <text x="802" y="830" class="n-sub" fill="#17431a">templates-platform</text>
+    </g>
+    <g data-node-id="yaml:templates-shared/pipelines/nightly.yml">
+      <title>yaml:templates-shared/pipelines/nightly.yml</title>
+      <rect x="412" y="132" width="250" height="34" rx="6" fill="#dff0e0" stroke="#2e7d32" stroke-width="1.4" />
+      <text x="422" y="146" class="n-label" fill="#17431a">pipelines/nightly.yml</text>
+      <text x="422" y="158" class="n-sub" fill="#17431a">templates-shared</text>
+    </g>
+    <g data-node-id="yaml:templates-shared/steps/common.yml">
+      <title>yaml:templates-shared/steps/common.yml</title>
+      <rect x="792" y="756" width="250" height="34" rx="6" fill="#dff0e0" stroke="#2e7d32" stroke-width="1.4" />
+      <text x="802" y="770" class="n-label" fill="#17431a">steps/common.yml</text>
+      <text x="802" y="782" class="n-sub" fill="#17431a">templates-shared</text>
+    </g>
+    <g data-node-id="yaml:templates-shared/steps/notify.yml">
+      <title>yaml:templates-shared/steps/notify.yml</title>
+      <rect x="1172" y="372" width="250" height="34" rx="6" fill="#dff0e0" stroke="#2e7d32" stroke-width="1.4" />
+      <text x="1182" y="386" class="n-label" fill="#17431a">steps/notify.yml</text>
+      <text x="1182" y="398" class="n-sub" fill="#17431a">templates-shared</text>
+    </g>
+  </g>
+</svg>
+
+</div>
+<footer>
+  Layered left to right by breadth-first depth. Cycles are drawn, bowing left,
+  and are not followed twice. Rendered from graph.json by runs/Render-Graph.ps1.
+</footer>
+</body>
+</html>
