@@ -144,6 +144,26 @@ never in a URL. Every run scans its own artifacts for PAT-shaped strings before
 committing; run 002's scan is in its
 [plan](plans/0016-first-build/plan.md).
 
+## The ecosystem
+
+Six repositories, governed from here. `main` moves in each only by
+fast-forward after a green pass, ancestry checked and never forced — decision
+[0009](decisions/0009-agent-moves-both-mains.md) for the target,
+[0010](decisions/0010-ecosystem-repo-governance.md) for the rest.
+
+| Repository | What it is | State |
+| --- | --- | --- |
+| this one | the harness, the oracle, and the plugin distilled from what they measured | — |
+| [PSAzureDevOpsGraph](https://github.com/JerryBalmer1/PSAzureDevOpsGraph) | the build target: a read-only AzDO pipeline dependency grapher | built and scored, runs 002–003 |
+| [PSGraphRender](https://github.com/JerryBalmer1/PSGraphRender) | the renderer. Takes a view model, writes one self-contained HTML page, and knows nothing about what the nodes are | v0.13.0, handed over |
+| [PSGraphRenderToHtml](https://github.com/JerryBalmer1/PSGraphRenderToHtml) | the battery between a producer and the renderer: producer-graph contract, options, mapping, and the contract battery a producer runs against its own output | v0.1.0 |
+| [PSModuleGraph](https://github.com/JerryBalmer1/PSModuleGraph) | the first producer, and the repository the renderer was extracted from | the renderer's only consumer today |
+| PSTerraformGraph | the second producer, and the first that is not PowerShell — the real test of the renderer's producer-agnosticism | a stub |
+
+The renderer's boundary is the claim the ecosystem exists to test: **a producer
+in any language can drive it without changing it.** One producer makes that an
+assertion; the second makes it a measurement.
+
 ## Status, honestly
 
 - The conformance suite is **falsified against one reference module**; every
