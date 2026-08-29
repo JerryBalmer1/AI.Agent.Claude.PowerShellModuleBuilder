@@ -1,0 +1,76 @@
+{
+  "schemaVersion": "1.0.0",
+  "note": "The known-failure set: persisted Bucket B classifications, one entry per expected failure, keyed by assertion name plus target. Checked in deliberately - it is not derived from a previous run, because a run cannot be its own authority. It ratchets both ways: a failure absent from this file is new and blocks; an entry that stops failing is stale and must be removed deliberately, since an expected failure that quietly disappeared is either a fix worth recording or a test that stopped running. Neither direction may be resolved by the harness on its own. See evals/HARNESS.md.",
+  "failures": [
+    {
+      "id": "B-1",
+      "assertion": "Repository shape.exercises the exported command Get-PSModuleAssembly somewhere in tests",
+      "target": "PSModuleGraph",
+      "reason": "Get-PSModuleAssembly is exported but no test invokes it. Its only appearance in the test tree is a string literal in the export list in tests/Module.Quality.Tests.ps1, which asserts the command is exported, not that it works.",
+      "findings": "baseline/FINDINGS.md#b-1"
+    },
+    {
+      "id": "B-C1",
+      "assertion": "Manifest.exports no cmdlets, variables, or aliases implicitly",
+      "target": "Az",
+      "reason": "VariablesToExport is absent from the manifest. An unset export key defaults to a wildcard, so the module does leak.",
+      "findings": "baseline/UNIVERSAL-CORPUS.md#b-c1"
+    },
+    {
+      "id": "B-C1",
+      "assertion": "Manifest.exports no cmdlets, variables, or aliases implicitly",
+      "target": "Az.Accounts",
+      "reason": "VariablesToExport is commented out at manifest line 115, so the key is absent and defaults to a wildcard.",
+      "findings": "baseline/UNIVERSAL-CORPUS.md#b-c1"
+    },
+    {
+      "id": "B-C1",
+      "assertion": "Manifest.exports no cmdlets, variables, or aliases implicitly",
+      "target": "ImportExcel",
+      "reason": "VariablesToExport absent.",
+      "findings": "baseline/UNIVERSAL-CORPUS.md#b-c1"
+    },
+    {
+      "id": "B-C1",
+      "assertion": "Manifest.exports no cmdlets, variables, or aliases implicitly",
+      "target": "Microsoft.PowerShell.Crescendo",
+      "reason": "All three export keys absent - three failing cases of one assertion.",
+      "findings": "baseline/UNIVERSAL-CORPUS.md#b-c1"
+    },
+    {
+      "id": "B-C2",
+      "assertion": "Manifest.exports no cmdlets, variables, or aliases implicitly",
+      "target": "SqlServerDsc",
+      "reason": "Sets an export key to '*' outright rather than omitting it. Explicit rather than implicit, and still a wildcard export.",
+      "findings": "baseline/UNIVERSAL-CORPUS.md#b-c2"
+    },
+    {
+      "id": "B-C3",
+      "assertion": "Public surface.defines every function the manifest exports somewhere in source",
+      "target": "ImportExcel",
+      "reason": "Export-ExcelSheet and Invoke-AllTests are listed in FunctionsToExport but are [Alias()] names on other functions, not functions. The manifest exports an alias as though it were a function.",
+      "findings": "baseline/UNIVERSAL-CORPUS.md#b-c3"
+    },
+    {
+      "id": "B-C4",
+      "assertion": "Public surface.gives <_.Name> comment-based help with a synopsis",
+      "target": "ImportExcel",
+      "reason": "60 exported functions carry no comment-based help and the module ships no external help directory. Get-Help on them returns nothing useful.",
+      "findings": "baseline/UNIVERSAL-CORPUS.md#b-c4"
+    },
+    {
+      "id": "B-C5",
+      "assertion": "Public surface.gives <_.Name> comment-based help with a synopsis",
+      "target": "Microsoft.PowerShell.Crescendo",
+      "reason": "10 of 13 exported functions undocumented. The module's psm1 contains three .SYNOPSIS blocks in total.",
+      "findings": "baseline/UNIVERSAL-CORPUS.md#b-c5"
+    },
+    {
+      "id": "B-C6",
+      "assertion": "Public surface.gives <_.Name> comment-based help with a synopsis",
+      "target": "posh-git",
+      "reason": "Expand-GitCommand, Get-PromptPath, Update-AllBranches, TabExpansion and tgit are exported without comment-based help. posh-git documents 20 functions this way, so the omission is inconsistency rather than a project-wide convention. This is the only assertion the corpus control still fails, and it fails for a real reason - see the note in UNIVERSAL-CORPUS.md.",
+      "findings": "baseline/UNIVERSAL-CORPUS.md#b-c6"
+    }
+  ]
+}

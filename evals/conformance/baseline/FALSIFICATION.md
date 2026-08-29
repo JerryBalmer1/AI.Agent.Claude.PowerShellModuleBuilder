@@ -49,8 +49,12 @@ one.
 12 breaks turn exactly their assertion red, 1 break over-fires by design,
 nothing is inert.
 
-Every row now also carries a negative control — a break the named assertion must
-*not* notice. Eleven of the twelve are correct. One is not.
+Every row also carries a negative control — a break the named assertion must
+*not* notice. All twelve are now correct; row 7's was failing until Pass 0008
+converted that assertion to AST.
+
+Pass 0008 added five more rows covering the rest of the build-file block, each
+with both probe directions. See "Row 7's control failed" below.
 
 Provenance: rows 8a-8c were run in Pass 2, against the replacement assertion,
 before any score containing it was recorded. The rest were run in Pass 1, re-run
@@ -73,7 +77,7 @@ plausibly fool the assertion proves nothing about scope.
 | 4 | defines exactly one function | two definitions in a `Private/` file | green | **green** | — |
 | 5 | comment-based help with a synopsis | strip the synopsis from a `Private/` file | green | **green** | — |
 | 6 | exercises the exported command | delete the command's name as a **string literal**, keep its invocation | green | **green** | — |
-| 7 | throws rather than exits | add a **comment** mentioning `Run.Exit = $true` | green | **RED** | — |
+| 7 | throws rather than exits | add a **comment** mentioning `Run.Exit = $true` | green | **green** (RED before the Pass 0008 AST conversion) | — |
 | 8 | throws on coverage below target | delete both `Pester 6.x is required` throws, one of them inside the Test task | green | **green** | — |
 | 9 | excludes PreTag-tagged tests | remove `Filter.Tag = 'PreTag'` from the **PreTag** task | green | **green** | — |
 | 10 | pins build dependencies | add a new, correctly pinned `Requirements.psd1` entry | green | **green** | — |
@@ -84,7 +88,36 @@ Collateral on a control is expected and is recorded, not failed. A control asser
 only that the *named* assertion does not move. `AliasesToExport = '*'` really is a
 wildcard export; it simply is not the one row 1 is about.
 
-### Row 7's control fails
+### Row 7's control failed, and was fixed in Pass 0008
+
+The section below records the failure as found. The assertion has since been
+converted to an AST check: within the Test task's body, `Run.Throw` must be
+assigned `$true` and no assignment may target `Run.Exit`. The control now stays
+green and the break still fires.
+
+The conversion generalised. Every *other* regex assertion in
+`House style: build file` was then probed the other way round — delete the code
+and leave a block comment quoting the line it looks for — and **all five stayed
+green**, which is the coverage assertion's original defect exactly. All five were
+converted.
+
+| Assertion | Comment only, no code change | Code deleted, comment left | After conversion |
+|---|---|---|---|
+| `declares the task <_>` | green (correct) | **green — defect** | red (correct) |
+| `makes the default task Clean, Lint, Build, Test` | green (correct) | **green — defect** | red (correct) |
+| `excludes PreTag-tagged tests from the Test task` | green (correct) | **green — defect** | red (correct) |
+| `disables Pester v5 assertion syntax` | green (correct) | **green — defect** | red (correct) |
+| `measures coverage against the built psm1` | green (correct) | **green — defect** | red (correct) |
+
+Note which probe found it. The comment-only control — the one specified, and the
+one that caught row 7 — passed on all five, and cannot do otherwise for a
+positive assertion whose code is still present. Only deleting the code and
+leaving the comment discriminates. A control is worth having in proportion to
+what it perturbs.
+
+### Row 7 as found
+
+
 
 ```powershell
 # Never write $config.Run.Exit = $true here; it kills the host.
@@ -109,8 +142,7 @@ something it should ignore, which is the mirror-image failure and is only visibl
 through a control. It is the single reason the control column was worth
 backfilling rather than writing down.
 
-Recorded, not fixed — no assertion changes were in scope for this pass. It is the
-next candidate for the AST treatment the coverage assertion got.
+Recorded in Pass 3, fixed in Pass 0008.
 
 ## Row 8 — was inert, now fixed
 

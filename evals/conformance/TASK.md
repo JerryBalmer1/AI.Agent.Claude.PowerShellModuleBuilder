@@ -287,3 +287,86 @@ every row in the README table now carries a control column.
 - [x] H3 HARNESS.md revised
 - [x] Commits made
 - [x] Reported back
+
+---
+
+# Pass 0008 — Repair the Universal tag against corpus evidence
+
+Opened after the corpus run showed five of ten Universal assertions failing on
+targets nobody wrote them for, and posh-git — the designated control — failing
+two of them for suite reasons.
+
+## Standing constraints
+
+Unchanged. `./scratch/PSModuleGraph` only. Nothing from `gallery/modules/` or
+`scratch/corpus-targets/` committed. No fixes to any corpus module or to the
+reference. No assertion weakened because a target fails it. No new assertions
+beyond the repairs listed. No push, no tags.
+
+## Two new standing rules
+
+9. **Zero cases is not a pass.** An assertion whose `-ForEach` produced no cases
+   is inapplicable, and must be reported as inapplicable rather than counted as
+   a pass or failing its container. Scores state cases-run alongside
+   cases-passed.
+10. **Ambiguous discovery fails loudly.** When the suite cannot determine which
+    module it is grading, it stops. Grading a bundled helper and reporting
+    81.82% is worse than reporting nothing.
+
+## Work
+
+- **I1a** Discovery: support `<name>/<version>/<name>.psd1`; throw naming every
+  candidate when ambiguous; `-ModuleName` escape hatch.
+- **I1b** Empty `-ForEach` reports inapplicable; `CasesRun` in `result.json`.
+- **I2** One definition helper (`.psm1` + scope-qualifier stripping); delete the
+  count clause from the wildcard assertion; rewrite comment-based help against
+  the exported surface; `CompatiblePSEditions` moves to HouseStyle with a
+  StrictMode guard.
+- **I3a** `Run.Exit` becomes an AST assertion; falsified with break and control.
+- **I3b** A control for every remaining regex assertion in `House style: build
+  file`. Convert to AST only where the control fails. Record which held.
+- **I4** Re-measure: reference both tag sets, all breaks and controls, all eight
+  corpus modules on the committed suite with no out-of-tree neutralisation.
+- **I5** `journal/`, `decisions/`, and the declared known-failure file.
+
+## Pass 0008 outcome
+
+**The gate is not met.** posh-git, the corpus control, does not pass every
+`Universal` assertion: it fails comment-based help on five exported commands.
+Those five failures are genuine (B-C6) and every *suite* defect the control
+previously exposed is fixed — it now passes eight of nine — but the standing
+instruction is that the control passes clean. `Universal` is not signed off.
+
+- **I1a.** Both manifest layouts accepted. Selection: `$repoName`, then a
+  manifest directly in the target, then a lone candidate; more than one
+  undecidable candidate throws and names them. `-ModuleName` added.
+- **I1b.** `Run.FailOnNullOrEmptyForEach = $false`; `CasesRun` and a
+  per-assertion `Assertions` breakdown in `result.json`.
+- **I2.** One definition index over `.ps1` and `.psm1` with scope qualifiers
+  stripped; count clause deleted; help driven by the exported surface;
+  `CompatiblePSEditions` moved to HouseStyle with a `ContainsKey` guard.
+- **I3a.** `Run.Exit` converted to AST. Break fires, control now green.
+- **I3b.** All five remaining regex assertions passed the specified
+  comment-only control and **failed** the deletion probe. All five converted;
+  all five now fire.
+- **I4.** Reference 74/75 and 80/81, unchanged. 14 breaks fire, 12 controls
+  green, 5 substitution probes fire. Corpus run on the committed suite with no
+  neutralisation: **7 of 9 Universal assertions survive all 9 targets**, up from
+  5 of 10. Both remaining failures are Bucket B.
+- **I5.** `journal/TEMPLATE.md`, `journal/0008-repair-universal-tag.md`,
+  `decisions/0001-universal-validated-against-corpus.md`,
+  `baseline/known-failures.json`.
+
+## Pass 0008 checklist
+
+- [x] Rules 9 and 10 in README
+- [x] I1a discovery
+- [x] I1b zero cases + CasesRun
+- [x] I2 assertion repairs
+- [x] I3a Run.Exit AST + falsified
+- [x] I3b controls for remaining regex assertions
+- [x] I4 re-measured, corpus re-run on committed suite
+- [x] I5 journal, decision record, known-failure file
+- [x] Commits made
+- [x] Reported back
+- [ ] **Gate: posh-git passes every Universal assertion — NOT met, see above**

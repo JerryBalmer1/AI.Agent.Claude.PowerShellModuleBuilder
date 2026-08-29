@@ -82,6 +82,21 @@ Red probes alone cannot tell the correct scoping from the over-broad one; only
 the green control can. Every row in the table below carries one, and one of
 those controls is currently failing.
 
+**Zero cases is not a pass.** An assertion whose `-ForEach` produced no cases is
+*inapplicable* to this target. It must be reported as such — never counted as a
+pass, and never allowed to fail its container. Scores state cases-run alongside
+cases-passed: `result.json` carries `CasesRun` beside `Total`, and an
+`Assertions` breakdown in which an assertion that produced nothing is simply
+absent. The comment-based-help assertion silently did not apply to six of eight
+corpus modules while appearing to be part of a green run.
+
+**Ambiguous discovery fails loudly.** When the suite cannot determine which
+module it is grading, it stops and names every candidate. It does not pick.
+SqlServerDsc ships 51 manifests; the old shortest-path tie-break graded a
+bundled helper module and reported 81.82% with nothing in the output to say so.
+Reporting nothing is better than reporting a number about the wrong thing.
+`-ModuleName` is the way to answer the question when it is genuinely ambiguous.
+
 None of this is style preference. Two assertions have already gone into a
 scoring run without a confirmed red: the invocation check, which was new, and
 `throws on coverage below target`, which was inert from the day it was written
@@ -128,21 +143,23 @@ Recorded, not yet fixed.
 
 ## Known limits
 
-- Most assertions on the build file are still text matches, not semantics. A
-  build file that satisfies the regex and does something else passes, and row 7
-  of the table above is a demonstration rather than a hypothetical: a comment
-  defeats `throws rather than exits`. The coverage assertion has been moved to an
-  AST check; the rest have not.
-- `Universal` has now run against nine targets and **five of its ten assertions
-  survive all nine**. Two of the five that do not are suite defects rather than
-  claims about PowerShell; one has only ever run against three targets because it
-  is scoped to a directory most modules do not have. See
-  [`baseline/UNIVERSAL-CORPUS.md`](baseline/UNIVERSAL-CORPUS.md) before treating
-  a `Universal` pass as evidence.
-- The suite cannot currently locate the manifest of a **published** module —
-  `<name>/<version>/<name>.psd1` — and on one corpus module it silently graded a
-  bundled helper module instead. `Universal` is therefore a claim about source
-  trees in practice, whatever the tag says. Also in UNIVERSAL-CORPUS.md.
+- The `House style: build file` assertions are now AST checks, not text matches.
+  Every one of them was defeated by a block comment quoting the line it looked
+  for, with the real code deleted — five out of five, tested one at a time. The
+  regexes are gone from that Describe.
+- What is *not* covered: an AST assertion still checks that a setting is
+  assigned, not that the build behaves. `CodeCoverage.Path` pointing at a psm1
+  is not proof coverage was measured against it.
+- `Universal` is nine assertions and has run against nine targets. **Seven
+  survive all nine.** The two that do not fail only on Bucket B grounds — real
+  properties of the modules, recorded in
+  [`baseline/known-failures.json`](baseline/known-failures.json), not suite
+  defects. See [`baseline/UNIVERSAL-CORPUS.md`](baseline/UNIVERSAL-CORPUS.md)
+  for cases-run per assertion.
+- **The corpus control does not pass clean.** posh-git fails
+  comment-based help on five exported commands. The failures are genuine, but
+  the standing gate is that the control passes, and it does not. `Universal`
+  is better evidenced than it was and is not yet signed off.
 - There is no assertion that the build actually succeeds. That belongs in the
   run harness, which invokes `./build.ps1` and records the exit code alongside
   this suite's score.
