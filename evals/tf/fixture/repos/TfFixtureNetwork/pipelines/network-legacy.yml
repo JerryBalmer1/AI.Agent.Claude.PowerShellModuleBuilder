@@ -1,0 +1,22 @@
+# Definition only. This pipeline is created and never queued.
+#
+# Pinned to an old Terraform on purpose: the fixture carries four distinct
+# versions across its pipelines so a provider/version case has something to
+# tell apart.
+trigger: none
+pr: none
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  terraformVersion: '0.13.7'
+
+steps:
+  - task: TerraformInstaller@1
+    displayName: Install Terraform $(terraformVersion)
+    inputs:
+      terraformVersion: $(terraformVersion)
+
+  - script: terraform validate
+    displayName: terraform validate

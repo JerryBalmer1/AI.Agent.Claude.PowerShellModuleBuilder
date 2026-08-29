@@ -1,0 +1,21 @@
+# Definition only. This pipeline is created and never queued.
+trigger: none
+pr: none
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  terraformVersion: '1.0.11'
+
+steps:
+  - task: TerraformInstaller@1
+    displayName: Install Terraform $(terraformVersion)
+    inputs:
+      terraformVersion: $(terraformVersion)
+
+  - script: terraform init -backend=false
+    displayName: terraform init
+
+  - script: terraform validate
+    displayName: terraform validate
