@@ -41,7 +41,7 @@ $ErrorActionPreference = 'Stop'
 # Decision 0004: this script records the SHA it was written against and reports
 # when HEAD has moved. Writing the SHA in is its own immediate child commit, so
 # a difference of exactly one commit straight after the pass is expected.
-$WrittenAgainstSha = 'PASS-0016-WORK-COMMIT'
+$WrittenAgainstSha = 'fb68e16ef000b7f612b59c33b1c17adbf84483aa'
 $WrittenAgainstBranch = 'pass-0016-first-build'
 
 $RepoRoot = (Resolve-Path "$PSScriptRoot/../..").Path
