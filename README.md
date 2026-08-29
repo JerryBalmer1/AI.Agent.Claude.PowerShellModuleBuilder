@@ -158,11 +158,13 @@ fast-forward after a green pass, ancestry checked and never forced — decision
 | [PSGraphRender](https://github.com/JerryBalmer1/PSGraphRender) | the renderer. Takes a view model, writes one self-contained HTML page, and knows nothing about what the nodes are | v0.13.0, handed over |
 | [PSGraphRenderToHtml](https://github.com/JerryBalmer1/PSGraphRenderToHtml) | the battery between a producer and the renderer: producer-graph contract, options, mapping, and the contract battery a producer runs against its own output | v0.1.0 |
 | [PSModuleGraph](https://github.com/JerryBalmer1/PSModuleGraph) | the first producer, and the repository the renderer was extracted from | the renderer's only consumer today |
-| PSTerraformGraph | the second producer, and the first that is not PowerShell — the real test of the renderer's producer-agnosticism | a stub |
+| [PSTerraformGraph](https://github.com/JerryBalmer1/PSTerraformGraph) | the second producer, and the first that is not PowerShell | v0.1.0, scored in [run tf-001](runs/tf-001-first-build/) |
 
 The renderer's boundary is the claim the ecosystem exists to test: **a producer
-in any language can drive it without changing it.** One producer makes that an
-assertion; the second makes it a measurement.
+in any language can drive it without changing it.** As of run tf-001 that is a
+measurement rather than an assertion: PSTerraformGraph drives PSGraphRender
+through PSGraphRenderToHtml, in a domain nobody had in mind when the renderer
+was extracted, and **not one line of either changed to allow it**.
 
 ## Status, honestly
 
