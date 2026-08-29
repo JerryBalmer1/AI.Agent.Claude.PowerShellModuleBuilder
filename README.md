@@ -132,9 +132,10 @@ Invoke-Pester ./evals/functional/ReadBack.Tests.ps1    #  76 cases, needs AZDO_P
 Invoke-Pester ./evals/functional/Compare.Tests.ps1     #  28 cases
 ```
 
-`-ModuleName` is not optional when the repository root is a run directory —
-discovery prefers a manifest named for the target directory and refuses to guess
-rather than grade the wrong module silently.
+`-ModuleName` is optional. When the repository root is a run directory the
+runner derives it from `src/<Name>/<Name>.psd1`; two manifests under `src/` is
+undecidable and stops, naming both, rather than grading the wrong module
+silently.
 
 ## Credentials
 

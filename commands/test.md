@@ -30,10 +30,11 @@ directory) and report them as **two numbers**, never averaged.
 
    Run it **after** the build — the `RequiresBuild` tag reads `output/<Name>/`.
 
-   Pass `-ModuleName` whenever the repository root is not named for the module.
-   Discovery prefers a manifest named for the target directory, then one sitting
-   directly in the target; a run directory called something like
-   `002-first-build` matches neither and the suite reports no manifest at all.
+   `-ModuleName` is optional. Discovery prefers a manifest named for the target
+   directory, then one sitting directly in the target; a run directory called
+   something like `002-first-build` matches neither, and the runner then derives
+   the name from `src/<Name>/<Name>.psd1` and says which manifest it read. Pass
+   it to override, or to answer an ambiguity the runner refuses to guess at.
 
 3. **Read the score from `result.json`, never from the exit code.** The runner
    exits 0 on a red run on purpose — a red conformance run is data, not a build
