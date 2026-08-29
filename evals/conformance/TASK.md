@@ -230,3 +230,60 @@ no code.
 - [x] G4 HARNESS.md written
 - [x] Commits made
 - [x] Reported back
+
+---
+
+# Pass 3 — controls, and the closed loop
+
+Opened after probe 8c turned out to be the result rather than a detail: a
+negative control discriminates between two assertions that both pass the
+positive break.
+
+## Standing constraints
+
+Unchanged. `./scratch/PSModuleGraph` only. Nothing from `gallery/modules/`
+committed anywhere. No fixes to any corpus module. No new assertions. No
+weakening an assertion because a target fails it. No push, no tags.
+
+## New standing rule
+
+A falsification row needs a negative control, not just a break. A break that
+must go red proves the assertion can fail; a control that must stay green proves
+it fails for the right reason. Added to `README.md` beside the Pass 2 rule, and
+every row in the README table now carries a control column.
+
+## Pass 3 outcome
+
+- **Standing rule + control column.** Both in the README. Twelve controls
+  designed, run, and recorded. **Eleven correct, one not:** adding a *comment*
+  mentioning `Run.Exit = $true` turns `throws rather than exits` red. Twelve red
+  breaks had not found that; the control did. Recorded, not fixed.
+- **H1 — tag split.** `Repository shape` retagged `Universal` -> `Repository`.
+  Runner `ValidateSet` and default tag set updated. Scores unchanged at 74/75
+  and 80/81; per-tag counts 26 + 18 + 31 + 6 = 81, so nothing was dropped. All
+  thirteen breaks and twelve controls re-run after the retag.
+- **H2 — corpus.** All eight gallery modules fetched and run with `-Tag Universal`.
+  Run as committed, **all eight collapse**: the suite cannot locate a published
+  module's manifest, and on SqlServerDsc it silently graded a bundled helper
+  module instead. Per-assertion data collected from a second pass with exactly
+  two blockers neutralised outside the committed tree. **Five of ten Universal
+  assertions survive all nine targets.** Seven Bucket A findings, four Bucket B.
+  Nothing changed. See `baseline/UNIVERSAL-CORPUS.md`.
+- **H3 — HARNESS.md.** Known-failure set respecified as persisted Bucket B
+  classifications, keyed by assertion plus target, ratcheting both ways. Bucket
+  A/B sorting recorded as not automatable, with the corpus evidence for why.
+  Hazard 5 and the Phase 0 default-versus-sealing distinction marked
+  *Evidence: 1 target*.
+
+## Pass 3 checklist
+
+- [x] Standing rule added to README
+- [x] Control column backfilled across all 12 rows
+- [x] Controls actually run, not just written down
+- [x] H1 retag, ValidateSet, scores confirmed unchanged
+- [x] H1 breaks and controls re-run after the retag
+- [x] H2 corpus fetched, all eight run with -Tag Universal
+- [x] H2 UNIVERSAL-CORPUS.md written, buckets sorted, nothing changed
+- [x] H3 HARNESS.md revised
+- [x] Commits made
+- [x] Reported back

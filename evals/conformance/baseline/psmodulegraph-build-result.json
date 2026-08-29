@@ -2,10 +2,11 @@
   "Target": "C:\\__Code\\__AI.Agent.Claude.PowerShellModuleBuilder\\AI.Agent.Claude.PowerShellModuleBuilder\\scratch\\PSModuleGraph",
   "Tags": [
     "Universal",
+    "Repository",
     "HouseStyle",
     "RequiresBuild"
   ],
-  "RunAt": "2026-08-28T17:00:35.1702798-07:00",
+  "RunAt": "2026-08-28T17:28:14.7387604-07:00",
   "Total": 81,
   "Passed": 80,
   "Failed": 1,

@@ -22,6 +22,14 @@ without the run being repeated.
    the target's *sealing* tasks (PreTag and similar) — those may be red without
    blocking, and the harness needs to know which is which per target rather than
    assuming.
+
+   > **Evidence: 1 target.** The default-versus-sealing distinction is drawn
+   > from PSModuleGraph's task layout, where `PreTag` is a separate task
+   > deliberately excluded from the default one. Whether other repositories
+   > split their tasks that way, name the split differently, or do not split at
+   > all is untested. The harness must discover this per target; it must not
+   > assume a task called `PreTag` exists, nor that a red non-default task is
+   > always safe to continue past.
 4. **Score.** Run the conformance suite at both tag sets, writing each result to
    an explicit path.
 5. **Sort the failures** into suite bugs and real findings.
@@ -84,6 +92,35 @@ happily proceed when one failure is silently swapped for a different one.
 **Requirement:** known-good is an explicit *set* of failure names, compared by
 name. Any failure not in the set aborts the row and says which. Never a count.
 
+#### What the known-failure set is
+
+**The persisted Bucket B classifications.** A checked-in file, not something
+derived from a previous run — a run cannot be its own authority, or one bad run
+silently becomes the next run's definition of good.
+
+One entry per expected failure, keyed by **assertion name plus target**. Each
+entry carries:
+
+- the assertion's full name, exactly as it appears in `result.json`
+- the target it applies to (the same assertion may be Bucket B on one module and
+  a suite bug on another — `defines every function the manifest exports` is
+  Bucket B against ImportExcel's two aliased exports and Bucket A against
+  Pester's `.psm1`, and the key has to be able to say so)
+- the reason, in a sentence
+- a pointer to its FINDINGS entry
+
+**It ratchets both ways.**
+
+- A failure **not** in the file is new. It blocks. The run stops and reports it
+  rather than folding it into a score.
+- An entry that **stops failing** is stale. It also blocks — removing it is a
+  deliberate act, because an expected failure that quietly disappeared is either
+  a fix worth recording or a test that stopped running. Two of the corpus
+  assertions produced zero cases rather than passing, which is exactly how a
+  stale entry hides.
+
+Neither direction may be resolved by the harness on its own.
+
 ### 3. A rebuild row needs two rebuilds
 
 **Failure it causes:** rows that break the psm1 emitter need the target rebuilt
@@ -109,6 +146,12 @@ is re-run, and aborts the row if not. Two breaks were caught by this guard
 during development of the Pass 1 driver.
 
 ### 5. `$env:PSGRAPHRENDER_MODULE_PATH` — unpublished dependencies and clone location
+
+> **Evidence: 1 target.** Observed on PSModuleGraph only. The mechanism is
+> confirmed; the generalisation at the end of this hazard is inference from a
+> single example and has not been tested against a second module with an
+> unpublished dependency. Treat it the way the suite README treats `Universal`:
+> an intention until a second target shows the same shape.
 
 **Failure it causes:** the reference resolves an unpublished `RequiredModules`
 dependency from a *sibling checkout*. A scratch clone has no sibling, so the
@@ -154,16 +197,46 @@ Enough that the score can be read months later without rerunning it:
 - the falsification table, including controls, and including which assertions
   were new or changed in this pass
 
+## Bucket A/B sorting is not automatable
+
+Settled, in the negative. Three passes of sorting have produced no rule a
+machine could apply, and the corpus run showed why: the same assertion failing
+the same way is Bucket A on one target and Bucket B on another.
+`defines every function the manifest exports somewhere in source` fails on
+Pester because the suite globs `*.ps1` and misses the `.psm1` — a suite bug — and
+on ImportExcel because two names in `FunctionsToExport` are aliases, not
+functions — a real finding. The failure messages are near-identical. Nothing in
+the result file distinguishes them; only reading the module does.
+
+**The harness presents failures for sorting. It does not sort them.** For each
+failure it must show:
+
+- the assertion's full name and the text of the assertion itself
+- the relevant excerpt from the target — the manifest lines, the file the
+  assertion was reading, the definition it failed to find
+- any prior classification of the same key (assertion + target), so a failure
+  already sorted once is not re-litigated from scratch
+
+That last point is what keeps the sorting cost from growing with every run.
+A new key is the only thing that needs a human.
+
 ## Open questions
 
 Things this spec does not settle, flagged rather than guessed:
 
-- **Where the known-failure set lives.** Checked-in per target, or derived from
-  the previous run's result file? Derived is less to maintain and much easier to
-  corrupt — a bad run becomes the next run's definition of good.
-- **Whether the harness should sort failures at all.** Bucket A/B sorting was a
-  judgement call both passes; it may not be automatable, in which case the
-  harness should present failures for sorting rather than attempt it.
-- **Multiple targets.** Everything above assumes one target at a time. The
-  `Universal` tag's whole purpose is a second, deliberately dissimilar target,
-  and nothing here has been tested against one.
+- **Multiple targets, partly answered.** `Universal` has now run against nine
+  targets — the reference plus the eight-module gallery corpus. Five of its ten
+  assertions survive all nine; one has been exercised on only three, because it
+  is scoped to a directory six of the targets do not have. See
+  `conformance/baseline/UNIVERSAL-CORPUS.md`. What is still open is whether the
+  harness should run corpus targets routinely or only when a tag's claims
+  change.
+- **Whether the harness should fix the two blockers it just found.** Running
+  against a published module currently requires restaging the target and a
+  runner flag (`Run.FailOnNullOrEmptyForEach`). Both were done by hand and
+  outside the committed tree for the corpus pass. Whether they become harness
+  responsibilities or suite fixes is a decision about where the boundary sits,
+  not a detail.
+- **Per-target expected-failure files versus one file.** The known-failure set is
+  keyed by assertion plus target; whether that lives as one file or one per
+  target is unresolved. Nine targets is where the question starts to matter.

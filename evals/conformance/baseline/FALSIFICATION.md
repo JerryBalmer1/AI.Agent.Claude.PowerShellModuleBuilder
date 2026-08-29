@@ -46,14 +46,71 @@ one.
 | 11 | Rename `PSScriptAnalyzerSettings.psd1` | has analyzer settings at the repository root | Fires | — | |
 | 12 | Delete the `$script:ModuleRoot` line from the psm1 emitter, rebuild | sets `$script:ModuleRoot` | Fires | — | **rebuild** |
 
-12 breaks turn exactly their assertion red, 1 control correctly stays green,
-1 break over-fires by design. Nothing is inert.
+12 breaks turn exactly their assertion red, 1 break over-fires by design,
+nothing is inert.
 
-Rows 8a-8c were run in Pass 2, against the replacement assertion, before any
-score containing it was recorded. The rest were run in Pass 1 and re-run
-unchanged in Pass 2 to confirm the replacement did not disturb them — in
-particular that a break editing the build file does not make the new
-AST-parsing assertion fail for the wrong reason.
+Every row now also carries a negative control — a break the named assertion must
+*not* notice. Eleven of the twelve are correct. One is not.
+
+Provenance: rows 8a-8c were run in Pass 2, against the replacement assertion,
+before any score containing it was recorded. The rest were run in Pass 1, re-run
+unchanged in Pass 2 to confirm the replacement did not disturb them, and re-run
+again in Pass 3 after the `Universal`/`Repository` retag. The controls were added
+in Pass 3.
+
+## Negative controls
+
+Added after probe 8c showed that a red break alone does not finish an assertion.
+Each control is chosen to be confusable with its own row's break: a near miss in
+the same file, the same task, or the same manifest. A control that could not
+plausibly fool the assertion proves nothing about scope.
+
+| # | Assertion | Control applied | Required | Actual | Collateral |
+|---|---|---|---|---|---|
+| 1 | exports functions by explicit name | `AliasesToExport = '*'` instead of FunctionsToExport | green | **green** | `exports no cmdlets, variables, or aliases implicitly` |
+| 2 | agrees three ways | drop `Get-PSModuleEnum` from the manifest **and** delete its `Public/` file | green | **green** | — |
+| 3 | keeps `Public/` flat | add `Private/Sub/Get-Thing.ps1` | green | **green** | — |
+| 4 | defines exactly one function | two definitions in a `Private/` file | green | **green** | — |
+| 5 | comment-based help with a synopsis | strip the synopsis from a `Private/` file | green | **green** | — |
+| 6 | exercises the exported command | delete the command's name as a **string literal**, keep its invocation | green | **green** | — |
+| 7 | throws rather than exits | add a **comment** mentioning `Run.Exit = $true` | green | **RED** | — |
+| 8 | throws on coverage below target | delete both `Pester 6.x is required` throws, one of them inside the Test task | green | **green** | — |
+| 9 | excludes PreTag-tagged tests | remove `Filter.Tag = 'PreTag'` from the **PreTag** task | green | **green** | — |
+| 10 | pins build dependencies | add a new, correctly pinned `Requirements.psd1` entry | green | **green** | — |
+| 11 | has analyzer settings at the root | rename a **different** root `.psd1` | green | **green** | `pins build dependencies only in Requirements.psd1` |
+| 12 | sets `$script:ModuleRoot` | delete a **different** emitted line (auto-generated marker), rebuild | green | **green** | `marks the generated file as generated` |
+
+Collateral on a control is expected and is recorded, not failed. A control asserts
+only that the *named* assertion does not move. `AliasesToExport = '*'` really is a
+wildcard export; it simply is not the one row 1 is about.
+
+### Row 7's control fails
+
+```powershell
+# Never write $config.Run.Exit = $true here; it kills the host.
+$config.Run.Throw = $true
+```
+
+That comment, with no code changed, turns
+`throws rather than exits when tests fail` red. The assertion is
+
+```powershell
+$BuildText | Should -Match 'Run\.Throw\s*=\s*\$true'
+$BuildText | Should -Not -Match 'Run\.Exit\s*=\s*\$true'
+```
+
+— a text match over the whole file, which cannot distinguish a comment warning
+against a setting from the setting itself. A build file whose author documented
+the hazard would fail the assertion that checks for the hazard.
+
+This is not the coverage assertion's defect. That one was inert: it could not go
+red at all. This one fires under its own break correctly and *also* fires on
+something it should ignore, which is the mirror-image failure and is only visible
+through a control. It is the single reason the control column was worth
+backfilling rather than writing down.
+
+Recorded, not fixed — no assertion changes were in scope for this pass. It is the
+next candidate for the AST treatment the coverage assertion got.
 
 ## Row 8 — was inert, now fixed
 
@@ -193,6 +250,17 @@ Not built now.
    still wrong. Only the green control, 8c, separates them. The driver needs an
    explicit "this must stay green" outcome type, or control rows get recorded as
    "does not fire" and read as failures.
+
+   Backfilling controls across all twelve rows found one more defect that twelve
+   red breaks had not: row 7 fires on a comment. Note also that a control must
+   pass when only its *named* assertion stays green — three of the twelve
+   controls legitimately turn other assertions red, and an implementation that
+   required zero collateral would have rejected all three.
+
+   One control was rejected by the hazard-4 guard on its first run: it tried to
+   strip a synopsis from a private file that had none, so the substitution
+   matched nothing. Without the guard it would have been recorded as a passing
+   control, which is the same false-green the guard exists to prevent.
 
 8. **A PowerShell parse trap, for whoever writes the driver.**
    `-ForegroundColor ( if ($x) { 'Green' } else { 'Yellow' } )` parses `if` as a
