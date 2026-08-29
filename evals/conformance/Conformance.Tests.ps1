@@ -298,8 +298,76 @@ Describe 'House style: build file' -Tag 'HouseStyle' {
 
     It 'throws on coverage below target rather than only reporting it' {
         # CoveragePercentTarget reports and nothing else. It sat at 74.88
-        # against a target of 75 through three green builds.
-        $BuildText | Should -Match '(?s)CoveragePercent.*throw'
+        # against a target of 75 through three green builds, so the throw after
+        # the comparison is the actual gate.
+        #
+        # This was '(?s)CoveragePercent.*throw' and could not fail. (?s) plus an
+        # unbounded .* meant any throw anywhere later in the file satisfied it:
+        # deleting the gate left it green on the word "throw" in the comment
+        # explaining the gate, and with that comment gone it still matched the
+        # Pester guard in the PreTag task thirty lines down. Nine throws in this
+        # build file, and the assertion accepted all of them.
+        #
+        # Structure instead of text. The throw has to be inside the if that
+        # compares the coverage percentage, inside the Test task, or it is not
+        # this gate.
+        Test-Path -LiteralPath $BuildFile | Should -BeTrue
+
+        $tokens = $null
+        $errors = $null
+        $buildAst = [System.Management.Automation.Language.Parser]::ParseFile(
+            $BuildFile, [ref]$tokens, [ref]$errors)
+        @($errors).Count | Should -Be 0 -Because 'a build file that does not parse cannot be checked'
+
+        # InvokeBuild spells a task 'task <Name> [<deps>,] { ... }', so the name
+        # is the second command element whether or not dependencies follow.
+        $testTask = @($buildAst.FindAll({
+                    param($n)
+                    $n -is [System.Management.Automation.Language.CommandAst] -and
+                    $n.GetCommandName() -eq 'task' -and
+                    @($n.CommandElements).Count -gt 1 -and
+                    $n.CommandElements[1].Extent.Text -eq 'Test'
+                }, $true))
+        $testTask.Count | Should -Be 1 -Because 'the coverage gate lives in the Test task'
+
+        # FindAll is pre-order, so the task's own body comes before anything
+        # nested in it. Not CommandElements: with dependencies present the body
+        # is inside an array literal, not a top-level element.
+        $body = @($testTask[0].FindAll({
+                    param($n) $n -is [System.Management.Automation.Language.ScriptBlockExpressionAst]
+                }, $true)) | Select-Object -First 1
+        $body | Should -Not -BeNullOrEmpty -Because 'the Test task must have a body to gate anything'
+
+        # The gate is an if whose CONDITION reads the coverage percentage -
+        # a $percent-ish variable, or the .CoveragePercent member off the Pester
+        # result. Matching the condition is what keeps a comment from counting.
+        $gates = @($body.FindAll({
+                    param($n)
+                    if ($n -isnot [System.Management.Automation.Language.IfStatementAst]) { return $false }
+                    $hits = @($n.Clauses | ForEach-Object {
+                            $_.Item1.FindAll({
+                                    param($c)
+                                    ($c -is [System.Management.Automation.Language.VariableExpressionAst] -and
+                                    $c.VariablePath.UserPath -match 'percent') -or
+                                    ($c -is [System.Management.Automation.Language.MemberExpressionAst] -and
+                                    $c.Member.Extent.Text -match 'CoveragePercent')
+                                }, $true)
+                        })
+                    $hits.Count -gt 0
+                }, $true))
+        $gates.Count | Should -BeGreaterThan 0 -Because 'nothing in the Test task compares coverage against a target'
+
+        # Only that if's own body. A throw in the Dependencies resolver, the
+        # PreTag guard, or anywhere else in the file is a different statement
+        # and does not make this gate exist.
+        $throws = @($gates | ForEach-Object {
+                $_.Clauses | ForEach-Object {
+                    $_.Item2.FindAll({
+                            param($t) $t -is [System.Management.Automation.Language.ThrowStatementAst]
+                        }, $true)
+                }
+            })
+        $throws.Count | Should -BeGreaterThan 0 -Because 'CoveragePercentTarget only reports; the throw is the gate'
     }
 }
 

@@ -9,6 +9,11 @@
     Default is Universal and HouseStyle, which need no build output.
 .PARAMETER ResultPath
     Where to write result.json. Default: alongside the target, ./conformance-result.json
+.PARAMETER PassExitCode
+    Exit with the failure count instead of 0. Off by default: a red conformance
+    run is data, and the harness reads the score from result.json, not from an
+    exit code. Turn it on only for a caller that genuinely wants a red run to
+    fail a pipeline step.
 .EXAMPLE
     ./Invoke-Conformance.ps1 -Path ../../../PSModuleGraph
 .EXAMPLE
@@ -22,7 +27,9 @@ param(
     [ValidateSet('Universal', 'HouseStyle', 'RequiresBuild')]
     [string[]] $Tag = @('Universal', 'HouseStyle'),
 
-    [string] $ResultPath
+    [string] $ResultPath,
+
+    [switch] $PassExitCode
 )
 
 Set-StrictMode -Version Latest
@@ -87,3 +94,14 @@ Write-Host ''
 Write-Host "Conformance: $($summary.Passed)/$($summary.Passed + $summary.Failed) ($($summary.ScorePct)%)  ->  $ResultPath"
 
 $summary
+
+# Invoke-Pester sets $LASTEXITCODE to the failure count even with Run.Throw and
+# Run.Exit both off, so a red conformance run left this script looking like a
+# crash - the exact opposite of the contract three lines of comment above claim.
+# A harness that checks exit codes would have treated every red run as a broken
+# runner and never read the score it wrote.
+#
+# A red run is data. Say so in the exit code, and give the callers who really do
+# want a red run to fail a pipeline step an explicit way to ask.
+if ($PassExitCode) { exit $summary.Failed }
+exit 0
