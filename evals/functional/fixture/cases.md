@@ -319,9 +319,17 @@ on the same mechanism.
 
 **kind:** absence
 
-**checked by:** `Fixture.Tests.ps1` assertion 7, "no node is the pre-existing
-ClaudeTesting repository"; and read-back assertion 8 in Pass 0013, that the
-repository exists in the project, is empty, and no definition targets it.
+**checked by:** `Fixture.Tests.ps1`, "no node is the pre-existing
+ClaudeTesting repository"; and `ReadBack.Tests.ps1` read-back assertion 8, "the
+pre-existing ClaudeTesting repository still exists", "the ClaudeTesting
+repository is still empty", and "no definition targets the ClaudeTesting
+repository".
+
+Every test name quoted above is checked to resolve against a real test name in
+the suite named beside it. A pointer written in prose is a pointer that rots
+silently: a test can be renamed or deleted and the line that names it goes on
+reading correctly. Naming the assertion is the rule; resolving the name is what
+makes the rule bite.
 
 **Tests.** The Azure DevOps project contains a repository named
 `ClaudeTesting`, created with the project and empty. No pipeline references it,

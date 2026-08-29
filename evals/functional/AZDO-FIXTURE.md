@@ -195,6 +195,53 @@ calls returned 200.
    definition targets it. This is read-back assertion 8 and it is case 12's
    external check: it is what makes "nothing carries the tag" mean something.
 
+### How assertion 3 compares bytes
+
+A byte comparison is only meaningful if both sides say what "the bytes" are.
+This is that statement, and it is what read-back assertion 3 implements.
+
+**The fixture's canonical form.** Every file under `fixture/repos/` is UTF-8
+without a byte-order mark, uses LF (`0x0A`) alone as its newline, and ends with
+a final newline. Measured, not assumed: all 30 files are BOM-free, contain no
+byte above `0x7F`, contain no `0x0D` at all, and end in `0x0A`. Because the
+content is a pure ASCII subset, UTF-8 and ASCII agree byte for byte here; the
+canonical encoding is still UTF-8, and a future file containing a non-ASCII
+character does not change the rule.
+
+**How the comparison is performed.** Both sides are read as raw bytes with no
+line-ending translation, no encoding detection, and no string conversion at any
+point:
+
+- The committed side is read with `[IO.File]::ReadAllBytes`, never
+  `Get-Content`, whose default splits on newlines and reassembles them.
+- The Azure DevOps side is fetched from the Git items endpoint as a byte stream
+  and read into a byte array, never through a property that has already been
+  decoded to a string.
+- Each side is hashed with SHA-256 over those bytes, and the two hashes are
+  compared. Lengths are compared too, so a mismatch reports how far apart the
+  sides are rather than only that they differ.
+
+Nothing in the comparison path calls `-split`, `-replace`, `Get-Content`,
+`Out-File`, or `Set-Content`. Each of those translates line endings on Windows
+by default, and a comparison that translates both sides identically will pass
+while the fixture on the server is wrong.
+
+**Why this needs saying.** `core.autocrlf=true` is the Git for Windows installer
+default and arrives at **system** scope, so it is what any Windows clone of this
+repository gets. Measured on this machine before `.gitattributes` existed:
+`pipelines/p01.yml` is 449 bytes with 0 CR in the working tree and in the git
+blob, but **461 bytes with 12 CR in a fresh clone**. The working tree and the
+blob agree only because these files were written into the tree rather than
+checked out; the gap appears the moment anyone clones. Pushing a clone's bytes
+would put CRLF into Azure DevOps, and a comparison that read both sides through
+a newline-translating API would not notice.
+
+The repository-root `.gitattributes` prevents this, pinning `*.yml`, `*.json`,
+`*.md` and `*.ps1` to `eol=lf` so a checkout on any platform reproduces the
+canonical bytes. Prevention alone is not enough: `Fixture.Tests.ps1` keeps its
+CRLF regression assertion, because prevention that nothing detects is prevention
+nobody notices failing.
+
 Check 3 is the one that matters. Checks 1, 2, 4 and 5 confirm that the right
 names exist; only 3 confirms that what was pushed is what the module will later
 read. A fixture whose YAML differs from `fixture/repos/` by one line makes every

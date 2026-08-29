@@ -90,6 +90,20 @@ BeforeDiscovery {
     $script:CaseDeclarations = @(Get-FixtureCaseDeclaration -Path $script:CasesPath)
     $script:PresenceCases = @($script:CaseDeclarations | Where-Object Kind -EQ 'presence')
     $script:AbsenceCases = @($script:CaseDeclarations | Where-Object Kind -EQ 'absence')
+
+    # One row per test name quoted on a **checked by:** line, so each resolves
+    # or fails to resolve on its own rather than as a batch.
+    $script:CheckedByPointers = @(
+        foreach ($decl in $script:CaseDeclarations) {
+            foreach ($quoted in @($decl.QuotedTestNames)) {
+                @{
+                    CaseId   = $decl.Id
+                    TestName = $quoted
+                    Suites   = @($decl.NamedSuites)
+                }
+            }
+        }
+    )
 }
 
 BeforeAll {
@@ -595,6 +609,66 @@ Describe 'Functional fixture' {
                 } | ForEach-Object { $_.id }
             )
             $offenders -join ', ' | Should -BeNullOrEmpty -Because 'case-12: the project repository is referenced by no pipeline and must not appear in the graph'
+        }
+    }
+
+    Context 'checked-by pointers resolve' {
+        # A **checked by:** line names the assertion that checks an absence
+        # case. Requiring the line to exist is not the same as requiring it to
+        # be true: a test can be renamed or deleted and the prose that names it
+        # goes on reading perfectly well. That is hazard 6 - a stale expectation
+        # reporting the wrong answer confidently - and this is its fourth
+        # appearance in this project.
+        #
+        # Only names in double quotes on a **checked by:** line are pointers. A
+        # test name mentioned anywhere else in cases.md is prose and is
+        # deliberately not checked, or every sentence discussing a test would
+        # become a maintenance obligation.
+
+        BeforeAll {
+            $script:SuiteTestNames = @{}
+            foreach ($suite in @('Fixture.Tests.ps1', 'ReadBack.Tests.ps1')) {
+                $suitePath = Join-Path $PSScriptRoot $suite
+                $script:SuiteTestNames[$suite] = @(Get-PesterTestName -Path $suitePath |
+                    ForEach-Object { ($_ -replace '\s+', ' ').Trim() })
+            }
+            $script:AllSuiteTestNames = @($script:SuiteTestNames.Values | ForEach-Object { $_ })
+        }
+
+        It 'both named suites exist and declare tests' {
+            foreach ($suite in @('Fixture.Tests.ps1', 'ReadBack.Tests.ps1')) {
+                Test-Path -LiteralPath (Join-Path $PSScriptRoot $suite) |
+                    Should -BeTrue -Because "a checked-by line names '$suite'"
+                $script:SuiteTestNames[$suite].Count |
+                    Should -BeGreaterThan 0 -Because "'$suite' must declare at least one It, or every pointer into it resolves vacuously"
+            }
+        }
+
+        It '<_.CaseId> pointer "<_.TestName>" resolves to a real test' -ForEach $script:CheckedByPointers -AllowNullOrEmptyForEach {
+            $wanted = ($_.TestName -replace '\s+', ' ').Trim()
+
+            # Prefer the suites the line itself names; fall back to both only
+            # when the line named none.
+            $candidates = @()
+            if ($_.Suites.Count -gt 0) {
+                foreach ($suite in $_.Suites) {
+                    if ($script:SuiteTestNames.ContainsKey($suite)) {
+                        $candidates += $script:SuiteTestNames[$suite]
+                    }
+                }
+            }
+            if ($candidates.Count -eq 0) { $candidates = $script:AllSuiteTestNames }
+
+            ($candidates -ccontains $wanted) |
+                Should -BeTrue -Because "cases.md $($_.CaseId) quotes the test name `"$wanted`" on a **checked by:** line, but no It with that name exists in $(($_.Suites -join ', ')). Either the test was renamed and the pointer was not, or the pointer names a test that was never written."
+        }
+
+        It 'every absence case quotes at least one test name' {
+            $unquoted = @($script:CaseDeclarations |
+                Where-Object { $_.Kind -eq 'absence' -and @($_.QuotedTestNames).Count -eq 0 } |
+                ForEach-Object { $_.Id })
+            $unquoted -join ', ' |
+                Should -BeNullOrEmpty -Because 'an absence case whose checked-by line quotes no test name names nothing that can be resolved'
         }
     }
 }

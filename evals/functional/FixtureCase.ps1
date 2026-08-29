@@ -46,11 +46,77 @@ function Get-FixtureCaseDeclaration {
         $kinds = [regex]::Matches($section, '(?m)^\*\*kind:\*\*[ \t]+(presence|absence)[ \t]*$')
         $checkedBy = [regex]::Match($section, '(?m)^\*\*checked by:\*\*[ \t]+(\S.*?)[ \t]*$')
 
+        # The whole checked-by paragraph, not just its first line, collapsed to
+        # single spaces.
+        #
+        # A quoted test name is prose and prose is hard-wrapped, so the name
+        # routinely straddles a line break: `"no node is the pre-existing\n
+        # ClaudeTesting repository"`. A single-line match sees only the first
+        # half and would report a truncated name as unresolvable, or - worse -
+        # a short truncation that happens to match something else as resolved.
+        # Collapse first, match second.
+        $blockMatch = [regex]::Match($section, '(?ms)^\*\*checked by:\*\*[ \t]+(.*?)(?:\r?\n[ \t]*\r?\n|\z)')
+        $block = $null
+        if ($blockMatch.Success) {
+            $block = ($blockMatch.Groups[1].Value -replace '\s+', ' ').Trim()
+        }
+
+        # Test names quoted inside that block, as written.
+        $quoted = @()
+        if ($block) {
+            $quoted = @([regex]::Matches($block, '"([^"]+)"') | ForEach-Object { $_.Groups[1].Value })
+        }
+
+        # Suites the block names, in backticks, e.g. `Fixture.Tests.ps1`.
+        $suites = @()
+        if ($block) {
+            $suites = @([regex]::Matches($block, '`([A-Za-z0-9._-]+\.Tests\.ps1)`') |
+                ForEach-Object { $_.Groups[1].Value } | Select-Object -Unique)
+        }
+
         [pscustomobject]@{
-            Id        = $headings[$i].Groups[1].Value
-            KindCount = $kinds.Count
-            Kind      = $(if ($kinds.Count -eq 1) { $kinds[0].Groups[1].Value } else { $null })
-            CheckedBy = $(if ($checkedBy.Success) { $checkedBy.Groups[1].Value } else { $null })
+            Id              = $headings[$i].Groups[1].Value
+            KindCount       = $kinds.Count
+            Kind            = $(if ($kinds.Count -eq 1) { $kinds[0].Groups[1].Value } else { $null })
+            CheckedBy       = $(if ($checkedBy.Success) { $checkedBy.Groups[1].Value } else { $null })
+            CheckedByBlock  = $block
+            QuotedTestNames = $quoted
+            NamedSuites     = $suites
+        }
+    }
+}
+
+function Get-PesterTestName {
+    <#
+        Every test name declared by `It` in a Pester file, read from the
+        PowerShell AST rather than by regex.
+
+        The AST is used because a regex over test files has to guess at quoting,
+        escaping and continuation, and a name it fails to extract becomes a name
+        the caller reports as missing. A pointer check whose failure mode is a
+        false alarm gets switched off, and then it checks nothing.
+    #>
+    param([Parameter(Mandatory)][string]$Path)
+
+    if (-not (Test-Path -LiteralPath $Path)) { return }
+
+    $tokens = $null
+    $errors = $null
+    $ast = [System.Management.Automation.Language.Parser]::ParseFile(
+        (Resolve-Path -LiteralPath $Path).ProviderPath, [ref]$tokens, [ref]$errors)
+
+    $its = $ast.FindAll({
+        param($n)
+        $n -is [System.Management.Automation.Language.CommandAst] -and
+        $n.GetCommandName() -eq 'It'
+    }, $true)
+
+    foreach ($it in $its) {
+        if ($it.CommandElements.Count -lt 2) { continue }
+        $name = $it.CommandElements[1]
+        if ($name -is [System.Management.Automation.Language.StringConstantExpressionAst] -or
+            $name -is [System.Management.Automation.Language.ExpandableStringExpressionAst]) {
+            $name.Value
         }
     }
 }
