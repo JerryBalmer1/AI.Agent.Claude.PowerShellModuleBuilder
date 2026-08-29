@@ -8,9 +8,16 @@
     tree, the manifest, the build file, or the generated psm1 as text.
 
     Tags:
-      Universal    - true of any well-formed PowerShell module repository
+      Universal    - true of any PowerShell module, source tree or published
+                     package. Reads the manifest and the source it can find.
+      Repository   - true of any module repository. Needs a source tree: build
+                     entrypoint, analyzer settings, tests.
       HouseStyle   - specific to the PSModuleGraph build conventions
       RequiresBuild- needs output/<Name>/ to exist, so run after a build
+
+    Universal and Repository were one tag until the split showed what the
+    conflation was hiding: a published package has no build file and no tests,
+    and failing it for that says nothing about the module.
 
     Written in Pester v5 assertion style on purpose. The suite is tooling, not a
     module's own tests, and it has to keep running if a target repository turns
@@ -178,7 +185,12 @@ Describe 'Public surface' -Tag 'Universal' {
     }
 }
 
-Describe 'Repository shape' -Tag 'Universal' {
+# Repository, not Universal. Every assertion here needs a source tree: a build
+# entrypoint, analyzer settings, a tests directory, tests that call the command.
+# A published package satisfies none of them and is not thereby a bad module -
+# it is a module rather than a module repository. Conflating the two made
+# 'Universal' a claim the tag could not support.
+Describe 'Repository shape' -Tag 'Repository' {
 
     It 'has a build entrypoint at the repository root' {
         Test-Path -LiteralPath (Join-Path $Target 'build.ps1') | Should -BeTrue

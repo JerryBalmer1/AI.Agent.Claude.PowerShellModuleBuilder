@@ -5,8 +5,12 @@
 .PARAMETER Path
     Repository root of the module under test.
 .PARAMETER Tag
-    Which assertion sets to run. Universal, HouseStyle, RequiresBuild.
-    Default is Universal and HouseStyle, which need no build output.
+    Which assertion sets to run. Universal, Repository, HouseStyle,
+    RequiresBuild. Default is Universal, Repository and HouseStyle, which need
+    no build output.
+
+    Universal alone is the set to run against a published package or any module
+    that is not a repository - it makes no claim about build files or tests.
 .PARAMETER ResultPath
     Where to write result.json. Default: alongside the target, ./conformance-result.json
 .PARAMETER PassExitCode
@@ -24,8 +28,8 @@ param(
     [Parameter(Mandatory, Position = 0)]
     [string] $Path,
 
-    [ValidateSet('Universal', 'HouseStyle', 'RequiresBuild')]
-    [string[]] $Tag = @('Universal', 'HouseStyle'),
+    [ValidateSet('Universal', 'Repository', 'HouseStyle', 'RequiresBuild')]
+    [string[]] $Tag = @('Universal', 'Repository', 'HouseStyle'),
 
     [string] $ResultPath,
 
