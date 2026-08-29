@@ -33,7 +33,7 @@ decision in the harness. Three of the tasks to run as parallel jobs.
 - Added `docs/HANDOFF.md` (236 lines), `docs/vendoring.md` (232),
   `tools/Update-Vendor.ps1` (647), `docs/worklog/v0.13.0.md` (111),
   `docs/ledger-archive/README.md`.
-- Harness `main` at `8f30b04`, carrying
+- Harness `main` at `8f7eb3a`, carrying
   `decisions/0010-ecosystem-repo-governance.md`, the plan, the acceptance test
   and `verify.ps1`, plus one unrelated commit for an editor-written workspace
   change that made the tree dirty at preconditions.
