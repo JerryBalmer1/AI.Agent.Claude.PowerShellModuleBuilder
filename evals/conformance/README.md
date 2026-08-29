@@ -82,6 +82,17 @@ Red probes alone cannot tell the correct scoping from the over-broad one; only
 the green control can. Every row in the table below carries one, and one of
 those controls is currently failing.
 
+**The control's shape is determined by the assertion's polarity.** For a
+*positive* assertion — must match X — remove X and leave text resembling X; the
+assertion must go **red**. For a *negative* assertion — must not match X — add
+text mentioning X without the behaviour; the assertion must stay **green**.
+
+A comment-only probe against a positive assertion cannot fail while the code is
+present, and will pass an assertion that is inert. Five build-file assertions
+passed exactly that probe and then stayed green with their code deleted and a
+comment left in its place — which is the inert-assertion defect, found only by
+the polarity-correct probe.
+
 **Zero cases is not a pass.** An assertion whose `-ForEach` produced no cases is
 *inapplicable* to this target. It must be reported as such — never counted as a
 pass, and never allowed to fail its container. Scores state cases-run alongside
@@ -122,6 +133,12 @@ measurement of nothing.
 Every control is chosen to be *confusable* with its break — a near miss in the
 same file, the same task, or the same manifest. A control that could not
 plausibly fool the assertion proves nothing about its scope.
+
+The controls in the table above are **scope** controls: they prove an assertion
+does not fire on a neighbour. They are not polarity-correct controls for the
+positive assertions among them, and the two are not substitutes. See
+[`baseline/CONTROL-SWEEP.md`](baseline/CONTROL-SWEEP.md) for the polarity sweep
+across every positive assertion in the suite.
 
 Record the result of this pass. An assertion that stays green through its own
 break is worse than no assertion, because it will be counted as evidence.

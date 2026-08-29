@@ -369,4 +369,74 @@ instruction is that the control passes clean. `Universal` is not signed off.
 - [x] I5 journal, decision record, known-failure file
 - [x] Commits made
 - [x] Reported back
-- [ ] **Gate: posh-git passes every Universal assertion — NOT met, see above**
+- [x] **Gate — corrected wording, and met.** The Pass 0008 gate said "the
+  control passes clean", which assumes the control target is a perfect artifact.
+  The correct gate is **the control fails nothing classified as Bucket A**.
+  posh-git fails only B-C6, five genuinely undocumented exported commands, which
+  is a fact about posh-git. Zero Bucket A. `Universal` is signed off.
+
+
+---
+
+# Pass 0009 — Correct the control protocol, consolidate the record
+
+Two findings from Pass 0008 were defects in the instructions, not the work: the
+gate wording, and the shape of the prescribed control. Both corrected here.
+
+## Rule corrections
+
+**Pushing.** The "no push" rule was written too broadly to prevent releases.
+Push to a branch on origin for review. Still forbidden: tags, `Publish-Module`,
+anything to PSGallery, and pushing to `main`.
+
+**The gate.** "The control passes clean" assumed a perfect control target. The
+correct gate is **the control fails nothing classified as Bucket A**. Under it,
+`Universal` is signed off: zero Bucket A, seven of nine assertions surviving all
+nine targets, both remaining failures Bucket B.
+
+`Universal` stays provisional in one respect, and this stays open: **no target
+has yet been a repository built by this plugin.**
+
+## New standing rule — control polarity
+
+> The control's shape is determined by the assertion's polarity. For a positive
+> assertion (must match X): remove X and leave text resembling X; the assertion
+> must go red. For a negative assertion (must not match X): add text mentioning
+> X without the behaviour; the assertion must stay green. A comment-only probe
+> against a positive assertion cannot fail while the code is present, and will
+> pass an assertion that is inert.
+
+In `README.md`. Deferred to METHOD.md with K4.
+
+## Pass 0009 outcome
+
+- **K1.** Every positive assertion swept with the polarity-correct control — 33
+  rows. **Three defects found**, all in assertions that had passed a scope
+  control: discovery's lone-candidate fallback (it graded the vendored PSCorpus
+  module when the reference's own manifest was removed), and three psm1
+  assertions satisfied by emitting a comment where the code should be
+  (`sets $script:ModuleRoot`, `exports exactly the manifest surface`,
+  `includes functions from Private subfolders`). All four repaired and
+  re-falsified. `baseline/CONTROL-SWEEP.md`.
+- **K2.** The driver now resolves every expected-assertion name against the
+  current suite before running any row, and hard-stops on one that does not
+  resolve. Verified both ways. Hazard 6 in `HARNESS.md`.
+- **K3.** `decisions/0002` (prevalence is not correctness) and
+  `decisions/0003` (score comparability).
+- **K4.** **Blocked** — the METHOD.md draft was not supplied. Not started.
+- **K5.** Deferred to Pass 0010 per the instruction's own precedence: the sweep
+  was not truncated to reach it.
+
+## Pass 0009 checklist
+
+- [x] Pushed the pre-pass baseline to a branch
+- [x] Gate corrected and Universal signed off
+- [x] Control-polarity rule in README
+- [x] K1 sweep run in full, defects converted and re-falsified
+- [x] K2 driver hard-stop, verified
+- [x] K3 decisions 0002 and 0003
+- [ ] K4 METHOD.md — **blocked, draft not supplied**
+- [ ] K5 journal backfill 0001-0007 — **deferred to Pass 0010**
+- [x] journal/0009 written
+- [x] Commits made and pushed to branch
+- [x] Reported back

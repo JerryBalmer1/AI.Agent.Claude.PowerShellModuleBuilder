@@ -60,7 +60,14 @@ Outcomes it must distinguish:
   assertion must not notice.
 
 A harness that only knows "should go red" cannot express a control row, and
-without controls an over-broad assertion passes every probe. That is hazard 6.
+without controls an over-broad assertion passes every probe. That is hazard 7.
+
+The control's shape follows the assertion's polarity. For a positive assertion —
+must match X — the control removes X and leaves text resembling X, and must go
+**red**. For a negative assertion — must not match X — it adds text mentioning X
+without the behaviour, and must stay **green**. A comment-only probe against a
+positive assertion cannot fail while the code is present, and will pass an
+assertion that is inert.
 
 ## The hazards
 
@@ -145,6 +152,14 @@ be caught by someone eyeballing results for anomalies.
 is re-run, and aborts the row if not. Two breaks were caught by this guard
 during development of the Pass 1 driver.
 
+**A partial decoy is the same defect wearing a better disguise.** One probe
+removed every nested private function from the generated module but left a
+decoy comment naming only *one* of them. It went red — on the names it had not
+decoyed — and would have been recorded as "no defect found". Decoying all of
+them showed the assertion was in fact satisfied by comments. A control must
+perturb the whole of what the assertion reads, or its red proves nothing about
+the question being asked.
+
 ### 5. `$env:PSGRAPHRENDER_MODULE_PATH` — unpublished dependencies and clone location
 
 > **Evidence: 1 target.** Observed on PSModuleGraph only. The mechanism is
@@ -170,7 +185,36 @@ Any target with a dependency resolved by convention from its own location has a
 convention that a clone breaks. The harness should treat "this target builds only
 at its original path" as a property to discover and satisfy, not a surprise.
 
-### 6. A red probe alone does not finish an assertion
+### 6. A stale expectation reports a correct red as a missed one
+
+**Failure it causes:** the harness records, per row, the name of the assertion
+the break is supposed to turn red. Repair an assertion and rename it — as
+happened when comment-based help was rekeyed from filename to function name —
+and every row naming the old name silently stops matching. The row's genuine red
+lands in the *collateral* column and the row is reported **does not fire**.
+
+That is the precise false signal the whole protocol exists to detect,
+manufactured by the protocol's own bookkeeping, and it fails toward the alarming
+answer, so nobody eyeballing results for anomalies will dismiss it. It cost one
+investigation of a healthy assertion.
+
+**Requirement:** before running any row, resolve every expected-assertion name
+against the assertions the current suite actually produces, and **hard stop** on
+any that does not resolve. Not a warning: a warning is indistinguishable from
+noise in a run that prints a hundred lines.
+
+Two implementation notes, both learned the hard way:
+
+- The name list must come from a **real run**, not from discovery. Pester's
+  `Run.SkipRun` does not expand `-ForEach` names — they come back as the literal
+  template, `gives <_.Name> ...` — so a discovery-only preflight hard-stops on
+  every parameterised row. The guard against a false negative becomes a false
+  positive.
+- The same reasoning applies to row *selection*. A typo in the driver's
+  `-Only` filter selected zero rows and reported a clean run. A run of zero rows
+  is not a pass, and an unrecognised row name is an error.
+
+### 7. A red probe alone does not finish an assertion
 
 **Failure it causes:** an assertion scoped too widely passes every break aimed at
 it and is still wrong. The coverage assertion scoped to the whole Test task,
