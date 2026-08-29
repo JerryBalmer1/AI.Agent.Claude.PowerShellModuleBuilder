@@ -13,6 +13,11 @@
     that is not a repository - it makes no claim about build files or tests.
 .PARAMETER ResultPath
     Where to write result.json. Default: alongside the target, ./conformance-result.json
+.PARAMETER ModuleName
+    Which module the target contains, when the suite cannot decide for itself.
+    Discovery stops rather than guessing if more than one candidate manifest
+    survives and none is preferred; this is the way to answer it. Grading the
+    wrong module silently is worse than grading nothing.
 .PARAMETER PassExitCode
     Exit with the failure count instead of 0. Off by default: a red conformance
     run is data, and the harness reads the score from result.json, not from an
@@ -32,6 +37,8 @@ param(
     [string[]] $Tag = @('Universal', 'Repository', 'HouseStyle'),
 
     [string] $ResultPath,
+
+    [string] $ModuleName,
 
     [switch] $PassExitCode
 )
@@ -57,6 +64,7 @@ Import-Module -Name $pester.Path -Force
 # The suite reads its target from the environment because Pester needs the path
 # at discovery time to enumerate public functions for -ForEach.
 $env:CONFORMANCE_TARGET = $target
+$env:CONFORMANCE_MODULE_NAME = $ModuleName
 
 $config = New-PesterConfiguration
 $config.Run.Path = Join-Path $PSScriptRoot 'Conformance.Tests.ps1'
@@ -66,8 +74,35 @@ $config.Run.PassThru = $true
 $config.Run.Throw = $false
 $config.Filter.Tag = $Tag
 $config.Output.Verbosity = 'Detailed'
+# An It whose -ForEach collection is empty is INAPPLICABLE to this target, not a
+# failure of the file that contains it. Left at the default, one such It aborted
+# the whole container: six of the eight gallery corpus modules have no Public/
+# directory, so every assertion in the suite stopped, including ones that had
+# already passed. Zero cases is not a pass either - CasesRun below is what says
+# how much of the suite actually applied.
+$config.Run.FailOnNullOrEmptyForEach = $false
 
 $result = Invoke-Pester -Configuration $config
+
+# Per-assertion breakdown, keyed by the UNEXPANDED path so that every case of a
+# -ForEach It groups under the assertion that generated them. An assertion
+# missing from this list entirely produced no cases and did not apply to this
+# target - which is a different statement from passing, and the reason the list
+# is here.
+$assertions = @(
+    $result.Tests |
+        Where-Object { $_.Result -ne 'NotRun' } |
+        Group-Object -Property { $_.Path -join '.' } |
+        Sort-Object Name |
+        ForEach-Object {
+            [pscustomobject]@{
+                Name   = $_.Name
+                Ran    = $_.Count
+                Passed = @($_.Group | Where-Object { $_.Result -eq 'Passed' }).Count
+                Failed = @($_.Group | Where-Object { $_.Result -eq 'Failed' }).Count
+            }
+        }
+)
 
 $summary = [pscustomobject]@{
     Target      = $target
@@ -78,6 +113,10 @@ $summary = [pscustomobject]@{
     Failed      = $result.FailedCount
     Skipped     = $result.SkippedCount
     NotRun      = $result.NotRunCount
+    # What actually executed. Total counts tests filtered out by -Tag, and says
+    # nothing about how many of the selected assertions had anything to run
+    # against.
+    CasesRun    = $result.PassedCount + $result.FailedCount
     # Denominator is what actually executed. TotalCount includes tests filtered
     # out by -Tag (NotRun), so dividing by Total - Skipped charged the score for
     # assertions the caller deliberately did not select: a Universal,HouseStyle
@@ -85,6 +124,7 @@ $summary = [pscustomobject]@{
     ScorePct    = if (($result.PassedCount + $result.FailedCount) -gt 0) {
                       [math]::Round(100 * $result.PassedCount / ($result.PassedCount + $result.FailedCount), 2)
                   } else { 0 }
+    Assertions  = $assertions
     Failures    = @($result.Failed | ForEach-Object {
                       [pscustomobject]@{
                           Name    = $_.ExpandedPath
@@ -95,7 +135,8 @@ $summary = [pscustomobject]@{
 
 $summary | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $ResultPath -Encoding utf8
 Write-Host ''
-Write-Host "Conformance: $($summary.Passed)/$($summary.Passed + $summary.Failed) ($($summary.ScorePct)%)  ->  $ResultPath"
+Write-Host ("Conformance: $($summary.Passed)/$($summary.CasesRun) ($($summary.ScorePct)%) " +
+    "across $(@($assertions).Count) assertions  ->  $ResultPath")
 
 $summary
 

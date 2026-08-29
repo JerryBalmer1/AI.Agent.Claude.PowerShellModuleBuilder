@@ -34,35 +34,74 @@ BeforeDiscovery {
     }
     $script:Target = (Resolve-Path -LiteralPath $Target).Path
 
-    # Find the module manifest without assuming the layout, so the Universal
-    # tags can run against a repository that does not follow the house style.
-    # A manifest is a .psd1 whose base name matches its own directory name.
+    # Find the module manifest without assuming the layout. Two layouts count:
+    #
+    #   source tree       <name>/<name>.psd1
+    #   published module  <name>/<version>/<name>.psd1
+    #
+    # The second is the standard on-disk shape of an installed or downloaded
+    # module, and accepting only the first is why all eight gallery corpus
+    # modules failed discovery: a package's manifest sits in a directory named
+    # for its version, not for itself.
+    #
     # Build output, scratch, vendored galleries and test fixtures all contain
-    # well-formed manifests that are not the repository's own module.
-    # Matched against the path RELATIVE to the target, not the absolute path.
-    # The harness runs targets from ./scratch/runs/<id>/, so an absolute match
-    # let the target's own container exclude every candidate inside it.
+    # well-formed manifests that are not the repository's own module. Matched
+    # against the path RELATIVE to the target, not the absolute path: the
+    # harness runs targets from ./scratch/runs/<id>/, so an absolute match let
+    # the target's own container exclude every candidate inside it.
     $candidates = @(
         Get-ChildItem -Path $Target -Filter *.psd1 -File -Recurse -ErrorAction SilentlyContinue |
-            Where-Object { $_.BaseName -eq $_.Directory.Name } |
+            Where-Object {
+                $_.BaseName -eq $_.Directory.Name -or
+                ($_.Directory.Name -match '^\d+(\.\d+)*([-+].*)?$' -and
+                    $_.Directory.Parent -and $_.BaseName -eq $_.Directory.Parent.Name)
+            } |
             Where-Object {
                 $_.FullName.Substring($Target.Length) -notmatch
                     '[\\/](output|scratch|\.git|gallery|fixtures|node_modules)[\\/]'
             }
     )
 
-    # Shortest path is not a sufficient tie-break: a repository can carry a
-    # second module at a shallower path than its own (PSModuleGraph vendors
-    # corpus/PSCorpus/, which wins on length over src/PSModuleGraph/). The
-    # repository's own module is the one named for the repository; fall back to
-    # shortest path only when nothing matches, so a repository whose directory
-    # has been renamed still resolves.
-    # Select-Object -First 1, not [0]: indexing an empty array throws under
-    # Set-StrictMode -Version Latest, which the runner sets.
+    # Selection, most specific first. Ambiguity is a hard stop, never a guess.
+    # Shortest path used to be the tie-break, and SqlServerDsc - which ships 51
+    # manifests - was silently graded on a bundled helper module, reporting
+    # 81.82% for the wrong target with nothing in the output to say so. A suite
+    # that cannot tell what it is grading must say so rather than pick.
+    $requested = $env:CONFORMANCE_MODULE_NAME
     $repoName = Split-Path -Leaf $Target
-    $script:Manifest = $candidates | Where-Object { $_.BaseName -eq $repoName } | Select-Object -First 1
-    if (-not $Manifest) {
-        $script:Manifest = $candidates | Sort-Object { $_.FullName.Length } | Select-Object -First 1
+    $script:Manifest = $null
+
+    if ($requested) {
+        $named = @($candidates | Where-Object { $_.BaseName -eq $requested })
+        if ($named.Count -ne 1) {
+            throw ("-ModuleName '$requested' matched $($named.Count) manifests under '$Target'.")
+        }
+        $script:Manifest = $named[0]
+    }
+    else {
+        # The repository's own module is the one named for the repository.
+        $byRepoName = @($candidates | Where-Object { $_.BaseName -eq $repoName })
+        # A manifest sitting directly in the target is that target's module.
+        # This is what resolves <name>/<version>/, where the leaf is a version
+        # and so matches no name.
+        $atRoot = @($candidates | Where-Object { $_.Directory.FullName -eq $Target })
+
+        $script:Manifest =
+            if ($byRepoName.Count -eq 1) { $byRepoName[0] }
+            elseif ($atRoot.Count -eq 1) { $atRoot[0] }
+            elseif ($candidates.Count -eq 1) { $candidates[0] }
+            else { $null }
+
+        # No candidates at all is not ambiguity - it is absence, and the
+        # Manifest assertion below reports it. Only an undecidable choice throws.
+        if (-not $Manifest -and $candidates.Count -gt 1) {
+            $names = @($candidates | ForEach-Object {
+                    $_.FullName.Substring($Target.Length).TrimStart('\', '/')
+                })
+            throw ("Cannot determine which module '$Target' is: $($candidates.Count) candidate " +
+                "manifests, none preferred. Candidates: $($names -join '; '). " +
+                'Pass -ModuleName to choose.')
+        }
     }
 
     $script:ModuleName   = if ($Manifest) { $Manifest.BaseName } else { $null }
@@ -90,6 +129,58 @@ BeforeDiscovery {
     if ($ManifestData -and $ManifestData.ContainsKey('FunctionsToExport')) {
         $script:ExportedFunctions = @($ManifestData.FunctionsToExport)
     }
+
+    # One index of what this module defines, built once, used by every assertion
+    # that needs to know. Two separate defects came from not having it:
+    #
+    #   - the scan globbed *.ps1 only, so every module that defines its exports
+    #     in the .psm1 looked undefined - Pester's Invoke-Pester, all 161 of
+    #     SqlServerDsc's exports, ImportExcel's New-Plot.
+    #   - FunctionDefinitionAst.Name carries the scope qualifier, so posh-git's
+    #     'function Global:Write-VcsStatus' never matched the exported name.
+    #
+    # $false on FindAll: top-level definitions only. A function defined inside
+    # another function is not part of the file's surface.
+    $script:DefinedFunctions = @{}
+    if ($SrcRoot -and (Test-Path -LiteralPath $SrcRoot)) {
+        $sourceFiles = @(
+            Get-ChildItem -Path $SrcRoot -File -Recurse -ErrorAction SilentlyContinue |
+                Where-Object { $_.Extension -in '.ps1', '.psm1' }
+        )
+        foreach ($file in $sourceFiles) {
+            $ft = $null
+            $fe = $null
+            $fileAst = [System.Management.Automation.Language.Parser]::ParseFile(
+                $file.FullName, [ref]$ft, [ref]$fe)
+            if ($fe) { continue }
+            foreach ($fn in $fileAst.FindAll({
+                        param($n) $n -is [System.Management.Automation.Language.FunctionDefinitionAst]
+                    }, $false)) {
+                $plain = $fn.Name -replace '^(global|script|local|private):', ''
+                if (-not $DefinedFunctions.ContainsKey($plain)) {
+                    $DefinedFunctions[$plain] = $file.FullName
+                }
+            }
+        }
+    }
+
+    # Exports resolved to the file that defines them, and exports that resolve
+    # nowhere. The help assertion runs over the first; the definition assertion
+    # asserts the second is empty.
+    $script:ExportedWithSource = @()
+    $script:MissingExports = @()
+    foreach ($exported in $ExportedFunctions) {
+        if (-not $exported) { continue }
+        if ($DefinedFunctions.ContainsKey($exported)) {
+            $script:ExportedWithSource += [pscustomobject]@{
+                Name = $exported
+                File = $DefinedFunctions[$exported]
+            }
+        }
+        else {
+            $script:MissingExports += $exported
+        }
+    }
 }
 
 BeforeAll {
@@ -103,19 +194,127 @@ BeforeAll {
 
         # $false: top-level definitions only. A function defined inside another
         # function is not part of the file's surface.
+        # Scope qualifiers stripped: FunctionDefinitionAst.Name for
+        # 'function Global:Write-VcsStatus' is 'Global:Write-VcsStatus'.
         @($ast.FindAll({ param($n) $n -is [System.Management.Automation.Language.FunctionDefinitionAst] }, $false) |
-            ForEach-Object { $_.Name })
+            ForEach-Object { $_.Name -replace '^(global|script|local|private):', '' })
     }
 
-    function Get-HelpComment {
-        param([Parameter(Mandatory)][string] $Path)
+    function Test-FunctionSynopsis {
+        # Comment-based help for ONE named function, wherever that function
+        # lives. Was a file-level check over Public/*.ps1, which is a house
+        # style directory: six of eight corpus modules have no such directory,
+        # so the assertion produced zero cases and said nothing at all.
+        #
+        # Both legal placements count. The reference writes help inside the
+        # function body; posh-git writes it in a block immediately above the
+        # definition. Either is comment-based help; neither is a file-level
+        # property, which matters for a generated .psm1 holding hundreds of
+        # functions where only some are documented.
+        param(
+            [Parameter(Mandatory)][string] $Path,
+            [Parameter(Mandatory)][string] $Name
+        )
 
         $tokens = $null
         $errors = $null
-        $null = [System.Management.Automation.Language.Parser]::ParseFile($Path, [ref]$tokens, [ref]$errors)
-        @($tokens | Where-Object {
-            $_.Kind -eq 'Comment' -and $_.Text -match '(?im)^\s*<#[\s\S]*\.SYNOPSIS'
-        })
+        $ast = [System.Management.Automation.Language.Parser]::ParseFile($Path, [ref]$tokens, [ref]$errors)
+        if ($errors) { return $false }
+
+        $fn = @($ast.FindAll({
+                    param($n) $n -is [System.Management.Automation.Language.FunctionDefinitionAst]
+                }, $true) | Where-Object {
+                ($_.Name -replace '^(global|script|local|private):', '') -eq $Name
+            }) | Select-Object -First 1
+        if (-not $fn) { return $false }
+
+        $comments = @($tokens | Where-Object {
+                $_.Kind -eq 'Comment' -and $_.Text -match '(?im)\.SYNOPSIS'
+            })
+        if ($comments.Count -eq 0) { return $false }
+
+        $start = $fn.Extent.StartOffset
+        $end = $fn.Extent.EndOffset
+        $text = Get-Content -LiteralPath $Path -Raw
+
+        foreach ($comment in $comments) {
+            if ($comment.Extent.StartOffset -ge $start -and $comment.Extent.EndOffset -le $end) {
+                return $true
+            }
+            if ($comment.Extent.EndOffset -le $start) {
+                $between = $text.Substring($comment.Extent.EndOffset, $start - $comment.Extent.EndOffset)
+                if ($between -match '^\s*$') { return $true }
+            }
+        }
+        $false
+    }
+
+    function Get-BuildTaskCommand {
+        # The CommandAst for one InvokeBuild task.
+        #
+        # InvokeBuild spells a task 'task <Name> [<deps>,] { ... }', so the name
+        # is the second command element whether or not dependencies follow.
+        # Structure, not text: every assertion in this Describe used to match a
+        # regex against the whole file, and all five that remained were satisfied
+        # by a block comment quoting the line they looked for, with the real code
+        # deleted. A comment is not a task.
+        param(
+            [Parameter(Mandatory)][string] $Path,
+            [Parameter(Mandatory)][string] $TaskName
+        )
+
+        $tokens = $null
+        $errors = $null
+        $ast = [System.Management.Automation.Language.Parser]::ParseFile($Path, [ref]$tokens, [ref]$errors)
+        if ($errors) { return $null }
+
+        @($ast.FindAll({
+                    param($n)
+                    $n -is [System.Management.Automation.Language.CommandAst] -and
+                    $n.GetCommandName() -eq 'task' -and
+                    @($n.CommandElements).Count -gt 1 -and
+                    $n.CommandElements[1].Extent.Text -eq $TaskName
+                }, $true))
+    }
+
+    function Get-BuildTaskBody {
+        # The scriptblock of one InvokeBuild task, as an AST. The body has to be
+        # found by search rather than by indexing CommandElements: with
+        # dependencies present it sits inside an array literal, not at the top
+        # level. FindAll is pre-order, so the task's own body comes before
+        # anything nested inside it.
+        param(
+            [Parameter(Mandatory)][string] $Path,
+            [Parameter(Mandatory)][string] $TaskName
+        )
+
+        $task = @(Get-BuildTaskCommand -Path $Path -TaskName $TaskName)
+        if ($task.Count -ne 1) { return $null }
+
+        @($task[0].FindAll({
+                    param($n) $n -is [System.Management.Automation.Language.ScriptBlockExpressionAst]
+                }, $true)) | Select-Object -First 1
+    }
+
+    function Get-ConfigAssignment {
+        # Assignments of the form $<config>.<Section>.<Member> = ... within a
+        # scriptblock. Structure rather than text, so that a comment mentioning
+        # a setting is not mistaken for the setting.
+        param(
+            [Parameter(Mandatory)] $Body,
+            [Parameter(Mandatory)][string] $Section,
+            [Parameter(Mandatory)][string] $Member
+        )
+
+        @($Body.FindAll({
+                    param($n) $n -is [System.Management.Automation.Language.AssignmentStatementAst]
+                }, $true) | Where-Object {
+                $left = $_.Left
+                $left -is [System.Management.Automation.Language.MemberExpressionAst] -and
+                $left.Member.Extent.Text -eq $Member -and
+                $left.Expression -is [System.Management.Automation.Language.MemberExpressionAst] -and
+                $left.Expression.Member.Extent.Text -eq $Section
+            })
     }
 }
 
@@ -143,8 +342,13 @@ Describe 'Manifest' -Tag 'Universal' {
 
     It 'exports functions by explicit name, never by wildcard' {
         # A wildcard export defeats command discovery and leaks private helpers.
+        #
+        # There used to be a second assertion here requiring at least one
+        # exported function. It was not a universal truth and it is gone: Az is
+        # a rollup with no code at all, Az.Accounts exports cmdlets implemented
+        # in C#, and both legitimately export zero functions. Two claims in one
+        # It, one of them false.
         $ExportedFunctions | Should -Not -Contain '*'
-        $ExportedFunctions.Count | Should -BeGreaterThan 0
     }
 
     It 'exports no cmdlets, variables, or aliases implicitly' -ForEach @(
@@ -156,32 +360,27 @@ Describe 'Manifest' -Tag 'Universal' {
         @($ManifestData[$Key]) | Should -Not -Contain '*'
     }
 
-    It 'declares the PowerShell editions it claims to support' {
-        $ManifestData.CompatiblePSEditions | Should -Not -BeNullOrEmpty
-    }
 }
 
 Describe 'Public surface' -Tag 'Universal' {
 
     It 'defines every function the manifest exports somewhere in source' {
-        $defined = @(
-            Get-ChildItem -Path $SrcRoot -Filter *.ps1 -File -Recurse |
-                ForEach-Object { Get-DefinedFunctionName -Path $_.FullName }
-        )
-        $missing = @($ExportedFunctions | Where-Object { $_ -notin $defined })
-        $missing | Should -BeNullOrEmpty -Because 'an exported function that does not exist fails at import, not at call'
+        # $MissingExports is resolved once at discovery against the definition
+        # index, which scans .psm1 as well as .ps1 and strips scope qualifiers.
+        # Doing it here with Get-ChildItem also meant an absent $SrcRoot threw
+        # rather than failing.
+        $MissingExports | Should -BeNullOrEmpty -Because 'an exported function that does not exist fails at import, not at call'
     }
 
-    # <_.Name>, not <_>: expanding a FileInfo stamps its absolute FullName into
-    # the test name, so the name recorded in result.json changed with the
-    # target's location and scores could not be diffed between runs.
-    It 'gives <_.Name> comment-based help with a synopsis' -ForEach $PublicFiles {
-        # $_ is the FileInfo for one public function file.
-        # @() around the call: a function returning a one-element array has it
-        # unrolled to a scalar by the pipeline, and .Count on a scalar throws
-        # under Set-StrictMode -Version Latest.
-        @(Get-HelpComment -Path $_.FullName).Count |
-            Should -BeGreaterThan 0 -Because 'Get-Help on an exported command should return something'
+    # Driven by the exported surface, not by Public/*.ps1. The directory is a
+    # house style convention; the export list is what the module promises.
+    #
+    # <_.Name>, not <_>: expanding an object stamps its ToString into the test
+    # name, so the name recorded in result.json changed with the target's
+    # location and scores could not be diffed between runs.
+    It 'gives <_.Name> comment-based help with a synopsis' -ForEach $ExportedWithSource {
+        Test-FunctionSynopsis -Path $_.File -Name $_.Name |
+            Should -BeTrue -Because 'Get-Help on an exported command should return something'
     }
 }
 
@@ -254,6 +453,20 @@ Describe 'House style: source layout' -Tag 'HouseStyle' {
             Should -BeNullOrEmpty -Because 'the manifest and Public/ must name the same commands'
     }
 
+    It 'declares the PowerShell editions it claims to support' {
+        # HouseStyle, not Universal. CompatiblePSEditions is optional in the
+        # manifest schema and six of the eight corpus modules omit it, including
+        # posh-git - the corpus control - and Pester. Asserting it as a fact
+        # about PowerShell modules was a preference wearing a fact's clothes.
+        #
+        # ContainsKey first: reading an absent key throws PropertyNotFound under
+        # Set-StrictMode -Version Latest, so the assertion errored instead of
+        # failing.
+        $ManifestData.ContainsKey('CompatiblePSEditions') |
+            Should -BeTrue -Because 'the house style declares the editions it supports'
+        $ManifestData.CompatiblePSEditions | Should -Not -BeNullOrEmpty
+    }
+
     It 'pins build dependencies only in Requirements.psd1' {
         $req = Join-Path $Target 'Requirements.psd1'
         Test-Path -LiteralPath $req | Should -BeTrue
@@ -282,30 +495,83 @@ Describe 'House style: build file' -Tag 'HouseStyle' {
     }
 
     It 'declares the task <_>' -ForEach @('Clean', 'Lint', 'Build', 'Test', 'PreTag') {
-        $BuildText | Should -Match "(?m)^\s*task\s+$_\b"
+        # Was a regex. Renaming the real task and leaving a block comment that
+        # quoted its declaration kept the assertion green.
+        @(Get-BuildTaskCommand -Path $BuildFile -TaskName $_).Count |
+            Should -BeGreaterThan 0 -Because 'a commented-out task is not a task'
     }
 
     It 'makes the default task Clean, Lint, Build, Test' {
-        $BuildText | Should -Match '(?m)^\s*task\s+\.\s+Clean,\s*Lint,\s*Build,\s*Test'
+        # The default task is 'task . <deps>'. Its dependency list parses as an
+        # array literal, so the names can be compared as names rather than
+        # matched as a line of text that a comment can also supply.
+        $default = @(Get-BuildTaskCommand -Path $BuildFile -TaskName '.')
+        $default.Count | Should -Be 1 -Because 'exactly one default task'
+
+        $elements = @($default[0].CommandElements)
+        $elements.Count | Should -BeGreaterThan 2 -Because 'the default task must name its dependencies'
+
+        $deps = @(
+            if ($elements[2] -is [System.Management.Automation.Language.ArrayLiteralAst]) {
+                $elements[2].Elements | ForEach-Object { $_.Extent.Text }
+            }
+            else {
+                $elements[2..($elements.Count - 1)] | ForEach-Object { $_.Extent.Text }
+            }
+        )
+        ($deps -join ',') | Should -Be 'Clean,Lint,Build,Test'
     }
 
     It 'excludes PreTag-tagged tests from the Test task' {
         # A half-finished iteration must still be able to build green.
-        $BuildText | Should -Match "Filter\.ExcludeTag\s*=\s*'PreTag'"
+        # Scoped to the Test task's body, and to an actual assignment: the regex
+        # form was satisfied by a comment quoting the line.
+        $body = Get-BuildTaskBody -Path $BuildFile -TaskName 'Test'
+        $body | Should -Not -BeNullOrEmpty -Because 'the Test task configures the run'
+
+        @(Get-ConfigAssignment -Body $body -Section 'Filter' -Member 'ExcludeTag' |
+                Where-Object { $_.Right.Extent.Text -match 'PreTag' }).Count |
+            Should -BeGreaterThan 0 -Because 'PreTag tests must not run in the default build'
     }
 
     It 'throws rather than exits when tests fail' {
         # Run.Exit makes Pester call exit, which can kill the host process.
-        $BuildText | Should -Match 'Run\.Throw\s*=\s*\$true'
-        $BuildText | Should -Not -Match 'Run\.Exit\s*=\s*\$true'
+        #
+        # This was two regexes over the whole file, and its negative control
+        # failed: a COMMENT reading "never set Run.Exit = $true here" turned it
+        # red without a line of code changing. A build file whose author
+        # documented the hazard failed the assertion that checks for the hazard.
+        # The coverage assertion had the mirror-image defect - a comment
+        # satisfying it. One cause, both directions, so this gets the same
+        # treatment: ask the syntax, not the text.
+        $body = Get-BuildTaskBody -Path $BuildFile -TaskName 'Test'
+        $body | Should -Not -BeNullOrEmpty -Because 'the Test task is where Pester is configured'
+
+        $throwAssign = @(Get-ConfigAssignment -Body $body -Section 'Run' -Member 'Throw')
+        @($throwAssign | Where-Object { $_.Right.Extent.Text -eq '$true' }).Count |
+            Should -BeGreaterThan 0 -Because 'Run.Throw must be set, not merely mentioned'
+
+        @(Get-ConfigAssignment -Body $body -Section 'Run' -Member 'Exit').Count |
+            Should -Be 0 -Because 'Run.Exit makes Pester kill the host process'
     }
 
     It 'disables Pester v5 assertion syntax' {
-        $BuildText | Should -Match 'Should\.DisableV5\s*=\s*\$true'
+        $body = Get-BuildTaskBody -Path $BuildFile -TaskName 'Test'
+        $body | Should -Not -BeNullOrEmpty -Because 'the Test task configures the run'
+
+        @(Get-ConfigAssignment -Body $body -Section 'Should' -Member 'DisableV5' |
+                Where-Object { $_.Right.Extent.Text -eq '$true' }).Count |
+            Should -BeGreaterThan 0 -Because 'v5 assertion syntax must be off, not merely mentioned'
     }
 
     It 'measures coverage against the built psm1, not the source tree' {
-        $BuildText | Should -Match 'CodeCoverage\.Path\s*=.*psm1'
+        # Coverage measured against src/ counts lines the build never assembled.
+        $body = Get-BuildTaskBody -Path $BuildFile -TaskName 'Test'
+        $body | Should -Not -BeNullOrEmpty -Because 'the Test task configures coverage'
+
+        @(Get-ConfigAssignment -Body $body -Section 'CodeCoverage' -Member 'Path' |
+                Where-Object { $_.Right.Extent.Text -match 'psm1' }).Count |
+            Should -BeGreaterThan 0 -Because 'coverage must read the built module'
     }
 
     It 'throws on coverage below target rather than only reporting it' {
@@ -325,30 +591,10 @@ Describe 'House style: build file' -Tag 'HouseStyle' {
         # this gate.
         Test-Path -LiteralPath $BuildFile | Should -BeTrue
 
-        $tokens = $null
-        $errors = $null
-        $buildAst = [System.Management.Automation.Language.Parser]::ParseFile(
-            $BuildFile, [ref]$tokens, [ref]$errors)
-        @($errors).Count | Should -Be 0 -Because 'a build file that does not parse cannot be checked'
-
-        # InvokeBuild spells a task 'task <Name> [<deps>,] { ... }', so the name
-        # is the second command element whether or not dependencies follow.
-        $testTask = @($buildAst.FindAll({
-                    param($n)
-                    $n -is [System.Management.Automation.Language.CommandAst] -and
-                    $n.GetCommandName() -eq 'task' -and
-                    @($n.CommandElements).Count -gt 1 -and
-                    $n.CommandElements[1].Extent.Text -eq 'Test'
-                }, $true))
-        $testTask.Count | Should -Be 1 -Because 'the coverage gate lives in the Test task'
-
-        # FindAll is pre-order, so the task's own body comes before anything
-        # nested in it. Not CommandElements: with dependencies present the body
-        # is inside an array literal, not a top-level element.
-        $body = @($testTask[0].FindAll({
-                    param($n) $n -is [System.Management.Automation.Language.ScriptBlockExpressionAst]
-                }, $true)) | Select-Object -First 1
-        $body | Should -Not -BeNullOrEmpty -Because 'the Test task must have a body to gate anything'
+        # Same helper as the Run.Exit assertion above. Both need the Test task's
+        # body and nothing outside it.
+        $body = Get-BuildTaskBody -Path $BuildFile -TaskName 'Test'
+        $body | Should -Not -BeNullOrEmpty -Because 'the coverage gate lives in the Test task'
 
         # The gate is an if whose CONDITION reads the coverage percentage -
         # a $percent-ish variable, or the .CoveragePercent member off the Pester
