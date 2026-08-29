@@ -1,5 +1,10 @@
 scratch/
+# Stray runner output at the repository root. A run's own copy under runs/ is
+# part of that run's record and is committed - verify.ps1 reads it from a fresh
+# clone, so the blanket ignore silently broke verification until the negation
+# below was added.
 conformance-result.json
+!runs/*/conformance-result.json
 AzDoPAT.txt
 *.pat
 **/pat.txt
