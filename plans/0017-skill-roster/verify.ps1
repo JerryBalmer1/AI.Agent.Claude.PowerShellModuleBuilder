@@ -91,6 +91,37 @@ function Skip-Loudly {
 
 function Write-Note { param([string] $Text) Write-Host "        $Text" -ForegroundColor DarkGray }
 
+# The roster test, as ONE function, so the FailCheck probes re-run exactly what
+# check 1 ran rather than restating it. A probe that asserts "I deleted the
+# file, and the file is gone" proves the probe works and says nothing about the
+# check.
+function Measure-RosterDisagreement {
+    [OutputType([string[]])]
+    param([Parameter(Mandatory)][string] $CloneRoot)
+
+    $problems = @()
+    foreach ($skill in $RosterSkills) {
+        if (-not (Test-Path -LiteralPath (Join-Path $CloneRoot "skills/$skill/SKILL.md"))) {
+            $problems += "missing: skills/$skill/SKILL.md"
+        }
+    }
+    foreach ($retired in $RetiredSkills) {
+        if (Test-Path -LiteralPath (Join-Path $CloneRoot "skills/$retired")) {
+            $problems += "resurrected: skills/$retired"
+        }
+    }
+    $dirs = @(Get-ChildItem -Path (Join-Path $CloneRoot 'skills') -Directory -ErrorAction SilentlyContinue |
+            ForEach-Object { $_.Name } | Sort-Object)
+    foreach ($diff in @(Compare-Object $dirs ($RosterSkills | Sort-Object) -ErrorAction SilentlyContinue)) {
+        $problems += "unexpected in skills/: $($diff.InputObject)"
+    }
+    # NOT `, $problems`. The unary comma wraps the array, so an empty result
+    # arrives at the call site as ONE element that is an empty array - and the
+    # check reports a disagreement it cannot name. Every call site wraps this in
+    # @(), which handles the empty and single-element cases correctly.
+    return $problems
+}
+
 # --- HEAD drift, per decision 0004 -----------------------------------------
 
 $currentSha = $null
@@ -149,10 +180,13 @@ try {
         (Test-Path -LiteralPath (Join-Path $harnessClone 'decisions/0007-skill-taxonomy-and-naming.md'))
 
     # Every skill directory in the clone is one of the thirteen: a stray
-    # left-over directory is as much a failure as a missing one.
+    # left-over directory is as much a failure as a missing one. This is the
+    # same function the FailCheck probes re-run.
     $found = @(Get-ChildItem -Path (Join-Path $harnessClone 'skills') -Directory | ForEach-Object { $_.Name } | Sort-Object)
-    Confirm-That "skills/ holds exactly the thirteen named ($($found.Count) found)" `
-        (@(Compare-Object $found ($RosterSkills | Sort-Object)).Count -eq 0)
+    $rosterProblems = @(Measure-RosterDisagreement -CloneRoot $harnessClone)
+    Confirm-That "the roster agrees exactly ($($found.Count) directories, $($rosterProblems.Count) disagreement(s))" `
+        ($rosterProblems.Count -eq 0)
+    foreach ($problem in $rosterProblems) { Write-Note $problem }
 
     # No skill still refers to a retired name.
     $stale = @(Select-String -Path (Join-Path $harnessClone 'skills/*/SKILL.md') `
@@ -429,21 +463,42 @@ try {
         Write-Host ''
         Write-Host 'FailCheck probes - each must make its check go red'
 
-        # Probe A: a missing roster skill must be caught by check 1.
+        # Known-good is re-asserted before every probe, so a probe that reports
+        # red against an already-red baseline cannot be mistaken for a working
+        # probe.
+        Confirm-That 'probe baseline: the roster agrees before any break' `
+            (@(Measure-RosterDisagreement -CloneRoot $harnessClone).Count -eq 0)
+
+        # Probe A: remove a roster skill, then RE-RUN check 1's own function.
         $probeSkill = Join-Path $harnessClone 'skills/powershell-module-test'
         $probeBefore = Test-Path -LiteralPath $probeSkill
         Remove-Item -LiteralPath $probeSkill -Recurse -Force
-        Confirm-That 'probe A actually removed a roster skill' `
+        Confirm-That 'probe A: the break actually landed' `
             ($probeBefore -and -not (Test-Path -LiteralPath $probeSkill))
-        Confirm-That 'probe A: check 1 would go red on a missing skill' `
-            (-not (Test-Path -LiteralPath (Join-Path $probeSkill 'SKILL.md')))
+        $afterA = @(Measure-RosterDisagreement -CloneRoot $harnessClone)
+        Confirm-That "probe A: check 1 goes red on a missing skill ($($afterA.Count) disagreement(s))" `
+            ($afterA.Count -gt 0 -and ($afterA -join ';') -match 'missing: skills/powershell-module-test')
+        foreach ($problem in $afterA) { Write-Note $problem }
 
-        # Probe B: a retired skill reappearing must be caught by check 1.
+        # Restore, and verify the restoration, before the next probe.
+        & git -C $harnessClone checkout -- . 2>&1 | Out-Null
+        Confirm-That 'probe A: restored, and the roster agrees again' `
+            (@(Measure-RosterDisagreement -CloneRoot $harnessClone).Count -eq 0)
+
+        # Probe B: resurrect a retired name, then re-run the same function. This
+        # is the scope control for probe A: a check that only counted missing
+        # skills would stay green here.
         $probeRetired = Join-Path $harnessClone 'skills/build-script'
         $null = New-Item -ItemType Directory -Path $probeRetired -Force
-        Confirm-That 'probe B actually recreated a retired skill' (Test-Path -LiteralPath $probeRetired)
-        Confirm-That 'probe B: check 1 would go red on a resurrected old name' `
-            (Test-Path -LiteralPath $probeRetired)
+        Confirm-That 'probe B: the break actually landed' (Test-Path -LiteralPath $probeRetired)
+        $afterB = @(Measure-RosterDisagreement -CloneRoot $harnessClone)
+        Confirm-That "probe B: check 1 goes red on a resurrected old name ($($afterB.Count) disagreement(s))" `
+            ($afterB.Count -gt 0 -and ($afterB -join ';') -match 'resurrected: skills/build-script')
+        foreach ($problem in $afterB) { Write-Note $problem }
+
+        Remove-Item -LiteralPath $probeRetired -Recurse -Force
+        Confirm-That 'probe B: restored, and the roster agrees again' `
+            (@(Measure-RosterDisagreement -CloneRoot $harnessClone).Count -eq 0)
 
         # Probe C: the tag check must reject a tag that peels elsewhere. The
         # string is synthetic on purpose - the point is the comparison, and

@@ -708,6 +708,23 @@ assumes `scratch/` exists. `-FailCheck` runs four probes.
 It is SHA-pinned per decision 0004 and prints a drift notice when HEAD has
 moved.
 
+```
+$ pwsh -NoProfile -File plans/0017-skill-roster/verify.ps1
+checks: 66   failures: 0   skipped: 0
+VERIFY OK
+
+$ pwsh -NoProfile -File plans/0017-skill-roster/verify.ps1 -FailCheck
+checks: 75   failures: 0   skipped: 0
+VERIFY OK
+```
+
+The four probes re-run the checks rather than restating the sabotage. Probe A
+removes a roster skill and re-runs check 1's own `Measure-RosterDisagreement`,
+asserting it goes red **and names that skill**; probe B resurrects a retired
+name, which is the scope control — a check that only counted missing skills
+would stay green there. Both re-assert known-good before the break and verify
+the restoration after it.
+
 **One deliberate difference from the acceptance test.** Spot-check 5 asserts the
 tag peels to `79e02fb…` — the **commit**. The acceptance test's regex is an
 alternation, so its `v0.1.0^{}` branch is satisfied by any annotated tag of that
@@ -880,6 +897,18 @@ one pass to write the list down.
 
 **D-9. The `Lint`-versus-`files-parse` contrast is weaker than I expected, and I
 have said so above rather than presenting the stronger version.** See task 7.
+
+**D-11. A defect I introduced and caught, recorded because it is this project's
+own failure mode.** The first version of `verify.ps1`'s roster evaluator ended
+`, $problems`. The unary comma wraps the array, so an **empty** result reached
+the call site as one element that was an empty array — and the check reported
+`1 disagreement(s)` with a blank line where the disagreement's name should have
+been. It failed toward the alarming answer, which is the direction that gets
+noticed, and it was found immediately. Had the polarity been reversed it would
+have been a check that could not go red. Fixed to `return $problems`, with the
+reason in a comment at the site. The strengthened probes are what exposed it:
+the first probe run reported six failures including a *baseline* failure, and a
+baseline that fails before any break is a broken probe, not a broken repository.
 
 **D-10. Nothing else in the prompt was wrong.** The preconditions were accurate,
 the target SHAs were correct, the tag message was well-formed, and the two

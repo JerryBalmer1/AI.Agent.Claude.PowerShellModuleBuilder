@@ -121,6 +121,8 @@ it is green is illegible everywhere the record actually lives.
 | Ordered run, one parse error | stopped at `files-parse`; 1 file named, 2 diagnostics, 0 downstream lines; exit 1 | `ordered-run-demo.txt` |
 | `evals/` diff for this pass | exactly 2 files, +99 −1 | plan §5 task 6 |
 | Credential scan across every artifact | 0 matches, including a direct search for the live `$env:AZDO_PAT` value | plan §5 task 9 |
+| `verify.ps1` | 66 checks, 0 failures, 0 skipped | plan §8 |
+| `verify.ps1 -FailCheck` | 75 checks, 0 failures, 0 skipped; every probe re-runs its check and restores | plan §8 |
 
 Cases-run is stated on both sides of every conformance comparison. The F-8
 repair changes the denominator — 30 to 51 — so the two percentages are not two
@@ -174,6 +176,18 @@ wanted, and deliberately left out.
 — the root `README.md`'s "`-ModuleName` is not optional when the repository root
 is a run directory", and the same guidance in `commands/test.md`. The prompt
 scoped me out of both. Flagged rather than silently fixed or silently ignored.
+
+**A check can report a disagreement it cannot name, and that is the tell.** The
+first roster evaluator in `verify.ps1` ended `, $problems`. The unary comma
+wraps the array, so an empty result arrived as one element that was an empty
+array: the check reported `1 disagreement(s)` and then printed a blank line
+where the name should have been. It was caught by strengthening the `-FailCheck`
+probes to re-run the check rather than restate the sabotage — the first run of
+those probes reported a failing **baseline**, and a baseline that fails before
+any break is a broken probe, not a broken repository. This failed toward the
+alarming answer. The same bug with reversed polarity would have been a check
+that could not go red, which is the defect this repository exists to find and
+would not have announced itself.
 
 **The standing rules are numbered inconsistently in committed artifacts.**
 "Rule 9" means *mechanism selection* in `runs/002-first-build/findings.md` and in
