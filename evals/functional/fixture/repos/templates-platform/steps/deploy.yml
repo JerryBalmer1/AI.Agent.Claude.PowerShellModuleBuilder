@@ -1,0 +1,3 @@
+# Consumed cross-repo by p04, and locally by x04.
+steps:
+  - script: echo deploy

@@ -1,0 +1,16 @@
+# x02-platform-release. Triggered by the completion of x01-consumer-build, and
+# built from a job template in templates-platform.
+trigger: none
+resources:
+  repositories:
+    - repository: platformTemplates
+      type: git
+      name: ClaudeTesting/templates-platform
+  pipelines:
+    - pipeline: appBuild
+      source: x01-consumer-build
+      trigger: true
+pool:
+  vmImage: ubuntu-latest
+jobs:
+  - template: jobs/release.yml@platformTemplates

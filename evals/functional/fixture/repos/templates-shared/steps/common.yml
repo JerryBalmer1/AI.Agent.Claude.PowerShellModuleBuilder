@@ -1,0 +1,6 @@
+# case-04  Consumed cross-repo by p04 and by x03. Its own reference to
+# notify.yml is relative to THIS file, so it stays inside templates-shared even
+# though the including pipeline lives in another repository.
+steps:
+  - script: echo shared common
+  - template: notify.yml

@@ -1,0 +1,3 @@
+# case-04  Reached only through common.yml.
+steps:
+  - script: echo notify

@@ -1,0 +1,127 @@
+{
+  "version": 1,
+  "organisation": "jlbalmerjr1",
+  "project": "ClaudeTesting",
+  "nodes": [
+    { "id": "repo:pipelines-main", "kind": "repo", "name": "pipelines-main" },
+    { "id": "repo:templates-shared", "kind": "repo", "name": "templates-shared" },
+    { "id": "repo:templates-platform", "kind": "repo", "name": "templates-platform" },
+    { "id": "repo:consumer-app", "kind": "repo", "name": "consumer-app" },
+
+    { "id": "pipeline:p01-simple-include", "kind": "pipeline", "name": "p01-simple-include", "repo": "pipelines-main", "cases": ["case-01"] },
+    { "id": "pipeline:p02-nested-chain", "kind": "pipeline", "name": "p02-nested-chain", "repo": "pipelines-main", "cases": ["case-02"] },
+    { "id": "pipeline:p03-extends-params", "kind": "pipeline", "name": "p03-extends-params", "repo": "pipelines-main", "cases": ["case-03"] },
+    { "id": "pipeline:p04-cross-repo-template", "kind": "pipeline", "name": "p04-cross-repo-template", "repo": "pipelines-main", "cases": ["case-04"] },
+    { "id": "pipeline:p05-pipeline-resource", "kind": "pipeline", "name": "p05-pipeline-resource", "repo": "pipelines-main", "cases": ["case-05"] },
+    { "id": "pipeline:p06-variable-template", "kind": "pipeline", "name": "p06-variable-template", "repo": "pipelines-main", "cases": ["case-06"] },
+    { "id": "pipeline:p07-diamond-a", "kind": "pipeline", "name": "p07-diamond-a", "repo": "pipelines-main", "cases": ["case-07"] },
+    { "id": "pipeline:p07-diamond-b", "kind": "pipeline", "name": "p07-diamond-b", "repo": "pipelines-main", "cases": ["case-07"] },
+    { "id": "pipeline:p08-cycle", "kind": "pipeline", "name": "p08-cycle", "repo": "pipelines-main", "cases": ["case-08"], "note": "Would fail if run. Never run." },
+    { "id": "pipeline:p09-unresolved", "kind": "pipeline", "name": "p09-unresolved", "repo": "pipelines-main", "cases": ["case-09"], "note": "Would fail if run. Never run." },
+    { "id": "pipeline:p10-orphan", "kind": "pipeline", "name": "p10-orphan", "repo": "pipelines-main", "cases": ["case-10"], "note": "Isolated: one definition edge and nothing else. Its whole point is to be present." },
+    { "id": "pipeline:x01-consumer-build", "kind": "pipeline", "name": "x01-consumer-build", "repo": "consumer-app", "cases": ["case-10"] },
+    { "id": "pipeline:x02-platform-release", "kind": "pipeline", "name": "x02-platform-release", "repo": "consumer-app", "cases": ["case-05"] },
+    { "id": "pipeline:x03-shared-nightly", "kind": "pipeline", "name": "x03-shared-nightly", "repo": "templates-shared" },
+    { "id": "pipeline:x04-cross-trigger", "kind": "pipeline", "name": "x04-cross-trigger", "repo": "templates-platform", "cases": ["case-05"] },
+
+    { "id": "yaml:pipelines-main/pipelines/p01.yml", "kind": "yaml", "name": "pipelines/p01.yml", "repo": "pipelines-main", "path": "repos/pipelines-main/pipelines/p01.yml" },
+    { "id": "yaml:pipelines-main/pipelines/p02.yml", "kind": "yaml", "name": "pipelines/p02.yml", "repo": "pipelines-main", "path": "repos/pipelines-main/pipelines/p02.yml" },
+    { "id": "yaml:pipelines-main/pipelines/p03.yml", "kind": "yaml", "name": "pipelines/p03.yml", "repo": "pipelines-main", "path": "repos/pipelines-main/pipelines/p03.yml" },
+    { "id": "yaml:pipelines-main/pipelines/p04.yml", "kind": "yaml", "name": "pipelines/p04.yml", "repo": "pipelines-main", "path": "repos/pipelines-main/pipelines/p04.yml" },
+    { "id": "yaml:pipelines-main/pipelines/p05.yml", "kind": "yaml", "name": "pipelines/p05.yml", "repo": "pipelines-main", "path": "repos/pipelines-main/pipelines/p05.yml" },
+    { "id": "yaml:pipelines-main/pipelines/p06.yml", "kind": "yaml", "name": "pipelines/p06.yml", "repo": "pipelines-main", "path": "repos/pipelines-main/pipelines/p06.yml" },
+    { "id": "yaml:pipelines-main/pipelines/p07a.yml", "kind": "yaml", "name": "pipelines/p07a.yml", "repo": "pipelines-main", "path": "repos/pipelines-main/pipelines/p07a.yml" },
+    { "id": "yaml:pipelines-main/pipelines/p07b.yml", "kind": "yaml", "name": "pipelines/p07b.yml", "repo": "pipelines-main", "path": "repos/pipelines-main/pipelines/p07b.yml" },
+    { "id": "yaml:pipelines-main/pipelines/p08.yml", "kind": "yaml", "name": "pipelines/p08.yml", "repo": "pipelines-main", "path": "repos/pipelines-main/pipelines/p08.yml" },
+    { "id": "yaml:pipelines-main/pipelines/p09.yml", "kind": "yaml", "name": "pipelines/p09.yml", "repo": "pipelines-main", "path": "repos/pipelines-main/pipelines/p09.yml" },
+    { "id": "yaml:pipelines-main/pipelines/p10.yml", "kind": "yaml", "name": "pipelines/p10.yml", "repo": "pipelines-main", "path": "repos/pipelines-main/pipelines/p10.yml", "cases": ["case-10"] },
+    { "id": "yaml:pipelines-main/pipelines/templates/steps-build.yml", "kind": "yaml", "name": "pipelines/templates/steps-build.yml", "repo": "pipelines-main", "path": "repos/pipelines-main/pipelines/templates/steps-build.yml", "cases": ["case-01"], "note": "The file-relative target of p01." },
+    { "id": "yaml:pipelines-main/pipelines/templates/chain-a.yml", "kind": "yaml", "name": "pipelines/templates/chain-a.yml", "repo": "pipelines-main", "path": "repos/pipelines-main/pipelines/templates/chain-a.yml", "cases": ["case-02"] },
+    { "id": "yaml:pipelines-main/pipelines/templates/chain-b.yml", "kind": "yaml", "name": "pipelines/templates/chain-b.yml", "repo": "pipelines-main", "path": "repos/pipelines-main/pipelines/templates/chain-b.yml", "cases": ["case-02"] },
+    { "id": "yaml:pipelines-main/pipelines/templates/chain-c.yml", "kind": "yaml", "name": "pipelines/templates/chain-c.yml", "repo": "pipelines-main", "path": "repos/pipelines-main/pipelines/templates/chain-c.yml", "cases": ["case-02"] },
+    { "id": "yaml:pipelines-main/pipelines/templates/vars-common.yml", "kind": "yaml", "name": "pipelines/templates/vars-common.yml", "repo": "pipelines-main", "path": "repos/pipelines-main/pipelines/templates/vars-common.yml", "cases": ["case-06"] },
+    { "id": "yaml:pipelines-main/pipelines/templates/diamond-shared.yml", "kind": "yaml", "name": "pipelines/templates/diamond-shared.yml", "repo": "pipelines-main", "path": "repos/pipelines-main/pipelines/templates/diamond-shared.yml", "cases": ["case-07"], "note": "In-degree 2. One node, not one per path." },
+    { "id": "yaml:pipelines-main/pipelines/templates/diamond-leaf.yml", "kind": "yaml", "name": "pipelines/templates/diamond-leaf.yml", "repo": "pipelines-main", "path": "repos/pipelines-main/pipelines/templates/diamond-leaf.yml", "cases": ["case-07"] },
+    { "id": "yaml:pipelines-main/pipelines/templates/cycle-a.yml", "kind": "yaml", "name": "pipelines/templates/cycle-a.yml", "repo": "pipelines-main", "path": "repos/pipelines-main/pipelines/templates/cycle-a.yml", "cases": ["case-08"] },
+    { "id": "yaml:pipelines-main/pipelines/templates/cycle-b.yml", "kind": "yaml", "name": "pipelines/templates/cycle-b.yml", "repo": "pipelines-main", "path": "repos/pipelines-main/pipelines/templates/cycle-b.yml", "cases": ["case-08"] },
+    { "id": "yaml:pipelines-main/templates/steps-build.yml", "kind": "yaml", "name": "templates/steps-build.yml", "repo": "pipelines-main", "path": "repos/pipelines-main/templates/steps-build.yml", "cases": ["case-01"], "note": "The root-relative decoy for p01, and the correct target of a cross-repo reference." },
+
+    { "id": "yaml:templates-shared/steps/common.yml", "kind": "yaml", "name": "steps/common.yml", "repo": "templates-shared", "path": "repos/templates-shared/steps/common.yml", "cases": ["case-04"] },
+    { "id": "yaml:templates-shared/steps/notify.yml", "kind": "yaml", "name": "steps/notify.yml", "repo": "templates-shared", "path": "repos/templates-shared/steps/notify.yml", "cases": ["case-04"] },
+    { "id": "yaml:templates-shared/pipelines/nightly.yml", "kind": "yaml", "name": "pipelines/nightly.yml", "repo": "templates-shared", "path": "repos/templates-shared/pipelines/nightly.yml" },
+
+    { "id": "yaml:templates-platform/steps/deploy.yml", "kind": "yaml", "name": "steps/deploy.yml", "repo": "templates-platform", "path": "repos/templates-platform/steps/deploy.yml" },
+    { "id": "yaml:templates-platform/jobs/release.yml", "kind": "yaml", "name": "jobs/release.yml", "repo": "templates-platform", "path": "repos/templates-platform/jobs/release.yml", "cases": ["case-03"] },
+    { "id": "yaml:templates-platform/pipelines/trigger.yml", "kind": "yaml", "name": "pipelines/trigger.yml", "repo": "templates-platform", "path": "repos/templates-platform/pipelines/trigger.yml" },
+
+    { "id": "yaml:consumer-app/azure-pipelines.yml", "kind": "yaml", "name": "azure-pipelines.yml", "repo": "consumer-app", "path": "repos/consumer-app/azure-pipelines.yml", "cases": ["case-10"] },
+    { "id": "yaml:consumer-app/pipelines/release.yml", "kind": "yaml", "name": "pipelines/release.yml", "repo": "consumer-app", "path": "repos/consumer-app/pipelines/release.yml" },
+    { "id": "yaml:consumer-app/templates/app-steps.yml", "kind": "yaml", "name": "templates/app-steps.yml", "repo": "consumer-app", "path": "repos/consumer-app/templates/app-steps.yml", "cases": ["case-01"] }
+  ],
+  "edges": [
+    { "from": "pipeline:p01-simple-include", "to": "yaml:pipelines-main/pipelines/p01.yml", "kind": "definition" },
+    { "from": "pipeline:p02-nested-chain", "to": "yaml:pipelines-main/pipelines/p02.yml", "kind": "definition" },
+    { "from": "pipeline:p03-extends-params", "to": "yaml:pipelines-main/pipelines/p03.yml", "kind": "definition" },
+    { "from": "pipeline:p04-cross-repo-template", "to": "yaml:pipelines-main/pipelines/p04.yml", "kind": "definition" },
+    { "from": "pipeline:p05-pipeline-resource", "to": "yaml:pipelines-main/pipelines/p05.yml", "kind": "definition" },
+    { "from": "pipeline:p06-variable-template", "to": "yaml:pipelines-main/pipelines/p06.yml", "kind": "definition" },
+    { "from": "pipeline:p07-diamond-a", "to": "yaml:pipelines-main/pipelines/p07a.yml", "kind": "definition" },
+    { "from": "pipeline:p07-diamond-b", "to": "yaml:pipelines-main/pipelines/p07b.yml", "kind": "definition" },
+    { "from": "pipeline:p08-cycle", "to": "yaml:pipelines-main/pipelines/p08.yml", "kind": "definition" },
+    { "from": "pipeline:p09-unresolved", "to": "yaml:pipelines-main/pipelines/p09.yml", "kind": "definition" },
+    { "from": "pipeline:p10-orphan", "to": "yaml:pipelines-main/pipelines/p10.yml", "kind": "definition", "cases": ["case-10"] },
+    { "from": "pipeline:x01-consumer-build", "to": "yaml:consumer-app/azure-pipelines.yml", "kind": "definition" },
+    { "from": "pipeline:x02-platform-release", "to": "yaml:consumer-app/pipelines/release.yml", "kind": "definition" },
+    { "from": "pipeline:x03-shared-nightly", "to": "yaml:templates-shared/pipelines/nightly.yml", "kind": "definition" },
+    { "from": "pipeline:x04-cross-trigger", "to": "yaml:templates-platform/pipelines/trigger.yml", "kind": "definition" },
+
+    { "from": "yaml:pipelines-main/pipelines/p01.yml", "to": "yaml:pipelines-main/pipelines/templates/steps-build.yml", "kind": "template", "ref": "templates/steps-build.yml", "cases": ["case-01"], "note": "Relative to pipelines/p01.yml. Not the repo-root file of the same trailing path." },
+
+    { "from": "yaml:pipelines-main/pipelines/p02.yml", "to": "yaml:pipelines-main/pipelines/templates/chain-a.yml", "kind": "template", "ref": "templates/chain-a.yml", "cases": ["case-02"] },
+    { "from": "yaml:pipelines-main/pipelines/templates/chain-a.yml", "to": "yaml:pipelines-main/pipelines/templates/chain-b.yml", "kind": "template", "ref": "chain-b.yml", "cases": ["case-02"] },
+    { "from": "yaml:pipelines-main/pipelines/templates/chain-b.yml", "to": "yaml:pipelines-main/pipelines/templates/chain-c.yml", "kind": "template", "ref": "chain-c.yml", "cases": ["case-02"] },
+
+    { "from": "yaml:pipelines-main/pipelines/p03.yml", "to": "repo:templates-platform", "kind": "repositoryResource", "ref": "ClaudeTesting/templates-platform", "alias": "platformTemplates", "cases": ["case-03"] },
+    { "from": "yaml:pipelines-main/pipelines/p03.yml", "to": "yaml:templates-platform/jobs/release.yml", "kind": "extends", "ref": "jobs/release.yml@platformTemplates", "cases": ["case-03"], "note": "An extends edge, not a template edge. The buildTemplate parameter beside it is not an edge at all." },
+
+    { "from": "yaml:pipelines-main/pipelines/p04.yml", "to": "repo:templates-shared", "kind": "repositoryResource", "ref": "ClaudeTesting/templates-shared", "alias": "sharedTemplates", "cases": ["case-04"] },
+    { "from": "yaml:pipelines-main/pipelines/p04.yml", "to": "repo:templates-platform", "kind": "repositoryResource", "ref": "ClaudeTesting/templates-platform", "alias": "platformTemplates", "cases": ["case-04"] },
+    { "from": "yaml:pipelines-main/pipelines/p04.yml", "to": "yaml:templates-shared/steps/common.yml", "kind": "template", "ref": "steps/common.yml@sharedTemplates", "cases": ["case-04"], "note": "Resolved from the ROOT of templates-shared, through the alias declared in this file." },
+    { "from": "yaml:pipelines-main/pipelines/p04.yml", "to": "yaml:templates-platform/steps/deploy.yml", "kind": "template", "ref": "steps/deploy.yml@platformTemplates", "cases": ["case-04"], "note": "The second alias in the same file. steps/deploy.yml exists in templates-platform and not in templates-shared." },
+    { "from": "yaml:templates-shared/steps/common.yml", "to": "yaml:templates-shared/steps/notify.yml", "kind": "template", "ref": "notify.yml", "cases": ["case-04"], "note": "Relative to common.yml, so it stays in templates-shared even though the including pipeline is in pipelines-main." },
+
+    { "from": "yaml:pipelines-main/pipelines/p05.yml", "to": "pipeline:p01-simple-include", "kind": "pipelineResource", "ref": "p01-simple-include", "alias": "upstreamBuild", "cases": ["case-05"], "note": "Pipeline to pipeline. Not a file edge." },
+    { "from": "yaml:pipelines-main/pipelines/p05.yml", "to": "yaml:pipelines-main/pipelines/templates/chain-c.yml", "kind": "template", "ref": "templates/chain-c.yml", "cases": ["case-05"], "note": "Here so that p05 has one edge of each kind and collapsing them is visible." },
+
+    { "from": "yaml:pipelines-main/pipelines/p06.yml", "to": "yaml:pipelines-main/pipelines/templates/vars-common.yml", "kind": "template", "ref": "templates/vars-common.yml", "cases": ["case-06"], "note": "In the variables block, not in steps." },
+
+    { "from": "yaml:pipelines-main/pipelines/p07a.yml", "to": "yaml:pipelines-main/pipelines/templates/diamond-shared.yml", "kind": "template", "ref": "templates/diamond-shared.yml", "cases": ["case-07"] },
+    { "from": "yaml:pipelines-main/pipelines/p07b.yml", "to": "yaml:pipelines-main/pipelines/templates/diamond-shared.yml", "kind": "template", "ref": "templates/diamond-shared.yml", "cases": ["case-07"] },
+    { "from": "yaml:pipelines-main/pipelines/templates/diamond-shared.yml", "to": "yaml:pipelines-main/pipelines/templates/diamond-leaf.yml", "kind": "template", "ref": "diamond-leaf.yml", "cases": ["case-07"] },
+
+    { "from": "yaml:pipelines-main/pipelines/p08.yml", "to": "yaml:pipelines-main/pipelines/templates/cycle-a.yml", "kind": "template", "ref": "templates/cycle-a.yml", "cases": ["case-08"] },
+    { "from": "yaml:pipelines-main/pipelines/templates/cycle-a.yml", "to": "yaml:pipelines-main/pipelines/templates/cycle-b.yml", "kind": "template", "ref": "cycle-b.yml", "cases": ["case-08"] },
+    { "from": "yaml:pipelines-main/pipelines/templates/cycle-b.yml", "to": "yaml:pipelines-main/pipelines/templates/cycle-a.yml", "kind": "template", "ref": "cycle-a.yml", "cases": ["case-08"], "note": "Closes the cycle. A traversal must terminate and say so." },
+
+    { "from": "yaml:pipelines-main/pipelines/p09.yml", "to": "repo:templates-shared", "kind": "repositoryResource", "ref": "ClaudeTesting/templates-shared", "alias": "sharedTemplates", "cases": ["case-09"], "note": "Declared and never used. The unresolved reference below uses a different alias." },
+    { "from": "yaml:pipelines-main/pipelines/p09.yml", "to": "yaml:pipelines-main/pipelines/templates/missing-steps.yml", "kind": "unresolved", "refKind": "template", "ref": "templates/missing-steps.yml", "reason": "file-not-found: resolved to pipelines/templates/missing-steps.yml in pipelines-main, which does not exist", "cases": ["case-09"] },
+    { "from": "yaml:pipelines-main/pipelines/p09.yml", "to": "yaml:@ghostTemplates/steps/common.yml", "kind": "unresolved", "refKind": "template", "ref": "steps/common.yml@ghostTemplates", "reason": "alias-not-declared: 'ghostTemplates' is not in resources.repositories of pipelines/p09.yml, so the repository is unknown and the path cannot be resolved at all", "cases": ["case-09"] },
+
+    { "from": "yaml:consumer-app/azure-pipelines.yml", "to": "repo:pipelines-main", "kind": "repositoryResource", "ref": "ClaudeTesting/pipelines-main", "alias": "mainPipelines" },
+    { "from": "yaml:consumer-app/azure-pipelines.yml", "to": "repo:templates-shared", "kind": "repositoryResource", "ref": "ClaudeTesting/templates-shared", "alias": "sharedTemplates", "cases": ["case-10"] },
+    { "from": "yaml:consumer-app/azure-pipelines.yml", "to": "repo:templates-shared", "kind": "checkout", "ref": "sharedTemplates", "cases": ["case-10"], "note": "A repository dependency. Nothing in templates-shared is included by this pipeline, so there is no template edge here to invent." },
+    { "from": "yaml:consumer-app/azure-pipelines.yml", "to": "yaml:consumer-app/templates/app-steps.yml", "kind": "template", "ref": "templates/app-steps.yml", "cases": ["case-01"], "note": "Local. Same path text as the reference below, different repository." },
+    { "from": "yaml:consumer-app/azure-pipelines.yml", "to": "yaml:pipelines-main/templates/steps-build.yml", "kind": "template", "ref": "templates/steps-build.yml@mainPipelines", "cases": ["case-01"], "note": "Cross-repo, so resolved from the root of pipelines-main. This is the file p01 must NOT reach." },
+
+    { "from": "yaml:consumer-app/pipelines/release.yml", "to": "repo:templates-platform", "kind": "repositoryResource", "ref": "ClaudeTesting/templates-platform", "alias": "platformTemplates" },
+    { "from": "yaml:consumer-app/pipelines/release.yml", "to": "pipeline:x01-consumer-build", "kind": "pipelineResource", "ref": "x01-consumer-build", "alias": "appBuild", "cases": ["case-05"] },
+    { "from": "yaml:consumer-app/pipelines/release.yml", "to": "yaml:templates-platform/jobs/release.yml", "kind": "template", "ref": "jobs/release.yml@platformTemplates" },
+
+    { "from": "yaml:templates-shared/pipelines/nightly.yml", "to": "repo:pipelines-main", "kind": "repositoryResource", "ref": "ClaudeTesting/pipelines-main", "alias": "mainPipelines" },
+    { "from": "yaml:templates-shared/pipelines/nightly.yml", "to": "yaml:templates-shared/steps/common.yml", "kind": "template", "ref": "../steps/common.yml" },
+    { "from": "yaml:templates-shared/pipelines/nightly.yml", "to": "yaml:pipelines-main/templates/steps-build.yml", "kind": "template", "ref": "templates/steps-build.yml@mainPipelines", "cases": ["case-01"] },
+
+    { "from": "yaml:templates-platform/pipelines/trigger.yml", "to": "pipeline:p01-simple-include", "kind": "pipelineResource", "ref": "p01-simple-include", "alias": "mainSimple", "cases": ["case-05"], "note": "A definition outside pipelines-main depending on one inside it." },
+    { "from": "yaml:templates-platform/pipelines/trigger.yml", "to": "yaml:templates-platform/steps/deploy.yml", "kind": "template", "ref": "../steps/deploy.yml" }
+  ]
+}

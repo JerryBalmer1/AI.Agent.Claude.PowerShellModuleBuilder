@@ -1,0 +1,3 @@
+# case-07  The tip of the diamond, reachable by two paths and still one node.
+steps:
+  - script: echo leaf

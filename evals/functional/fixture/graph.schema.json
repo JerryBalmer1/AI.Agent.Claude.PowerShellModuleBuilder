@@ -1,0 +1,195 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PSAzureDevOpsGraph pipeline dependency graph",
+  "description": "The shape of a pipeline dependency graph. expected-graph.json is the hand-written oracle for the fixture; a graph produced by the module must validate against this same schema before it can be compared with the oracle.",
+  "type": "object",
+  "required": [
+    "version",
+    "organisation",
+    "project",
+    "nodes",
+    "edges"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "type": "integer",
+      "const": 1
+    },
+    "organisation": {
+      "type": "string",
+      "minLength": 1
+    },
+    "project": {
+      "type": "string",
+      "minLength": 1
+    },
+    "generatedBy": {
+      "type": "string",
+      "description": "Absent on the oracle by design. A run's graph names the command that produced it."
+    },
+    "nodes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/definitions/node"
+      }
+    },
+    "edges": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/definitions/edge"
+      }
+    }
+  },
+  "definitions": {
+    "caseId": {
+      "type": "string",
+      "pattern": "^case-[0-9]{2}$"
+    },
+    "caseList": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/definitions/caseId"
+      }
+    },
+    "nodeKind": {
+      "enum": [
+        "pipeline",
+        "yaml",
+        "repo"
+      ]
+    },
+    "referenceKind": {
+      "enum": [
+        "template",
+        "extends",
+        "pipelineResource",
+        "repositoryResource",
+        "checkout"
+      ]
+    },
+    "edgeKind": {
+      "enum": [
+        "definition",
+        "template",
+        "extends",
+        "pipelineResource",
+        "repositoryResource",
+        "checkout",
+        "unresolved"
+      ]
+    },
+    "node": {
+      "type": "object",
+      "required": [
+        "id",
+        "kind",
+        "name"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "$ref": "#/definitions/nodeKind"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "repo": {
+          "type": "string",
+          "minLength": 1
+        },
+        "path": {
+          "type": "string",
+          "pattern": "^repos/",
+          "description": "Relative to the fixture root. Present on yaml nodes only."
+        },
+        "cases": {
+          "$ref": "#/definitions/caseList"
+        },
+        "note": {
+          "type": "string"
+        }
+      },
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "yaml"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "path",
+          "repo"
+        ]
+      }
+    },
+    "edge": {
+      "type": "object",
+      "required": [
+        "from",
+        "to",
+        "kind"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "from": {
+          "type": "string",
+          "minLength": 1
+        },
+        "to": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "$ref": "#/definitions/edgeKind"
+        },
+        "ref": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The reference exactly as it appears in the YAML. Absent on definition edges, which are a claim about the Azure DevOps project rather than about a file."
+        },
+        "refKind": {
+          "$ref": "#/definitions/referenceKind"
+        },
+        "alias": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "cases": {
+          "$ref": "#/definitions/caseList"
+        },
+        "note": {
+          "type": "string"
+        }
+      },
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "unresolved"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "ref",
+          "refKind",
+          "reason"
+        ]
+      }
+    }
+  }
+}

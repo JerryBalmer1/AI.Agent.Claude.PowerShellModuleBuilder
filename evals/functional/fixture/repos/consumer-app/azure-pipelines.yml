@@ -1,0 +1,25 @@
+# x01-consumer-build.
+#
+# case-10  `checkout: sharedTemplates` is a repository dependency. It is not a
+# template edge, and nothing in templates-shared is included here.
+#
+# case-01  `templates/steps-build.yml` (local, relative to this file at the repo
+# root) and `templates/steps-build.yml@mainPipelines` (root of pipelines-main)
+# are the same text and different files.
+trigger:
+  - main
+pool:
+  vmImage: ubuntu-latest
+resources:
+  repositories:
+    - repository: mainPipelines
+      type: git
+      name: ClaudeTesting/pipelines-main
+    - repository: sharedTemplates
+      type: git
+      name: ClaudeTesting/templates-shared
+steps:
+  - checkout: self
+  - checkout: sharedTemplates
+  - template: templates/app-steps.yml
+  - template: templates/steps-build.yml@mainPipelines

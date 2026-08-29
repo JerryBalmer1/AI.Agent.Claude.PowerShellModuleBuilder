@@ -1,0 +1,13 @@
+# case-03  The extends target. Declares parameters; references nothing.
+# `buildTemplate` is a parameter name, not a key called `template`.
+parameters:
+  - name: buildTemplate
+    type: string
+    default: ''
+  - name: environment
+    type: string
+    default: dev
+jobs:
+  - job: Release
+    steps:
+      - script: echo releasing

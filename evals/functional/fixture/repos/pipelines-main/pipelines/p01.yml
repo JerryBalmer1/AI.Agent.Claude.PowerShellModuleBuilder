@@ -1,0 +1,12 @@
+# case-01  Same-repo step template, resolved relative to THIS file.
+#
+# `templates/steps-build.yml` from pipelines/p01.yml is
+# pipelines/templates/steps-build.yml. There is a second file at the repo root,
+# templates/steps-build.yml, which is what a root-relative resolver picks. Both
+# exist, so the wrong answer is a wrong file rather than an error.
+trigger:
+  - main
+pool:
+  vmImage: ubuntu-latest
+steps:
+  - template: templates/steps-build.yml

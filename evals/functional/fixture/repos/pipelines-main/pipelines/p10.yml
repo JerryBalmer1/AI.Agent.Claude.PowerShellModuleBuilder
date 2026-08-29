@@ -1,0 +1,7 @@
+# case-10  Orphan. No references out, nothing references it. It must still
+# appear as a node.
+trigger: none
+pool:
+  vmImage: ubuntu-latest
+steps:
+  - script: echo standalone

@@ -1,0 +1,4 @@
+# case-07  Included by both p07a and p07b. One node, in-degree 2.
+steps:
+  - script: echo shared
+  - template: diamond-leaf.yml

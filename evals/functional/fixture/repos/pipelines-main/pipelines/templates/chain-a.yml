@@ -1,0 +1,4 @@
+# case-02  Level 1 of 3. Relative to this file, so pipelines/templates/chain-b.yml.
+steps:
+  - script: echo chain a
+  - template: chain-b.yml

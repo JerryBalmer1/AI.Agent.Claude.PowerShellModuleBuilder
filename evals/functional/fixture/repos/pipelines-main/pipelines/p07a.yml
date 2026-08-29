@@ -1,0 +1,6 @@
+# case-07  First arm of the diamond.
+trigger: none
+pool:
+  vmImage: ubuntu-latest
+steps:
+  - template: templates/diamond-shared.yml

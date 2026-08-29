@@ -1,0 +1,8 @@
+# case-01  The decoy. Same trailing path as pipelines/templates/steps-build.yml
+# but at the repo root, so a resolver that works from the root picks this one.
+#
+# It is not dead weight: a cross-repo reference `templates/steps-build.yml@mainPipelines`
+# resolves from the root of this repo and correctly lands here. Two files, one
+# path, two rules.
+steps:
+  - script: echo build from the repository root

@@ -1,0 +1,14 @@
+# x04-cross-trigger. Runs on completion of a pipelines-main definition, so the
+# pipeline-resource edges run in both directions across the fixture.
+pool:
+  vmImage: ubuntu-latest
+resources:
+  pipelines:
+    - pipeline: mainSimple
+      source: p01-simple-include
+      trigger:
+        branches:
+          include:
+            - main
+steps:
+  - template: ../steps/deploy.yml

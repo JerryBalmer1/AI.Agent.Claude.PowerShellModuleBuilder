@@ -1,0 +1,18 @@
+# x03-shared-nightly. A pipeline definition whose YAML lives outside
+# pipelines-main, referencing a template back in pipelines-main.
+schedules:
+  - cron: 0 3 * * *
+    displayName: nightly
+    branches:
+      include:
+        - main
+pool:
+  vmImage: ubuntu-latest
+resources:
+  repositories:
+    - repository: mainPipelines
+      type: git
+      name: ClaudeTesting/pipelines-main
+steps:
+  - template: ../steps/common.yml
+  - template: templates/steps-build.yml@mainPipelines

@@ -1,0 +1,16 @@
+# case-03  extends with parameters.
+#
+# `extends.template` is an extends edge, not a template edge. The parameter
+# `buildTemplate` has a value that looks exactly like a template path and is
+# not a reference: nothing loads it.
+trigger: none
+resources:
+  repositories:
+    - repository: platformTemplates
+      type: git
+      name: ClaudeTesting/templates-platform
+extends:
+  template: jobs/release.yml@platformTemplates
+  parameters:
+    buildTemplate: templates/steps-build.yml
+    environment: staging

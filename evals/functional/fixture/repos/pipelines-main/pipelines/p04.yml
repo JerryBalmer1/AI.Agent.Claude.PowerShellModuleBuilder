@@ -1,0 +1,19 @@
+# case-04  Cross-repo templates through two different aliases in one file.
+#
+# A path after @ is resolved from the ROOT of the aliased repository, not
+# relative to this file. Two aliases in one file is what catches a resolver
+# that resolves in the wrong repo.
+trigger: none
+pool:
+  vmImage: ubuntu-latest
+resources:
+  repositories:
+    - repository: sharedTemplates
+      type: git
+      name: ClaudeTesting/templates-shared
+    - repository: platformTemplates
+      type: git
+      name: ClaudeTesting/templates-platform
+steps:
+  - template: steps/common.yml@sharedTemplates
+  - template: steps/deploy.yml@platformTemplates

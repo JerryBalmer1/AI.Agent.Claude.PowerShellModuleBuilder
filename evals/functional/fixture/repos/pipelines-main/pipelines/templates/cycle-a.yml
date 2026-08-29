@@ -1,0 +1,4 @@
+# case-08  Half of the cycle.
+steps:
+  - script: echo cycle a
+  - template: cycle-b.yml

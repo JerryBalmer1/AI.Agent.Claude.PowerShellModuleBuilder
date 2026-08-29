@@ -1,0 +1,6 @@
+# case-07  Second arm of the diamond. Same target as p07a.
+trigger: none
+pool:
+  vmImage: ubuntu-latest
+steps:
+  - template: templates/diamond-shared.yml

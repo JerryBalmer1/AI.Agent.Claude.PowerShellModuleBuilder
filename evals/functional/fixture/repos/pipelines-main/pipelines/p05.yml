@@ -1,0 +1,17 @@
+# case-05  A pipeline resource is a pipeline-to-pipeline edge.
+#
+# The template edge below is here on purpose: this file has one edge of each
+# kind, so collapsing the two into one kind is visible.
+trigger: none
+pool:
+  vmImage: ubuntu-latest
+resources:
+  pipelines:
+    - pipeline: upstreamBuild
+      source: p01-simple-include
+      trigger:
+        branches:
+          include:
+            - main
+steps:
+  - template: templates/chain-c.yml

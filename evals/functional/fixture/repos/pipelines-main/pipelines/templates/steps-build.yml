@@ -1,0 +1,4 @@
+# case-01  The correct target of p01's `templates/steps-build.yml`, because
+# template paths without an @alias resolve relative to the including file.
+steps:
+  - script: echo build from pipelines/templates

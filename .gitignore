@@ -1,2 +1,5 @@
 scratch/
 conformance-result.json
+AzDoPAT.txt
+*.pat
+**/pat.txt

@@ -1,0 +1,4 @@
+# case-08  The other half. Points back at cycle-a.
+steps:
+  - script: echo cycle b
+  - template: cycle-a.yml
