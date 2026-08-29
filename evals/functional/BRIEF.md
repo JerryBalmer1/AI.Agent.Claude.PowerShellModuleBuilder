@@ -39,7 +39,7 @@ network; resolution needs to know what exists in which repository. Cases 1, 4
 and 9 are all resolution failures that a combined command would report as
 parsing results, with no way to tell which half was wrong.
 
-The final surface is whatever the ten cases require. The table above is the
+The final surface is whatever the twelve cases require. The table above is the
 starting shape, not a commitment; a case that cannot be served by any of these
 commands is a reason to add one.
 
@@ -80,7 +80,7 @@ the constraint rather than an exception to it.
 Concretely: `Get-AzDoPipelineDependencyGraph` run against the fixture produces a
 graph whose nodes and edges equal those in `expected-graph.json` — same ids,
 same kinds, same endpoints, same unresolved edges with the same reasons. Not a
-superset, not a subset. The ten cases in `fixture/cases.md` say what each part
+superset, not a subset. The twelve cases in `fixture/cases.md` say what each part
 of that equality is for, and each names the specific wrong answer it catches.
 
 **This is not part of the conformance score.** It is a separate check with a
@@ -96,7 +96,7 @@ exported names. This measures whether the thing works.
 
 This directory is that separate functional check. A module can score 100% on
 conformance and return an empty graph; a module can fail four house-style
-assertions and answer every one of the ten cases correctly. Those are different
+assertions and answer every one of the twelve cases correctly. Those are different
 facts and averaging them would destroy both.
 
 ## The fixture

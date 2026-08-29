@@ -1,0 +1,60 @@
+VERIFY RUN RECORD
+pass      : 0011
+script    : plans/0011-fixture-design/verify.ps1
+commit    : fd39b351d6d45bc3d525d67abdf5324e1a1fdf97 (fd39b35)
+worktree  : scratch/verify-0011 (detached HEAD)
+AZDO_PAT  : set
+invoked   : pwsh -NoProfile -File plans/0011-fixture-design/verify.ps1
+
+---- OUTPUT ----
+check 0 - the acceptance test passes
+  ok    Fixture.Tests.ps1 is green
+  ok    Fixture.Tests.ps1 ran a non-trivial number of cases
+check 1 - assertion 6 re-derived, both directions, by a second extractor
+  ok    every YAML file under repos/ is present
+  ok    the YAML and the declared graph agree in both directions
+check 2 - case 4, the cross-repo edges out of p04.yml
+  ok    p04.yml exists
+  ok    p04.yml declares two repository aliases
+  ok    steps/common.yml@sharedTemplates resolves to a file that exists
+  ok    steps/common.yml@sharedTemplates has exactly one declared edge
+  ok    steps/common.yml@sharedTemplates points at yaml:templates-shared/steps/common.yml
+  ok    steps/common.yml@sharedTemplates is of kind template
+  ok    steps/deploy.yml@platformTemplates resolves to a file that exists
+  ok    steps/deploy.yml@platformTemplates has exactly one declared edge
+  ok    steps/deploy.yml@platformTemplates points at yaml:templates-platform/steps/deploy.yml
+  ok    steps/deploy.yml@platformTemplates is of kind template
+  ok    steps/deploy.yml does not exist in templates-shared
+check 3 - case 9, both unresolved targets genuinely do not exist
+  ok    there are exactly two unresolved edges
+  ok    templates/missing-steps.yml does not exist anywhere under repos/
+  ok    no file named missing-steps.yml exists in any repository
+  ok    alias 'ghostTemplates' is not declared in p09.yml
+  ok    unresolved target 'yaml:pipelines-main/pipelines/templates/missing-steps.yml' is not a declared node
+  ok    unresolved edge 'templates/missing-steps.yml' states a reason
+  ok    unresolved target 'yaml:@ghostTemplates/steps/common.yml' is not a declared node
+  ok    unresolved edge 'steps/common.yml@ghostTemplates' states a reason
+check 4 - case 8, a traversal from p08 terminates and reports a cycle
+  ok    the traversal from p08 terminates
+  ok    the traversal reports exactly one back edge
+  ok    the back edge is cycle-b -> cycle-a
+  ok    both halves of the cycle were reached
+check 5 - the rendered HTML
+  ok    000.html exists
+  ok    000.html is not empty
+  ok    000.html contains no external script reference
+  ok    000.html contains no external stylesheet reference
+  ok    000.html contains no @import
+  ok    000.html contains no http:// or https:// at all
+  ok    000.html node count matches expected-graph.json
+  ok    000.html draws both unresolved targets as pseudo-nodes
+check 6 - no PAT-shaped string in any tracked file
+  ok    no tracked file contains a PAT-shaped token
+  ok    AzDoPAT.txt is not tracked
+  ok    no tracked file is named like a PAT file
+
+VERIFY: all checks agree.
+
+---- END OUTPUT ----
+EXIT CODE: 0
+

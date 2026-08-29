@@ -1,0 +1,63 @@
+VERIFY RUN RECORD
+pass      : 0014
+script    : plans/0014-seed-and-comparator/verify.ps1
+commit    : 57a449b3c7fd1a72354054f2496a35b1246ead02 (57a449b)
+worktree  : scratch/verify-0014 (detached HEAD)
+AZDO_PAT  : set
+invoked   : pwsh -NoProfile -File plans/0014-seed-and-comparator/verify.ps1
+
+---- OUTPUT ----
+check 1 - Fixture.Tests.ps1 and ReadBack.Tests.ps1 at their full case counts
+        Fixture.Tests.ps1  total=352 passed=352 failed=0
+  ok    Fixture.Tests.ps1 has no failing test
+  ok    Fixture.Tests.ps1 case count is 352
+        ReadBack.Tests.ps1 total=76 passed=76 failed=0
+  ok    ReadBack.Tests.ps1 has no failing test
+  ok    ReadBack.Tests.ps1 case count is 76
+check 2 - the expected graph compared with itself: zero differences, exit 0
+  ok    self-comparison exits 0
+  ok    self-comparison reports zero differences
+  ok    self-comparison reports agreement
+check 3 - case-01, case-08 and case-12 mutations each name their case
+          (mutations regenerated here, not read from the plan)
+  ok    case-01 mutation was generated
+  ok    case-01 mutation actually changed the graph
+  ok    case-01 is reported as differing
+  ok    case-01 comparison exits non-zero
+  ok    case-01 is named in the report
+  ok    case-08 mutation was generated
+  ok    case-08 mutation actually changed the graph
+  ok    case-08 is reported as differing
+  ok    case-08 comparison exits non-zero
+  ok    case-08 is named in the report
+  ok    case-12 mutation was generated
+  ok    case-12 mutation actually changed the graph
+  ok    case-12 is reported as differing
+  ok    case-12 comparison exits non-zero
+  ok    case-12 is named in the report
+check 4 - the seed carries no head start
+  ok    the seed directory exists
+        seed holds 4 files: .gitattributes, .gitignore, LICENSE, README.md
+  ok    the seed contains no module manifest
+  ok    the seed contains no module file
+  ok    the seed contains no build file
+  ok    the seed contains no source tree
+  ok    the seed contains no test tree
+  ok    the seed contains no test file
+  ok    the seed is exactly README.md, LICENSE, .gitignore and .gitattributes
+check 5 - Reset-Target.ps1 refuses a destination outside scratch/runs/
+  ok    refuses '../PSAzureDevOpsGraph'
+  ok    refuses 'evals/functional/seed'
+  ok    refuses 'scratch/runs/../../../PSAzureDevOpsGraph'
+  ok    accepts a destination under scratch/runs/
+check 6 - no PAT-shaped string in any tracked file or under runs/
+  ok    git ls-files returned files
+        scanned 104 files
+  ok    the scan actually read files
+  ok    no scanned file contains a PAT-shaped string
+
+verify.ps1: every check that ran agreed (0 skipped)
+
+---- END OUTPUT ----
+EXIT CODE: 0
+

@@ -1,5 +1,10 @@
 # TASK — establish the conformance baseline
 
+> **Superseded.** This task completed at `6655e1c` and `64fee46`;
+> it is kept as a record. Nothing in this file is a current
+> instruction, including the "continue from the first unfinished
+> step" sentence below.
+
 Standing instruction for the current pass. This file exists because a session
 restart clears the conversation but not the repository. If you have lost
 context, read this file and continue from the first unfinished step. Mark steps

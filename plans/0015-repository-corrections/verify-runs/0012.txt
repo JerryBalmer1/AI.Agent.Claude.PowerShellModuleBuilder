@@ -1,0 +1,48 @@
+VERIFY RUN RECORD
+pass      : 0012
+script    : plans/0012-case-split-and-corrections/verify.ps1
+commit    : c9853493b5f8ab0a200be396aaaa4633cc31ccc0 (c985349)
+worktree  : scratch/verify-0012 (detached HEAD)
+AZDO_PAT  : set
+invoked   : pwsh -NoProfile -File plans/0012-case-split-and-corrections/verify.ps1
+
+---- OUTPUT ----
+check 1 - the acceptance test is green at its full case count
+  ok    Fixture.Tests.ps1 is green
+  ok    Fixture.Tests.ps1 runs 346 cases
+  ok    no container failed
+check 2 - twelve cases, each with a kind, and the split matches the tags
+  ok    cases.md declares twelve cases
+  ok    every case declares a kind
+  ok    there is at least one presence case
+  ok    there is at least one absence case
+  ok    every absence case names the assertion that checks it
+  ok    every presence case is tagged at least once
+  ok    no absence case is tagged
+  ok    the graph carries no tag that is not a presence case
+  ok    the declarations read identically from a CRLF copy
+check 3 - case 12: no node names the pre-existing ClaudeTesting repository
+  ok    no node is the ClaudeTesting repository
+  ok    the graph still has exactly four repo nodes
+  ok    case-12 appears nowhere in expected-graph.json
+check 4 - PLAN-PROTOCOL.md corrections
+  ok    no longer requires "an approximate token count"
+  ok    states that there is no token count
+  ok    section 11 asks for wall-clock and run counts
+  ok    no longer requires verify.ps1 fenced unconditionally
+  ok    section 9 states the conditional form
+check 5 - method/METHOD.md no longer says to skip the corpus
+  ok    does not instruct "Skip the corpus"
+  ok    does not list the corpus among things to skip
+  ok    says the corpus is not to be skipped
+  ok    gives the reason the corpus stays
+check 6 - no PAT-shaped string in any tracked file
+  ok    no tracked file contains a PAT-shaped token
+  ok    AzDoPAT.txt is not tracked
+  ok    no tracked file is named like a PAT file
+
+VERIFY: all checks agree.
+
+---- END OUTPUT ----
+EXIT CODE: 0
+
