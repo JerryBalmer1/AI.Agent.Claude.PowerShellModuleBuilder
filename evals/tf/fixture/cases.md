@@ -105,8 +105,9 @@ This is the case a single-repository parser cannot see at all.
 Three repositories, three distinct `required_version` constraints
 (`>= 1.3.0, < 2.0.0`, `>= 1.5.0`, `~> 1.0.11`) and six provider requirements
 across four distinct providers, pinned three different ways — exact (`3.6.0`),
-pessimistic (`~> 0.11.1`) and ranged (`>= 3.0.0, < 4.0.0`). Five pipeline
-definitions pin four distinct Terraform versions: 0.13.7, 1.0.11, 1.5.7, 1.9.8.
+pessimistic (`~> 0.11.1`) and ranged (`>= 3.0.0, < 4.0.0`). Four pipeline
+definitions pin four distinct Terraform versions - 0.13.7, 1.0.11, 1.5.7 and
+1.9.8, one each - so a producer that reads only the first finds only one.
 
 **What it catches:** a producer that records the provider and drops the
 constraint, or that only understands one pin syntax.

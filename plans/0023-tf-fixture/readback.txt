@@ -1,0 +1,71 @@
+==============================================================================
+READ-BACK - the AzDO fixture against the harness copy
+Generated 2026-08-29T20:01:57Z
+==============================================================================
+
+The harness copy under evals/tf/fixture/repos/ is the source of truth per
+decision 0011. Every file on both sides is hashed (SHA256 over content with
+line endings normalised to LF on BOTH sides, because every fixture repository
+carries .gitattributes with `* text=auto eol=lf`) and the sets are compared in
+both directions, so a file present on one side only is a named mismatch.
+
+------------------------------------------------------------------------------
+REPOSITORY: TfFixtureShared
+  cloned at 0af6ee33854bedb4147d0b13cc6db1311687775b
+  harness files: 13   remote files: 13
+  OK                 .gitattributes  D60F352D0DB1404C
+  OK                 main.tf  2BB4A7CD2B2BB6BA
+  OK                 modules/naming/main.tf  2640D8FEEEE78D8E
+  OK                 modules/naming/outputs.tf  7AC87466F7AC3726
+  OK                 modules/naming/variables.tf  C472DD5622E554F2
+  OK                 modules/tags/main.tf  09882CE1954E4AE8
+  OK                 modules/tags/outputs.tf  12377258AFCC7CBC
+  OK                 modules/tags/variables.tf  2BC62407E0640832
+  OK                 outputs.tf  23DE9382079B4F48
+  OK                 pipelines/shared-validate.yml  745BE50EBADAFD97
+  OK                 README.md  0D6ED6FBC2401620
+  OK                 variables.tf  709DB59B5497F9F8
+  OK                 versions.tf  848DBAA66B8D4531
+
+------------------------------------------------------------------------------
+REPOSITORY: TfFixtureNetwork
+  cloned at 24f27be92e583b6dfc9208bca42f8ec0baf5004b
+  harness files: 14   remote files: 14
+  OK                 .gitattributes  D60F352D0DB1404C
+  OK                 main.tf  DC3E109D5EB92C87
+  OK                 modules/segment/main.tf  BA17FDEB05098CFD
+  OK                 modules/segment/modules/subnet/main.tf  B8FB0826704C877C
+  OK                 modules/segment/modules/subnet/outputs.tf  184BEB40452E44AB
+  OK                 modules/segment/modules/subnet/variables.tf  8CE044A45B5B63B3
+  OK                 modules/segment/outputs.tf  C93837A68886F0A8
+  OK                 modules/segment/variables.tf  3E91158F8EA6C0EF
+  OK                 outputs.tf  40B27FD6C945ABFC
+  OK                 pipelines/network-legacy.yml  5A13CB7032C86D78
+  OK                 pipelines/network-plan.yml  97887B4A2B0977BF
+  OK                 README.md  4F99FFD45CBB9F29
+  OK                 variables.tf  71CB214B0918A119
+  OK                 versions.tf  3EE192668B6DC612
+
+------------------------------------------------------------------------------
+REPOSITORY: TfFixtureApp
+  cloned at 187ff229c0ad908eb39822f1bb78b6c0e3a206b3
+  harness files: 13   remote files: 13
+  OK                 .gitattributes  D60F352D0DB1404C
+  OK                 main.tf  17C62595A858F9F8
+  OK                 modules/service/main.tf  1DFA4823EBB92B2C
+  OK                 modules/service/modules/worker/main.tf  7CAB826DBDC95FAB
+  OK                 modules/service/modules/worker/outputs.tf  C19223274FFD2323
+  OK                 modules/service/modules/worker/variables.tf  DD2C09A1CF037DFD
+  OK                 modules/service/outputs.tf  6C308E7D1886648F
+  OK                 modules/service/variables.tf  43C74E53A87394CD
+  OK                 outputs.tf  E41AB734CC1A47DD
+  OK                 pipelines/app-validate.yml  826A0E28F13DF6AA
+  OK                 README.md  AB54104587E82CB4
+  OK                 variables.tf  37CA08A2A4727294
+  OK                 versions.tf  1CF04F04976CAE76
+
+------------------------------------------------------------------------------
+40 file(s) compared across 3 repositories.
+
+BYTE-IDENTICAL
+==============================================================================
