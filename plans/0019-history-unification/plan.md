@@ -401,8 +401,54 @@ $ git diff --name-only 621d72eb..HEAD -- evals/ skills/ evals/functional/Reset-T
 
 ## 7. Both mains — the final evidence
 
-See §8 of the transcript below and the report. Recorded here after the branch
-push and the ancestry re-check.
+Ancestry re-verified immediately before the harness push, per decision 0009,
+then a dry-run, then the push:
+
+```
+$ git fetch origin main && git rev-parse origin/main
+d1647fa3062fc36e6a1b6aa02a1f9e5608379d30
+$ git merge-base --is-ancestor origin/main HEAD ; echo $?
+0
+$ git push --dry-run origin HEAD:main
+   d1647fa..eb4969f  HEAD -> main
+$ git push origin HEAD:main
+   d1647fa..eb4969f  HEAD -> main
+```
+
+**Harness remote — after:**
+
+```
+ref: refs/heads/main	HEAD
+eb4969f66f27c3fc86e113e02580c273303e349b	HEAD
+eb4969f66f27c3fc86e113e02580c273303e349b	refs/heads/main
+```
+
+**Target remote — after:**
+
+```
+ref: refs/heads/main	HEAD
+5fd814b464272aa6e282ea46884546e8f8e736c9	HEAD
+5fd814b464272aa6e282ea46884546e8f8e736c9	refs/heads/main
+79e02fba9dffd976bccf507d531f59303cc58f9d	refs/heads/run-002-first-build
+f1947c28f80389eacc356a1f1c6470c77615fbfc	refs/tags/v0.1.0
+79e02fba9dffd976bccf507d531f59303cc58f9d	refs/tags/v0.1.0^{}
+89e14387c0e775ed131f276f308e97c4efa8b22f	refs/tags/v0.2.0
+5fd814b464272aa6e282ea46884546e8f8e736c9	refs/tags/v0.2.0^{}
+```
+
+**The four lines the prompt asked for:**
+
+| Remote | Before | After |
+|---|---|---|
+| harness `main` | `d1647fa3062fc36e6a1b6aa02a1f9e5608379d30` | `eb4969f66f27c3fc86e113e02580c273303e349b` |
+| target `main` | `2c745310a97a551acc834e4b299a676536ea1f07` | `5fd814b464272aa6e282ea46884546e8f8e736c9` |
+
+Both moves were fast-forwards, both verified with `merge-base --is-ancestor` and
+a `--dry-run` first, and no push anywhere in this pass used `--force`.
+
+This section was written after those pushes, so the commit carrying it is one
+ahead of `eb4969f`; `main` was fast-forwarded again to include it, by the same
+verified procedure.
 
 ## 8. Deviations
 
