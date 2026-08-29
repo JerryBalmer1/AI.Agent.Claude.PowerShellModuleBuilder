@@ -1,0 +1,356 @@
+{
+  "organisation": "jlbalmerjr1",
+  "project": "ClaudeTesting",
+  "projectId": "d24e1e58-2489-4f25-aef2-387ce48864f4",
+  "timestampUtc": "2026-08-29T05:28:02.7976344Z",
+  "dryRun": false,
+  "repositories": [
+    {
+      "name": "pipelines-main",
+      "id": "8e1ffaab-45e2-4342-ba5c-befcf3bf8e3d",
+      "action": "created"
+    },
+    {
+      "name": "templates-shared",
+      "id": "ac59c97a-3768-4ab6-a12f-7d6382e9c289",
+      "action": "created"
+    },
+    {
+      "name": "templates-platform",
+      "id": "151fdd15-bc74-44ef-8837-f80ae45429bf",
+      "action": "created"
+    },
+    {
+      "name": "consumer-app",
+      "id": "d0098877-0e7e-4363-93a8-44704b2baf28",
+      "action": "created"
+    }
+  ],
+  "files": [
+    {
+      "repository": "pipelines-main",
+      "path": "pipelines/p01.yml",
+      "bytes": 449,
+      "sha256": "27e454c9f561c756c0f59e91afc3db5e728045238611a7bab683a994a8fccd69",
+      "action": "pushed"
+    },
+    {
+      "repository": "pipelines-main",
+      "path": "pipelines/p02.yml",
+      "bytes": 156,
+      "sha256": "1a3bc978451360e656895cec50658fb6b0b1a01bc06afcfd88dd5ce072536355",
+      "action": "pushed"
+    },
+    {
+      "repository": "pipelines-main",
+      "path": "pipelines/p03.yml",
+      "bytes": 506,
+      "sha256": "b1c3d72c21bdfb0e2c3c57e90d8fca3b88c8c6c04e8b72038685ebce49bd2afe",
+      "action": "pushed"
+    },
+    {
+      "repository": "pipelines-main",
+      "path": "pipelines/p04.yml",
+      "bytes": 627,
+      "sha256": "b5e350a8744a0152499e2eebf6c28f8411d9383dc6ba6ea54fb5fe49d683e981",
+      "action": "pushed"
+    },
+    {
+      "repository": "pipelines-main",
+      "path": "pipelines/p05.yml",
+      "bytes": 444,
+      "sha256": "f16a4fdb4e1fb1139bdf9e6729a308856dc0cb07be700986ce479cbf70b4b7e9",
+      "action": "pushed"
+    },
+    {
+      "repository": "pipelines-main",
+      "path": "pipelines/p06.yml",
+      "bytes": 277,
+      "sha256": "92c56eaff28035f8f192feb84f4ab39bb4a631e41a07be6cb58b20c4e29155a9",
+      "action": "pushed"
+    },
+    {
+      "repository": "pipelines-main",
+      "path": "pipelines/p07a.yml",
+      "bytes": 132,
+      "sha256": "33bd2d9271663d28b1c5ab2b5a8f7d53c33c3fa459416768a9c5cbab50e3eb35",
+      "action": "pushed"
+    },
+    {
+      "repository": "pipelines-main",
+      "path": "pipelines/p07b.yml",
+      "bytes": 154,
+      "sha256": "fb0bd645113bafa9585a67f07d32463becd00f5950646d99b9352b39db08cabc",
+      "action": "pushed"
+    },
+    {
+      "repository": "pipelines-main",
+      "path": "pipelines/p08.yml",
+      "bytes": 229,
+      "sha256": "d23e77d151d185e6fffc571072ed14697c052fa1b7938745d91eb6fab65f53d8",
+      "action": "pushed"
+    },
+    {
+      "repository": "pipelines-main",
+      "path": "pipelines/p09.yml",
+      "bytes": 470,
+      "sha256": "d5de64315b584c6f04cdabe5cb8286d824fca6ecdffd89a574c8381ff40e1262",
+      "action": "pushed"
+    },
+    {
+      "repository": "pipelines-main",
+      "path": "pipelines/p10.yml",
+      "bytes": 175,
+      "sha256": "1bfc9d73ee4293f955f1bef4fdcfc63d3bf84458d4904a7e1f4d3a1ca6ddea11",
+      "action": "pushed"
+    },
+    {
+      "repository": "pipelines-main",
+      "path": "pipelines/templates/chain-a.yml",
+      "bytes": 142,
+      "sha256": "0eec49f910cc4b75fee3de8dcfd81476088e71d5e74f8e63d5c2cb52f389e13d",
+      "action": "pushed"
+    },
+    {
+      "repository": "pipelines-main",
+      "path": "pipelines/templates/chain-b.yml",
+      "bytes": 83,
+      "sha256": "c51de90cad11e49b1f549ab6a89c17952767f5f489476891ed14c33a4003d6ed",
+      "action": "pushed"
+    },
+    {
+      "repository": "pipelines-main",
+      "path": "pipelines/templates/chain-c.yml",
+      "bytes": 80,
+      "sha256": "f932fa16a135233c6113dc228a682b598888a9487b720c5eeed9f84d6b1d9d40",
+      "action": "pushed"
+    },
+    {
+      "repository": "pipelines-main",
+      "path": "pipelines/templates/cycle-a.yml",
+      "bytes": 88,
+      "sha256": "a5a4b1a7683e1dd327aa2cd422f85715c3976ca06904be7836b779edb9baacfc",
+      "action": "pushed"
+    },
+    {
+      "repository": "pipelines-main",
+      "path": "pipelines/templates/cycle-b.yml",
+      "bytes": 109,
+      "sha256": "31ecfb2d75f8eae282faa536f3487fa22b69b38eb93788bb3c4bfaf7e6d24fb6",
+      "action": "pushed"
+    },
+    {
+      "repository": "pipelines-main",
+      "path": "pipelines/templates/diamond-leaf.yml",
+      "bytes": 107,
+      "sha256": "e471bb70848e723f825ba2bc0b13f8b5a0444f8e0e74be8b72417134d8cdf02d",
+      "action": "pushed"
+    },
+    {
+      "repository": "pipelines-main",
+      "path": "pipelines/templates/diamond-shared.yml",
+      "bytes": 128,
+      "sha256": "e6825abf6b1f10efdc67c0e50d2ddd82cf5cc256f0787d68efcc6ba7786af390",
+      "action": "pushed"
+    },
+    {
+      "repository": "pipelines-main",
+      "path": "pipelines/templates/steps-build.yml",
+      "bytes": 206,
+      "sha256": "b66037dbeb272048d7862e18e775ca44a09a3dd6a1de3f85942396e8a6321e31",
+      "action": "pushed"
+    },
+    {
+      "repository": "pipelines-main",
+      "path": "pipelines/templates/vars-common.yml",
+      "bytes": 115,
+      "sha256": "4633e3b3e1d328440021a1aefda86fb92dd8cf51e7c774df53130c9ce5f300a7",
+      "action": "pushed"
+    },
+    {
+      "repository": "pipelines-main",
+      "path": "templates/steps-build.yml",
+      "bytes": 404,
+      "sha256": "04cd8d036f59338bafd99701b74f166867da544c86b7ec4ca1e3adfdf7819f28",
+      "action": "pushed"
+    },
+    {
+      "repository": "templates-shared",
+      "path": "pipelines/nightly.yml",
+      "bytes": 476,
+      "sha256": "388ccc6d0c179e2b9d0feb24553f06403a1f5ec58094e1b012cdc7763e4d963d",
+      "action": "pushed"
+    },
+    {
+      "repository": "templates-shared",
+      "path": "steps/common.yml",
+      "bytes": 275,
+      "sha256": "52d4f730cf423abf3c4053472593906bf582e9f98bdd4b1a6895c854f3fc9319",
+      "action": "pushed"
+    },
+    {
+      "repository": "templates-shared",
+      "path": "steps/notify.yml",
+      "bytes": 75,
+      "sha256": "3209cf76aef4fc11d16c2ce12ec4c0a986817c824267a04344089c446eec3bbf",
+      "action": "pushed"
+    },
+    {
+      "repository": "templates-platform",
+      "path": "jobs/release.yml",
+      "bytes": 330,
+      "sha256": "1e63b23dfa363cd7c8adc9b1795f3b77b3aef3e53f3615aac5effbd729bad9cb",
+      "action": "pushed"
+    },
+    {
+      "repository": "templates-platform",
+      "path": "pipelines/trigger.yml",
+      "bytes": 375,
+      "sha256": "0331dff7eb84f3744f6a6e9b187d9ef38e40b4339797ebae960fe8985018c17e",
+      "action": "pushed"
+    },
+    {
+      "repository": "templates-platform",
+      "path": "steps/deploy.yml",
+      "bytes": 81,
+      "sha256": "b1eeab5453ee23d7ac595a05c98386695115cffa55e44fd067a15ed2f2e88f3c",
+      "action": "pushed"
+    },
+    {
+      "repository": "consumer-app",
+      "path": "azure-pipelines.yml",
+      "bytes": 779,
+      "sha256": "56f48cdecbc8d382ecfe335312191a984dd4457aeb47dc313fa530cadd69ae12",
+      "action": "pushed"
+    },
+    {
+      "repository": "consumer-app",
+      "path": "pipelines/release.yml",
+      "bytes": 445,
+      "sha256": "2a49df17725f776dc72119926bb38883599380e20da2a0438f53c13b361f2b8a",
+      "action": "pushed"
+    },
+    {
+      "repository": "consumer-app",
+      "path": "templates/app-steps.yml",
+      "bytes": 146,
+      "sha256": "a0e13623c4f4644b7edc05080c2a93816de15d072e8ea2a7ac595ef76a65348d",
+      "action": "pushed"
+    }
+  ],
+  "definitions": [
+    {
+      "name": "p01-simple-include",
+      "id": 1,
+      "repository": "pipelines-main",
+      "yamlPath": "pipelines/p01.yml",
+      "action": "created"
+    },
+    {
+      "name": "p02-nested-chain",
+      "id": 2,
+      "repository": "pipelines-main",
+      "yamlPath": "pipelines/p02.yml",
+      "action": "created"
+    },
+    {
+      "name": "p03-extends-params",
+      "id": 3,
+      "repository": "pipelines-main",
+      "yamlPath": "pipelines/p03.yml",
+      "action": "created"
+    },
+    {
+      "name": "p04-cross-repo-template",
+      "id": 4,
+      "repository": "pipelines-main",
+      "yamlPath": "pipelines/p04.yml",
+      "action": "created"
+    },
+    {
+      "name": "p05-pipeline-resource",
+      "id": 5,
+      "repository": "pipelines-main",
+      "yamlPath": "pipelines/p05.yml",
+      "action": "created"
+    },
+    {
+      "name": "p06-variable-template",
+      "id": 6,
+      "repository": "pipelines-main",
+      "yamlPath": "pipelines/p06.yml",
+      "action": "created"
+    },
+    {
+      "name": "p07-diamond-a",
+      "id": 7,
+      "repository": "pipelines-main",
+      "yamlPath": "pipelines/p07a.yml",
+      "action": "created"
+    },
+    {
+      "name": "p07-diamond-b",
+      "id": 8,
+      "repository": "pipelines-main",
+      "yamlPath": "pipelines/p07b.yml",
+      "action": "created"
+    },
+    {
+      "name": "p08-cycle",
+      "id": 9,
+      "repository": "pipelines-main",
+      "yamlPath": "pipelines/p08.yml",
+      "action": "created"
+    },
+    {
+      "name": "p09-unresolved",
+      "id": 10,
+      "repository": "pipelines-main",
+      "yamlPath": "pipelines/p09.yml",
+      "action": "created"
+    },
+    {
+      "name": "p10-orphan",
+      "id": 11,
+      "repository": "pipelines-main",
+      "yamlPath": "pipelines/p10.yml",
+      "action": "created"
+    },
+    {
+      "name": "x01-consumer-build",
+      "id": 12,
+      "repository": "consumer-app",
+      "yamlPath": "azure-pipelines.yml",
+      "action": "created"
+    },
+    {
+      "name": "x02-platform-release",
+      "id": 13,
+      "repository": "consumer-app",
+      "yamlPath": "pipelines/release.yml",
+      "action": "created"
+    },
+    {
+      "name": "x03-shared-nightly",
+      "id": 14,
+      "repository": "templates-shared",
+      "yamlPath": "pipelines/nightly.yml",
+      "action": "created"
+    },
+    {
+      "name": "x04-cross-trigger",
+      "id": 15,
+      "repository": "templates-platform",
+      "yamlPath": "pipelines/trigger.yml",
+      "action": "created"
+    }
+  ],
+  "counts": {
+    "repositories": 4,
+    "files": 30,
+    "definitions": 15,
+    "reposCreated": 4,
+    "filesPushed": 30,
+    "defsCreated": 15
+  }
+}

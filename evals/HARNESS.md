@@ -255,6 +255,62 @@ assertion stays green — as a first-class outcome. Without the distinct outcome
 type, a control row's correct result is recorded as "does not fire" and reads as
 a failure.
 
+### 8. An absence check on prose is case-insensitive and line-broken
+
+**Failure it causes:** a check that asserts a document does *not* say something
+reports clean while the document says exactly that, and a check that asserts a
+document *does* say something reports missing while the phrase is sitting there.
+Both directions are wrong, and both are silent.
+
+**Two independent causes, and both must be fixed or neither check is sound.**
+
+**Cause one: `-match` is case-insensitive.** PowerShell's `-match` and
+`-notmatch` ignore case by default; the case-sensitive forms are `-cmatch` and
+`-cnotmatch`. So a check written as
+
+    $doc -notmatch 'Skip the corpus'
+
+passes only if the phrase is absent in *any* casing - but worse, an absence
+check phrased this way is satisfied by text that contains the phrase as part of
+a longer sentence with the opposite meaning. `"Do not skip the corpus"` contains
+`skip the corpus`, so a check asserting the *absence* of `Skip the corpus`
+reports a violation against a document that says the correct thing. Absence
+checks on prose must be case-sensitive (`-cnotmatch`), and they must match a
+phrase specific enough that no correct sentence contains it.
+
+**Cause two: prose is hard-wrapped.** Documents in this repository are wrapped
+at roughly 78 columns. A phrase of more than a few words routinely straddles a
+line break, so it exists in the file as `"no node is the pre-existing\n
+ClaudeTesting repository"` and matches no single-line pattern. A line-wise
+search finds nothing and reports the phrase absent. This is not hypothetical: it
+happened twice inside Pass 0013 alone. `FixtureCase.ps1` originally captured
+only the first line of a `**checked by:**` block and so saw half of a quoted
+test name; and a `grep -c` written to confirm a falsification probe had been
+applied returned 0 for a phrase that was demonstrably in the file, because the
+phrase spanned a line break.
+
+**Requirement:** a check asserting the presence or absence of a phrase in prose
+must
+
+1. run against a **whitespace-collapsed copy** of the document - replace every
+   run of whitespace, newlines included, with a single space - so that wrapping
+   cannot hide a phrase; and
+2. use a **case-sensitive** operator (`-cmatch` / `-cnotmatch`), never `-match`.
+
+In PowerShell:
+
+    $collapsed = ($raw -replace '\s+', ' ')
+    $collapsed -cmatch  'the phrase that must be present'
+    $collapsed -cnotmatch 'the phrase that must be absent'
+
+The collapse must happen before matching, never after, and the pattern must be
+written with single spaces so that it matches the collapsed form.
+
+**Why it belongs in the hazard list.** Both failure modes report success. A
+case-insensitive absence check that matches a negated sentence, and a line-wise
+presence check that misses a wrapped phrase, are the same species as hazard 6:
+an expectation that is confidently wrong and never says so.
+
 ## What a run must record
 
 Enough that the score can be read months later without rerunning it:

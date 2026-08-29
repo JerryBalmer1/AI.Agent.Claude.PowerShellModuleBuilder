@@ -60,7 +60,15 @@ else {
     $config.Output.Verbosity = 'None'
     $result = Invoke-Pester -Configuration $config
     Assert-True 'Fixture.Tests.ps1 is green' ($result.FailedCount -eq 0) "$($result.FailedCount) failed of $($result.TotalCount)"
-    Assert-True 'Fixture.Tests.ps1 runs 346 cases' ($result.TotalCount -eq 346) "$($result.TotalCount) tests"
+    # Pass 0012 recorded 346. Pass 0013 added six assertions to the same suite:
+    # one that both named suites exist, four that each test name quoted on a
+    # **checked by:** line resolves to a real test, and one that every absence
+    # case quotes at least one name - taking it to 352. The count is updated
+    # rather than left to fail, because a verify script pinned to a count that a
+    # later pass legitimately moved is itself the stale expectation of hazard 6.
+    # What Pass 0012 claimed was that the suite is green and that its own twelve
+    # cases hold; both still verify below.
+    Assert-True 'Fixture.Tests.ps1 runs 352 cases' ($result.TotalCount -eq 352) "$($result.TotalCount) tests"
     Assert-True 'no container failed' (@($result.Containers | Where-Object { -not $_.Passed }).Count -eq 0)
 }
 
@@ -204,9 +212,28 @@ if ($tracked.Count -eq 0) {
     Assert-True 'git ls-files returned files' $false 'run from a git clone'
 }
 else {
+    # Corrected by Pass 0013. The original pattern set assumed a 52-character
+    # lowercase base32 token. The PAT actually in use is 84 characters,
+    # mixed-case alphanumeric, one unbroken run - measured, never printed.
+    #
+    # Measured correction: the original set was NOT blind to it. Its second
+    # pattern, '[A-Za-z0-9]{52}', is unanchored, so a 52-character window inside
+    # an 84-character run matched. This scan could fail, and would have. It is
+    # widened anyway, because catching an 84-character secret with a
+    # 52-character window is an accident of length rather than a property of the
+    # pattern: a PAT containing one non-alphanumeric character would break into
+    # runs shorter than 52 and slip through.
+    #
+    # The exclusion is the substantive change. Pass 0013 committed
+    # runs/001-fixture-create/create-summary.json, which carries thirty
+    # 64-character SHA-256 digests, and documented 40-character git object ids.
+    # Both match '[A-Za-z0-9]{52}'. Without the exclusion below, this check goes
+    # red on files that contain no secret, and a check that cries wolf is a check
+    # that gets switched off. A PAT cannot hide behind the exclusion: 84 is
+    # neither 40 nor 64, and a mixed-case token is not lower-hex.
     $patterns = @(
-        '[a-z2-7]{52}'
-        '[A-Za-z0-9]{52}'
+        '[A-Za-z0-9]{52,}'
+        '[a-z2-7]{52,}'
         'eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}'
     )
     $hits = [System.Collections.Generic.List[string]]::new()
@@ -215,9 +242,18 @@ else {
         if (-not (Test-Path -LiteralPath $full -PathType Leaf)) { continue }
         $text = Get-Content -LiteralPath $full -Raw -ErrorAction SilentlyContinue
         if (-not $text) { continue }
+        $flagged = $false
         foreach ($pattern in $patterns) {
-            if ([regex]::IsMatch($text, $pattern)) { $hits.Add($relative); break }
+            foreach ($m in [regex]::Matches($text, $pattern)) {
+                $v = $m.Value
+                # git object id (40) or SHA-256 digest (64), and nothing else.
+                if ($v -cmatch '^[0-9a-f]+$' -and ($v.Length -eq 40 -or $v.Length -eq 64)) { continue }
+                $flagged = $true
+                break
+            }
+            if ($flagged) { break }
         }
+        if ($flagged) { $hits.Add($relative) }
     }
     # Paths are reported. The matching text never is.
     Assert-True 'no tracked file contains a PAT-shaped token' ($hits.Count -eq 0) ($hits -join ', ')

@@ -144,9 +144,26 @@ defect to fix.
 ### Triggers
 
 `p01.yml` and `azure-pipelines.yml` declare `trigger: - main`. Every other
-pipeline declares `trigger: none`. The two CI triggers are deliberate: a
-definition with no trigger at all is a slightly different object in the Azure
-DevOps API, and the fixture should contain both shapes.
+pipeline declares `trigger: none`. The two CI triggers are deliberate: they give
+the fixture both YAML trigger shapes.
+
+**Corrected after execution.** This paragraph used to claim that a definition
+with no trigger is "a slightly different object in the Azure DevOps API", so
+that the fixture would contain both shapes *at the API level*. That is wrong as
+built. Every one of the fifteen definitions created through
+`POST /build/definitions` comes back with the `triggers` property **absent
+entirely** - including `p01-simple-include` and `x01-consumer-build`, the two
+whose YAML declares `trigger: - main`. Measured on definitions 1 and 12:
+`triggers` is not an empty array, it is not present at all.
+
+The trigger difference is therefore real only in the YAML, which is where the
+module will read it from anyway. It is not visible in the definition object, and
+no read-back assertion may look for it there.
+
+A consequence worth keeping: because no definition carries a definition-level CI
+trigger, no push to any of the four repositories can queue a build. The ordering
+rule below is still the primary guard and stays; this is a second one that
+arrived by accident.
 
 **A push to a repository will therefore queue `p01-simple-include` and
 `x01-consumer-build` unless CI is suppressed.** Pass 0013 must either disable CI
@@ -247,6 +264,129 @@ names exist; only 3 confirms that what was pushed is what the module will later
 read. A fixture whose YAML differs from `fixture/repos/` by one line makes every
 subsequent functional result unattributable — the module could be wrong, or the
 fixture could be, and nothing in the output would say which.
+
+## What creation actually required
+
+Written after Pass 0013 executed. Everything above it was written before any
+call was made; this section is what the API turned out to want, and where the
+plan above was wrong.
+
+### Endpoints and API versions
+
+All of these worked at `api-version=7.1`, except the queue listing as noted.
+
+| Purpose | Method and endpoint |
+|---|---|
+| Confirm the project | `GET /_apis/projects/ClaudeTesting?api-version=7.1` |
+| List repositories | `GET /{project}/_apis/git/repositories?api-version=7.1` |
+| Create a repository | `POST /{project}/_apis/git/repositories?api-version=7.1` |
+| List files on a branch | `GET /{project}/_apis/git/repositories/{repoId}/items?recursionLevel=Full&versionDescriptor.versionType=branch&versionDescriptor.version=main&api-version=7.1` |
+| Read one file's bytes | `GET .../items?path=/{path}&versionDescriptor...&download=true&$format=octetStream&api-version=7.1` |
+| Push files | `POST /{project}/_apis/git/repositories/{repoId}/pushes?api-version=7.1` |
+| List definitions | `GET /{project}/_apis/build/definitions?api-version=7.1` |
+| Expand one definition | `GET /{project}/_apis/build/definitions/{id}?api-version=7.1` |
+| Count a definition's builds | `GET /{project}/_apis/build/builds?definitions={id}&api-version=7.1` |
+| List agent queues | `GET /{project}/_apis/distributedtask/queues?api-version=7.1-preview.1` |
+
+Two of these are easy to get wrong:
+
+- **The definition list endpoint returns neither `process.yamlFilename` nor
+  `repository.name`.** Read-back assertion 5 needs both, so each definition must
+  be fetched individually by id. A check written against the list endpoint alone
+  would compare a missing value to a missing value and pass.
+- **Reading a file's bytes needs `download=true` and `$format=octetStream`.**
+  Without them the endpoint returns JSON metadata carrying the content as an
+  already-decoded string, which is useless for a byte comparison and would make
+  assertion 3 agree with itself rather than with the server.
+
+### Pushing without giving git the PAT
+
+Files are pushed through the Git Pushes REST API, not by shelling out to
+`git push`. This is not a stylistic choice: `git push` needs the credential
+inside a remote URL, where it lands in the reflog, in `.git/config` if the
+remote is saved, and in any process listing while the command runs. The REST
+push keeps the PAT in an Authorization header and nowhere else.
+
+The payload creates the branch and adds every file in one commit per repository:
+
+```json
+{
+  "refUpdates": [
+    { "name": "refs/heads/main",
+      "oldObjectId": "0000000000000000000000000000000000000000" }
+  ],
+  "commits": [{
+    "comment": "Functional fixture, pushed by Sync-Fixture.ps1 ***NO_CI***",
+    "changes": [{
+      "changeType": "add",
+      "item": { "path": "/pipelines/p01.yml" },
+      "newContent": { "content": "<base64>", "contentType": "base64encoded" }
+    }]
+  }]
+}
+```
+
+The all-zero `oldObjectId` is how the API expresses "this branch does not exist
+yet". Content is base64 of the bytes read with `[IO.File]::ReadAllBytes` - never
+read as text and re-encoded, which is exactly what would reintroduce the CRLF
+problem `.gitattributes` was added to prevent. The `***NO_CI***` marker in the
+comment is redundant given the ordering, and is kept for the re-run case where a
+push could land while definitions already exist.
+
+Creating a repository leaves `defaultBranch` unset until the first push; the
+push to `refs/heads/main` is what sets it. Read-back assertion 2 therefore has
+to run after the push, not after the create.
+
+### The definition payload
+
+```json
+{
+  "name": "p01-simple-include",
+  "type": "build",
+  "quality": "definition",
+  "path": "\\",
+  "repository": {
+    "id": "<repo guid>", "name": "pipelines-main",
+    "type": "TfsGit", "defaultBranch": "refs/heads/main"
+  },
+  "process": { "type": 2, "yamlFilename": "pipelines/p01.yml" },
+  "queue": { "id": 0 }
+}
+```
+
+`process.type` **2** is what marks a YAML pipeline; type 1 is the old designer
+build. `repository.type` must be the string `TfsGit`. The `queue` references the
+project's existing hosted *Azure Pipelines* queue by its id - referenced, never
+created, resized or modified, and nothing self-hosted is involved.
+
+`triggers` is deliberately not sent, and comes back absent; see *Triggers*
+above.
+
+### What Azure DevOps refused
+
+Nothing. All four repositories, all four pushes and all fifteen definitions were
+accepted on the first attempt.
+
+In particular **`p08-cycle` and `p09-unresolved` were created without
+complaint.** This is the expected result and not a surprise to be fixed: their
+faults are template-expansion faults, and template expansion happens when a
+pipeline is queued. Since neither is ever queued, neither fault is ever
+evaluated. The UI may still flag them if someone opens one and asks to validate
+its YAML, and that too is the correct result.
+
+### Where the plan above was wrong
+
+1. **The trigger claim.** Corrected in place under *Triggers*: the two shapes
+   are a YAML difference, not an API difference. This was the only substantive
+   error.
+2. **Read-back numbering.** This file numbers its read-back checks 1-7 and calls
+   case 12's check "assertion 8"; the executed suite numbers them 1-8, where 8
+   is case 12's. `ReadBack.Tests.ps1` uses the 1-8 numbering and its context
+   names are the authority.
+3. **Definition ids.** Nothing above claimed otherwise, but worth recording: the
+   ids came out as the integers 1-15 only because the project had never held a
+   definition. They are not stable across a wipe and rebuild, and nothing may
+   assume them. Every check resolves definitions by name.
 
 ## Rebuilding after a wipe
 
