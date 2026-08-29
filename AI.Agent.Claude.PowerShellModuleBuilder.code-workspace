@@ -7,5 +7,7 @@
 			"path": "../PSAzureDevOpsGraph"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"powershell.cwd": "AI.Agent.Claude.PowerShellModuleBuilder"
+	}
 }
