@@ -165,13 +165,17 @@ fast-forward after a green pass, ancestry checked and never forced — decision
 | [PSGraphRender](https://github.com/JerryBalmer1/PSGraphRender) | the renderer. Takes a view model, writes one self-contained HTML page, and knows nothing about what the nodes are | v0.13.0, handed over |
 | [PSGraphRenderToHtml](https://github.com/JerryBalmer1/PSGraphRenderToHtml) | the battery between a producer and the renderer: producer-graph contract, options, mapping, and the contract battery a producer runs against its own output | v0.1.0 |
 | [PSModuleGraph](https://github.com/JerryBalmer1/PSModuleGraph) | the first producer, and the repository the renderer was extracted from | the renderer's only consumer today |
-| [PSTerraformGraph](https://github.com/JerryBalmer1/PSTerraformGraph) | the second producer, and the first that is not PowerShell | v0.1.0, scored in [run tf-001](runs/tf-001-first-build/) |
+| [PSTerraformGraph](https://github.com/JerryBalmer1/PSTerraformGraph) | the second producer, and the first that is not PowerShell | v0.2.0, scored in [tf-001](runs/tf-001-first-build/) and [tf-002](runs/tf-002-convention-and-case3/) |
 
 The renderer's boundary is the claim the ecosystem exists to test: **a producer
 in any language can drive it without changing it.** As of run tf-001 that is a
 measurement rather than an assertion: PSTerraformGraph drives PSGraphRender
 through PSGraphRenderToHtml, in a domain nobody had in mind when the renderer
-was extracted, and **not one line of either changed to allow it**.
+was extracted, and **not one line of either changed to allow it**. Run tf-002
+re-scored it at **0 differences and 7/7** after the fixture's case 3 was
+repaired under [decision 0012](decisions/0012-fixture-case3-repair.md) and two
+producer defects were closed — still with the oracle visible, so it remains a
+statement about one fixture and not a generalisation claim.
 
 ## Status, honestly
 
