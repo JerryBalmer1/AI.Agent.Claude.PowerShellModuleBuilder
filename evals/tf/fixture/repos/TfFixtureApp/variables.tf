@@ -27,18 +27,6 @@ variable "tags" {
   default     = { cost_centre = "cc-1234" }
 }
 
-variable "network_segment_id" {
-  description = "TfFixtureNetwork's segment_id output, supplied by the caller. The cross-repository output-reference case."
-  type        = string
-  default     = ""
-}
-
-variable "network_subnet_ids" {
-  description = "TfFixtureNetwork's subnet_ids output, supplied by the caller."
-  type        = list(string)
-  default     = []
-}
-
 variable "worker_count" {
   description = "How many workers the service runs."
   type        = number

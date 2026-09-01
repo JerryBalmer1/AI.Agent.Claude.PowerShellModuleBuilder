@@ -70,11 +70,11 @@
       { "id": "TfFixtureApp:.#var.environment", "label": "environment", "type": "variable", "scope": "TfFixtureApp", "parentId": "TfFixtureApp:.", "attributes": { "varType": "string", "hasDefault": true, "hasValidation": true } },
       { "id": "TfFixtureApp:.#var.owner", "label": "owner", "type": "variable", "scope": "TfFixtureApp", "parentId": "TfFixtureApp:.", "attributes": { "varType": "string", "hasDefault": true } },
       { "id": "TfFixtureApp:.#var.tags", "label": "tags", "type": "variable", "scope": "TfFixtureApp", "parentId": "TfFixtureApp:.", "attributes": { "varType": "map(string)", "hasDefault": true } },
-      { "id": "TfFixtureApp:.#var.network_segment_id", "label": "network_segment_id", "type": "variable", "scope": "TfFixtureApp", "parentId": "TfFixtureApp:.", "attributes": { "varType": "string", "hasDefault": true } },
-      { "id": "TfFixtureApp:.#var.network_subnet_ids", "label": "network_subnet_ids", "type": "variable", "scope": "TfFixtureApp", "parentId": "TfFixtureApp:.", "attributes": { "varType": "list(string)", "hasDefault": true } },
       { "id": "TfFixtureApp:.#var.worker_count", "label": "worker_count", "type": "variable", "scope": "TfFixtureApp", "parentId": "TfFixtureApp:.", "attributes": { "varType": "number", "hasDefault": true } },
       { "id": "TfFixtureApp:.#local.merged_tags", "label": "merged_tags", "type": "local", "scope": "TfFixtureApp", "parentId": "TfFixtureApp:." },
       { "id": "TfFixtureApp:.#local.service_name", "label": "service_name", "type": "local", "scope": "TfFixtureApp", "parentId": "TfFixtureApp:." },
+      { "id": "TfFixtureApp:.#local.network_segment_id", "label": "network_segment_id", "type": "local", "scope": "TfFixtureApp", "parentId": "TfFixtureApp:." },
+      { "id": "TfFixtureApp:.#local.network_subnet_ids", "label": "network_subnet_ids", "type": "local", "scope": "TfFixtureApp", "parentId": "TfFixtureApp:." },
       { "id": "TfFixtureApp:.#output.service_endpoint", "label": "service_endpoint", "type": "output", "scope": "TfFixtureApp", "parentId": "TfFixtureApp:." },
       { "id": "TfFixtureApp:.#output.instance_name", "label": "instance_name", "type": "output", "scope": "TfFixtureApp", "parentId": "TfFixtureApp:." },
       { "id": "TfFixtureApp:.#output.applied_tags", "label": "applied_tags", "type": "output", "scope": "TfFixtureApp", "parentId": "TfFixtureApp:." },
@@ -96,6 +96,7 @@
       { "from": "TfFixtureNetwork:modules/segment", "to": "TfFixtureNetwork:modules/segment/modules/subnet", "kind": "sources", "resolved": true },
       { "from": "TfFixtureApp:.", "to": "TfFixtureShared:modules/naming", "kind": "sources", "label": "git::", "resolved": true },
       { "from": "TfFixtureApp:.", "to": "TfFixtureShared:modules/tags", "kind": "sources", "label": "git::", "resolved": true },
+      { "from": "TfFixtureApp:.", "to": "TfFixtureNetwork:.", "kind": "sources", "label": "git::", "resolved": true },
       { "from": "TfFixtureApp:.", "to": "TfFixtureApp:modules/service", "kind": "sources", "resolved": true },
       { "from": "TfFixtureApp:modules/service", "to": "TfFixtureApp:modules/service/modules/worker", "kind": "sources", "resolved": true },
       { "from": "TfFixtureApp:.", "to": "TfFixtureApp:../shared-legacy/modules/archive", "kind": "sources", "resolved": false, "reason": "source ../shared-legacy/modules/archive resolves to no directory in any scanned repository" },
@@ -121,7 +122,7 @@
 
       { "from": "TfFixtureApp:.#var.tags", "to": "TfFixtureApp:.#local.merged_tags", "kind": "references" },
       { "from": "TfFixtureApp:.#var.application_name", "to": "TfFixtureApp:.#local.merged_tags", "kind": "references" },
-      { "from": "TfFixtureApp:.#var.network_segment_id", "to": "TfFixtureApp:.#local.merged_tags", "kind": "references" },
+      { "from": "TfFixtureApp:.#local.network_segment_id", "to": "TfFixtureApp:.#local.merged_tags", "kind": "references" },
       { "from": "TfFixtureApp:.#var.application_name", "to": "TfFixtureApp:.#local.service_name", "kind": "references" },
       { "from": "TfFixtureApp:modules/service#output.endpoint", "to": "TfFixtureApp:.#output.service_endpoint", "kind": "references" },
       { "from": "TfFixtureApp:modules/service#output.tags", "to": "TfFixtureApp:.#output.applied_tags", "kind": "references" },
@@ -129,8 +130,10 @@
       { "from": "TfFixtureApp:modules/service#local.service_tags", "to": "TfFixtureApp:modules/service#output.tags", "kind": "references" },
       { "from": "TfFixtureApp:modules/service#var.name", "to": "TfFixtureApp:modules/service#output.endpoint", "kind": "references" },
 
-      { "from": "TfFixtureNetwork:.#output.segment_id", "to": "TfFixtureApp:.#var.network_segment_id", "kind": "references", "resolved": true },
-      { "from": "TfFixtureNetwork:.#output.subnet_ids", "to": "TfFixtureApp:.#var.network_subnet_ids", "kind": "references", "resolved": true },
+      { "from": "TfFixtureNetwork:.#output.segment_id", "to": "TfFixtureApp:.#local.network_segment_id", "kind": "references" },
+      { "from": "TfFixtureNetwork:.#output.subnet_ids", "to": "TfFixtureApp:.#local.network_subnet_ids", "kind": "references" },
+
+      { "from": "TfFixtureApp:.#var.application_name", "to": "TfFixtureNetwork:.#var.network_name", "kind": "passes-to" },
 
       { "from": "TfFixtureShared:.#local.effective_prefix", "to": "TfFixtureShared:modules/naming#var.prefix", "kind": "passes-to" },
       { "from": "TfFixtureShared:.#var.environment", "to": "TfFixtureShared:modules/naming#var.environment", "kind": "passes-to" },
@@ -150,7 +153,7 @@
       { "from": "TfFixtureApp:.#var.environment", "to": "TfFixtureShared:modules/tags#var.environment", "kind": "passes-to" },
       { "from": "TfFixtureApp:.#local.service_name", "to": "TfFixtureApp:modules/service#var.name", "kind": "passes-to" },
       { "from": "TfFixtureApp:.#local.merged_tags", "to": "TfFixtureApp:modules/service#var.tags", "kind": "passes-to" },
-      { "from": "TfFixtureApp:.#var.network_subnet_ids", "to": "TfFixtureApp:modules/service#var.subnet_ids", "kind": "passes-to" },
+      { "from": "TfFixtureApp:.#local.network_subnet_ids", "to": "TfFixtureApp:modules/service#var.subnet_ids", "kind": "passes-to" },
       { "from": "TfFixtureApp:.#var.worker_count", "to": "TfFixtureApp:modules/service#var.worker_count", "kind": "passes-to" },
       { "from": "TfFixtureApp:modules/service#var.name", "to": "TfFixtureApp:modules/service/modules/worker#var.name", "kind": "passes-to" },
       { "from": "TfFixtureApp:modules/service#local.service_tags", "to": "TfFixtureApp:modules/service/modules/worker#var.tags", "kind": "passes-to" }

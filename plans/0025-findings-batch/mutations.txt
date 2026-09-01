@@ -1,0 +1,108 @@
+==============================================================================
+FALSIFYING Compare-TfGraph.ps1
+Generated 2026-09-01T00:44:27Z
+Oracle: C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/evals/tf/fixture/expected-graph.json
+==============================================================================
+
+A comparator is the one tool in a scoring harness that nothing else checks.
+If it under-reports, every score it produces is flattering and nothing says so.
+Each mutation below changes exactly ONE thing about a graph that is otherwise
+the oracle, and each is proved to have changed the document before its
+detection is trusted.
+
+------------------------------------------------------------------------------
+CONTROL FIRST - the oracle against itself must report ZERO differences.
+Every detection below is meaningless if a document differs from itself.
+
+IsMatch:          True
+DifferenceCount:  0
+compared:         78 nodes, 59 edges
+CONTROL GREEN
+
+------------------------------------------------------------------------------
+MUTATION: missing-node
+CHANGED:  drop TfFixtureApp:modules/service#local.service_tags, a node the traceability chain runs through
+LANDED:   document changed, 21017 -> 20857 chars
+IsMatch:          False
+DifferenceCount:  1
+  MissingNode     TfFixtureApp:modules/service#local.service_tags
+                  type=local scope=TfFixtureApp
+DETECTED: missing-node [MissingNode]
+
+------------------------------------------------------------------------------
+MUTATION: extra-node
+CHANGED:  add a local nothing declares
+LANDED:   document changed, 21017 -> 21171 chars
+IsMatch:          False
+DifferenceCount:  1
+  ExtraNode       TfFixtureApp:.#local.invented_by_the_mutator
+                  type=local scope=TfFixtureApp
+DETECTED: extra-node [ExtraNode]
+
+------------------------------------------------------------------------------
+MUTATION: wrong-attribute
+CHANGED:  change the random provider pin from 3.6.0 to 9.9.9
+LANDED:   document changed, 21017 -> 21017 chars
+IsMatch:          False
+DifferenceCount:  1
+  WrongAttribute  TfFixtureShared:.#provider.random
+                  attributes.version : expected '3.6.0', got '9.9.9'
+DETECTED: wrong-attribute [WrongAttribute]
+
+------------------------------------------------------------------------------
+MUTATION: wrong-parent
+CHANGED:  reparent the third-level subnet module to the root, flattening the chain by one level
+LANDED:   document changed, 21017 -> 21003 chars
+IsMatch:          False
+DifferenceCount:  1
+  WrongParent     TfFixtureNetwork:modules/segment/modules/subnet
+                  expected parentId 'TfFixtureNetwork:modules/segment', got 'TfFixtureNetwork:.'
+DETECTED: wrong-parent [WrongParent]
+
+------------------------------------------------------------------------------
+MUTATION: missing-edge
+CHANGED:  drop the local.merged_tags -> modules/service#var.tags passes-to edge
+LANDED:   document changed, 21017 -> 20909 chars
+IsMatch:          False
+DifferenceCount:  1
+  MissingEdge     TfFixtureApp:.#local.merged_tags -> TfFixtureApp:modules/service#var.tags
+                  kind=passes-to
+DETECTED: missing-edge [MissingEdge]
+
+------------------------------------------------------------------------------
+MUTATION: extra-edge
+CHANGED:  invent a reference out of the deliberately unused variable
+LANDED:   document changed, 21017 -> 21140 chars
+IsMatch:          False
+DifferenceCount:  1
+  ExtraEdge       TfFixtureShared:.#var.unused_retention_days -> TfFixtureShared:.#local.effective_prefix
+                  kind=references
+DETECTED: extra-edge [ExtraEdge]
+
+------------------------------------------------------------------------------
+MUTATION: wrong-edge-kind
+CHANGED:  change that same edge from passes-to to references
+LANDED:   document changed, 21017 -> 21018 chars
+IsMatch:          False
+DifferenceCount:  1
+  WrongEdgeKind   TfFixtureApp:.#local.merged_tags -> TfFixtureApp:modules/service#var.tags
+                  expected kind 'passes-to', got 'references'
+DETECTED: wrong-edge-kind [WrongEdgeKind]
+
+------------------------------------------------------------------------------
+DISCRIMINATION - each mutation must be reported as its OWN mechanism.
+A comparator that reported everything as MissingNode would score 7/7 above and
+be useless, so the categories are checked to be distinct.
+
+  missing-node       -> MissingNode     (1 difference(s) total)
+  extra-node         -> ExtraNode       (1 difference(s) total)
+  wrong-attribute    -> WrongAttribute  (1 difference(s) total)
+  wrong-parent       -> WrongParent     (1 difference(s) total)
+  missing-edge       -> MissingEdge     (1 difference(s) total)
+  extra-edge         -> ExtraEdge       (1 difference(s) total)
+  wrong-edge-kind    -> WrongEdgeKind   (1 difference(s) total)
+distinct categories exercised: 7 of 7
+
+==============================================================================
+DETECTED: 7 / 7
+==============================================================================

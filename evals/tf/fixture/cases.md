@@ -57,7 +57,7 @@ repo:TfFixtureApp
 | Kind | From → to | Means |
 | --- | --- | --- |
 | `sources` | module → module | the first declares a `module` block whose source resolves to the second |
-| `references` | variable/local/output → local/output | the second's expression reads the first, inside one module |
+| `references` | variable/local/output → local/output | the second's expression reads the first. Usually inside one module; case 3's two cross a repository, because a `module` block's outputs are read by their caller |
 | `passes-to` | variable/local → variable | a value crosses a module boundary as an argument |
 
 `contains` is not an edge kind here and the contract refuses it by name.
@@ -93,12 +93,38 @@ resolves the repository and loses the subdirectory.
 ### 3. Cross-repository output reference
 
 `TfFixtureNetwork` publishes `output.segment_id` and `output.subnet_ids`.
-`TfFixtureApp` declares `var.network_segment_id` and `var.network_subnet_ids`
-whose descriptions say they carry them. Two `references` edges cross the
-repository boundary.
+`TfFixtureApp` declares `module "network"`, whose `source` is a `git::` URL for
+TfFixtureNetwork **with no `//subdirectory`** — and that absence is what names
+the repository's root module rather than a directory inside it:
+
+```
+git::https://jlbalmerjr1@dev.azure.com/jlbalmerjr1/ClaudeTestingTerraform/_git/TfFixtureNetwork?ref=main
+```
+
+Two locals read that module's outputs through the block:
+
+```hcl
+network_segment_id = module.network.segment_id
+network_subnet_ids = module.network.subnet_ids
+```
+
+so the chain is `sources` to the other repository's root, then two `references`
+edges from its outputs into TfFixtureApp's locals, and from there on into
+`local.merged_tags` and `modules/service#var.subnet_ids`. The call also passes
+`network_name = var.application_name`, one `passes-to` edge back the other way.
 
 **What it catches:** a producer that treats each repository as a closed world.
-This is the case a single-repository parser cannot see at all.
+This is the case a single-repository parser cannot see at all. It also catches a
+resolver that requires a `//subdirectory` — case 2 exercises only that form, and
+a resolver which splits on `//` and gives up when there is none passes case 2
+and fails this.
+
+**Amended once, under decision 0012.** As first written, the tie was stated only
+in the *description strings* of two variables — prose no parser can read — and
+run tf-001 established that no producer could pass the case. Decision 0012 is
+the one amendment decision 0011 provides for; the two variables became the two
+locals above, and the module block is the mechanical tie that replaced the
+prose. The fixture re-froze immediately afterwards.
 
 ### 4. Provider version pin
 
@@ -159,17 +185,25 @@ The oracle holds, and `Compare-TfGraph.ps1` checks:
 | --- | --- | --- | --- | --- |
 | repository | 1 | 1 | 1 | 3 |
 | module | 3 | 3 | 4 | 10 |
-| variable | 8 | 12 | 13 | 33 |
-| local | 3 | 3 | 3 | 9 |
+| variable | 8 | 12 | 11 | 31 |
+| local | 3 | 3 | 5 | 11 |
 | output | 5 | 6 | 6 | 17 |
 | provider | 2 | 2 | 2 | 6 |
 | **nodes** | **22** | **27** | **29** | **78** |
 
 The `module` count for TfFixtureApp includes the unresolvable `legacy` target.
+It does **not** include `module "network"`, which resolves to `TfFixtureNetwork:.`
+— an existing node — exactly as case 2's cross-repository calls resolve to
+existing nodes in TfFixtureShared.
+
+Edges: **59** — 10 `sources`, 28 `references`, 21 `passes-to`.
 
 ## Frozen
 
 Per decision 0011, once `mutations.txt` records the oracle falsified, this
-fixture is frozen like `ClaudeTesting`: changes require a new decision. Pass
-0024 may not edit anything under `evals/tf/fixture/`, and a defect found there
-is a finding, not an edit.
+fixture is frozen like `ClaudeTesting`: changes require a new decision. A defect
+found here is a finding, not an edit.
+
+**Amended exactly once since,** by decision 0012 in pass 0025, for case 3 and
+nothing else. The amended oracle was re-falsified against all seven mutations
+before the re-freeze. The fixture is closed again on decision 0011's terms.
