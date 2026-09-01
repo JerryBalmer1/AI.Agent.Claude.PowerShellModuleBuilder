@@ -66,3 +66,37 @@ TF fixture SHAs (decision-0012 re-freeze):
     skill.** `producer-contract` is neither `powershell-module-<role>`
     nor `azdo-<role>`. Left as-is and flagged in the README rather than
     bent into a name that lies; worth settling if a second one appears.
+
+### Blind-run hygiene — operator-directed, landed ahead of run 004
+
+12. **HARNESS.md hazard entry — run records are oracle knowledge in
+    prose; a session that has read `runs/` is disqualified as a blind
+    builder; blind-run prompts are the first message of a fresh session;
+    AND nothing may ever write run scores, fixture findings, or oracle
+    content into session memory, `MEMORY.md`, `CLAUDE.md`, or any
+    auto-loading location — a poisoned memory fails the gate permanently
+    and silently** (fold in at 0029; `evals/` frozen until then).
+
+    Raised when pass 0026 stopped at its own session gate: pass 0025 had
+    read `runs/002-first-build/README.md` and `runs/003-baseline-off/`
+    legitimately, to rebuild those clones for the conformance-denominator
+    falsification, and that alone disqualified the session from building
+    run 004 blind. The reading had nothing to do with the AzDO fixture's
+    answers and burned the session anyway.
+
+    The memory clause is the half with no visible failure. A context
+    window is cleared by `/clear`; an auto-loading file is not, so a
+    single score written to memory disqualifies **every** future session
+    and nothing announces it. Verified empty at the time of writing:
+
+        <project>/memory/           empty, no MEMORY.md
+        harness CLAUDE.md           absent
+        harness .claude/            absent
+
+    Keeping it empty is the enforcement until the hazard entry lands.
+    `evals/HARNESS.md` is the destination and is frozen behind the
+    ladder, which is why this sits here and not there.
+
+    **Run 004's task 8 is satisfied for this item — append nothing, and
+    do not restate it.** Its shorter wording is superseded by the text
+    above.
