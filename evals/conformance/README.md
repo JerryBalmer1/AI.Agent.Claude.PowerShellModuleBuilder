@@ -116,6 +116,32 @@ cases-passed: `result.json` carries `CasesRun` beside `Total`, and an
 absent. The comment-based-help assertion silently did not apply to six of eight
 corpus modules while appearing to be part of a green run.
 
+**cases-run is not comparable between two targets; cases-defined is.** `CasesRun`
+depends on the SHAPE of the target — an `It` with `-ForEach` over the public
+functions makes seven cases against a module with seven commands and two against
+a module with two. Runs 002 and 003 are two builds of the *same* module and
+reported 57 and 55, so the denominator moved underneath the score.
+
+`result.json` therefore also carries **`CasesDefined`** and
+`CasesDefinedPerTag`: the count of `It` statements the selected tags select,
+parsed out of `Conformance.Tests.ps1` itself. The target is never consulted — no
+file of it is read, no `-ForEach` is expanded — which is exactly why the number
+cannot move with the target. Read from the AST rather than by regex, for the
+same reason the build-file assertions are: a block comment quoting an `It` is
+not an `It`.
+
+**Compare two runs on `CasesDefined`; report `CasesRun` beside it.** A change in
+`CasesDefined` between two runs means *the suite changed*, which silently
+rescales every score either side of it and has to be said out loud. `ScorePct`
+still divides by `CasesRun` deliberately: "what fraction of what applied to this
+target passed" is a fair question about one target, and it is a different
+question from whether two runs were graded against the same suite at all.
+
+Reporting only. No assertion was weakened, and nothing is skipped. The evidence
+is `plans/0025-findings-batch/denominator.txt`: three differently shaped targets
+report `CasesDefined` 33 with `CasesRun` 57, 55 and 41, and the two
+PSAzureDevOpsGraph rows reproduce runs 002 and 003 exactly.
+
 **Ambiguous discovery fails loudly.** When the suite cannot determine which
 module it is grading, it stops and names every candidate. It does not pick.
 SqlServerDsc ships 51 manifests; the old shortest-path tie-break graded a

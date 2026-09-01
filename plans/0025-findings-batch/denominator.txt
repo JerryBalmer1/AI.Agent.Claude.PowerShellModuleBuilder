@@ -1,0 +1,77 @@
+==============================================================================
+A STABLE CONFORMANCE DENOMINATOR
+Generated 2026-09-01T01:11:53Z
+==============================================================================
+
+THE PROBLEM
+
+cases-run is what executed, and it depends on the SHAPE of the target. An It
+with -ForEach over the public functions produces seven cases against a module
+with seven commands and two against a module with two. Runs 002 and 003 are
+two builds of the SAME module and reported 57 and 55: the denominator moved
+underneath the score, so 57/57 and 39/55 are not two points on one scale.
+
+cases-defined is read from the suite SOURCE by parsing it - the count of It
+statements the selected tags select. The target is never consulted: no file of
+it is read, no -ForEach is expanded, nothing is discovered. That is the whole
+property, and it is why the number cannot move with the target.
+
+Read from the AST, not with a regex, for the reason the suite gives about the
+build file: a block comment quoting an It is not an It.
+
+NO ASSERTION WAS WEAKENED. Nothing is skipped, and cases-run and the score are
+computed exactly as before. This adds a denominator that holds still.
+
+------------------------------------------------------------------------------
+THE FALSIFICATION - three differently shaped targets, one tag selection
+
+  target                             defined  run    passed   score
+  run-002 (79e02fb, 7 public fns)    33       57     57       100%
+  run-003 (d852abc, 7 public fns)    33       55     39       70.91%
+  PSTerraformGraph (2 public fns)    33       41     40       97.56%
+
+  per tag, all three targets: HouseStyle=14 Repository=4 RequiresBuild=6 Universal=9
+
+cases-defined identical across shapes: True
+cases-run differs across shapes:       True   (57, 55, 41)
+
+The two PSAzureDevOpsGraph rows reproduce the committed results of runs 002
+and 003 exactly - 57/57 and 39/55 at 70.91% - so this is the same measurement
+those runs recorded, with a denominator added beside it.
+
+------------------------------------------------------------------------------
+THE CONTROL - it must move with the SELECTION, or it measures nothing
+
+A number that never changed would be stable and useless. Against run-002:
+
+  -Tag Universal                                   cases-defined  9   cases-run 17
+  -Tag Universal,HouseStyle                        cases-defined 23   cases-run 41
+  -Tag Universal,Repository,HouseStyle,RequiresBuild cases-defined 33  cases-run 57
+
+It tracks the tags the caller selected and nothing about the target. Both
+halves are needed: invariant across targets, responsive to selection.
+
+------------------------------------------------------------------------------
+THE COMPARISON RULE FOR RUNS 004-006
+
+  COMPARE ON cases-defined. REPORT cases-run BESIDE IT. Never compare two
+  runs on cases-run alone.
+
+  A run states four numbers: passed, cases-run, cases-defined, and the score.
+  Two runs are comparable when their cases-defined and their tag selection
+  agree. When their cases-run differs, that difference is a fact about the
+  two TARGETS - one has more public commands, or fewer files a -ForEach
+  enumerates - and it is reported, never averaged away.
+
+  A change in cases-defined between two runs means THE SUITE CHANGED. That is
+  a harness event and needs saying out loud, because it silently rescales
+  every score before and after it. Runs 004-006 are meant to be compared to
+  run 003, so the suite must not change under them; if it must, the runs that
+  straddle the change are not comparable and the record says so.
+
+  ScorePct is unchanged and still divides by cases-run, deliberately: it
+  answers "what fraction of what applied to this target passed", which is a
+  fair question about one target. cases-defined answers the different
+  question of whether two runs were graded against the same suite at all.
+==============================================================================
+

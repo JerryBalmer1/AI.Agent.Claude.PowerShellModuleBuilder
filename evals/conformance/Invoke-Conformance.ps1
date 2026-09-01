@@ -134,6 +134,92 @@ if (-not $ModuleName) {
     }
 }
 
+# ---------------------------------------------------------------------------
+# The assertion inventory: what the suite DEFINES, per tag.
+#
+# CasesRun below is what executed, and it depends on the SHAPE of the target: an
+# It with -ForEach over the public functions produces seven cases against a
+# module with seven commands and one against a module with one. That makes a
+# score comparable to itself and to nothing else, and it is why two runs of the
+# same suite against two builds of the same module reported 57 and 55.
+#
+# cases-defined is the count of It statements the selected tags select, read
+# from the suite's own SOURCE by parsing it. It cannot vary with the target
+# because the target is not consulted: no file of the target is read, no
+# -ForEach is expanded, nothing is discovered. That is the whole property.
+#
+# It is READING ONLY. No assertion is weakened, none is skipped, and CasesRun
+# and the score are computed exactly as before. This adds a denominator that
+# holds still; it does not change what is graded.
+#
+# Read from the AST rather than with a regex, for the reason the suite itself
+# gives about the build file: a block comment quoting `It 'x' {` is not an It,
+# and every regex written against this kind of file has eventually been defeated
+# by one.
+# ---------------------------------------------------------------------------
+
+function Get-AssertionInventory {
+    param([Parameter(Mandatory)] [string] $SuitePath)
+
+    # Declared before the [ref], because Set-StrictMode refuses an undefined
+    # variable and this file runs under it.
+    $parseErrors = $null
+    $ast = [System.Management.Automation.Language.Parser]::ParseFile($SuitePath, [ref]$null, [ref]$parseErrors)
+    if ($parseErrors) { throw "Cannot parse '$SuitePath': $($parseErrors[0].Message)" }
+
+    $commands = $ast.FindAll({ $args[0] -is [System.Management.Automation.Language.CommandAst] }, $true)
+
+    $describes = @($commands | Where-Object { $_.GetCommandName() -eq 'Describe' })
+    $its = @($commands | Where-Object { $_.GetCommandName() -eq 'It' })
+
+    $inventory = [ordered]@{}
+    foreach ($describe in $describes) {
+        # The -Tag argument, as written. A Describe carries the tag for every It
+        # inside it; this suite has no Context that re-tags, and an It that
+        # carried its own -Tag would need handling here rather than silently
+        # counting under its parent.
+        $tags = @()
+        $elements = @($describe.CommandElements)
+        for ($i = 0; $i -lt $elements.Count - 1; $i++) {
+            $element = $elements[$i]
+            if ($element -is [System.Management.Automation.Language.CommandParameterAst] -and
+                $element.ParameterName -eq 'Tag') {
+                $value = $elements[$i + 1]
+                if ($value -is [System.Management.Automation.Language.ArrayLiteralAst]) {
+                    $tags = @($value.Elements | ForEach-Object { $_.Value })
+                }
+                elseif ($value.PSObject.Properties['Value']) { $tags = @($value.Value) }
+            }
+        }
+        if (-not $tags) { continue }
+
+        # Its inside THIS Describe, by source extent. Nested Describes would
+        # double-count; this suite has none, and a change that introduced one
+        # would need this to compare against the innermost enclosing Describe.
+        $start = $describe.Extent.StartOffset
+        $end = $describe.Extent.EndOffset
+        $count = @($its | Where-Object { $_.Extent.StartOffset -ge $start -and $_.Extent.EndOffset -le $end }).Count
+
+        foreach ($tag in $tags) {
+            if (-not $inventory.Contains($tag)) { $inventory[$tag] = 0 }
+            $inventory[$tag] += $count
+        }
+    }
+    $inventory
+}
+
+$inventory = Get-AssertionInventory -SuitePath (Join-Path $PSScriptRoot 'Conformance.Tests.ps1')
+$definedPerTag = [ordered]@{}
+# $selectedTag, NOT $tag. PowerShell variable names are case-insensitive, so a
+# loop variable named $tag IS the $Tag parameter: iterating it rebinds the
+# parameter to the last element, and every tag but one silently stops being
+# selected. That happened here - the run reported 17 cases instead of 57 and
+# looked like a filter bug in Pester.
+foreach ($selectedTag in ($Tag | Sort-Object)) {
+    $definedPerTag[$selectedTag] = if ($inventory.Contains($selectedTag)) { [int]$inventory[$selectedTag] } else { 0 }
+}
+$casesDefined = [int](@($definedPerTag.Values) | Measure-Object -Sum).Sum
+
 $pester = Get-Module -Name Pester -ListAvailable |
     Where-Object { $_.Version -ge [version]'6.0.0' -and $_.Version -lt [version]'7.0.0' } |
     Sort-Object Version -Descending |
@@ -200,6 +286,16 @@ $summary = [pscustomobject]@{
     # nothing about how many of the selected assertions had anything to run
     # against.
     CasesRun    = $result.PassedCount + $result.FailedCount
+    # The stable denominator. Read from the suite's source, per selected tag,
+    # without consulting the target - so two differently shaped targets graded
+    # with the same tags report the SAME CasesDefined and may report different
+    # CasesRun. Compare runs on CasesDefined; report CasesRun beside it.
+    CasesDefined = $casesDefined
+    # [pscustomobject], not the ordered dictionary itself: ConvertTo-Json
+    # refuses OrderedDictionary outright - "Keys must be strings" - even when
+    # every key is a string, and the result file is the artifact the harness
+    # reads.
+    CasesDefinedPerTag = [pscustomobject]$definedPerTag
     # Denominator is what actually executed. TotalCount includes tests filtered
     # out by -Tag (NotRun), so dividing by Total - Skipped charged the score for
     # assertions the caller deliberately did not select: a Universal,HouseStyle
@@ -220,6 +316,9 @@ $summary | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $ResultPath -Encod
 Write-Host ''
 Write-Host ("Conformance: $($summary.Passed)/$($summary.CasesRun) ($($summary.ScorePct)%) " +
     "across $(@($assertions).Count) assertions  ->  $ResultPath")
+Write-Host ("cases-defined: $($summary.CasesDefined)  (" +
+    ((@($definedPerTag.Keys) | ForEach-Object { '{0}={1}' -f $_, $definedPerTag[$_] }) -join ', ') +
+    ")   cases-run: $($summary.CasesRun)")
 
 $summary
 
