@@ -1,0 +1,11 @@
+functional-tf, by the named cases in evals/tf/fixture/cases.md
+
+  PASS 1 nested-module chain, three levels
+  PASS 2 cross-repository source (git:: with //subdir)
+  PASS 3 cross-repository output reference
+  PASS 4 provider version pin
+  PASS 5 variable -> local -> module -> nested module
+  PASS 6 unused variable, the absence case
+  PASS 7 unresolved module source
+
+functional-tf: 7 / 7

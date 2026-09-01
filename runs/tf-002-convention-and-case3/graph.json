@@ -1,0 +1,1113 @@
+{
+  "graph": {
+    "meta": {
+      "producer": "PSTerraformGraph",
+      "producerVersion": "0.2.0",
+      "contractVersion": "0.1.0",
+      "generatedUtc": "2026-09-01T01:01:53Z",
+      "roots": [
+        "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureShared",
+        "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureNetwork",
+        "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureApp"
+      ]
+    },
+    "nodes": [
+      {
+        "id": "repo:TfFixtureShared",
+        "label": "TfFixtureShared",
+        "type": "repository",
+        "scope": "TfFixtureShared",
+        "parentId": null
+      },
+      {
+        "id": "repo:TfFixtureNetwork",
+        "label": "TfFixtureNetwork",
+        "type": "repository",
+        "scope": "TfFixtureNetwork",
+        "parentId": null
+      },
+      {
+        "id": "repo:TfFixtureApp",
+        "label": "TfFixtureApp",
+        "type": "repository",
+        "scope": "TfFixtureApp",
+        "parentId": null
+      },
+      {
+        "id": "TfFixtureShared:.",
+        "label": "root",
+        "type": "module",
+        "scope": "TfFixtureShared",
+        "parentId": "repo:TfFixtureShared",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureShared/.",
+        "attributes": {
+          "requiredVersion": ">= 1.3.0, < 2.0.0"
+        }
+      },
+      {
+        "id": "TfFixtureShared:.#provider.random",
+        "label": "random",
+        "type": "provider",
+        "scope": "TfFixtureShared",
+        "parentId": "TfFixtureShared:.",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureShared/versions.tf",
+        "attributes": {
+          "source": "hashicorp/random",
+          "version": "3.6.0"
+        }
+      },
+      {
+        "id": "TfFixtureShared:.#provider.time",
+        "label": "time",
+        "type": "provider",
+        "scope": "TfFixtureShared",
+        "parentId": "TfFixtureShared:.",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureShared/versions.tf",
+        "attributes": {
+          "source": "hashicorp/time",
+          "version": "~> 0.11.1"
+        }
+      },
+      {
+        "id": "TfFixtureShared:.#var.prefix",
+        "label": "prefix",
+        "type": "variable",
+        "scope": "TfFixtureShared",
+        "parentId": "TfFixtureShared:.",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureShared/variables.tf",
+        "attributes": {
+          "varType": "string",
+          "hasDefault": true
+        }
+      },
+      {
+        "id": "TfFixtureShared:.#var.environment",
+        "label": "environment",
+        "type": "variable",
+        "scope": "TfFixtureShared",
+        "parentId": "TfFixtureShared:.",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureShared/variables.tf",
+        "attributes": {
+          "varType": "string",
+          "hasDefault": true,
+          "hasValidation": true
+        }
+      },
+      {
+        "id": "TfFixtureShared:.#var.owner",
+        "label": "owner",
+        "type": "variable",
+        "scope": "TfFixtureShared",
+        "parentId": "TfFixtureShared:.",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureShared/variables.tf",
+        "attributes": {
+          "varType": "string",
+          "hasDefault": true
+        }
+      },
+      {
+        "id": "TfFixtureShared:.#var.unused_retention_days",
+        "label": "unused_retention_days",
+        "type": "variable",
+        "scope": "TfFixtureShared",
+        "parentId": "TfFixtureShared:.",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureShared/variables.tf",
+        "attributes": {
+          "varType": "number",
+          "hasDefault": true
+        }
+      },
+      {
+        "id": "TfFixtureShared:.#local.effective_prefix",
+        "label": "effective_prefix",
+        "type": "local",
+        "scope": "TfFixtureShared",
+        "parentId": "TfFixtureShared:.",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureShared/main.tf"
+      },
+      {
+        "id": "TfFixtureShared:.#output.name_prefix",
+        "label": "name_prefix",
+        "type": "output",
+        "scope": "TfFixtureShared",
+        "parentId": "TfFixtureShared:.",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureShared/outputs.tf"
+      },
+      {
+        "id": "TfFixtureShared:.#output.common_tags",
+        "label": "common_tags",
+        "type": "output",
+        "scope": "TfFixtureShared",
+        "parentId": "TfFixtureShared:.",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureShared/outputs.tf"
+      },
+      {
+        "id": "TfFixtureShared:modules/naming",
+        "label": "naming",
+        "type": "module",
+        "scope": "TfFixtureShared",
+        "parentId": "TfFixtureShared:.",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureShared/modules/naming"
+      },
+      {
+        "id": "TfFixtureShared:modules/naming#var.prefix",
+        "label": "prefix",
+        "type": "variable",
+        "scope": "TfFixtureShared",
+        "parentId": "TfFixtureShared:modules/naming",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureShared/modules/naming/variables.tf",
+        "attributes": {
+          "varType": "string",
+          "hasDefault": false,
+          "hasValidation": true
+        }
+      },
+      {
+        "id": "TfFixtureShared:modules/naming#var.environment",
+        "label": "environment",
+        "type": "variable",
+        "scope": "TfFixtureShared",
+        "parentId": "TfFixtureShared:modules/naming",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureShared/modules/naming/variables.tf",
+        "attributes": {
+          "varType": "string",
+          "hasDefault": true
+        }
+      },
+      {
+        "id": "TfFixtureShared:modules/naming#local.qualified",
+        "label": "qualified",
+        "type": "local",
+        "scope": "TfFixtureShared",
+        "parentId": "TfFixtureShared:modules/naming",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureShared/modules/naming/main.tf"
+      },
+      {
+        "id": "TfFixtureShared:modules/naming#output.prefix",
+        "label": "prefix",
+        "type": "output",
+        "scope": "TfFixtureShared",
+        "parentId": "TfFixtureShared:modules/naming",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureShared/modules/naming/outputs.tf"
+      },
+      {
+        "id": "TfFixtureShared:modules/naming#output.unique_suffix",
+        "label": "unique_suffix",
+        "type": "output",
+        "scope": "TfFixtureShared",
+        "parentId": "TfFixtureShared:modules/naming",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureShared/modules/naming/outputs.tf"
+      },
+      {
+        "id": "TfFixtureShared:modules/tags",
+        "label": "tags",
+        "type": "module",
+        "scope": "TfFixtureShared",
+        "parentId": "TfFixtureShared:.",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureShared/modules/tags"
+      },
+      {
+        "id": "TfFixtureShared:modules/tags#var.owner",
+        "label": "owner",
+        "type": "variable",
+        "scope": "TfFixtureShared",
+        "parentId": "TfFixtureShared:modules/tags",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureShared/modules/tags/variables.tf",
+        "attributes": {
+          "varType": "string",
+          "hasDefault": false
+        }
+      },
+      {
+        "id": "TfFixtureShared:modules/tags#var.environment",
+        "label": "environment",
+        "type": "variable",
+        "scope": "TfFixtureShared",
+        "parentId": "TfFixtureShared:modules/tags",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureShared/modules/tags/variables.tf",
+        "attributes": {
+          "varType": "string",
+          "hasDefault": true
+        }
+      },
+      {
+        "id": "TfFixtureShared:modules/tags#local.tags",
+        "label": "tags",
+        "type": "local",
+        "scope": "TfFixtureShared",
+        "parentId": "TfFixtureShared:modules/tags",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureShared/modules/tags/main.tf"
+      },
+      {
+        "id": "TfFixtureShared:modules/tags#output.tags",
+        "label": "tags",
+        "type": "output",
+        "scope": "TfFixtureShared",
+        "parentId": "TfFixtureShared:modules/tags",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureShared/modules/tags/outputs.tf"
+      },
+      {
+        "id": "TfFixtureNetwork:.",
+        "label": "root",
+        "type": "module",
+        "scope": "TfFixtureNetwork",
+        "parentId": "repo:TfFixtureNetwork",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureNetwork/.",
+        "attributes": {
+          "requiredVersion": ">= 1.5.0"
+        }
+      },
+      {
+        "id": "TfFixtureNetwork:.#provider.null",
+        "label": "null",
+        "type": "provider",
+        "scope": "TfFixtureNetwork",
+        "parentId": "TfFixtureNetwork:.",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureNetwork/versions.tf",
+        "attributes": {
+          "source": "hashicorp/null",
+          "version": "3.2.2"
+        }
+      },
+      {
+        "id": "TfFixtureNetwork:.#provider.local",
+        "label": "local",
+        "type": "provider",
+        "scope": "TfFixtureNetwork",
+        "parentId": "TfFixtureNetwork:.",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureNetwork/versions.tf",
+        "attributes": {
+          "source": "hashicorp/local",
+          "version": "2.5.1"
+        }
+      },
+      {
+        "id": "TfFixtureNetwork:.#var.network_name",
+        "label": "network_name",
+        "type": "variable",
+        "scope": "TfFixtureNetwork",
+        "parentId": "TfFixtureNetwork:.",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureNetwork/variables.tf",
+        "attributes": {
+          "varType": "string",
+          "hasDefault": true
+        }
+      },
+      {
+        "id": "TfFixtureNetwork:.#var.address_space",
+        "label": "address_space",
+        "type": "variable",
+        "scope": "TfFixtureNetwork",
+        "parentId": "TfFixtureNetwork:.",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureNetwork/variables.tf",
+        "attributes": {
+          "varType": "string",
+          "hasDefault": true,
+          "hasValidation": true
+        }
+      },
+      {
+        "id": "TfFixtureNetwork:.#var.segment_index",
+        "label": "segment_index",
+        "type": "variable",
+        "scope": "TfFixtureNetwork",
+        "parentId": "TfFixtureNetwork:.",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureNetwork/variables.tf",
+        "attributes": {
+          "varType": "number",
+          "hasDefault": true
+        }
+      },
+      {
+        "id": "TfFixtureNetwork:.#var.subnet_count",
+        "label": "subnet_count",
+        "type": "variable",
+        "scope": "TfFixtureNetwork",
+        "parentId": "TfFixtureNetwork:.",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureNetwork/variables.tf",
+        "attributes": {
+          "varType": "number",
+          "hasDefault": true
+        }
+      },
+      {
+        "id": "TfFixtureNetwork:.#var.enable_egress",
+        "label": "enable_egress",
+        "type": "variable",
+        "scope": "TfFixtureNetwork",
+        "parentId": "TfFixtureNetwork:.",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureNetwork/variables.tf",
+        "attributes": {
+          "varType": "bool",
+          "hasDefault": true
+        }
+      },
+      {
+        "id": "TfFixtureNetwork:.#local.segment_name",
+        "label": "segment_name",
+        "type": "local",
+        "scope": "TfFixtureNetwork",
+        "parentId": "TfFixtureNetwork:.",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureNetwork/main.tf"
+      },
+      {
+        "id": "TfFixtureNetwork:.#local.segment_cidr",
+        "label": "segment_cidr",
+        "type": "local",
+        "scope": "TfFixtureNetwork",
+        "parentId": "TfFixtureNetwork:.",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureNetwork/main.tf"
+      },
+      {
+        "id": "TfFixtureNetwork:.#output.segment_id",
+        "label": "segment_id",
+        "type": "output",
+        "scope": "TfFixtureNetwork",
+        "parentId": "TfFixtureNetwork:.",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureNetwork/outputs.tf"
+      },
+      {
+        "id": "TfFixtureNetwork:.#output.subnet_ids",
+        "label": "subnet_ids",
+        "type": "output",
+        "scope": "TfFixtureNetwork",
+        "parentId": "TfFixtureNetwork:.",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureNetwork/outputs.tf"
+      },
+      {
+        "id": "TfFixtureNetwork:.#output.network_name",
+        "label": "network_name",
+        "type": "output",
+        "scope": "TfFixtureNetwork",
+        "parentId": "TfFixtureNetwork:.",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureNetwork/outputs.tf"
+      },
+      {
+        "id": "TfFixtureNetwork:modules/segment",
+        "label": "segment",
+        "type": "module",
+        "scope": "TfFixtureNetwork",
+        "parentId": "TfFixtureNetwork:.",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureNetwork/modules/segment"
+      },
+      {
+        "id": "TfFixtureNetwork:modules/segment#var.name",
+        "label": "name",
+        "type": "variable",
+        "scope": "TfFixtureNetwork",
+        "parentId": "TfFixtureNetwork:modules/segment",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureNetwork/modules/segment/variables.tf",
+        "attributes": {
+          "varType": "string",
+          "hasDefault": false
+        }
+      },
+      {
+        "id": "TfFixtureNetwork:modules/segment#var.cidr",
+        "label": "cidr",
+        "type": "variable",
+        "scope": "TfFixtureNetwork",
+        "parentId": "TfFixtureNetwork:modules/segment",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureNetwork/modules/segment/variables.tf",
+        "attributes": {
+          "varType": "string",
+          "hasDefault": false
+        }
+      },
+      {
+        "id": "TfFixtureNetwork:modules/segment#var.subnet_count",
+        "label": "subnet_count",
+        "type": "variable",
+        "scope": "TfFixtureNetwork",
+        "parentId": "TfFixtureNetwork:modules/segment",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureNetwork/modules/segment/variables.tf",
+        "attributes": {
+          "varType": "number",
+          "hasDefault": true,
+          "hasValidation": true
+        }
+      },
+      {
+        "id": "TfFixtureNetwork:modules/segment#var.enable_egress",
+        "label": "enable_egress",
+        "type": "variable",
+        "scope": "TfFixtureNetwork",
+        "parentId": "TfFixtureNetwork:modules/segment",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureNetwork/modules/segment/variables.tf",
+        "attributes": {
+          "varType": "bool",
+          "hasDefault": true
+        }
+      },
+      {
+        "id": "TfFixtureNetwork:modules/segment#local.subnet_prefix",
+        "label": "subnet_prefix",
+        "type": "local",
+        "scope": "TfFixtureNetwork",
+        "parentId": "TfFixtureNetwork:modules/segment",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureNetwork/modules/segment/main.tf"
+      },
+      {
+        "id": "TfFixtureNetwork:modules/segment#output.id",
+        "label": "id",
+        "type": "output",
+        "scope": "TfFixtureNetwork",
+        "parentId": "TfFixtureNetwork:modules/segment",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureNetwork/modules/segment/outputs.tf"
+      },
+      {
+        "id": "TfFixtureNetwork:modules/segment#output.subnet_ids",
+        "label": "subnet_ids",
+        "type": "output",
+        "scope": "TfFixtureNetwork",
+        "parentId": "TfFixtureNetwork:modules/segment",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureNetwork/modules/segment/outputs.tf"
+      },
+      {
+        "id": "TfFixtureNetwork:modules/segment/modules/subnet",
+        "label": "subnet",
+        "type": "module",
+        "scope": "TfFixtureNetwork",
+        "parentId": "TfFixtureNetwork:modules/segment",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureNetwork/modules/segment/modules/subnet"
+      },
+      {
+        "id": "TfFixtureNetwork:modules/segment/modules/subnet#var.name",
+        "label": "name",
+        "type": "variable",
+        "scope": "TfFixtureNetwork",
+        "parentId": "TfFixtureNetwork:modules/segment/modules/subnet",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureNetwork/modules/segment/modules/subnet/variables.tf",
+        "attributes": {
+          "varType": "string",
+          "hasDefault": false
+        }
+      },
+      {
+        "id": "TfFixtureNetwork:modules/segment/modules/subnet#var.cidr",
+        "label": "cidr",
+        "type": "variable",
+        "scope": "TfFixtureNetwork",
+        "parentId": "TfFixtureNetwork:modules/segment/modules/subnet",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureNetwork/modules/segment/modules/subnet/variables.tf",
+        "attributes": {
+          "varType": "string",
+          "hasDefault": false
+        }
+      },
+      {
+        "id": "TfFixtureNetwork:modules/segment/modules/subnet#var.segment_id",
+        "label": "segment_id",
+        "type": "variable",
+        "scope": "TfFixtureNetwork",
+        "parentId": "TfFixtureNetwork:modules/segment/modules/subnet",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureNetwork/modules/segment/modules/subnet/variables.tf",
+        "attributes": {
+          "varType": "string",
+          "hasDefault": false
+        }
+      },
+      {
+        "id": "TfFixtureNetwork:modules/segment/modules/subnet#output.id",
+        "label": "id",
+        "type": "output",
+        "scope": "TfFixtureNetwork",
+        "parentId": "TfFixtureNetwork:modules/segment/modules/subnet",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureNetwork/modules/segment/modules/subnet/outputs.tf"
+      },
+      {
+        "id": "TfFixtureApp:.",
+        "label": "root",
+        "type": "module",
+        "scope": "TfFixtureApp",
+        "parentId": "repo:TfFixtureApp",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureApp/.",
+        "attributes": {
+          "requiredVersion": "~> 1.0.11"
+        }
+      },
+      {
+        "id": "TfFixtureApp:.#provider.null",
+        "label": "null",
+        "type": "provider",
+        "scope": "TfFixtureApp",
+        "parentId": "TfFixtureApp:.",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureApp/versions.tf",
+        "attributes": {
+          "source": "hashicorp/null",
+          "version": ">= 3.0.0, < 4.0.0"
+        }
+      },
+      {
+        "id": "TfFixtureApp:.#provider.random",
+        "label": "random",
+        "type": "provider",
+        "scope": "TfFixtureApp",
+        "parentId": "TfFixtureApp:.",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureApp/versions.tf",
+        "attributes": {
+          "source": "hashicorp/random",
+          "version": "3.6.0"
+        }
+      },
+      {
+        "id": "TfFixtureApp:.#var.application_name",
+        "label": "application_name",
+        "type": "variable",
+        "scope": "TfFixtureApp",
+        "parentId": "TfFixtureApp:.",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureApp/variables.tf",
+        "attributes": {
+          "varType": "string",
+          "hasDefault": true
+        }
+      },
+      {
+        "id": "TfFixtureApp:.#var.environment",
+        "label": "environment",
+        "type": "variable",
+        "scope": "TfFixtureApp",
+        "parentId": "TfFixtureApp:.",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureApp/variables.tf",
+        "attributes": {
+          "varType": "string",
+          "hasDefault": true,
+          "hasValidation": true
+        }
+      },
+      {
+        "id": "TfFixtureApp:.#var.owner",
+        "label": "owner",
+        "type": "variable",
+        "scope": "TfFixtureApp",
+        "parentId": "TfFixtureApp:.",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureApp/variables.tf",
+        "attributes": {
+          "varType": "string",
+          "hasDefault": true
+        }
+      },
+      {
+        "id": "TfFixtureApp:.#var.tags",
+        "label": "tags",
+        "type": "variable",
+        "scope": "TfFixtureApp",
+        "parentId": "TfFixtureApp:.",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureApp/variables.tf",
+        "attributes": {
+          "varType": "map(string)",
+          "hasDefault": true
+        }
+      },
+      {
+        "id": "TfFixtureApp:.#var.worker_count",
+        "label": "worker_count",
+        "type": "variable",
+        "scope": "TfFixtureApp",
+        "parentId": "TfFixtureApp:.",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureApp/variables.tf",
+        "attributes": {
+          "varType": "number",
+          "hasDefault": true
+        }
+      },
+      {
+        "id": "TfFixtureApp:.#local.merged_tags",
+        "label": "merged_tags",
+        "type": "local",
+        "scope": "TfFixtureApp",
+        "parentId": "TfFixtureApp:.",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureApp/main.tf"
+      },
+      {
+        "id": "TfFixtureApp:.#local.service_name",
+        "label": "service_name",
+        "type": "local",
+        "scope": "TfFixtureApp",
+        "parentId": "TfFixtureApp:.",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureApp/main.tf"
+      },
+      {
+        "id": "TfFixtureApp:.#local.network_segment_id",
+        "label": "network_segment_id",
+        "type": "local",
+        "scope": "TfFixtureApp",
+        "parentId": "TfFixtureApp:.",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureApp/main.tf"
+      },
+      {
+        "id": "TfFixtureApp:.#local.network_subnet_ids",
+        "label": "network_subnet_ids",
+        "type": "local",
+        "scope": "TfFixtureApp",
+        "parentId": "TfFixtureApp:.",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureApp/main.tf"
+      },
+      {
+        "id": "TfFixtureApp:.#output.service_endpoint",
+        "label": "service_endpoint",
+        "type": "output",
+        "scope": "TfFixtureApp",
+        "parentId": "TfFixtureApp:.",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureApp/outputs.tf"
+      },
+      {
+        "id": "TfFixtureApp:.#output.instance_name",
+        "label": "instance_name",
+        "type": "output",
+        "scope": "TfFixtureApp",
+        "parentId": "TfFixtureApp:.",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureApp/outputs.tf"
+      },
+      {
+        "id": "TfFixtureApp:.#output.applied_tags",
+        "label": "applied_tags",
+        "type": "output",
+        "scope": "TfFixtureApp",
+        "parentId": "TfFixtureApp:.",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureApp/outputs.tf"
+      },
+      {
+        "id": "TfFixtureApp:modules/service",
+        "label": "service",
+        "type": "module",
+        "scope": "TfFixtureApp",
+        "parentId": "TfFixtureApp:.",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureApp/modules/service"
+      },
+      {
+        "id": "TfFixtureApp:modules/service#var.name",
+        "label": "name",
+        "type": "variable",
+        "scope": "TfFixtureApp",
+        "parentId": "TfFixtureApp:modules/service",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureApp/modules/service/variables.tf",
+        "attributes": {
+          "varType": "string",
+          "hasDefault": false
+        }
+      },
+      {
+        "id": "TfFixtureApp:modules/service#var.tags",
+        "label": "tags",
+        "type": "variable",
+        "scope": "TfFixtureApp",
+        "parentId": "TfFixtureApp:modules/service",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureApp/modules/service/variables.tf",
+        "attributes": {
+          "varType": "map(string)",
+          "hasDefault": false
+        }
+      },
+      {
+        "id": "TfFixtureApp:modules/service#var.subnet_ids",
+        "label": "subnet_ids",
+        "type": "variable",
+        "scope": "TfFixtureApp",
+        "parentId": "TfFixtureApp:modules/service",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureApp/modules/service/variables.tf",
+        "attributes": {
+          "varType": "list(string)",
+          "hasDefault": true
+        }
+      },
+      {
+        "id": "TfFixtureApp:modules/service#var.worker_count",
+        "label": "worker_count",
+        "type": "variable",
+        "scope": "TfFixtureApp",
+        "parentId": "TfFixtureApp:modules/service",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureApp/modules/service/variables.tf",
+        "attributes": {
+          "varType": "number",
+          "hasDefault": true
+        }
+      },
+      {
+        "id": "TfFixtureApp:modules/service#local.service_tags",
+        "label": "service_tags",
+        "type": "local",
+        "scope": "TfFixtureApp",
+        "parentId": "TfFixtureApp:modules/service",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureApp/modules/service/main.tf"
+      },
+      {
+        "id": "TfFixtureApp:modules/service#output.endpoint",
+        "label": "endpoint",
+        "type": "output",
+        "scope": "TfFixtureApp",
+        "parentId": "TfFixtureApp:modules/service",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureApp/modules/service/outputs.tf"
+      },
+      {
+        "id": "TfFixtureApp:modules/service#output.tags",
+        "label": "tags",
+        "type": "output",
+        "scope": "TfFixtureApp",
+        "parentId": "TfFixtureApp:modules/service",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureApp/modules/service/outputs.tf"
+      },
+      {
+        "id": "TfFixtureApp:modules/service/modules/worker",
+        "label": "worker",
+        "type": "module",
+        "scope": "TfFixtureApp",
+        "parentId": "TfFixtureApp:modules/service",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureApp/modules/service/modules/worker"
+      },
+      {
+        "id": "TfFixtureApp:modules/service/modules/worker#var.name",
+        "label": "name",
+        "type": "variable",
+        "scope": "TfFixtureApp",
+        "parentId": "TfFixtureApp:modules/service/modules/worker",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureApp/modules/service/modules/worker/variables.tf",
+        "attributes": {
+          "varType": "string",
+          "hasDefault": false
+        }
+      },
+      {
+        "id": "TfFixtureApp:modules/service/modules/worker#var.tags",
+        "label": "tags",
+        "type": "variable",
+        "scope": "TfFixtureApp",
+        "parentId": "TfFixtureApp:modules/service/modules/worker",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureApp/modules/service/modules/worker/variables.tf",
+        "attributes": {
+          "varType": "map(string)",
+          "hasDefault": false
+        }
+      },
+      {
+        "id": "TfFixtureApp:modules/service/modules/worker#output.id",
+        "label": "id",
+        "type": "output",
+        "scope": "TfFixtureApp",
+        "parentId": "TfFixtureApp:modules/service/modules/worker",
+        "path": "C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/tf-002/TfFixtureApp/modules/service/modules/worker/outputs.tf"
+      },
+      {
+        "id": "TfFixtureApp:../shared-legacy/modules/archive",
+        "label": "archive",
+        "type": "module",
+        "scope": "TfFixtureApp",
+        "parentId": "TfFixtureApp:.",
+        "attributes": {
+          "unresolved": true
+        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "TfFixtureShared:.",
+        "to": "TfFixtureShared:modules/naming",
+        "kind": "sources",
+        "resolved": true
+      },
+      {
+        "from": "TfFixtureShared:.#local.effective_prefix",
+        "to": "TfFixtureShared:modules/naming#var.prefix",
+        "kind": "passes-to"
+      },
+      {
+        "from": "TfFixtureShared:.#var.environment",
+        "to": "TfFixtureShared:modules/naming#var.environment",
+        "kind": "passes-to"
+      },
+      {
+        "from": "TfFixtureShared:.",
+        "to": "TfFixtureShared:modules/tags",
+        "kind": "sources",
+        "resolved": true
+      },
+      {
+        "from": "TfFixtureShared:.#var.owner",
+        "to": "TfFixtureShared:modules/tags#var.owner",
+        "kind": "passes-to"
+      },
+      {
+        "from": "TfFixtureShared:.#var.environment",
+        "to": "TfFixtureShared:modules/tags#var.environment",
+        "kind": "passes-to"
+      },
+      {
+        "from": "TfFixtureShared:.#var.prefix",
+        "to": "TfFixtureShared:.#local.effective_prefix",
+        "kind": "references"
+      },
+      {
+        "from": "TfFixtureShared:modules/naming#output.prefix",
+        "to": "TfFixtureShared:.#output.name_prefix",
+        "kind": "references"
+      },
+      {
+        "from": "TfFixtureShared:modules/tags#output.tags",
+        "to": "TfFixtureShared:.#output.common_tags",
+        "kind": "references"
+      },
+      {
+        "from": "TfFixtureShared:modules/naming#var.prefix",
+        "to": "TfFixtureShared:modules/naming#local.qualified",
+        "kind": "references"
+      },
+      {
+        "from": "TfFixtureShared:modules/naming#var.environment",
+        "to": "TfFixtureShared:modules/naming#local.qualified",
+        "kind": "references"
+      },
+      {
+        "from": "TfFixtureShared:modules/naming#local.qualified",
+        "to": "TfFixtureShared:modules/naming#output.prefix",
+        "kind": "references"
+      },
+      {
+        "from": "TfFixtureShared:modules/tags#var.owner",
+        "to": "TfFixtureShared:modules/tags#local.tags",
+        "kind": "references"
+      },
+      {
+        "from": "TfFixtureShared:modules/tags#var.environment",
+        "to": "TfFixtureShared:modules/tags#local.tags",
+        "kind": "references"
+      },
+      {
+        "from": "TfFixtureShared:modules/tags#local.tags",
+        "to": "TfFixtureShared:modules/tags#output.tags",
+        "kind": "references"
+      },
+      {
+        "from": "TfFixtureNetwork:.",
+        "to": "TfFixtureNetwork:modules/segment",
+        "kind": "sources",
+        "resolved": true
+      },
+      {
+        "from": "TfFixtureNetwork:.#local.segment_name",
+        "to": "TfFixtureNetwork:modules/segment#var.name",
+        "kind": "passes-to"
+      },
+      {
+        "from": "TfFixtureNetwork:.#local.segment_cidr",
+        "to": "TfFixtureNetwork:modules/segment#var.cidr",
+        "kind": "passes-to"
+      },
+      {
+        "from": "TfFixtureNetwork:.#var.subnet_count",
+        "to": "TfFixtureNetwork:modules/segment#var.subnet_count",
+        "kind": "passes-to"
+      },
+      {
+        "from": "TfFixtureNetwork:.#var.enable_egress",
+        "to": "TfFixtureNetwork:modules/segment#var.enable_egress",
+        "kind": "passes-to"
+      },
+      {
+        "from": "TfFixtureNetwork:.#var.network_name",
+        "to": "TfFixtureNetwork:.#local.segment_name",
+        "kind": "references"
+      },
+      {
+        "from": "TfFixtureNetwork:.#var.address_space",
+        "to": "TfFixtureNetwork:.#local.segment_cidr",
+        "kind": "references"
+      },
+      {
+        "from": "TfFixtureNetwork:.#var.segment_index",
+        "to": "TfFixtureNetwork:.#local.segment_cidr",
+        "kind": "references"
+      },
+      {
+        "from": "TfFixtureNetwork:modules/segment#output.id",
+        "to": "TfFixtureNetwork:.#output.segment_id",
+        "kind": "references"
+      },
+      {
+        "from": "TfFixtureNetwork:modules/segment#output.subnet_ids",
+        "to": "TfFixtureNetwork:.#output.subnet_ids",
+        "kind": "references"
+      },
+      {
+        "from": "TfFixtureNetwork:.#var.network_name",
+        "to": "TfFixtureNetwork:.#output.network_name",
+        "kind": "references"
+      },
+      {
+        "from": "TfFixtureNetwork:modules/segment",
+        "to": "TfFixtureNetwork:modules/segment/modules/subnet",
+        "kind": "sources",
+        "resolved": true
+      },
+      {
+        "from": "TfFixtureNetwork:modules/segment#local.subnet_prefix",
+        "to": "TfFixtureNetwork:modules/segment/modules/subnet#var.name",
+        "kind": "passes-to"
+      },
+      {
+        "from": "TfFixtureNetwork:modules/segment#var.cidr",
+        "to": "TfFixtureNetwork:modules/segment/modules/subnet#var.cidr",
+        "kind": "passes-to"
+      },
+      {
+        "from": "TfFixtureNetwork:modules/segment#var.name",
+        "to": "TfFixtureNetwork:modules/segment#local.subnet_prefix",
+        "kind": "references"
+      },
+      {
+        "from": "TfFixtureNetwork:modules/segment/modules/subnet#output.id",
+        "to": "TfFixtureNetwork:modules/segment#output.subnet_ids",
+        "kind": "references"
+      },
+      {
+        "from": "TfFixtureApp:.",
+        "to": "TfFixtureNetwork:.",
+        "kind": "sources",
+        "resolved": true,
+        "label": "git::"
+      },
+      {
+        "from": "TfFixtureApp:.#var.application_name",
+        "to": "TfFixtureNetwork:.#var.network_name",
+        "kind": "passes-to"
+      },
+      {
+        "from": "TfFixtureApp:.",
+        "to": "TfFixtureShared:modules/naming",
+        "kind": "sources",
+        "resolved": true,
+        "label": "git::"
+      },
+      {
+        "from": "TfFixtureApp:.#var.application_name",
+        "to": "TfFixtureShared:modules/naming#var.prefix",
+        "kind": "passes-to"
+      },
+      {
+        "from": "TfFixtureApp:.#var.environment",
+        "to": "TfFixtureShared:modules/naming#var.environment",
+        "kind": "passes-to"
+      },
+      {
+        "from": "TfFixtureApp:.",
+        "to": "TfFixtureShared:modules/tags",
+        "kind": "sources",
+        "resolved": true,
+        "label": "git::"
+      },
+      {
+        "from": "TfFixtureApp:.#var.owner",
+        "to": "TfFixtureShared:modules/tags#var.owner",
+        "kind": "passes-to"
+      },
+      {
+        "from": "TfFixtureApp:.#var.environment",
+        "to": "TfFixtureShared:modules/tags#var.environment",
+        "kind": "passes-to"
+      },
+      {
+        "from": "TfFixtureApp:.",
+        "to": "TfFixtureApp:modules/service",
+        "kind": "sources",
+        "resolved": true
+      },
+      {
+        "from": "TfFixtureApp:.#local.service_name",
+        "to": "TfFixtureApp:modules/service#var.name",
+        "kind": "passes-to"
+      },
+      {
+        "from": "TfFixtureApp:.#local.merged_tags",
+        "to": "TfFixtureApp:modules/service#var.tags",
+        "kind": "passes-to"
+      },
+      {
+        "from": "TfFixtureApp:.#local.network_subnet_ids",
+        "to": "TfFixtureApp:modules/service#var.subnet_ids",
+        "kind": "passes-to"
+      },
+      {
+        "from": "TfFixtureApp:.#var.worker_count",
+        "to": "TfFixtureApp:modules/service#var.worker_count",
+        "kind": "passes-to"
+      },
+      {
+        "from": "TfFixtureApp:.",
+        "to": "TfFixtureApp:../shared-legacy/modules/archive",
+        "kind": "sources",
+        "resolved": false,
+        "reason": "source ../shared-legacy/modules/archive resolves to no directory in any scanned repository"
+      },
+      {
+        "from": "TfFixtureApp:.#var.tags",
+        "to": "TfFixtureApp:.#local.merged_tags",
+        "kind": "references"
+      },
+      {
+        "from": "TfFixtureApp:.#var.application_name",
+        "to": "TfFixtureApp:.#local.merged_tags",
+        "kind": "references"
+      },
+      {
+        "from": "TfFixtureApp:.#local.network_segment_id",
+        "to": "TfFixtureApp:.#local.merged_tags",
+        "kind": "references"
+      },
+      {
+        "from": "TfFixtureApp:.#var.application_name",
+        "to": "TfFixtureApp:.#local.service_name",
+        "kind": "references"
+      },
+      {
+        "from": "TfFixtureNetwork:.#output.segment_id",
+        "to": "TfFixtureApp:.#local.network_segment_id",
+        "kind": "references"
+      },
+      {
+        "from": "TfFixtureNetwork:.#output.subnet_ids",
+        "to": "TfFixtureApp:.#local.network_subnet_ids",
+        "kind": "references"
+      },
+      {
+        "from": "TfFixtureApp:modules/service#output.endpoint",
+        "to": "TfFixtureApp:.#output.service_endpoint",
+        "kind": "references"
+      },
+      {
+        "from": "TfFixtureApp:modules/service#output.tags",
+        "to": "TfFixtureApp:.#output.applied_tags",
+        "kind": "references"
+      },
+      {
+        "from": "TfFixtureApp:modules/service",
+        "to": "TfFixtureApp:modules/service/modules/worker",
+        "kind": "sources",
+        "resolved": true
+      },
+      {
+        "from": "TfFixtureApp:modules/service#var.name",
+        "to": "TfFixtureApp:modules/service/modules/worker#var.name",
+        "kind": "passes-to"
+      },
+      {
+        "from": "TfFixtureApp:modules/service#local.service_tags",
+        "to": "TfFixtureApp:modules/service/modules/worker#var.tags",
+        "kind": "passes-to"
+      },
+      {
+        "from": "TfFixtureApp:modules/service#var.tags",
+        "to": "TfFixtureApp:modules/service#local.service_tags",
+        "kind": "references"
+      },
+      {
+        "from": "TfFixtureApp:modules/service#var.name",
+        "to": "TfFixtureApp:modules/service#output.endpoint",
+        "kind": "references"
+      },
+      {
+        "from": "TfFixtureApp:modules/service#local.service_tags",
+        "to": "TfFixtureApp:modules/service#output.tags",
+        "kind": "references"
+      }
+    ]
+  }
+}
