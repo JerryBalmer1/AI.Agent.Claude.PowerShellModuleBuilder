@@ -87,6 +87,45 @@ today — a requirement that stops being checked when its shape changes is a
 requirement nobody is checking. And print the resolved version, so the fact sits
 next to the failure rather than three tasks away from it.
 
+### Take the dependency name as a parameter
+
+Write the resolver **once, parameterised**, not once per dependency:
+
+```powershell
+function Resolve-BuildDependency {
+    param(
+        [Parameter(Mandatory)] [string] $Name,
+        [Parameter(Mandatory)] [string] $ManifestPath
+    )
+    # The environment variable is derived from the name, never spelled out.
+    $variable = ($Name.ToUpperInvariant() -replace '[^A-Z0-9]', '') + '_MODULE_PATH'
+    $override = [Environment]::GetEnvironmentVariable($variable)
+
+    foreach ($candidate in @(
+            $override
+            (Join-Path (Split-Path -Parent $BuildRoot) "$Name/output/$Name/$Name.psd1")
+            (Join-Path (Split-Path -Parent $BuildRoot) "$Name/src/$Name/$Name.psd1"))) {
+        if ($candidate -and (Test-Path -LiteralPath $candidate)) { return $candidate }
+    }
+    $installed = Get-Module -ListAvailable -Name $Name | Sort-Object Version -Descending | Select-Object -First 1
+    if ($installed) { return $installed.Path }
+
+    throw "$Name was not found. Set $variable, check out $Name beside this repository, or install it."
+}
+```
+
+The published example resolves one hard-coded dependency, and the way it is used
+is copy-and-rename. A module two links down a chain — PSTerraformGraph depends on
+PSGraphRenderToHtml, which depends on PSGraphRender — had to rename it by hand in
+**four** places: the environment variable, two `throw` messages and the task
+name. The second copy is exactly where the old name survives inside a message,
+and a `throw` naming the wrong dependency sends a reader to the wrong repository.
+
+If you keep a hard-coded copy anyway, the four rename points are: the
+`$env:<DEP>_MODULE_PATH` variable, the sibling-checkout path, the `throw` text,
+and the `Write-Build` line. Deriving the variable from `$Name` removes the one
+that hides in a string.
+
 ## `<Name>.build.ps1` — the tasks
 
 Five tasks must exist by name: `Clean`, `Lint`, `Build`, `Test`, `PreTag`. The
@@ -111,7 +150,8 @@ At the repository root, so editors and CI lint identically to the build.
     Severity     = @('ParseError', 'Error', 'Warning')
 
     ExcludeRules = @(
-        # Only with a stated reason, next to the exclusion.
+        # Only with a stated reason, next to the exclusion. See
+        # "Suppressing a rule" below for the format and the one recurring case.
         'PSUseShouldProcessForStateChangingFunctions'
     )
 
@@ -147,6 +187,44 @@ Two corollaries:
   failure names the analyzer's finding count and not always the file. Run the
   `files-parse` layer of `powershell-module-test` first when a build fails in a
   way that does not name a source file.
+
+### Suppressing a rule, and the one that recurs
+
+A suppression with no reason beside it is indistinguishable from a rule somebody
+could not get to pass. Write three things, in this order and in a comment
+touching the exclusion:
+
+1. **which** rule,
+2. **why here** — the specific fact about this repository that makes the rule
+   wrong, not a restatement of what the rule does,
+3. **what would make it removable**.
+
+```powershell
+ExcludeRules = @(
+    # PSUseSingularNouns: New-GraphRenderOptions is named by PSGraphRenderToHtml's
+    # producer contract, not by this repository. Renaming it to satisfy the
+    # analyzer would break every consumer, and a consumer cannot rename it back.
+    # Removable if the contract ever renames the command.
+    'PSUseSingularNouns'
+)
+```
+
+**`PSUseSingularNouns` against a contract-fixed command name is the recurring
+case.** The analyzer wants `New-GraphRenderOption`; the contract says
+`New-GraphRenderOptions`, and a name that crosses a repository boundary is not
+this repository's to change. Two modules in two passes hit the same exclusion for
+the same reason.
+
+The general rule underneath it: **when a name is fixed by a contract you do not
+own, the analyzer is wrong and the suppression is the correct answer** — but only
+with the reason written down, because next year the difference between "the
+contract fixes this" and "we gave up" is invisible without it.
+
+Prefer the narrowest suppression available. A rule excluded repository-wide in
+`PSScriptAnalyzerSettings.psd1` is off for code that has not been written yet;
+`[Diagnostics.CodeAnalysis.SuppressMessageAttribute]` on the one function says
+the same thing about one place. Exclude repository-wide only when the reason
+genuinely applies repository-wide, and say which case it is.
 
 ### Lint is a gate, not a report
 
@@ -271,6 +349,34 @@ cause.
 - **Test** imports the built artifact and gates on coverage.
 - **Package** and **PreTag** are separate tasks and are **not** in the default.
   A half-finished iteration should still be able to run a green build.
+
+**Declaring the `PreTag` task is not the same as having the gate.** The task
+selects tests by `-Tag 'PreTag'`, and a repository with no PreTag-tagged test
+selects nothing. Guard it:
+
+```powershell
+if (($result.PassedCount + $result.FailedCount) -eq 0) {
+    throw 'The PreTag filter selected no test at all. A gate that grades nothing is not a gate.'
+}
+```
+
+Count what **ran**, not `TotalCount`: discovery walks the whole tests path before
+the tag filter applies, so `TotalCount` is never zero and a guard written against
+it can never fire.
+
+Then write `tests/PreTag.Tests.ps1` in the same pass that declares the task. A
+module shipped its first tag with the task declared and no tagged test, so
+`-Task PreTag` could only ever throw its own guard, and nobody found out until
+somebody ran it two versions later. **The conformance suite could not catch it**:
+it asserts the task is declared and that the default `Test` task excludes
+PreTag-tagged tests, both of which were true. Nothing asserts that a
+PreTag-tagged test exists.
+
+What belongs in it: claims no unit test can make, because they are about what the
+code must **never** do or about agreement between documents and code. The version
+in the manifest has a worklog and a ledger row; documents name no path that does
+not exist; no document can publish by being followed; `src/` reaches no network
+or shells out to no tool the module's boundaries say it never runs.
 
 The default task's dependency list is graded as an array literal and compared as
 names: `'Clean,Lint,Build,Test'`. Adding `PreTag` to it breaks that assertion,

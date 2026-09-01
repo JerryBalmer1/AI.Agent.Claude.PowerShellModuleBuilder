@@ -18,6 +18,8 @@ somewhere in `evals/conformance/Conformance.Tests.ps1`; none of it is taste.
   Requirements.psd1             # the only place build dependencies are pinned
   src/<Name>/
     <Name>.psd1                 # manifest — basename MUST equal its directory name
+    <Name>.psm1                 # DEV LOADER, committed. See below — without it
+                                # `Import-Module src/<Name>/<Name>.psd1` fails.
     Public/                     # FLAT. One file per exported function.
       Get-Thing.ps1
     Private/                    # may nest; the build must still find these
@@ -55,7 +57,8 @@ in `Private/`, not below the public one.
 **Three-way agreement.** `Public/*.ps1` basenames, `FunctionsToExport` in the
 manifest, and their count must be the same set. The build derives
 `Export-ModuleMember` from the filenames while the manifest is written by hand;
-this is the seam where they drift.
+this is the seam where they drift. The committed dev loader below adds a fourth
+corner that the suite does **not** grade — keep it in step by hand.
 
 **Every exported function needs comment-based help with `.SYNOPSIS`.** Either
 inside the function body or in a block immediately above the definition — both
@@ -96,8 +99,67 @@ most of the gallery omits it.
 }
 ```
 
-`RootModule` names the *generated* psm1, which the build writes into
-`output/<Name>/`. It does not exist in `src/`.
+`RootModule` names a psm1 the build writes into `output/<Name>/`. **A psm1 of
+that name must also exist in `src/`, and it is not the same file** — see the
+next section.
+
+## The dev loader, and why `src/` is otherwise un-importable
+
+`RootModule = '<Name>.psm1'` is a relative reference resolved beside the
+manifest. The build generates that file into `output/`, so if `src/` holds only
+the manifest then
+
+```powershell
+Import-Module ./src/<Name>/<Name>.psd1
+```
+
+**fails outright** — the manifest points at a file that is not there. Everything
+downstream fails for a reason that looks like something else: an acceptance test
+that imports from source, a unit test run before a build, a quick REPL check.
+
+Commit a dev loader at `src/<Name>/<Name>.psm1`:
+
+```powershell
+# DEV LOADER. Not the build product.
+#
+# The build concatenates Private/** then Public/* into
+# output/<Name>/<Name>.psm1 and that generated file is what ships. This exists
+# so the manifest in src/ is importable directly.
+#
+# It DOT-SOURCES rather than concatenating, so $script:ModuleRoot means the same
+# thing under both loaders and any asset resolves either way.
+$script:ModuleRoot = $PSScriptRoot
+
+foreach ($file in @(Get-ChildItem -LiteralPath (Join-Path $PSScriptRoot 'Private') -Filter *.ps1 -Recurse -File | Sort-Object FullName) +
+    @(Get-ChildItem -LiteralPath (Join-Path $PSScriptRoot 'Public') -Filter *.ps1 -File | Sort-Object Name)) {
+    . $file.FullName
+}
+
+Export-ModuleMember -Function 'Get-Thing', 'Set-Thing'
+```
+
+Three properties are load-bearing, and each is a way the loader can be wrong
+while appearing to work:
+
+1. **Private then Public, Private recursively.** The same order the build uses.
+   A different order works until a public function calls a private one at load
+   time.
+2. **Dot-source, do not concatenate.** Under concatenation `$PSScriptRoot` is
+   the *generated* file's directory; under dot-sourcing it is each source file's
+   own. Setting `$script:ModuleRoot = $PSScriptRoot` once at the top, before the
+   loop, is what makes the two agree — so a module that resolves a template or a
+   culture directory from `$script:ModuleRoot` finds it under both.
+3. **The export list is the same set as the manifest's `FunctionsToExport`.**
+   Three-way agreement now has a fourth corner. A dev loader exporting more than
+   the manifest lets a test pass against a function that is not shipped.
+
+**Two modules in two consecutive passes needed this, and both times it was found
+by an acceptance test failing rather than by reading a skill.** That is why it is
+in the scaffold rather than in a troubleshooting note.
+
+Its cost is a fourth place the export list is written. Worth it: the failure it
+prevents is silent at scaffold time and loud much later, and it is the only way
+to import a module before it has ever been built.
 
 ## Tests mirror src
 

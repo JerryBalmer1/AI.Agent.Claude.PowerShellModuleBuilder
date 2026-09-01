@@ -78,6 +78,12 @@ Named by scope, per [decision 0007](decisions/0007-skill-taxonomy-and-naming.md)
 `azdo-<role>` for what is specific to the Azure DevOps target. Dots are not legal
 in skill names, which is what rules out the `powershell.module.x` form.
 
+`producer-contract` fits neither prefix, and that is a gap in decision 0007's
+taxonomy rather than a naming slip: it is about emitting against a contract
+another repository owns, which is not a PowerShell-module lifecycle stage and
+not specific to any one target. Recorded in pass 0025 for the operator to
+settle if a second cross-cutting skill ever appears.
+
 Rule 9 governs what goes where inside one: judgment is the `SKILL.md`,
 deterministic mechanics are scripts under the skill's `scripts/`, and user entry
 points are commands.
@@ -96,13 +102,14 @@ points are commands.
 | `azdo-rest` | The Azure DevOps REST API, read-only. `$env:AZDO_PAT` and nothing else, ever. |
 | `azdo-pipeline-yaml-refs` | Extracting and resolving pipeline YAML references, with parsing separated from resolution. |
 | `azdo-graph-assembly` | Turning those references into a graph — identity by what a node is, never by where a traversal reached it. |
+| `producer-contract` | Emitting data against a schema another repository owns: absent versus false for optional fields, running the consumer's battery in your own build, never renaming what the contract names. |
 | `task-tree-reporting` | Response formatting during multi-skill work. Markdown structure only, so the tree survives transcripts and commits. |
 
 ## Layout
 
 | Path | What |
 |---|---|
-| `skills/` | The plugin's thirteen skills — see [the roster](#the-skills) above |
+| `skills/` | The plugin's fourteen skills — see [the roster](#the-skills) above |
 | `commands/` | `/build` and `/test` |
 | `evals/conformance/` | The shape oracle: `Conformance.Tests.ps1`, its runner, and the falsification record |
 | `evals/functional/` | The behaviour oracle: `BRIEF.md`, `fixture/`, the comparator, the seed |
