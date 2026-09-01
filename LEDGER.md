@@ -8,7 +8,7 @@ that changes it.
 Last landed: 0025. Next: 0026.
 
 ## Runs
-AzDO-module (runs/NNN-*): last 003, next 004 (passes 0026-0028;
+AzDO-module (runs/NNN-*): last 004, next 005 (passes 0026-0028;
 0029 final-README rider on 006).
 Terraform (runs/tf-NNN-*): last tf-002, next tf-003 (measured,
 blind — not yet scheduled).
@@ -26,7 +26,8 @@ Harness main: pass-0025-findings-batch tip — the commit that adds
 this file, fast-forwarded at pass close. Verified by ancestry and
 by `git ls-remote`, never by quoting a SHA this file cannot know
 about itself.
-Ladder plugin SHA: unset until run 004 records it
+Ladder plugin SHA: f25d05d8eb219c9b0009a85d39918214f6b3b681
+Ladder model version: claude-opus-5[1m]
 Oracle blob (AzDO): bd7b3c4f4f8ce9901c7a6a02073c0cb5ff3ec4dc
 TF fixture SHAs (decision-0012 re-freeze):
   TfFixtureShared   0af6ee33854bedb4147d0b13cc6db1311687775b  (unchanged)

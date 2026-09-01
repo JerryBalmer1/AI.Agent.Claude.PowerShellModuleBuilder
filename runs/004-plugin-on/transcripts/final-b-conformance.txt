@@ -1,0 +1,350 @@
+Resolving build dependencies
+  InvokeBuild: 5.14.23 at C:\Users\jlbal\OneDrive\Documents\PowerShell\Modules\InvokeBuild\5.14.23\InvokeBuild.psd1
+  Pester: 6.1.0 at C:\Users\jlbal\OneDrive\Documents\PowerShell\Modules\Pester\6.1.0\Pester.psd1
+  PSScriptAnalyzer: 1.25.0 at C:\Users\jlbal\OneDrive\Documents\PowerShell\Modules\PSScriptAnalyzer\1.25.0\PSScriptAnalyzer.psd1
+Build . C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\scratch\runs\004-verify-clone\PSAzureDevOpsGraph.build.ps1
+Task /./Clean
+Clean: output/ and testResults/ removed.
+Done /./Clean 00:00:00.0121291
+Task /./Lint
+Lint: 0 findings.
+Done /./Lint 00:00:04.3271042
+Task /./Build
+  culture directory copied: en-US
+Build: 15 private + 7 public into C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\scratch\runs\004-verify-clone/output/PSAzureDevOpsGraph.
+Done /./Build 00:00:00.0855490
+Task /./Test
+Pester v6.1.0
+
+Running tests from 9 files.
+Starting code coverage.
+Code Coverage preparation finished after 840ms.
+
+Running tests from 'C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\scratch\runs\004-verify-clone\tests\Module.Quality.Tests.ps1'
+Describing The built module
+  [+] exports exactly what the manifest declares 77ms
+  [+] exports exactly the Public file basenames 14ms
+  [+] keeps the committed dev loader in step with the manifest 19ms
+  [+] says it is generated 5ms
+  [+] assigns $script:ModuleRoot from $PSScriptRoot as code, not in a comment 202ms
+  [+] calls Export-ModuleMember with every exported name as a string constant 186ms
+  [+] carries the functions defined in nested Private subfolders 156ms
+  [+] copied the culture directory, or Get-Help finds no about_ topic 8ms
+  [+] exports nothing implicitly 11ms
+  [+] declares CompatiblePSEditions and a GUID that parses 12ms
+
+Describing The exported surface
+  [+] gives every exported command comment-based help with a synopsis 165ms
+  [+] begins no command with a writing verb, because the module is read-only 9ms
+  [+] names every exported command with the module prefix 8ms
+
+Running tests from 'C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\scratch\runs\004-verify-clone\tests\Integration\LiveProject.Tests.ps1'
+Describing A live project
+  [+] lists repositories over a project-scoped route 312ms
+  [+] lists definitions, each carrying the repository and path of its YAML 2.76s
+  [+] reads the YAML behind a definition and parses references from it 3.11s
+  [+] returns nothing rather than throwing for a path that is not there 323ms
+
+Running tests from 'C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\scratch\runs\004-verify-clone\tests\Private\GraphInternals.Tests.ps1'
+Describing Resolve-AzDoRepositoryPath
+  [+] joins a reference to the directory of the referencing file 21ms
+  [+] ignores the source directory when the path is from a repository root 5ms
+  [+] treats a leading slash as repository-root-relative 5ms
+  [+] collapses . and .. rather than emitting them into an id 13ms
+  [+] does not climb above the repository root 5ms
+  [+] normalises backslashes, which a hand-edited YAML file can carry 6ms
+
+Describing Add-AzDoGraphNode
+  [+] is a no-op for an id already present, not a duplicate 13ms
+  [+] writes repo on the two kinds that live somewhere, and path only on yaml 15ms
+
+Describing Add-AzDoGraphEdge
+  [+] omits an optional field there is nothing to say about 18ms
+  [+] writes refKind only on an unresolved edge, where kind cannot carry it 13ms
+  [+] de-duplicates on the whole edge, not on its endpoints 12ms
+
+Describing ConvertTo-AzDoHtmlText
+  [+] escapes the five characters that break HTML or SVG 9ms
+  [+] returns an empty string for null rather than the word null 7ms
+
+Describing ConvertFrom-AzDoYamlDocument
+  [+] returns null for whitespace rather than throwing 9ms
+  [+] returns null for a document that will not parse 12ms
+
+Describing Format-AzDoEdgeTitle
+  [+] names only the optional fields the edge actually carries 18ms
+
+Running tests from 'C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\scratch\runs\004-verify-clone\tests\Public\AzDoRest.Tests.ps1'
+Describing The credential rule
+  [+] takes no PAT parameter on any exported command 29ms
+  [+] fails naming the variable when it is absent, and does not prompt or search 31ms
+  [+] names the scopes a caller needs in that message 10ms
+
+Describing Get-AzDoRepository
+  [+] returns one record per repository, typed 80ms
+  [+] filters by name without a second call 28ms
+  [+] calls a project-scoped route and never the accounts or profile API 98ms
+
+Describing Get-AzDoPipeline
+  [+] fetches each definition by id, because the list form carries no yaml path 48ms
+  [+] strips the leading slash from yamlFilename so the path is repository-relative 15ms
+  [+] keeps a classic definition, with no YamlPath rather than dropped 15ms
+
+Describing Get-AzDoPipelineYaml
+  [+] returns a record that traces back to its repository and path 16ms
+  [+] returns nothing for a path that is not in the repository, rather than throwing 15ms
+  [+] reads the file behind a pipeline record from the pipeline 14ms
+  [+] has nothing to read for a classic definition and says so quietly 4ms
+  [+] passes a ref through as a version descriptor 13ms
+
+Describing Invoke-AzDoWebRequest error handling
+  [+] reads the sign-in page, which arrives as a success status, as a bad PAT 29ms
+  [+] names the scopes on a 401 rather than retrying 30ms
+  [+] puts no request URL and no token into the message it raises 33ms
+
+Running tests from 'C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\scratch\runs\004-verify-clone\tests\Public\Export-AzDoPipelineDependencyGraph.Tests.ps1'
+Describing Export-AzDoPipelineDependencyGraph
+ Context JSON is the contract
+   [+] emits exactly the six contract keys and no type annotation 12ms
+   [+] writes version as a JSON number, not as a string 9ms
+   [+] writes no optional field the source object did not carry 6ms
+   [+] writes the file and creates the directory it needs 17ms
+ Context DOT
+   [+] renders a digraph with a node per graph node 23ms
+   [+] gives an unresolved target somewhere to land, drawn differently 7ms
+ Context HTML is self-contained without qualification
+   [+] renders the graph and the unresolved table 8ms
+   [+] references no external script, stylesheet, image or font 15ms
+   [+] escapes text that came from YAML nobody in this module authored 14ms
+   [+] writes the page to disk when asked, and can also return it 24ms
+  [+] takes a graph from the pipeline 5ms
+
+Running tests from 'C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\scratch\runs\004-verify-clone\tests\Public\Get-AzDoPipelineDependencyGraph.Tests.ps1'
+Describing Get-AzDoPipelineDependencyGraph
+ Context the shape of the contract
+   [+] reports version 1 and names the command that produced it 6ms
+   [+] carries the organisation and project it was asked for 4ms
+   [+] gives every yaml node a repo and a path rooted at repos/ 11ms
+   [+] writes no optional field on a definition edge, which is not about a file 4ms
+   [+] sorts nodes and edges so two runs can be diffed 31ms
+ Context node identity is the thing, never its position
+   [+] gives a template included by two files one node, not two 19ms
+   [+] gives that shared template in-degree 2, because two edges point at one node 4ms
+ Context orphans are nodes; unreferenced repositories are not
+   [+] keeps a pipeline that references nothing and that nothing references 4ms
+   [+] keeps a classic definition with no YAML as a node with no definition edge 5ms
+   [+] does not emit a node for a repository nothing references 7ms
+   [+] emits a node for a repository the graph lives in, referenced or not 3ms
+   [+] gives every pipeline node the repository it lives in 4ms
+   [+] emits repository nodes for the ones references name 3ms
+ Context cycle-safe traversal
+   [+] terminates and records both edges of the cycle 8ms
+ Context unresolved references are the answer the tool exists to give
+   [+] carries ref, refKind and reason on every unresolved edge 6ms
+   [+] reports an undeclared alias as alias-not-declared, keeping the alias in the target 6ms
+   [+] reports a missing file as file-not-found, which needs a different fix 6ms
+   [+] gives an unresolved target no node, so it cannot be mistaken for a real one 4ms
+ Context reference kinds are kept apart
+   [+] records extends as extends, not as template 7ms
+   [+] records checkout as a repository dependency and invents no template edge from it 5ms
+   [+] records a pipelineResource against a definition node 6ms
+   [+] resolves a cross-repository relative reference inside that repository 6ms
+
+Running tests from 'C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\scratch\runs\004-verify-clone\tests\Public\Get-AzDoPipelineReference.Tests.ps1'
+Describing Get-AzDoPipelineReference
+  [+] parses a document with no credentials and no network 5ms
+  [+] gives extends.template the kind extends, not template 5ms
+  [+] finds a template under variables, which is not a steps/jobs/stages block 4ms
+  [+] does not invent a reference from buildTemplate, which only contains the word 3ms
+  [+] records the raw reference text and the alias separately 4ms
+  [+] reads resources.repositories as repositoryResource with its alias 5ms
+  [+] reads resources.pipelines as a reference to a definition, not to a file 8ms
+  [+] yields a checkout reference for another repository but nothing for self 5ms
+  [+] yields nothing at all for a document of self, none and a lookalike script line 8ms
+  [+] reads a file on disk with no credentials 21ms
+  [+] throws naming the path when the file is not there 10ms
+  [+] treats a document that will not parse as a result, not a crash 8ms
+  [+] returns nothing for empty content rather than throwing 5ms
+  [+] accepts the Content property from a yaml record on the pipeline 21ms
+Filter 'ExcludeTag' set to ('PreTag').
+Filters selected 111 tests to run.
+
+Running tests from 'C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\scratch\runs\004-verify-clone\tests\Public\Resolve-AzDoPipelineReference.Tests.ps1'
+Describing Resolve-AzDoPipelineReference
+ Context no @alias - relative to the directory of the including file
+   [+] resolves against the referencing file directory, not the repository root 10ms
+   [+] normalises a parent-directory reference 6ms
+   [+] keeps the current repository as a property of the file, not of the walk 6ms
+ Context with @alias - from the root of the aliased repository
+   [+] joins the path to the repository root and ignores the source directory 7ms
+   [+] reports alias-not-declared and keeps the alias in the target id 7ms
+ Context unresolved references are results, not dropped edges
+   [+] reports file-not-found when the alias resolved but no such file exists 8ms
+   [+] keeps file-not-found and alias-not-declared distinct, because the fixes differ 10ms
+   [+] reports repository-not-found when the aliased repository is not in the project 5ms
+ Context the other three reference kinds
+   [+] resolves a repositoryResource to a repository node 13ms
+   [+] strips a project qualifier from a repositoryResource name 6ms
+   [+] resolves checkout of a declared alias to that repository 5ms
+   [+] reports alias-not-declared for a checkout of an undeclared alias 5ms
+   [+] resolves a pipelineResource to a definition node, not to a file 6ms
+   [+] reports pipeline-not-found when the named definition is not in the project 7ms
+Tests completed in 11.36s
+Tests Passed: 111, Failed: 0, Skipped: 0, Inconclusive: 0, NotRun: 7
+Processing code coverage result.
+Code Coverage result processed in 1659ms.
+Covered 94.61% / 70%. 760 analyzed Commands in 1 File.
+Missed commands:
+
+File                                                                            Class Function                        Li
+                                                                                                                      ne
+----                                                                            ----- --------                        --
+scratch\runs\004-verify-clone\output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       ConvertTo-AzDoGraphHtml         …1
+scratch\runs\004-verify-clone\output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       ConvertTo-AzDoGraphHtml         …1
+scratch\runs\004-verify-clone\output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       ConvertTo-AzDoGraphHtml         …8
+scratch\runs\004-verify-clone\output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       ConvertTo-AzDoGraphHtml         …6
+scratch\runs\004-verify-clone\output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Get-AzDoCachedYaml              …8
+scratch\runs\004-verify-clone\output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Invoke-AzDoRestMethod           …3
+scratch\runs\004-verify-clone\output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Invoke-AzDoRestMethod           …3
+scratch\runs\004-verify-clone\output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Invoke-AzDoRestMethod           …4
+scratch\runs\004-verify-clone\output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Invoke-AzDoWebRequest           …1
+scratch\runs\004-verify-clone\output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Invoke-AzDoWebRequest           …7
+scratch\runs\004-verify-clone\output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Invoke-AzDoWebRequest           …7
+scratch\runs\004-verify-clone\output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Invoke-AzDoWebRequest           …3
+scratch\runs\004-verify-clone\output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Invoke-AzDoWebRequest           …4
+scratch\runs\004-verify-clone\output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Invoke-AzDoWebRequest           …5
+scratch\runs\004-verify-clone\output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Invoke-AzDoWebRequest           …6
+scratch\runs\004-verify-clone\output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Invoke-AzDoWebRequest           …8
+scratch\runs\004-verify-clone\output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Invoke-AzDoWebRequest           …9
+scratch\runs\004-verify-clone\output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Invoke-AzDoWebRequest           …9
+scratch\runs\004-verify-clone\output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Invoke-AzDoWebRequest           …0
+scratch\runs\004-verify-clone\output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Invoke-AzDoWebRequest           …2
+scratch\runs\004-verify-clone\output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Invoke-AzDoWebRequest           …2
+scratch\runs\004-verify-clone\output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Get-AzDoYamlReferenceNode       …9
+scratch\runs\004-verify-clone\output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Get-AzDoYamlReferenceNode       …1
+scratch\runs\004-verify-clone\output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Get-AzDoYamlReferenceNode       …3
+scratch\runs\004-verify-clone\output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Get-AzDoYamlReferenceNode       …6
+scratch\runs\004-verify-clone\output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Get-AzDoPipeline                …9
+scratch\runs\004-verify-clone\output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Get-AzDoPipeline                …5
+scratch\runs\004-verify-clone\output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Get-AzDoPipelineDependencyGraph …7
+scratch\runs\004-verify-clone\output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Get-AzDoPipelineDependencyGraph …7
+scratch\runs\004-verify-clone\output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Get-AzDoPipelineDependencyGraph …8
+scratch\runs\004-verify-clone\output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Get-AzDoPipelineDependencyGraph …1
+scratch\runs\004-verify-clone\output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Get-AzDoPipelineDependencyGraph …3
+scratch\runs\004-verify-clone\output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Get-AzDoRepository              …8
+scratch\runs\004-verify-clone\output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Resolve-AzDoPipelineReference   …3
+scratch\runs\004-verify-clone\output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Resolve-AzDoPipelineReference   …3
+scratch\runs\004-verify-clone\output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Resolve-AzDoPipelineReference   …4
+scratch\runs\004-verify-clone\output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Resolve-AzDoPipelineReference   …7
+scratch\runs\004-verify-clone\output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Resolve-AzDoPipelineReference   …8
+scratch\runs\004-verify-clone\output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Resolve-AzDoPipelineReference   …5
+scratch\runs\004-verify-clone\output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Resolve-AzDoPipelineReference   …5
+scratch\runs\004-verify-clone\output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Resolve-AzDoPipelineReference   …6
+
+
+Line coverage: 94.61% (target 70%)
+Done /./Test 00:00:14.4078642
+Done /. 00:00:18.8509155
+Build succeeded. 5 tasks, 0 errors, 0 warnings 00:00:18.9633444
+CLONE BUILD EXIT: 0
+Pester v6.1.0
+
+Running tests from 1 files.
+Filter 'Tag' set to ('Universal', 'Repository', 'HouseStyle', 'RequiresBuild').
+Filters selected 57 tests to run.
+
+Running tests from 'C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Conformance.Tests.ps1'
+Describing Manifest
+  [+] exists, and its base name matches its directory 33ms
+  [+] parses as PowerShell data 6ms
+  [+] declares a RootModule 6ms
+  [+] declares a ModuleVersion that parses as a version 14ms
+  [+] declares a GUID that parses as a GUID 3ms
+  [+] exports functions by explicit name, never by wildcard 5ms
+  [+] exports no cmdlets, variables, or aliases implicitly 8ms
+  [+] exports no cmdlets, variables, or aliases implicitly 3ms
+  [+] exports no cmdlets, variables, or aliases implicitly 2ms
+
+Describing Public surface
+  [+] defines every function the manifest exports somewhere in source 4ms
+  [+] gives Export-AzDoPipelineDependencyGraph comment-based help with a synopsis 41ms
+  [+] gives Get-AzDoPipeline comment-based help with a synopsis 7ms
+  [+] gives Get-AzDoPipelineDependencyGraph comment-based help with a synopsis 15ms
+  [+] gives Get-AzDoPipelineReference comment-based help with a synopsis 6ms
+  [+] gives Get-AzDoPipelineYaml comment-based help with a synopsis 23ms
+  [+] gives Get-AzDoRepository comment-based help with a synopsis 6ms
+  [+] gives Resolve-AzDoPipelineReference comment-based help with a synopsis 11ms
+
+Describing Repository shape
+  [+] has a build entrypoint at the repository root 7ms
+  [+] has analyzer settings at the repository root 3ms
+  [+] has a tests directory 3ms
+  [+] exercises the exported command Export-AzDoPipelineDependencyGraph somewhere in tests 48ms
+  [+] exercises the exported command Get-AzDoPipeline somewhere in tests 18ms
+  [+] exercises the exported command Get-AzDoPipelineDependencyGraph somewhere in tests 50ms
+  [+] exercises the exported command Get-AzDoPipelineReference somewhere in tests 18ms
+  [+] exercises the exported command Get-AzDoPipelineYaml somewhere in tests 15ms
+  [+] exercises the exported command Get-AzDoRepository somewhere in tests 63ms
+  [+] exercises the exported command Resolve-AzDoPipelineReference somewhere in tests 67ms
+
+Describing House style: source layout
+  [+] places source under src/PSAzureDevOpsGraph/ 4ms
+  [+] keeps Public/ flat 3ms
+  [+] defines exactly one function in Export-AzDoPipelineDependencyGraph.ps1, named for the file 18ms
+  [+] defines exactly one function in Get-AzDoPipeline.ps1, named for the file 4ms
+  [+] defines exactly one function in Get-AzDoPipelineDependencyGraph.ps1, named for the file 5ms
+  [+] defines exactly one function in Get-AzDoPipelineReference.ps1, named for the file 6ms
+  [+] defines exactly one function in Get-AzDoPipelineYaml.ps1, named for the file 6ms
+  [+] defines exactly one function in Get-AzDoRepository.ps1, named for the file 11ms
+  [+] defines exactly one function in Resolve-AzDoPipelineReference.ps1, named for the file 6ms
+  [+] agrees three ways: Public filenames, manifest exports, and their count 4ms
+  [+] declares the PowerShell editions it claims to support 3ms
+  [+] pins build dependencies only in Requirements.psd1 11ms
+
+Describing House style: build file
+  [+] has a build file named PSAzureDevOpsGraph.build.ps1 5ms
+  [+] declares the task Clean 13ms
+  [+] declares the task Lint 10ms
+  [+] declares the task Build 6ms
+  [+] declares the task Test 6ms
+  [+] declares the task PreTag 6ms
+  [+] makes the default task Clean, Lint, Build, Test 14ms
+  [+] excludes PreTag-tagged tests from the Test task 20ms
+  [+] throws rather than exits when tests fail 15ms
+  [+] disables Pester v5 assertion syntax 15ms
+  [+] measures coverage against the built psm1, not the source tree 13ms
+  [+] throws on coverage below target rather than only reporting it 31ms
+
+Describing House style: generated module
+  [+] produced output/PSAzureDevOpsGraph/PSAzureDevOpsGraph.psm1 6ms
+  [+] marks the generated file as generated 7ms
+  [+] sets $script:ModuleRoot 39ms
+  [+] exports exactly the manifest surface 43ms
+  [+] includes functions from Private subfolders 32ms
+  [+] copies culture directories so Get-Help finds about_ topics 7ms
+Tests completed in 1.23s
+Tests Passed: 57, Failed: 0, Skipped: 0, Inconclusive: 0, NotRun: 0
+
+Conformance: 57/57 (100%) across 33 assertions  ->  c:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/runs/004-plugin-on/conformance-result.json
+cases-defined: 33  (HouseStyle=14, Repository=4, RequiresBuild=6, Universal=9)   cases-run: 57
+
+Target             : C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\scratc
+                     h\runs\004-verify-clone
+Tags               : {Universal, Repository, HouseStyle, RequiresBuild}
+RunAt              : 2026-09-01T14:20:26.4567261-07:00
+Total              : 57
+Passed             : 57
+Failed             : 0
+Skipped            : 0
+NotRun             : 0
+CasesRun           : 57
+CasesDefined       : 33
+CasesDefinedPerTag : @{HouseStyle=14; Repository=4; RequiresBuild=6; Universal=9}
+ScorePct           : 100
+Assertions         : {@{Name=House style: build file.declares the task <_>; Ran=5; Passed=5; Failed=0}, @{Name=House 
+                     style: build file.disables Pester v5 assertion syntax; Ran=1; Passed=1; Failed=0}, @{Name=House 
+                     style: build file.excludes PreTag-tagged tests from the Test task; Ran=1; Passed=1; Failed=0}, 
+                     @{Name=House style: build file.has a build file named <ModuleName>.build.ps1; Ran=1; Passed=1; 
+                     Failed=0}…}
+Failures           : {}
+

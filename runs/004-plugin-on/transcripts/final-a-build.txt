@@ -1,0 +1,247 @@
+Resolving build dependencies
+  InvokeBuild: 5.14.23 at C:\Users\jlbal\OneDrive\Documents\PowerShell\Modules\InvokeBuild\5.14.23\InvokeBuild.psd1
+  Pester: 6.1.0 at C:\Users\jlbal\OneDrive\Documents\PowerShell\Modules\Pester\6.1.0\Pester.psd1
+  PSScriptAnalyzer: 1.25.0 at C:\Users\jlbal\OneDrive\Documents\PowerShell\Modules\PSScriptAnalyzer\1.25.0\PSScriptAnalyzer.psd1
+Build . C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\scratch\runs\004-plugin-on\PSAzureDevOpsGraph.build.ps1
+Task /./Clean
+Clean: output/ and testResults/ removed.
+Done /./Clean 00:00:00.0216486
+Task /./Lint
+Lint: 0 findings.
+Done /./Lint 00:00:04.2123919
+Task /./Build
+  culture directory copied: en-US
+Build: 15 private + 7 public into C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\scratch\runs\004-plugin-on/output/PSAzureDevOpsGraph.
+Done /./Build 00:00:00.0808084
+Task /./Test
+Pester v6.1.0
+
+Running tests from 9 files.
+Starting code coverage.
+Code Coverage preparation finished after 802ms.
+
+Running tests from 'C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\scratch\runs\004-plugin-on\tests\Module.Quality.Tests.ps1'
+Describing The built module
+  [+] exports exactly what the manifest declares 75ms
+  [+] exports exactly the Public file basenames 12ms
+  [+] keeps the committed dev loader in step with the manifest 18ms
+  [+] says it is generated 5ms
+  [+] assigns $script:ModuleRoot from $PSScriptRoot as code, not in a comment 205ms
+  [+] calls Export-ModuleMember with every exported name as a string constant 137ms
+  [+] carries the functions defined in nested Private subfolders 131ms
+  [+] copied the culture directory, or Get-Help finds no about_ topic 7ms
+  [+] exports nothing implicitly 8ms
+  [+] declares CompatiblePSEditions and a GUID that parses 15ms
+
+Describing The exported surface
+  [+] gives every exported command comment-based help with a synopsis 173ms
+  [+] begins no command with a writing verb, because the module is read-only 12ms
+  [+] names every exported command with the module prefix 11ms
+
+Running tests from 'C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\scratch\runs\004-plugin-on\tests\Integration\LiveProject.Tests.ps1'
+Describing A live project
+  [+] lists repositories over a project-scoped route 262ms
+  [+] lists definitions, each carrying the repository and path of its YAML 3.07s
+  [+] reads the YAML behind a definition and parses references from it 2.94s
+  [+] returns nothing rather than throwing for a path that is not there 301ms
+
+Running tests from 'C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\scratch\runs\004-plugin-on\tests\Private\GraphInternals.Tests.ps1'
+Describing Resolve-AzDoRepositoryPath
+  [+] joins a reference to the directory of the referencing file 21ms
+  [+] ignores the source directory when the path is from a repository root 5ms
+  [+] treats a leading slash as repository-root-relative 5ms
+  [+] collapses . and .. rather than emitting them into an id 7ms
+  [+] does not climb above the repository root 6ms
+  [+] normalises backslashes, which a hand-edited YAML file can carry 5ms
+
+Describing Add-AzDoGraphNode
+  [+] is a no-op for an id already present, not a duplicate 12ms
+  [+] writes repo on the two kinds that live somewhere, and path only on yaml 12ms
+
+Describing Add-AzDoGraphEdge
+  [+] omits an optional field there is nothing to say about 32ms
+  [+] writes refKind only on an unresolved edge, where kind cannot carry it 18ms
+  [+] de-duplicates on the whole edge, not on its endpoints 5ms
+
+Describing ConvertTo-AzDoHtmlText
+  [+] escapes the five characters that break HTML or SVG 6ms
+  [+] returns an empty string for null rather than the word null 4ms
+
+Describing ConvertFrom-AzDoYamlDocument
+  [+] returns null for whitespace rather than throwing 6ms
+  [+] returns null for a document that will not parse 13ms
+
+Describing Format-AzDoEdgeTitle
+  [+] names only the optional fields the edge actually carries 13ms
+
+Running tests from 'C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\scratch\runs\004-plugin-on\tests\Public\AzDoRest.Tests.ps1'
+Describing The credential rule
+  [+] takes no PAT parameter on any exported command 26ms
+  [+] fails naming the variable when it is absent, and does not prompt or search 35ms
+  [+] names the scopes a caller needs in that message 10ms
+
+Describing Get-AzDoRepository
+  [+] returns one record per repository, typed 125ms
+  [+] filters by name without a second call 13ms
+  [+] calls a project-scoped route and never the accounts or profile API 101ms
+
+Describing Get-AzDoPipeline
+  [+] fetches each definition by id, because the list form carries no yaml path 35ms
+  [+] strips the leading slash from yamlFilename so the path is repository-relative 13ms
+  [+] keeps a classic definition, with no YamlPath rather than dropped 12ms
+
+Describing Get-AzDoPipelineYaml
+  [+] returns a record that traces back to its repository and path 14ms
+  [+] returns nothing for a path that is not in the repository, rather than throwing 16ms
+  [+] reads the file behind a pipeline record from the pipeline 8ms
+  [+] has nothing to read for a classic definition and says so quietly 3ms
+  [+] passes a ref through as a version descriptor 13ms
+
+Describing Invoke-AzDoWebRequest error handling
+  [+] reads the sign-in page, which arrives as a success status, as a bad PAT 70ms
+  [+] names the scopes on a 401 rather than retrying 24ms
+  [+] puts no request URL and no token into the message it raises 36ms
+
+Running tests from 'C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\scratch\runs\004-plugin-on\tests\Public\Export-AzDoPipelineDependencyGraph.Tests.ps1'
+Describing Export-AzDoPipelineDependencyGraph
+ Context JSON is the contract
+   [+] emits exactly the six contract keys and no type annotation 9ms
+   [+] writes version as a JSON number, not as a string 6ms
+   [+] writes no optional field the source object did not carry 6ms
+   [+] writes the file and creates the directory it needs 8ms
+ Context DOT
+   [+] renders a digraph with a node per graph node 16ms
+   [+] gives an unresolved target somewhere to land, drawn differently 5ms
+ Context HTML is self-contained without qualification
+   [+] renders the graph and the unresolved table 9ms
+   [+] references no external script, stylesheet, image or font 4ms
+   [+] escapes text that came from YAML nobody in this module authored 7ms
+   [+] writes the page to disk when asked, and can also return it 11ms
+  [+] takes a graph from the pipeline 3ms
+
+Running tests from 'C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\scratch\runs\004-plugin-on\tests\Public\Get-AzDoPipelineDependencyGraph.Tests.ps1'
+Describing Get-AzDoPipelineDependencyGraph
+ Context the shape of the contract
+   [+] reports version 1 and names the command that produced it 7ms
+   [+] carries the organisation and project it was asked for 5ms
+   [+] gives every yaml node a repo and a path rooted at repos/ 13ms
+   [+] writes no optional field on a definition edge, which is not about a file 10ms
+   [+] sorts nodes and edges so two runs can be diffed 19ms
+ Context node identity is the thing, never its position
+   [+] gives a template included by two files one node, not two 7ms
+   [+] gives that shared template in-degree 2, because two edges point at one node 4ms
+ Context orphans are nodes; unreferenced repositories are not
+   [+] keeps a pipeline that references nothing and that nothing references 4ms
+   [+] keeps a classic definition with no YAML as a node with no definition edge 8ms
+   [+] does not emit a node for a repository nothing references 3ms
+   [+] emits a node for a repository the graph lives in, referenced or not 2ms
+   [+] gives every pipeline node the repository it lives in 3ms
+   [+] emits repository nodes for the ones references name 3ms
+ Context cycle-safe traversal
+   [+] terminates and records both edges of the cycle 6ms
+ Context unresolved references are the answer the tool exists to give
+   [+] carries ref, refKind and reason on every unresolved edge 6ms
+   [+] reports an undeclared alias as alias-not-declared, keeping the alias in the target 8ms
+   [+] reports a missing file as file-not-found, which needs a different fix 5ms
+   [+] gives an unresolved target no node, so it cannot be mistaken for a real one 4ms
+ Context reference kinds are kept apart
+   [+] records extends as extends, not as template 8ms
+   [+] records checkout as a repository dependency and invents no template edge from it 5ms
+   [+] records a pipelineResource against a definition node 5ms
+   [+] resolves a cross-repository relative reference inside that repository 6ms
+
+Running tests from 'C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\scratch\runs\004-plugin-on\tests\Public\Get-AzDoPipelineReference.Tests.ps1'
+Describing Get-AzDoPipelineReference
+  [+] parses a document with no credentials and no network 4ms
+  [+] gives extends.template the kind extends, not template 5ms
+  [+] finds a template under variables, which is not a steps/jobs/stages block 4ms
+  [+] does not invent a reference from buildTemplate, which only contains the word 4ms
+  [+] records the raw reference text and the alias separately 4ms
+  [+] reads resources.repositories as repositoryResource with its alias 8ms
+  [+] reads resources.pipelines as a reference to a definition, not to a file 4ms
+  [+] yields a checkout reference for another repository but nothing for self 4ms
+  [+] yields nothing at all for a document of self, none and a lookalike script line 6ms
+  [+] reads a file on disk with no credentials 25ms
+  [+] throws naming the path when the file is not there 7ms
+  [+] treats a document that will not parse as a result, not a crash 5ms
+  [+] returns nothing for empty content rather than throwing 3ms
+  [+] accepts the Content property from a yaml record on the pipeline 17ms
+Filter 'ExcludeTag' set to ('PreTag').
+Filters selected 111 tests to run.
+
+Running tests from 'C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\scratch\runs\004-plugin-on\tests\Public\Resolve-AzDoPipelineReference.Tests.ps1'
+Describing Resolve-AzDoPipelineReference
+ Context no @alias - relative to the directory of the including file
+   [+] resolves against the referencing file directory, not the repository root 9ms
+   [+] normalises a parent-directory reference 5ms
+   [+] keeps the current repository as a property of the file, not of the walk 5ms
+ Context with @alias - from the root of the aliased repository
+   [+] joins the path to the repository root and ignores the source directory 10ms
+   [+] reports alias-not-declared and keeps the alias in the target id 6ms
+ Context unresolved references are results, not dropped edges
+   [+] reports file-not-found when the alias resolved but no such file exists 7ms
+   [+] keeps file-not-found and alias-not-declared distinct, because the fixes differ 11ms
+   [+] reports repository-not-found when the aliased repository is not in the project 5ms
+ Context the other three reference kinds
+   [+] resolves a repositoryResource to a repository node 7ms
+   [+] strips a project qualifier from a repositoryResource name 5ms
+   [+] resolves checkout of a declared alias to that repository 5ms
+   [+] reports alias-not-declared for a checkout of an undeclared alias 5ms
+   [+] resolves a pipelineResource to a definition node, not to a file 6ms
+   [+] reports pipeline-not-found when the named definition is not in the project 6ms
+Tests completed in 11.13s
+Tests Passed: 111, Failed: 0, Skipped: 0, Inconclusive: 0, NotRun: 7
+Processing code coverage result.
+Code Coverage result processed in 1665ms.
+Covered 94.61% / 70%. 760 analyzed Commands in 1 File.
+Missed commands:
+
+File                                              Class Function                        Line Command
+----                                              ----- --------                        ---- -------
+output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       ConvertTo-AzDoGraphHtml          251 continue
+output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       ConvertTo-AzDoGraphHtml          281 continue
+output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       ConvertTo-AzDoGraphHtml          308 $label = $label.Substring(…
+output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       ConvertTo-AzDoGraphHtml          336 'PSAzureDevOpsGraph'
+output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Get-AzDoCachedYaml               548 $parameter['Ref'] = $Ref
+output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Invoke-AzDoRestMethod            583 $pairs += "continuationTok…
+output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Invoke-AzDoRestMethod            583 [uri]::EscapeDataString($t…
+output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Invoke-AzDoRestMethod            584 $Uri
+output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Invoke-AzDoWebRequest            621 $attempt++
+output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Invoke-AzDoWebRequest            627 throw 'Azure DevOps return…
+output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Invoke-AzDoWebRequest            627 throw 'Azure DevOps return…
+output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Invoke-AzDoWebRequest            643 $after = 2
+output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Invoke-AzDoWebRequest            644 $header = $_.Exception.Res…
+output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Invoke-AzDoWebRequest            645 if ($header -and $header.R…
+output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Invoke-AzDoWebRequest            646 $after = [int] $header.Ret…
+output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Invoke-AzDoWebRequest            648 Write-Verbose "Throttled b…
+output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Invoke-AzDoWebRequest            649 Start-Sleep -Seconds ([mat…
+output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Invoke-AzDoWebRequest            649 [math]::Max(1, $after)
+output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Invoke-AzDoWebRequest            650 continue
+output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Invoke-AzDoWebRequest            662 throw "Azure DevOps kept t…
+output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Invoke-AzDoWebRequest            662 throw "Azure DevOps kept t…
+output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Get-AzDoYamlReferenceNode        749 continue
+output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Get-AzDoYamlReferenceNode        751 continue
+output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Get-AzDoYamlReferenceNode        763 continue
+output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Get-AzDoYamlReferenceNode        766 continue
+output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Get-AzDoPipeline                 969 continue
+output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Get-AzDoPipeline                 975 continue
+output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Get-AzDoPipelineDependencyGraph 1117 Write-Verbose "No content …
+output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Get-AzDoPipelineDependencyGraph 1117 $file.Id
+output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Get-AzDoPipelineDependencyGraph 1118 continue
+output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Get-AzDoPipelineDependencyGraph 1131 $name = $name.Substring($s…
+output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Get-AzDoPipelineDependencyGraph 1193 continue
+output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Get-AzDoRepository              1418 continue
+output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Resolve-AzDoPipelineReference   1573 $state['Reason'] = "reposi…
+output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Resolve-AzDoPipelineReference   1573 $Reference.Type
+output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Resolve-AzDoPipelineReference   1574 break
+output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Resolve-AzDoPipelineReference   1577 $state['Reason'] = "reposi…
+output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Resolve-AzDoPipelineReference   1578 break
+output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Resolve-AzDoPipelineReference   1595 $state['Reason'] = "reposi…
+output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Resolve-AzDoPipelineReference   1595 $Reference.Alias
+output\PSAzureDevOpsGraph\PSAzureDevOpsGraph.psm1       Resolve-AzDoPipelineReference   1596 break
+
+
+Line coverage: 94.61% (target 70%)
+Done /./Test 00:00:14.1476202
+Done /. 00:00:18.4807937
+Build succeeded. 5 tasks, 0 errors, 0 warnings 00:00:18.5987154
