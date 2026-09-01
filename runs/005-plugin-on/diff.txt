@@ -1,0 +1,7 @@
+Compare-Graph
+  expected  : C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\functional\fixture\expected-graph.json
+  candidate : scratch/runs/005-plugin-on/graph.json
+
+  The graphs agree. 0 differences.
+
+  report    : C:/Users/jlbal/AppData/Local/Temp/claude/c----Code---AI-Agent-Claude-PowerShellModuleBuilder-AI-Agent-Claude-PowerShellModuleBuilder/cc4d301c-ed6d-476f-90d9-63b324a62658/scratchpad/i1-diff.txt

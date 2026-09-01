@@ -1,0 +1,101 @@
+Pester v6.1.0
+
+Running tests from 1 files.
+Filter 'Tag' set to ('Universal', 'Repository', 'HouseStyle', 'RequiresBuild').
+Filters selected 57 tests to run.
+
+Running tests from 'C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Conformance.Tests.ps1'
+Describing Manifest
+  [+] exists, and its base name matches its directory 98ms
+  [+] parses as PowerShell data 7ms
+  [+] declares a RootModule 7ms
+  [+] declares a ModuleVersion that parses as a version 23ms
+  [+] declares a GUID that parses as a GUID 10ms
+  [+] exports functions by explicit name, never by wildcard 22ms
+  [+] exports no cmdlets, variables, or aliases implicitly 13ms
+  [+] exports no cmdlets, variables, or aliases implicitly 4ms
+  [+] exports no cmdlets, variables, or aliases implicitly 4ms
+
+Describing Public surface
+  [+] defines every function the manifest exports somewhere in source 5ms
+  [+] gives Export-AzDoPipelineDependencyGraph comment-based help with a synopsis 57ms
+  [+] gives Get-AzDoPipeline comment-based help with a synopsis 39ms
+  [+] gives Get-AzDoPipelineDependencyGraph comment-based help with a synopsis 35ms
+  [+] gives Get-AzDoPipelineReference comment-based help with a synopsis 11ms
+  [+] gives Get-AzDoPipelineYaml comment-based help with a synopsis 25ms
+  [+] gives Get-AzDoRepository comment-based help with a synopsis 15ms
+  [+] gives Resolve-AzDoPipelineReference comment-based help with a synopsis 48ms
+
+Describing Repository shape
+  [+] has a build entrypoint at the repository root 5ms
+  [+] has analyzer settings at the repository root 4ms
+  [+] has a tests directory 4ms
+  [+] exercises the exported command Export-AzDoPipelineDependencyGraph somewhere in tests 71ms
+  [+] exercises the exported command Get-AzDoPipeline somewhere in tests 54ms
+  [+] exercises the exported command Get-AzDoPipelineDependencyGraph somewhere in tests 42ms
+  [+] exercises the exported command Get-AzDoPipelineReference somewhere in tests 49ms
+  [+] exercises the exported command Get-AzDoPipelineYaml somewhere in tests 32ms
+  [+] exercises the exported command Get-AzDoRepository somewhere in tests 41ms
+  [+] exercises the exported command Resolve-AzDoPipelineReference somewhere in tests 48ms
+
+Describing House style: source layout
+  [+] places source under src/PSAzureDevOpsGraph/ 7ms
+  [+] keeps Public/ flat 6ms
+  [+] defines exactly one function in Export-AzDoPipelineDependencyGraph.ps1, named for the file 30ms
+  [+] defines exactly one function in Get-AzDoPipeline.ps1, named for the file 7ms
+  [+] defines exactly one function in Get-AzDoPipelineDependencyGraph.ps1, named for the file 8ms
+  [+] defines exactly one function in Get-AzDoPipelineReference.ps1, named for the file 7ms
+  [+] defines exactly one function in Get-AzDoPipelineYaml.ps1, named for the file 12ms
+  [+] defines exactly one function in Get-AzDoRepository.ps1, named for the file 11ms
+  [+] defines exactly one function in Resolve-AzDoPipelineReference.ps1, named for the file 8ms
+  [+] agrees three ways: Public filenames, manifest exports, and their count 11ms
+  [+] declares the PowerShell editions it claims to support 8ms
+  [+] pins build dependencies only in Requirements.psd1 18ms
+
+Describing House style: build file
+  [+] has a build file named PSAzureDevOpsGraph.build.ps1 6ms
+  [+] declares the task Clean 22ms
+  [+] declares the task Lint 10ms
+  [+] declares the task Build 9ms
+  [+] declares the task Test 7ms
+  [+] declares the task PreTag 8ms
+  [+] makes the default task Clean, Lint, Build, Test 15ms
+  [+] excludes PreTag-tagged tests from the Test task 28ms
+  [+] throws rather than exits when tests fail 27ms
+  [+] disables Pester v5 assertion syntax 17ms
+  [+] measures coverage against the built psm1, not the source tree 16ms
+  [+] throws on coverage below target rather than only reporting it 38ms
+
+Describing House style: generated module
+  [+] produced output/PSAzureDevOpsGraph/PSAzureDevOpsGraph.psm1 7ms
+  [+] marks the generated file as generated 6ms
+  [+] sets $script:ModuleRoot 36ms
+  [+] exports exactly the manifest surface 46ms
+  [+] includes functions from Private subfolders 54ms
+  [!] copies culture directories so Get-Help finds about_ topics is skipped, because this module ships no culture directories 29ms
+Tests completed in 2.34s
+Tests Passed: 56, Failed: 0, Skipped: 1, Inconclusive: 0, NotRun: 0
+
+Conformance: 56/56 (100%) across 33 assertions  ->  C:/Users/jlbal/AppData/Local/Temp/claude/c----Code---AI-Agent-Claude-PowerShellModuleBuilder-AI-Agent-Claude-PowerShellModuleBuilder/cc4d301c-ed6d-476f-90d9-63b324a62658/scratchpad/i1-conformance.json
+cases-defined: 33  (HouseStyle=14, Repository=4, RequiresBuild=6, Universal=9)   cases-run: 56
+
+Target             : C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\scratc
+                     h\0027-snapshot-1
+Tags               : {Universal, Repository, HouseStyle, RequiresBuild}
+RunAt              : 2026-09-01T15:56:42.3353516-07:00
+Total              : 57
+Passed             : 56
+Failed             : 0
+Skipped            : 1
+NotRun             : 0
+CasesRun           : 56
+CasesDefined       : 33
+CasesDefinedPerTag : @{HouseStyle=14; Repository=4; RequiresBuild=6; Universal=9}
+ScorePct           : 100
+Assertions         : {@{Name=House style: build file.declares the task <_>; Ran=5; Passed=5; Failed=0}, @{Name=House 
+                     style: build file.disables Pester v5 assertion syntax; Ran=1; Passed=1; Failed=0}, @{Name=House 
+                     style: build file.excludes PreTag-tagged tests from the Test task; Ran=1; Passed=1; Failed=0}, 
+                     @{Name=House style: build file.has a build file named <ModuleName>.build.ps1; Ran=1; Passed=1; 
+                     Failed=0}.}
+Failures           : {}
+

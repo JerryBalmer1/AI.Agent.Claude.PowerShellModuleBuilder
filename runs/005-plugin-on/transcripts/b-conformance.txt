@@ -1,0 +1,118 @@
+Pester v6.1.0
+
+Running tests from 1 files.
+Filter 'Tag' set to ('Universal', 'Repository', 'HouseStyle', 'RequiresBuild').
+Filters selected 57 tests to run.
+
+Running tests from 'C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Conformance.Tests.ps1'
+Describing Manifest
+  [+] exists, and its base name matches its directory 111ms
+  [+] parses as PowerShell data 24ms
+  [+] declares a RootModule 10ms
+  [+] declares a ModuleVersion that parses as a version 45ms
+  [+] declares a GUID that parses as a GUID 29ms
+  [+] exports functions by explicit name, never by wildcard 37ms
+  [+] exports no cmdlets, variables, or aliases implicitly 38ms
+  [+] exports no cmdlets, variables, or aliases implicitly 6ms
+  [+] exports no cmdlets, variables, or aliases implicitly 5ms
+
+Describing Public surface
+  [+] defines every function the manifest exports somewhere in source 7ms
+  [+] gives Export-AzDoPipelineDependencyGraph comment-based help with a synopsis 77ms
+  [+] gives Get-AzDoPipeline comment-based help with a synopsis 46ms
+  [+] gives Get-AzDoPipelineDependencyGraph comment-based help with a synopsis 37ms
+  [+] gives Get-AzDoPipelineReference comment-based help with a synopsis 11ms
+  [+] gives Get-AzDoPipelineYaml comment-based help with a synopsis 23ms
+  [+] gives Get-AzDoRepository comment-based help with a synopsis 18ms
+  [+] gives Resolve-AzDoPipelineReference comment-based help with a synopsis 54ms
+
+Describing Repository shape
+  [+] has a build entrypoint at the repository root 7ms
+  [+] has analyzer settings at the repository root 7ms
+  [+] has a tests directory 8ms
+  [+] exercises the exported command Export-AzDoPipelineDependencyGraph somewhere in tests 92ms
+  [+] exercises the exported command Get-AzDoPipeline somewhere in tests 38ms
+  [+] exercises the exported command Get-AzDoPipelineDependencyGraph somewhere in tests 43ms
+  [+] exercises the exported command Get-AzDoPipelineReference somewhere in tests 62ms
+  [+] exercises the exported command Get-AzDoPipelineYaml somewhere in tests 37ms
+  [+] exercises the exported command Get-AzDoRepository somewhere in tests 38ms
+  [+] exercises the exported command Resolve-AzDoPipelineReference somewhere in tests 66ms
+
+Describing House style: source layout
+  [+] places source under src/PSAzureDevOpsGraph/ 39ms
+  [+] keeps Public/ flat 24ms
+  [+] defines exactly one function in Export-AzDoPipelineDependencyGraph.ps1, named for the file 96ms
+  [+] defines exactly one function in Get-AzDoPipeline.ps1, named for the file 11ms
+  [+] defines exactly one function in Get-AzDoPipelineDependencyGraph.ps1, named for the file 11ms
+  [+] defines exactly one function in Get-AzDoPipelineReference.ps1, named for the file 12ms
+  [+] defines exactly one function in Get-AzDoPipelineYaml.ps1, named for the file 20ms
+  [+] defines exactly one function in Get-AzDoRepository.ps1, named for the file 19ms
+  [+] defines exactly one function in Resolve-AzDoPipelineReference.ps1, named for the file 17ms
+  [+] agrees three ways: Public filenames, manifest exports, and their count 26ms
+  [+] declares the PowerShell editions it claims to support 14ms
+  [+] pins build dependencies only in Requirements.psd1 52ms
+
+Describing House style: build file
+  [+] has a build file named PSAzureDevOpsGraph.build.ps1 11ms
+  [+] declares the task Clean 48ms
+  [+] declares the task Lint 9ms
+  [+] declares the task Build 14ms
+  [+] declares the task Test 9ms
+  [+] declares the task PreTag 8ms
+  [+] makes the default task Clean, Lint, Build, Test 27ms
+  [+] excludes PreTag-tagged tests from the Test task 52ms
+  [+] throws rather than exits when tests fail 22ms
+  [+] disables Pester v5 assertion syntax 22ms
+  [+] measures coverage against the built psm1, not the source tree 31ms
+  [+] throws on coverage below target rather than only reporting it 96ms
+
+Describing House style: generated module
+  [-] produced output/PSAzureDevOpsGraph/PSAzureDevOpsGraph.psm1 40ms
+   Expected $true, because run the build before the RequiresBuild tag, but got $false.
+   at Test-Path -LiteralPath $BuiltPsm1 | Should -BeTrue -Because 'run the build before the RequiresBuild tag', C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Conformance.Tests.ps1:679
+  [-] marks the generated file as generated 21ms
+   Expected regular expression '(?i)auto-generated' to match <empty>, but it did not match.
+   at $Psm1Text | Should -Match '(?i)auto-generated', C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Conformance.Tests.ps1:683
+  [-] sets $script:ModuleRoot 32ms
+   Expected a value, because the generated module must parse, but got $null or empty.
+   at $Psm1Ast | Should -Not -BeNullOrEmpty -Because 'the generated module must parse', C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Conformance.Tests.ps1:689
+  [-] exports exactly the manifest surface 7ms
+   Expected a value, because the generated module must parse, but got $null or empty.
+   at $Psm1Ast | Should -Not -BeNullOrEmpty -Because 'the generated module must parse', C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Conformance.Tests.ps1:701
+  [-] includes functions from Private subfolders 35ms
+   Expected a value, because the generated module must parse, but got $null or empty.
+   at $Psm1Ast | Should -Not -BeNullOrEmpty -Because 'the generated module must parse', C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Conformance.Tests.ps1:729
+  [!] copies culture directories so Get-Help finds about_ topics is skipped, because this module ships no culture directories 38ms
+Tests completed in 3.14s
+Tests Passed: 51, Failed: 5, Skipped: 1, Inconclusive: 0, NotRun: 0
+
+Conformance: 51/56 (91.07%) across 33 assertions  ->  C:/Users/jlbal/AppData/Local/Temp/claude/c----Code---AI-Agent-Claude-PowerShellModuleBuilder-AI-Agent-Claude-PowerShellModuleBuilder/cc4d301c-ed6d-476f-90d9-63b324a62658/scratchpad/conformance-result.json
+cases-defined: 33  (HouseStyle=14, Repository=4, RequiresBuild=6, Universal=9)   cases-run: 56
+
+Target             : C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\scratc
+                     h\runs\005-plugin-on
+Tags               : {Universal, Repository, HouseStyle, RequiresBuild}
+RunAt              : 2026-09-01T15:52:34.1846699-07:00
+Total              : 57
+Passed             : 51
+Failed             : 5
+Skipped            : 1
+NotRun             : 0
+CasesRun           : 56
+CasesDefined       : 33
+CasesDefinedPerTag : @{HouseStyle=14; Repository=4; RequiresBuild=6; Universal=9}
+ScorePct           : 91.07
+Assertions         : {@{Name=House style: build file.declares the task <_>; Ran=5; Passed=5; Failed=0}, @{Name=House 
+                     style: build file.disables Pester v5 assertion syntax; Ran=1; Passed=1; Failed=0}, @{Name=House 
+                     style: build file.excludes PreTag-tagged tests from the Test task; Ran=1; Passed=1; Failed=0}, 
+                     @{Name=House style: build file.has a build file named <ModuleName>.build.ps1; Ran=1; Passed=1; 
+                     Failed=0}.}
+Failures           : {@{Name=House style: generated module.produced output/PSAzureDevOpsGraph/PSAzureDevOpsGraph.psm1; 
+                     Message=Expected $true, because run the build before the RequiresBuild tag, but got $false.}, 
+                     @{Name=House style: generated module.marks the generated file as generated; Message=Expected 
+                     regular expression '(?i)auto-generated' to match <empty>, but it did not match.}, @{Name=House 
+                     style: generated module.sets $script:ModuleRoot; Message=Expected a value, because the generated 
+                     module must parse, but got $null or empty.}, @{Name=House style: generated module.exports exactly 
+                     the manifest surface; Message=Expected a value, because the generated module must parse, but got 
+                     $null or empty.}.}
+
