@@ -5,8 +5,8 @@ for counters and pins. Update it in the same commit as the work
 that changes it.
 
 ## Passes
-Last landed: 0028. Next: 0029-in-progress (final-README rider,
-running in the same session as 0028 per its prompt).
+Last landed: 0029. Next: 0030 — packaging (marketplace.json,
+cold-install proof).
 
 ## Runs
 AzDO-module (runs/NNN-*): **ladder COMPLETE at 004–006** (passes
@@ -35,6 +35,27 @@ worth re-reading rather than trusting.
 Ladder plugin SHA: f25d05d8eb219c9b0009a85d39918214f6b3b681
 Ladder model version: claude-opus-5[1m]
 Oracle blob (AzDO): bd7b3c4f4f8ce9901c7a6a02073c0cb5ff3ec4dc
+
+**The ladder pin check must be amended before the next blind run.**
+Runs 004-006 asserted that
+
+    git diff f25d05d..main -- skills/ commands/ .claude-plugin/ evals/
+
+is EMPTY. Pass 0029 landed its one sanctioned documentation change
+inside that path — `evals/HARNESS.md`, +69 lines, hazards 9/10/11,
+no assertion, script or fixture touched — so that command is no
+longer empty and a future run written against it hard-stops for a
+reason that is not about the instrument.
+
+The plugin proper is untouched and still checks empty:
+
+    git diff f25d05d..main -- skills/ commands/ .claude-plugin/
+
+Use that form, or exclude `evals/HARNESS.md` explicitly, and
+re-verify the oracle and BRIEF blobs separately as runs 004-006
+already do. This is a precondition edit, not a new pin: the plugin
+SHA above is unchanged and still names the instrument that produced
+all three ladder runs.
 TF fixture SHAs (decision-0012 re-freeze):
   TfFixtureShared   0af6ee33854bedb4147d0b13cc6db1311687775b  (unchanged)
   TfFixtureNetwork  24f27be92e583b6dfc9208bca42f8ec0baf5004b  (unchanged)
@@ -130,3 +151,33 @@ TF fixture SHAs (decision-0012 re-freeze):
     The tree is the pin; the commit is not, and a check written against
     the commit SHA fails for a reason that is not about the seed. Either
     document it or add `-Epoch` when `evals/` unfreezes.
+
+### Resolved by pass 0029
+
+- Item **1** (runs 004-006 + 0029 final README): **done.** Ladder
+  complete, final README written from the journal and the four run
+  records.
+- Items **12 / 13 / 14** (blind-run hygiene): **folded into
+  `evals/HARNESS.md` as hazards 9, 10 and 11** — the session gate and
+  the run-records-are-oracle-knowledge rule, the memory-poisoning
+  vector, and the commit-subject convention. Item 13 never had its own
+  numbered entry; its wording was absorbed into item 12 and is now
+  hazard 10. Nothing else under `evals/` was touched.
+
+### Added by pass 0029
+
+17. **The baseline has one run and it was never allowed to iterate.**
+    Run 003's protocol was "no fixes, no re-runs — the first scores
+    stand", so the with/without table has no plugin-off final column
+    and cannot have one. A second plugin-off run under runs 004-006's
+    rules — three iterations allowed, scored from fresh clones — is the
+    missing control, and until it exists nobody knows what a
+    plugin-off run reaches given the same budget. Highest-value single
+    run remaining.
+18. **Per-skill ablation is still unmeasured** (was backlog 4, now
+    sharpened). The measured plugin effect is 19/33 → 33/33 on shape
+    and four specific behavioural rules; which of the fourteen skills
+    carries which part is unknown. Suspects first:
+    `powershell-module-build` and `powershell-module-scaffold` for the
+    conformance delta, `azdo-graph-assembly` and
+    `azdo-pipeline-yaml-refs` for the four behavioural fixes.

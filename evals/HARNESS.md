@@ -327,6 +327,75 @@ file - because the phrase spanned a line break. The check for the hazard was
 written with the hazard in it. Knowing about it is not sufficient protection;
 collapsing whitespace before matching is.
 
+### 9. A session that has read `runs/` cannot be a blind builder
+
+Run records are **oracle knowledge in prose**. A run README states the score, the
+difference count, the mechanisms by name and often the exact field conventions
+the oracle wants. A session that has read one cannot produce an independent
+first-shot number afterwards, whatever else it does.
+
+The rule: **a measured run's prompt is the first message of a brand-new
+session**, and anything preceding it in that context - file contents, tool
+output, prior conversation - disqualifies the session. Preconditions that must
+confirm a run record exists check it by **line count** (`git show main:<path> |
+wc -l`), never by reading it.
+
+This is not hypothetical and it is cheap to trip. Pass 0026 stopped at its own
+gate because the preceding pass had legitimately read
+`runs/002-first-build/README.md` and `runs/003-baseline-off/` in order to rebuild
+those clones for a denominator falsification. The reading had nothing to do with
+the fixture's answers and burned the session anyway. Passes 0026, 0027 and 0028
+each opened a fresh session for exactly this reason, and their three distinct
+`session-identifier` values are what makes the claim checkable rather than
+asserted.
+
+The corollary that costs the most: a run's **prompt** is inside its own
+allowlist, so a prompt that quotes a previous run's findings has leaked oracle
+knowledge into the blind phase. Pass 0028's prompt did this - it named runs 004
+and 005's four difference mechanisms and their counts, because the variance
+section it asked for needs them. The run flagged it and did not act on it, and
+its record says the first-shot number's independence is weakened. Write the
+variance requirement without the answers, or accept that the third run's
+first-shot line is not independent.
+
+### 10. A poisoned memory file fails the gate permanently and silently
+
+Hazard 9 is enforceable only while nothing durable carries the knowledge. **No
+score, fixture finding, or oracle content may ever be written to session memory,
+`MEMORY.md`, `CLAUDE.md`, or any other auto-loading location.**
+
+This half has no visible failure mode. A context window is cleared by `/clear`
+and a new session genuinely starts blind; an auto-loading file is not cleared, so
+a single score written to memory disqualifies **every** future session, and
+nothing announces it. There is no red, no warning, and no artifact that looks
+wrong - the runs simply stop measuring what they claim to measure.
+
+Verified empty at the time this entry was written, and worth re-verifying at
+every blind run's preconditions:
+
+    <project>/memory/           empty, no MEMORY.md
+    harness CLAUDE.md           absent
+    harness .claude/            absent
+
+Keeping them empty is the enforcement. There is no way to check afterwards
+whether a past run was contaminated by a memory file that has since been deleted.
+
+### 11. Commit subjects leak scores into every future session
+
+`git log` runs at the preconditions of every measured run, so **a commit subject
+is read by sessions that must not read run records**. A subject like *"Run 004:
+12/12 functional, 33/33 conformance"* defeats hazard 9 through the one channel
+the allowlist cannot forbid, because checking the tree is clean and the branch is
+right requires looking at the log.
+
+The convention: **run and pass commits carry no scores in their subjects.**
+Scores live in run README bodies and plan bodies, which the allowlist does
+forbid. Subjects say what the commit is, not how it scored - *"Run 006: the last
+plugin-on rung, and the one thing that varied"* rather than any number.
+
+The same applies to branch names and tag names, which `git branch -a` and
+`git tag -l` surface just as readily.
+
 ## What a run must record
 
 Enough that the score can be read months later without rerunning it:

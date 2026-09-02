@@ -130,6 +130,43 @@ while removing all of them, produces a red that proves nothing.
 **PORTABLE.** Restoration is verified, not assumed, and the harness re-asserts
 known-good before every row.
 
+**PORTABLE. An assertion about a declaration is not an assertion about the thing
+declared.** Checking that a gate is *declared* is a different claim from checking
+that the gate *can fail*, and the first is routinely mistaken for the second
+because both go green.
+
+Two of this project's own gates were inert for exactly this reason. A `PreTag`
+task was asserted to exist, and the default `Test` task was asserted to exclude
+`PreTag`-tagged tests — both true — while no test carried the tag, so the gate
+selected nothing and could only ever throw its own guard; nothing in the suite
+could catch it, because nothing asserted that a tagged test exists. Separately, a
+coverage gate copied from a skill compared a percentage against a threshold
+inside an `if`, structurally exactly as specified, and could not fire: the test
+runner returned nothing, so the comparison was `0 -lt $null`, and the build
+printed a plausible coverage line and graded nothing across three independent
+runs.
+
+The rule that follows: for every gate, name the observation that would be
+different if the gate were removed, and produce it. Declaration is evidence about
+the document. Only a red is evidence about the gate.
+
+**PORTABLE. Parallel scoring jobs must be isolated per clone.** When more than
+one job scores the same artifact concurrently, each gets its own fresh clone of
+the commit under test and touches no other job's working tree.
+
+This is not tidiness. Three jobs sharing one tree produced a **false 51/56**: the
+build job's `Clean` task deleted `output/` while the conformance job's
+build-dependent assertions were reading it, and the resulting failures were
+indistinguishable from real defects in the artifact. The score was wrong in the
+direction that looks like a finding, which is the direction that costs the most
+to chase.
+
+Isolating the *tree* is necessary and not sufficient: the same defect recurs one
+level up when two builds share a **process**, because the module imported by the
+first build is still loaded when the second build's assertions run, and they
+then grade the wrong artifact. Give each job its own clone and its own process,
+and pay the wall-clock — about a minute, against a score nobody can trust.
+
 ## Evidence discipline
 
 **PORTABLE.** Distinguish observed from inferred. Anything claimed from a
