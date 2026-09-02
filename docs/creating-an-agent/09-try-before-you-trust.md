@@ -36,7 +36,45 @@ The repository's own "Running it" section lists what the harness needs:
 7.2 and InvokeBuild; the other two are needed once you start building
 modules with it.
 
-Check what you have:
+**Check what you have with one command.** Pass 0030 added a prerequisite
+checker, and it is the first thing to run — before the clone, before the
+staging, before Claude Code is involved at all:
+
+```powershell
+pwsh -NoProfile -File ./tools/publish/Test-Prerequisites.ps1
+```
+
+It checks five things — PowerShell 7.2+, Pester, git, InvokeBuild and
+`$env:AZDO_PAT` — and prints one line per missing item naming the thing and
+the exact command that installs or sets it. Intact, it exits 0 and says
+`ALL PREREQUISITES PRESENT. (5 of 5 checked, 0 missing.)`
+
+Two details worth knowing, because both are the kind of thing this chapter
+exists to make you check rather than believe:
+
+- **It has no `#Requires -Version 7.2` line, deliberately**, while every other
+  script here does. A prerequisite checker that refuses to start on the wrong
+  PowerShell fails exactly when it is needed — it would hand a Windows
+  PowerShell 5.1 user the engine's own `#Requires` error instead of the line
+  that says which PowerShell to install. So it is written to run under 5.1 and
+  does the version check itself.
+- **A missing `$env:AZDO_PAT` is reported as missing**, but its line says in so
+  many words that it is needed only by the three Azure DevOps skills and not to
+  build a module. If that is your only failure, it is one you can knowingly
+  ignore.
+
+**It was falsified, not merely observed passing.** All five prerequisites were
+made genuinely absent and the checker re-run against each broken environment:
+the version probe runs it under a real Windows PowerShell 5.1, the Pester and
+InvokeBuild probes mask `PSModulePath` in a child process to a root holding
+only the *other* module, the git probe masks `PATH`, and the PAT probe clears
+the variable in a child process while the parent keeps the real token. Each
+came back exit 1 with exactly one named line, and the control on the intact
+environment came back exit 0. The record is
+[hostile-first-run.txt](../../plans/0030-release/hostile-first-run.txt), and
+it ends `ALL PROBES: named one-line errors`.
+
+If you would rather check by hand:
 
 ```powershell
 $PSVersionTable.PSVersion
@@ -363,14 +401,23 @@ and it is mechanical: **nothing here pushes**. That is the next section.
 ## PublishReal — the guard in front of publication
 
 The second build task is the one that would take this repository public. It
-is called `PublishReal`, and today it refuses.
+is called `PublishReal`.
+
+**This section changed at pass 0030, and the change is the point.** Until
+then the guard refused, and this chapter said so. Packaging has now landed,
+so the guard passes and prints the operator's checklist instead. Both states
+are described below, in that order, because a guard you have only ever seen
+in one state is a guard you have not seen work.
 
 ```powershell
 Invoke-Build PublishReal
 ```
 
-What that prints, from
-[publishreal-guard.txt](../../plans/0031-operators-manual/publishreal-guard.txt):
+### What it printed before pass 0030
+
+From
+[publishreal-guard.txt](../../plans/0031-operators-manual/publishreal-guard.txt),
+a frozen record of pass 0031 and still an accurate account of that moment:
 
 ```
 GUARD: refused.
@@ -379,7 +426,7 @@ GUARD: refused.
   Found      : nothing.
 ```
 
-The refusal is not a bug and not a missing feature. A Claude Code
+The refusal was not a bug and not a missing feature. A Claude Code
 marketplace is discovered by a `marketplace.json` committed at a
 repository's root; this repository has a `plugin.json` and no
 `marketplace.json`, so there is nothing for anyone to add. The guard's own
@@ -387,16 +434,34 @@ words for why generating one would be wrong: it "would publish a file that
 no pass has falsified and that no cold install has ever been proved
 against."
 
-The guard goes green when pass **0030 — packaging** lands, which is the next
-pass in [LEDGER.md](../../LEDGER.md). Three things make it green: a
-committed `marketplace.json`; a re-version of the `psmodule` manifest away
-from `0.1.0` (the LEDGER reserves `v1.0.0` for "passed the ladder"); and a
-cold-install proof on a machine that has never seen this repository.
+### What it prints now
 
-**The guard was falsified, not merely observed refusing.** A guard that has
-only ever refused is indistinguishable from one that always refuses. So
-section 3 of the same file clones the repository into `scratch/`, drops a
-dummy `marketplace.json` into the *clone only*, and runs the guard again:
+Pass 0030 landed the packaging, so the guard takes its live path. From
+[packaging.txt](../../plans/0030-release/packaging.txt):
+
+```
+GUARD: passed. A committed marketplace.json is present.
+
+  marketplace : psmodule-builder
+  plugin      : psmodule 1.0.0
+  repository  : https://github.com/JerryBalmer1/AI.Agent.Claude.PowerShellModuleBuilder
+```
+
+Two of the three things the refusal asked for are done: the committed
+`marketplace.json`, and the manifest re-versioned from `0.1.0` to `1.0.0`
+(the LEDGER reserved `v1.0.0` for "passed the ladder", and the ladder is
+closed). **The third is not.** A cold-install proof — installing on a machine
+that has never seen this repository — has still never been done by anybody,
+and it is step 6 of the checklist the guard now prints. The guard going green
+did not make that claim true; it moved it from "blocked" to "outstanding",
+and the README's Status section says so.
+
+**The guard was falsified in both directions, and neither half was free.**
+
+A guard that has only ever refused is indistinguishable from one that always
+refuses. Before packaging existed, section 3 of the pass-0031 file cloned the
+repository into `scratch/`, dropped a dummy `marketplace.json` into the
+*clone only*, and ran the guard again:
 
 ```
 after flip:
@@ -411,6 +476,19 @@ was left alone — `Test-Path .claude-plugin/marketplace.json -> False` — and
 the clone was removed. The conclusion the file records: "GUARD IS FALSIFIABLE:
 refuses (exit 1) without the file, prints the operator's checklist (exit 0)
 with it, and publishes nothing on either path."
+
+Now the states are reversed: green is the everyday path, and **refusal** is
+the one nobody would otherwise see again. So pass 0030 probed that direction
+too. Probe D of
+[marketplace-falsification.txt](../../plans/0030-release/marketplace-falsification.txt)
+deletes the committed `marketplace.json` and confirms the validation goes red
+naming the missing file, then restores it and confirms the control returns to
+green. Five more probes break the file in other ways — a version that
+disagrees with the manifest, a source that is not a relative `./` path, a
+source pointing at a directory with no `plugin.json`, malformed JSON, and no
+entry matching the manifest name — and each is red. The rule this repository
+keeps rediscovering: whichever state a check is *usually* in, that is the
+state whose opposite has stopped being tested.
 
 ### It publishes nothing on either path, and that is structural
 
@@ -434,6 +512,23 @@ The rule it quotes is a **PORTABLE** safety rail in
 > **PORTABLE.** Nothing publishes. No release, no tag, no push to the
 > default branch, unless the operator does it from their own shell. Pushing
 > a pass branch is expected.
+
+**That rule gained one narrow exception at pass 0030**, and you should know
+about it before you take the paragraph above at face value.
+[Decision 0013](../../decisions/0013-harness-release-tagging.md) lets the agent
+create and push the annotated **release tag** on a release pass, once that
+pass's acceptance test is green. Everything else stands: the default branch is
+still the operator's, `Publish-Module` is still never run, no tag is ever moved
+or forced, and no other kind of tag is created. The exception is safe because a
+tag is immutable and additive — creating one cannot change what anyone already
+installed — and because consumers pin to tags, which is what keeps unreleased
+work off their machines. `METHOD.md` carries the amendment inline, so the two
+documents do not disagree.
+
+It is also worth noticing what the exception did **not** touch:
+`Publish-Real.ps1` still has no push path, and gained none. Decision 0013
+permits the agent to tag with `git` in a release pass; it did not add a code
+path to this script, and the verification below still comes back empty.
 
 Read that as a two-part claim. The rule says the agent does not publish; the
 absence of a code path says the agent *cannot*, from this script, whatever

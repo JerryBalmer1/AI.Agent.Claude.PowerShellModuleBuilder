@@ -18,9 +18,16 @@
     script back to refusing, not to succeeding vacuously.
 
     Note what is still absent after 0030: a push path. Decision 0013 permits the
-    AGENT to create the release tag on a green release pass, which it does with
-    git directly in that pass. It does not permit this script to push anything,
-    and this script still cannot.
+    AGENT to create the release tag on a green release pass, using git directly
+    in that pass. It does not permit this script to push anything, and this
+    script still cannot.
+
+    Keep every line of this file from BEGINNING with the word git. Chapter 09
+    teaches readers to verify the no-push claim with
+    `Select-String -Pattern '^\s*(&\s*)?git\s'` over this file and to expect no
+    output; a prose line that happens to start with it turns that lesson into a
+    false alarm. This comment is the reason the sentence above is wrapped as it
+    is.
 #>
 [CmdletBinding()]
 param(

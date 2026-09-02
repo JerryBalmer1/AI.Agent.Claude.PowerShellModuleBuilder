@@ -242,6 +242,21 @@ absent.
 branch, unless the operator does it from their own shell. Pushing a pass
 branch is expected.
 
+> **Amended for this repository only, by
+> [decision 0013](../decisions/0013-harness-release-tagging.md) (pass 0030).**
+> One exception, and it is narrow: on a **release pass**, once that pass's
+> acceptance test is green, the agent creates and pushes the annotated release
+> tag `vMAJOR.MINOR.PATCH`. Nothing else moves — the default branch is still
+> the operator's, `Publish-Module` is still never run, no tag is ever moved or
+> forced, and no other kind of tag is created. The reason the exception is
+> narrow enough to be safe: a tag is immutable and additive, so the agent can
+> create one but cannot change what anyone already has, and consumers pin to
+> tags precisely so that unreleased work never reaches them.
+>
+> The PORTABLE rule above is the one to copy into a new project. This
+> amendment is not portable — it is earned by having a release pass with an
+> acceptance test, and a project without one should keep the unamended rule.
+
 **PORTABLE.** Destructive work happens in a disposable copy, never in
 place. Refuse to run if the path is not under the scratch root or the tree
 is dirty.

@@ -1,0 +1,77 @@
+==============================================================================
+HOSTILE FIRST RUN - falsifying Test-Prerequisites.ps1
+Generated 2026-09-02T02:03:33Z
+==============================================================================
+
+A prerequisite checker is only worth running if it can actually say NO.
+Each of the five prerequisites is made genuinely absent - not simulated,
+not stubbed - and the checker is re-run against the broken environment.
+Each must exit non-zero and name the missing thing on exactly ONE line
+carrying the command that fixes it.
+
+Nothing here modifies this machine. The version probe uses a real Windows
+PowerShell 5.1 that is already installed; the module probes mask
+PSModulePath in a child process; the git probe masks PATH in a child
+process; the PAT probe clears the variable in a child process and never
+touches the parent, which still holds the real token.
+
+------------------------------------------------------------------------------
+PROBE 1/5
+  ABSENT : PowerShell 7.2 or later
+  HOW    : run the checker under the real Windows PowerShell 5.1 already on this machine (powershell.exe)
+  EXIT   : 1
+  NAMED  : MISSING: PowerShell 7.2 or later - this host is 5.1.26100.9168. Fix: winget install --id Microsoft.PowerShell --source winget   (then re-run with 'pwsh', not 'powershell')
+  RESULT : RED, ONE named line naming the thing and its fix
+
+------------------------------------------------------------------------------
+PROBE 2/5
+  ABSENT : Pester
+  HOW    : PSModulePath masked in a child process to a root holding InvokeBuild only
+  EXIT   : 1
+  NAMED  : MISSING: Pester 5.0 or later is not installed. Fix: Install-Module Pester -MinimumVersion 5.0 -Scope CurrentUser -Force
+  RESULT : RED, ONE named line naming the thing and its fix
+
+------------------------------------------------------------------------------
+PROBE 3/5
+  ABSENT : git
+  HOW    : PATH masked in a child process to System32, removing Git from PATH
+  EXIT   : 1
+  NAMED  : MISSING: git is not on PATH. Fix: winget install --id Git.Git --source winget   (then open a new shell)
+  RESULT : RED, ONE named line naming the thing and its fix
+
+------------------------------------------------------------------------------
+PROBE 4/5
+  ABSENT : InvokeBuild
+  HOW    : PSModulePath masked in a child process to a root holding Pester only
+  EXIT   : 1
+  NAMED  : MISSING: InvokeBuild is not installed. Fix: Install-Module InvokeBuild -Scope CurrentUser -Force
+  RESULT : RED, ONE named line naming the thing and its fix
+
+------------------------------------------------------------------------------
+PROBE 5/5
+  ABSENT : $env:AZDO_PAT
+  HOW    : variable cleared in a child process; the parent shell keeps the real token
+  EXIT   : 1
+  NAMED  : MISSING: $env:AZDO_PAT is not set - needed only by the three Azure DevOps skills, not to build a module. Fix: [Environment]::SetEnvironmentVariable('AZDO_PAT','<your-token>','User')   (then open a new shell; scope the token to Code:Read and Build:Read)
+  RESULT : RED, ONE named line naming the thing and its fix
+
+------------------------------------------------------------------------------
+CONTROL - intact environment, nothing masked.
+Prerequisites for the psmodule plugin
+
+  [ok]      PowerShell 7.6.5 (need 7.2 or later)
+  [ok]      Pester 6.1.0 (imports cleanly)
+  [ok]      git at C:\Program Files\Git\mingw64\bin\git.exe
+  [ok]      InvokeBuild 5.14.23
+  [ok]      $env:AZDO_PAT is set (existence checked; value never read)
+
+ALL PREREQUISITES PRESENT. (5 of 5 checked, 0 missing.)
+  EXIT   : 0
+  RESULT : GREEN, exit 0 - the probes above were the masking, not a broken checker
+
+------------------------------------------------------------------------------
+PAT SAFETY: parent $env:AZDO_PAT still set after probe 5: True  (value never read or printed anywhere above)
+
+==============================================================================
+ALL PROBES: named one-line errors
+==============================================================================

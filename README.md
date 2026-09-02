@@ -12,6 +12,60 @@ The claim this repository exists to test is that the second measurably improves
 the first's scores. **That claim has now been measured, four times, and the
 answer is partly yes and partly no.** Both halves are below.
 
+<!-- TEMPLATE:replace — keep the shape of this section: prerequisites first,
+     then the three commands, then how to remove it again. Swap the owner/repo
+     slug, the marketplace name, the plugin name and the tag for your own. A
+     new project's install section is the same shape with different nouns. -->
+
+## Install
+
+**Check your prerequisites first.** One command, and it names anything missing
+with the exact line that fixes it. Run it in your own shell, not inside Claude
+Code:
+
+    pwsh -NoProfile -File ./tools/publish/Test-Prerequisites.ps1
+
+It checks five things: PowerShell 7.2 or later, Pester, InvokeBuild, git, and
+`$env:AZDO_PAT`. All five count as missing if absent, and the PAT line says in
+so many words that it is needed only by the three Azure DevOps skills and not to
+build a module — so a missing PAT is a `1 of 5 missing` you can knowingly
+ignore, not a mystery. The checker itself runs under Windows PowerShell 5.1 on
+purpose: a prerequisite checker that will not start on the wrong PowerShell is
+useless exactly when you need it.
+
+Then paste these three inside **Claude Code**, not in a shell:
+
+    /plugin marketplace add JerryBalmer1/AI.Agent.Claude.PowerShellModuleBuilder@v1.0.0
+    /plugin install psmodule@psmodule-builder
+    /psmodule:build
+
+The first adds this repository as a plugin marketplace, **pinned to the
+`v1.0.0` tag**. The pin is deliberate and is
+[decision 0013](decisions/0013-harness-release-tagging.md): `main` moves as work
+lands, and pinning means none of that reaches you until a release is tagged.
+Drop the `@v1.0.0` and you are tracking whatever `main` happens to be, which is
+not a release and is not what these measurements are about.
+
+The second installs the plugin from that marketplace. The third is the plugin
+doing something — run it in a PowerShell module repository and it builds to the
+conventions the [skills](#the-skills) describe.
+
+**To remove it again:**
+
+    /plugin uninstall psmodule@psmodule-builder
+    /plugin marketplace remove psmodule-builder
+
+**Prefer to try it without touching anything public?**
+[Chapter 9](docs/creating-an-agent/09-try-before-you-trust.md) stages the same
+plugin as a local marketplace under `scratch/` and installs it from a path on
+your own disk. Nothing is fetched and nothing is pushed.
+
+**Before you install, read what this does and does not do.** The
+[with/without table](#with-the-plugin-and-without-it) is the measured effect and
+one of its two rows is nearly flat; [Status, honestly](#status-honestly) is the
+list of what is still unproven, including the fact that nobody has yet installed
+this cold on a machine that has never cloned the repository.
+
 ## Creating a new agent, start here:
 
 Everything here was built by directing Claude, and the method is written down
@@ -430,6 +484,93 @@ memory of tf-001 rather than its generality — are in
 - Per-skill ablation — which of the fourteen skills carries the 19 → 33 — is
   **unmeasured**, and is the next question worth a run.
 
+<!-- TEMPLATE:replace — every project that becomes installable needs a
+     versioning promise and a support statement, and both must be honest about
+     what THIS maintainer can actually sustain. Keep both sections; rewrite the
+     cadence, the scope of a major, and the contact route for your own. Do not
+     inherit a cadence you have not agreed to. -->
+
+## Versioning
+
+Releases are tagged `vMAJOR.MINOR.PATCH`
+([decision 0013](decisions/0013-harness-release-tagging.md)), and the tag is
+what you install. The number on the tag and the `version` in
+`.claude-plugin/plugin.json` always agree; if they ever disagree, that is a
+defect, not a variant.
+
+| | What may change | What you should do |
+|---|---|---|
+| **PATCH** — `1.0.x` | Corrected documents, clarified skill wording, fixed defects. Nothing changes what the plugin asks a builder to do. | Upgrade freely. |
+| **MINOR** — `1.x.0` | New skills, new commands, new conventions. Existing conventions keep meaning what they meant. | Upgrade freely; read the [CHANGELOG](CHANGELOG.md) for what is new. |
+| **MAJOR** — `x.0.0` | A skill removed or renamed, a command's contract changed, or a convention the conformance suite enforces **reversed**. Your existing use can break. | Read the CHANGELOG before upgrading. Modules built to the old conventions may stop conforming. |
+
+**The pin is the promise.** Because you added the marketplace at a tag, none of
+this reaches you until you change the tag. `main` moves whenever a pass lands —
+that is work in progress, not a release, and pinning is what keeps the two
+apart. To move to a later release, remove the marketplace and add it again at
+the new tag.
+
+**A caution about MAJOR.** This project's conventions are graded by a
+conformance suite. A reversed convention does not merely change advice — it
+changes what your module must look like to score. That is why it is a major, and
+why the CHANGELOG will say so in those terms.
+
+## Support
+
+**This is a solo project.** One person, no team, no company behind it, no paid
+tier and no service-level agreement. That is not a disclaimer added for form; it
+is the single most useful thing to know before you depend on this.
+
+**Issues:** <https://github.com/JerryBalmer1/AI.Agent.Claude.PowerShellModuleBuilder/issues>
+
+**The cadence, stated so you can plan around it:** issues are read in batches,
+roughly **weekly**. Security reports are looked at first — see
+[SECURITY.md](SECURITY.md). Everything else is triaged when the batch is read,
+and a reply may be "not planned", which is a real answer and is better than
+silence. There is no on-call and there is no guaranteed response time. If you
+need one, this project cannot give it to you.
+
+**What a good bug report contains.** The audit commands are the same ones
+[chapter 05](docs/creating-an-agent/05-calling-bullshit-verification.md) uses to
+check any claim made in this repository, including the maintainer's. Run them
+and paste the output — a report with them is actionable, a report without them
+usually turns into three round-trips before anything can start:
+
+    # 1. What you are running, exactly.
+    pwsh -NoProfile -Command '$PSVersionTable.PSVersion.ToString()'
+    pwsh -NoProfile -File ./tools/publish/Test-Prerequisites.ps1
+
+    # 2. Which version of the plugin, and whether it is the tagged one.
+    #    Run inside Claude Code:
+    #      /plugin
+    #    and report the version shown against psmodule.
+
+    # 3. If you cloned the repository, where its HEAD actually is.
+    git -C <your-clone> rev-parse HEAD
+    git -C <your-clone> describe --tags --always
+    git -C <your-clone> status --porcelain
+
+    # 4. The failure itself, re-run rather than remembered.
+    #    Paste the command you ran and its complete output, not a summary.
+
+Then say **what you expected and what happened**, in that order, and separately.
+The most common unactionable report is one that states a conclusion — "the build
+skill is broken" — without the transcript that led to it. If a score or a count
+is involved, say which command produced it: this repository's own rule is that a
+number nobody re-derived is a claim, and that applies to reports as much as to
+its own documents.
+
+**Never paste a PAT, a token or an organisation URL into an issue.** If you
+think you have leaked one, revoke it first and report second.
+
+**What is most useful of all:** a cold-install report. Nobody has yet installed
+this on a machine that has never cloned the repository. If you are the first,
+say so and say what happened, and that is worth more than a bug report.
+
 ## Licence
 
-MIT.
+MIT — see [LICENSE](LICENSE).
+
+Copyright (c) 2026 Jerry Balmer. The licence file, the `license` field in
+`.claude-plugin/plugin.json` and the entry in `.claude-plugin/marketplace.json`
+all say MIT, and the release pass checks that they agree.
