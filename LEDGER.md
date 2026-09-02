@@ -5,10 +5,48 @@ for counters and pins. Update it in the same commit as the work
 that changes it.
 
 ## Passes
-Last landed: **0036**. Next: the operator's. The generalisation claim
+Last landed: **0037**. Next: the operator's. The generalisation claim
 now has a number and a stated bound; the two things that would move it
 are a plugin-off control on the Terraform domain or a third domain the
-`tf-*` skills say nothing about.
+`tf-*` skills say nothing about. **The first of those is now written up
+as a costed operator decision** — backlog 42 — rather than as a wish.
+
+0037 is a consolidation pass and released **v1.1.1**, a PATCH: `skills/`
+and `commands/` are byte-identical to v1.1.0 and `git diff
+v1.1.0..v1.1.1 -- skills/ commands/` is empty. It did four things.
+
+**Promoted the fixture-2 case scorer** out of `plans/0036-tf-003/` to
+`evals/tf/fixture2/Test-TfFixture2Case.ps1`, with its falsification
+beside it, closing backlog 29 and the scorer half of 36. Fixture 1's
+scorer was left alone on purpose — it is the instrument tf-001 and
+tf-002 were scored with.
+
+**Corrected `cases.md` case 6** (backlog 40), and the correction is to
+the PROSE: ten nodes satisfy the unscoped "with neither" clause, so the
+oracle failed its own case. `expected-graph.json` and the fixture
+repositories are untouched. The rewritten discriminator is **stricter**
+and that is demonstrated rather than asserted — a graph the plans-era
+form scores 7 / 7 the promoted form reddens. The scorer also now
+**refuses a duplicated node id** instead of scoring it, which is the
+scorer-side half of the blindness backlog 32 found in the comparator.
+
+**Re-scored tf-003 with the promoted scorer**, from fresh built clones
+of both of the run's own commits, graphs regenerated from read-only
+fixture clones at their decision-0014 SHAs. **Every number held** —
+6 / 7 first shot, 7 / 7 final, 184 → 0 differences, 99/99 and 88/88 —
+and the regenerated final graph is byte-identical to the `graph.json`
+the record ships. The run record is **appended to, never rewritten**.
+
+**Stated the bounded claim in the README** (backlog 36): the result and
+the bound in the same breath, with tf-003 joining tf-001 and tf-002 in a
+footnoted comparison table and a standing warning that the raw counts do
+not compare across the three.
+
+Its own instrument change is the one to watch: the fixture-2 suite gained
+a second layer and was **re-pinned 8 → 18**, deliberately, with both new
+checks broken on purpose and seen red before the 18 was trusted
+(`plans/0037-consolidation/case-layer-falsification.txt`). Fixture 1 is
+still 15.
 
 0036 **ran tf-003**, the first genuinely blind measurement in this
 project: plugin v1.1.0 readable, fixture 2 and its oracle unread until
@@ -154,6 +192,17 @@ into `evals/` is backlog 36**, and until then a fixture-2 run has to
 carry its own scorer, which is exactly the kind of thing that goes
 stale.
 
+**Pass 0037 promoted it, and re-scored this run with it.** The promoted
+scorer is not the same instrument: its case 6 is corrected and stricter,
+and it refuses a duplicated node id rather than scoring it. So the
+numbers above were re-derived rather than re-read — fresh built clones of
+`d788f7c` and `d76d16b`, graphs regenerated from read-only fixture
+clones. **Every one held**, and the regenerated final graph is
+byte-identical to the recorded `graph.json`. The scores in this section
+therefore stand under an instrument stricter than the one that produced
+them. `plans/0037-consolidation/tf-003-rescore.txt`, and a dated
+correction note appended — never rewritten — to the run record.
+
 **007 — baseline off, iterated** (`runs/007-baseline-iterated`,
 target `run-007-baseline-iterated`, final `95ca28d`, first shot
 `1f2df30`, session `c0002fae-addf-4ff6-847e-9faf5d6aa05e`, plugin
@@ -179,7 +228,17 @@ PSAzureDevOpsGraph: v0.2.0 (next touching plan: v0.3.0)
 PSGraphRender: v0.13.0
 PSGraphRenderToHtml: v0.1.0 (next: v0.2.0)
 PSTerraformGraph: v0.2.0
-psmodule manifest: **1.1.0**, released and tagged `v1.1.0` by
+psmodule manifest: **1.1.1**, released and tagged `v1.1.1` by pass 0037
+under decision 0013. **PATCH, and the installed surface does not move:**
+`git diff v1.1.0..v1.1.1 -- skills/ commands/` is empty and every changed
+line under `.claude-plugin/` is a version field, both asserted by that
+pass's `verify.ps1`. What the release carries is a claim change — 1.1.0's
+CHANGELOG said the three `tf-*` skills were **unmeasured**, and tf-003
+measured them. The 1.1.1 entry states the result and the bound in the
+same breath, and also records the `cases.md` correction even though it
+changes no installed file.
+
+Previously **1.1.0**, released and tagged `v1.1.0` by
 pass 0034 under decision 0013. **MINOR, and the first release since
 v1.0.0 to change `skills/`:** three new `tf-<role>` skills, plus two
 hardening lines added to `azdo-rest` and
@@ -339,6 +398,37 @@ and released nothing; `git diff v1.1.0..HEAD -- skills/ commands/
 .claude-plugin/` is empty and its `verify.ps1` asserts that directly.
 The installed surface a tf-003 builder reads is therefore the one
 v1.1.0 published.
+
+**The fixture-2 case scorer (pass 0037).** Promoted out of `plans/` so a
+run can find it. It is a scoring instrument like the comparator, so its
+identity is pinned the same way:
+
+  Test-TfFixture2Case.ps1                  evals/tf/fixture2/
+  Invoke-TfFixture2CaseFalsification.ps1   evals/tf/fixture2/
+
+Falsified in one report — `plans/0037-consolidation/case-scorer.txt`:
+oracle-vs-self **7 / 7**, seven mutations each defeating its own case and
+no other, mutation 8 **refused rather than scored**, and the corrected
+case 6 demonstrated stricter than the plans-era form. The fixture-2 suite
+line is **re-pinned 8 → 18** (oracle layer 8, case layer 10); fixture 1
+is unchanged at 15. Both new checks were broken on purpose and seen red
+before the 18 was trusted:
+`plans/0037-consolidation/case-layer-falsification.txt`.
+
+**tf-003, re-scored (pass 0037).** The run's numbers were taken with the
+plans-era scorer, which has since been corrected and tightened, so they
+were re-derived rather than re-read: fresh built clones of `d788f7c` and
+`d76d16b`, graphs regenerated from read-only fixture clones at the
+decision-0014 SHAs. **All held** — 6 / 7 → 7 / 7, 184 → 0, 99/99 and
+88/88 — and the regenerated final graph is byte-identical to the
+recorded `graph.json` (SHA256 `203e80a6…`).
+`plans/0037-consolidation/tf-003-rescore.txt`.
+
+**Plugin pin, moved by pass 0037: `v1.1.1`.** The tag names this pass's
+release commit. `skills/` and `commands/` are byte-identical to `v1.1.0`,
+so the *instrument* a Terraform run reads is unchanged and tf-003's
+plugin pin still resolves to what it resolved to; what moved is the
+version string and the claims around it.
 
 ## Backlog (priority order; operator reorders)
 1. Runs 004-006 + 0029 final README
@@ -956,6 +1046,67 @@ controls and corpus figures) was **not** touched and stays open.
     fixture-2 case knowledge and 0036 may not touch `evals/`; the
     wording wants one clause. **Recorded, not taken.**
 
+### Resolved by pass 0037
+
+- Item **29** (no fixture-2 counterpart to `Test-TfFixtureCase.ps1`):
+  **CLOSED.** `evals/tf/fixture2/Test-TfFixture2Case.ps1`, promoted with
+  its falsification and wired into `Invoke-TfSuite.ps1`; the control the
+  item asked for is the oracle scored against itself, 7 / 7.
+- Item **36** (README generalisation rewrite, and promote the scorer):
+  **CLOSED, both halves.** The README states the claim and its bound in
+  the same breath, with tf-003 in a footnoted comparison table; the
+  scorer is promoted. Taken as a file rather than as a `-Fixture` switch
+  on fixture 1's scorer, which the item offered as the alternative:
+  fixture 1's is the instrument tf-001 and tf-002 were scored with, and
+  the two fixtures' cases differ in substance, not only in ids.
+- Item **40** (`cases.md` overstates case 6): **CLOSED, in the prose.**
+  The clause is scoped to value flow, the superseded wording is struck
+  through rather than deleted, and the oracle and the fixture are
+  untouched. The rewritten discriminator is **stricter** — it pins the
+  whole edgeless set by id — and the strictness is a falsification row,
+  not an assertion, because a correction that makes a case easier to
+  pass cannot be told from abandoning it.
+
+### Added by pass 0037
+
+41. **The plugin's two commands do not fit a `tf` run, and fixing it is
+    a v1.2.0.** This is item **37** promoted from "recorded, not taken"
+    to a named release candidate, because 0037 is the pass that had the
+    evidence and could not act on it: `commands/` is installed surface,
+    and 0037 is a PATCH whose whole claim is that `skills/` and
+    `commands/` are byte-identical to v1.1.0. Touching either would have
+    made the release a MINOR and put the plugin-pin story for tf-003 in
+    question in the same pass that was re-scoring it. **The work, when a
+    v1.2.0 opens:** `commands/build.md` step 1 names
+    `evals/conformance/Conformance.Tests.ps1` and
+    `evals/functional/BRIEF.md`; `commands/test.md` runs
+    `evals/conformance/Invoke-Conformance.ps1` and reports a conformance
+    score. Neither exists for a `tf` run — the brief is
+    `evals/tf/BRIEF.md` and there is no conformance suite in that
+    measurement at all. Either generalise both to take the eval suite as
+    an input, or state in them that they are the Azure DevOps ladder's
+    entry points. **The finding underneath it is the interesting half
+    and should survive the fix:** every skill the two commands delegate
+    to carried over to a second domain intact, and the commands did not.
+    Skills generalised; entry points did not.
+42. tf-004 plugin-off control: OPERATOR DECISION — one fresh session,
+    plugin unread, fixture 2, ladder iteration budget; would convert the
+    bounded claim's "or" into a measurement; costs one
+    contaminated-forever session identifier and ~2–4h
+
+    Stated as a decision rather than scheduled, because it is the
+    operator's to take and because the cost is not only time: the
+    session that runs it can never be used for a plugin-on run of the
+    same fixture, and the identifier is spent permanently. It is the
+    cheaper of the two things that would move the generalisation claim —
+    the other being a third domain the `tf-*` skills say nothing about,
+    which needs a fixture, an oracle and a brief before it needs a run.
+    **The ordering lesson is already recorded** in chapter 02 stage 7b:
+    a control is decided before the plugin-on numbers exist, because
+    afterwards it is decided while looking at a result one would like to
+    keep. This project got that ordering wrong, and this line is what
+    that mistake looks like written down.
+
 ### Numbering, reconciled by pass 0030
 
 Pass 0031 recorded a 17→19 drift and asked that numbers never move. This is
@@ -983,8 +1134,15 @@ re-derive it:
   reproducibility claim that was true only within one second, a
   line-ending rule that existed and was not applied, and a control that
   cannot get stronger.
-- **36 to 40 were consumed by pass 0036**; **41 is the next free
-  number.** 36 closes the remaining half of 29 and queues the README
+- **41 and 42 were consumed by pass 0037**; **43 is the next free
+  number.** 0037 resolved 29, 36 and 40 and consumed no number for any
+  of its own work, because everything it did was already numbered — which
+  is what a consolidation pass should look like. 41 is item 37 promoted
+  to a named v1.2.0 candidate rather than a new finding, and it is
+  numbered separately rather than edited into 37 so that a citation
+  against 37 keeps resolving. 42 is written as an operator decision with
+  its cost attached, including the cost that is not time.
+- **36 to 40 were consumed by pass 0036.** 36 closes the remaining half of 29 and queues the README
   rewrite the run's own record drafts. 38, 39 and 40 continue the
   pattern above — each was found by this pass's work going wrong, and
   two of them are defects in things the pass was following rather than
