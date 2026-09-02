@@ -245,6 +245,16 @@ the suite against their own module, and the two disclosed limits — opening wit
 
 Tag `v1.0.1`, annotated, message as specified. Branch and tag pushed.
 
+**The tag is not the branch tip, and that is deliberate.** `v1.0.1` names
+`1a947a4`, the commit that carries the release. `verify.ps1`'s falsification
+and its two transcripts landed afterwards at `c58eb52`, because a verify script
+cannot record the result of falsifying itself before it has been falsified. The
+tag is a complete release on its own terms - `skills/` and `commands/`
+byte-identical to `v1.0.0`, manifest `1.0.1`, CHANGELOG entry, rewritten
+README - and the later commit adds no consumer-visible content. Pass 0030 hit
+the same divergence and recorded it rather than moving a pushed tag; the same
+is done here. Moving a published tag is not on the table.
+
 ## 9. Verification
 
 `verify.ps1`, nine checks, re-derived from a fresh clone at the pinned commit.
@@ -346,7 +356,12 @@ discards the deliberate failures so the summary stays honest.
    corrected in all four.** Journal entries that say "eleven" are history and
    were left alone.
 
-8. **`verify.ps1`'s first draft had two probe defects**, both found by running
+8. **The `v1.0.1` tag is one commit behind the branch tip**, for the reason in
+   §8. Recorded rather than repaired: re-tagging a pushed tag is a history
+   rewrite by another name, and decision 0009 forbids that shape of fix even
+   where it is technically available.
+
+9. **`verify.ps1`'s first draft had two probe defects**, both found by running
    `-FailCheck` rather than by reading it, both fixed before the recorded run,
    and both written up in §9. They are named here as well because the pass
    protocol asks for anything followed that seems mistaken, and "the verify

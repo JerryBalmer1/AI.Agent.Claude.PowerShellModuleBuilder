@@ -65,7 +65,11 @@ PSGraphRender: v0.13.0
 PSGraphRenderToHtml: v0.1.0 (next: v0.2.0)
 PSTerraformGraph: v0.2.0
 psmodule manifest: **1.0.1**, released and tagged `v1.0.1` by
-pass 0033 under decision 0013 — a docs/method patch with `skills/`
+pass 0033 under decision 0013. The tag names `1a947a4`, one commit
+behind the pass tip: `verify.ps1`'s falsification transcripts could
+only land after the falsification ran. The tag is a complete release
+and the later commit is plan artifacts only. Same divergence pass
+0030 recorded; a pushed tag is not moved — a docs/method patch with `skills/`
 and `commands/` byte-identical to `v1.0.0`. Previously **1.0.0**,
 tagged `v1.0.0` by pass 0030. The reservation is spent: v1.0.0 was
 "passed the ladder" and the ladder is closed. Next release version
