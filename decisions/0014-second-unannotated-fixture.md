@@ -161,3 +161,29 @@ repositories.
 
 The SHAs the freeze names are appended to this file as an amendment once the
 push has been read back, and are pinned in `LEDGER.md`.
+
+---
+
+## Amendment, recorded at the close of pass 0034's task 5
+
+**Everything above this line was committed before the push**, as task 2, and is
+unchanged by this amendment — `git log decisions/0014-second-unannotated-fixture.md`
+shows the two commits. The three repositories were created and pushed at task 5
+and read back byte-identical across all 46 files. **These are the SHAs the
+freeze names:**
+
+| Repository | Frozen at |
+| --- | --- |
+| `TfSiteCore` | `a228e78c247d2d4367303f303c4363d9906e06f2` |
+| `TfSiteEdge` | `1ae66c2712f799a69304cb4364e91e4d10d694c4` |
+| `TfSiteOps` | `fe27a34f7585b86b6fdbf12b609e17d4cb0f4b83` |
+
+Read back by `evals/tf/Test-TfFixtureReadBack.ps1 -Fixture fixture2` →
+[`plans/0034-fixture2/readback2.txt`](../plans/0034-fixture2/readback2.txt),
+verdict **BYTE-IDENTICAL**, 46 files across three repositories. The same SHAs
+are pinned in `LEDGER.md`.
+
+Verified in the same check, and stated because a freeze that only checks its own
+subject is not a check on the constraint it was given: fixture 1's three
+repositories are still at their decision-0012 SHAs; the project holds four
+pipeline definitions and all four are fixture 1's; and the build list is empty.

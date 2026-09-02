@@ -1,0 +1,78 @@
+==============================================================================
+READ-BACK - the AzDO fixture against the harness copy
+Generated 2026-09-02T08:12:20Z
+Fixture: fixture2
+==============================================================================
+
+The harness copy under evals/tf/fixture2/repos/ is the source of truth
+per decision 0014. Every file on both sides is hashed (SHA256 over content with
+line endings normalised to LF on BOTH sides, because every fixture repository
+carries .gitattributes with `* text=auto eol=lf`) and the sets are compared in
+both directions, so a file present on one side only is a named mismatch.
+
+------------------------------------------------------------------------------
+REPOSITORY: TfSiteCore
+  cloned at a228e78c247d2d4367303f303c4363d9906e06f2
+  harness files: 13   remote files: 13
+  OK                 .gitattributes  D60F352D0DB1404C
+  OK                 main.tf  B733D894CF27FEF5
+  OK                 modules/label/main.tf  BA7AE2919E3CAB5D
+  OK                 modules/label/outputs.tf  59E6144472E15018
+  OK                 modules/label/variables.tf  C55721D88299E54E
+  OK                 modules/policy/main.tf  A41563B6A43117B6
+  OK                 modules/policy/outputs.tf  09798B1C8D10F722
+  OK                 modules/policy/variables.tf  FA52E6FBEB52F5B0
+  OK                 outputs.tf  E1D1C7CB69DBD9D6
+  OK                 pipelines/core-validate.yml  880D94F5D4CC4A80
+  OK                 README.md  1DCC077B950B81C6
+  OK                 variables.tf  24D05035709D3252
+  OK                 versions.tf  C931F250B00D65E4
+
+------------------------------------------------------------------------------
+REPOSITORY: TfSiteEdge
+  cloned at 1ae66c2712f799a69304cb4364e91e4d10d694c4
+  harness files: 16   remote files: 16
+  OK                 .gitattributes  D60F352D0DB1404C
+  OK                 main.tf  58BB1557D278C302
+  OK                 modules/edge/main.tf  FD861E3191F37396
+  OK                 modules/edge/modules/pop/main.tf  D748CA2FA604A101
+  OK                 modules/edge/modules/pop/modules/probe/main.tf  73AC987884246EAF
+  OK                 modules/edge/modules/pop/modules/probe/outputs.tf  86B8D5690B8C48A4
+  OK                 modules/edge/modules/pop/modules/probe/variables.tf  E6F8560540469DA4
+  OK                 modules/edge/modules/pop/outputs.tf  AE9FFD27270EAE42
+  OK                 modules/edge/modules/pop/variables.tf  7E459586A6BE8F9F
+  OK                 modules/edge/outputs.tf  659C52602F3C21D5
+  OK                 modules/edge/variables.tf  EA50F69A97E0C20E
+  OK                 outputs.tf  8D3AAB8C34B9D092
+  OK                 pipelines/edge-validate.yml  A6D9CD389C04714D
+  OK                 README.md  1C5F03181AEA7F14
+  OK                 variables.tf  017A6806E2D94C03
+  OK                 versions.tf  F6279F138537F54E
+
+------------------------------------------------------------------------------
+REPOSITORY: TfSiteOps
+  cloned at fe27a34f7585b86b6fdbf12b609e17d4cb0f4b83
+  harness files: 17   remote files: 17
+  OK                 .gitattributes  D60F352D0DB1404C
+  OK                 main.tf  CA3E9346F49C70A3
+  OK                 modules/collector/main.tf  C7FA8F382F6BA5AD
+  OK                 modules/collector/outputs.tf  FA9F656FA5874DBD
+  OK                 modules/collector/variables.tf  02852F4B2D7842AE
+  OK                 modules/common/main.tf  1836FF1207E8FAF8
+  OK                 modules/common/outputs.tf  27389146F51A3366
+  OK                 modules/common/variables.tf  EB88756894C981F7
+  OK                 modules/reporter/main.tf  D89E22A59681F295
+  OK                 modules/reporter/outputs.tf  5CCC55751E65A38F
+  OK                 modules/reporter/variables.tf  9499FAA4F027FED4
+  OK                 outputs.tf  610C93D5ACC3F54A
+  OK                 pipelines/ops-archive.yml  B34BFB81B8B403B2
+  OK                 pipelines/ops-validate.yml  FB43C97E569A2C0B
+  OK                 README.md  B8C1B87D9814E242
+  OK                 variables.tf  AFBA0B7AF95C8500
+  OK                 versions.tf  5C67105B894E12F6
+
+------------------------------------------------------------------------------
+46 file(s) compared across 3 repositories.
+
+BYTE-IDENTICAL
+==============================================================================
