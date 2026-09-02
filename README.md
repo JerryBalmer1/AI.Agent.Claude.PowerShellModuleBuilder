@@ -12,6 +12,23 @@ The claim this repository exists to test is that the second measurably improves
 the first's scores. **That claim has now been measured, four times, and the
 answer is partly yes and partly no.** Both halves are below.
 
+## Creating a new agent, start here:
+
+Everything here was built by directing Claude, and the method is written down
+so you can do the same thing on your own domain. Start at
+[docs/creating-an-agent/00-start-here.md](docs/creating-an-agent/00-start-here.md)
+— eleven chapters, each one worked against a real pass, run or decision in this
+repository, including the mistakes.
+
+**Deciding whether this much testing is worth it?**
+[docs/testing/](docs/testing/README.md) explains what each layer of the stack
+catches that the others do not, with the artifact behind every claim.
+
+**Try it locally first.**
+[Chapter 9](docs/creating-an-agent/09-try-before-you-trust.md) installs and
+drives the plugin entirely on your own machine, and shows you how to remove it
+again, before anything public is involved.
+
 ---
 
 ## With the plugin and without it
