@@ -5,7 +5,7 @@ for counters and pins. Update it in the same commit as the work
 that changes it.
 
 ## Passes
-Last landed: 0030. Next: the operator's decision — nothing is
+Last landed: 0032. Next: the operator's decision — nothing is
 scheduled. 0030 ran after 0031 because 0031 was taken out of order
 deliberately (the manual and the local publish path do not depend on
 packaging), so the numbers do not read in landing order and that is
@@ -13,17 +13,35 @@ expected. The guard in `tools/publish/Publish-Real.ps1` no longer
 refuses: 0030 landed the committed marketplace and it now prints the
 operator's checklist.
 
+0032 completed decision 0009's deferred step, which 0030 left
+outstanding: harness `main` was fast-forwarded `c8330d7..ec07aef`
+before any work began.
+
 The obvious next candidates, none of them chosen: the cold-install
-proof (backlog 2's remaining half), the second baseline run
-(backlog 17), and tf-003.
+proof (backlog 2's remaining half), the README with/without rewrite
+against run 007 (backlog 23, queued by 0032 and deliberately not done
+there), and tf-003.
 
 ## Runs
 AzDO-module (runs/NNN-*): **ladder COMPLETE at 004–006** (passes
-0026-0028). All three show three complete score lines, so the 0029
-rider is eligible and ran. The next run series is the operator's
+0026-0028), **control COMPLETE at 007** (pass 0032). All four show
+three complete score lines. The next run series is the operator's
 decision — nothing is scheduled.
 Terraform (runs/tf-NNN-*): last tf-002, next tf-003 (measured,
 blind — not yet scheduled).
+
+**007 — baseline off, iterated** (`runs/007-baseline-iterated`,
+target `run-007-baseline-iterated`, final `95ca28d`, first shot
+`1f2df30`, session `c0002fae-addf-4ff6-847e-9faf5d6aa05e`, plugin
+surface `v1.0.0` present but UNREAD): build exit 0; conformance
+**19/33 → 28/33** cases-defined, 55 cases-run; functional **6/12
+first shot → 12/12 final**, 3 iterations used but 12/12 reached at
+iteration 1. Two caveats that travel with the number: the pass prompt
+itself named three of the four convention mechanisms to the builder,
+and `Compare-Graph` prints the oracle's expected values, so
+"converged without the plugin" is true while "without the conventions
+being readable anywhere" is not. See `runs/007-baseline-iterated/findings.md`
+Part 3.
 
 ## Versions
 PSAzureDevOpsGraph: v0.2.0 (next touching plan: v0.3.0)
@@ -283,6 +301,58 @@ wrongly later.
   task. Chapter 09 and `method/METHOD.md` were updated in the same
   pass as the behaviour they describe.
 
+### Resolved by pass 0032
+
+- Item **17** (the baseline has one run and was never allowed to
+  iterate): **CLOSED.** Run 007 is the missing control — plugin-off,
+  same seed, brief and model pin as the ladder, with the ladder's
+  three-iteration budget. **It converged: 6/12 first shot → 12/12
+  final, in one iteration, with the plugin unread throughout.**
+  Conformance went 19/33 → 28/33 against the ladder's flat 33/33. The
+  with/without table now has its plugin-off final column, and it says
+  the plugin buys conformance rather than correctness.
+
+  Read the number with its two caveats attached (pass 0032 Deviations
+  3 and 4): the pass prompt named three of the four mechanisms and
+  their counts to the builder before it wrote a line, and
+  `Compare-Graph` discloses the oracle's expected value for every
+  wrong attribute. The plugin was unread; the conventions were still
+  legible from the scorer. A cleaner control keeps the mechanism list
+  out of the builder's prompt.
+
+### Added by pass 0032
+
+23. **The README's with/without section overstates the plugin.** Four
+    runs now exist and all four reach 12/12 functional within two
+    iterations; the measured plugin effect is on conformance
+    (33/33 first shot versus 19/33), not on correctness. The
+    replacement sentence is drafted verbatim in
+    `runs/007-baseline-iterated/README.md` under *The sentence the
+    README will need*. **Not applied by 0032 on purpose** — the
+    release surface is tagged at v1.0.0 and rewriting it is a pass
+    that owns it. For the next release pass.
+24. **`RequiresBuild` and the three-clone scoring rule are
+    incompatible.** Four conformance assertions read `output/`, which
+    is gitignored and therefore absent from a clone that has not been
+    built; the protocol scores conformance in a clone that never runs
+    the build, so those four can never pass. Run 007 measures 28/33
+    under the protocol and 32/33 in one clone with the build run
+    first (`conformance-result-built-clone.json`). The ladder reported
+    33/33 with them passing, so its jobs saw build output somehow —
+    and run 005's README documents a race implying its jobs shared a
+    tree. **Until this is resolved, 007's 28 and the ladder's 33 are
+    not the same measurement**, and the gap is overstated by four.
+    Fix the rule or fix the tag; do not compare across it.
+25. **The live fixture is annotated with case identifiers and
+    explanations.** Reading it through the module — which every run's
+    protocol requires — returns YAML whose comments name each case and
+    state the trap. Every run, blind or not, has had this. It is a
+    plausible explanation for why the traversal is right first time in
+    all four runs while the output conventions never are, and it is
+    recorded in no run record before 007. Decide whether "blind" is
+    meant to exclude it; if so, the fixture needs stripped comments
+    and a re-run.
+
 Item **21** (three documents disagreeing about the falsification
 controls and corpus figures) was **not** touched and stays open.
 
@@ -299,7 +369,8 @@ re-derive it:
   was written down, and it landed in `evals/HARNESS.md` as hazard 10. The gap
   is left open on purpose. Closing it would move 14 and every number above it.
 - **14–22** exist as numbered entries.
-- **23 is the next free number.** Pass 0030 consumes none: everything it
+- **23, 24 and 25 were consumed by pass 0032**; **26 is the next free
+  number.** Pass 0030 consumes none: everything it
   touched was already numbered.
 
 Numbers are consumed, never reused and never renumbered — including the ones
