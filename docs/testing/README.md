@@ -648,7 +648,7 @@ in the end, the argument this whole page has been making.
   and [09-try-before-you-trust](../creating-an-agent/09-try-before-you-trust.md).
 - Everything that went wrong and what it cost:
   [07-failure-catalog](../creating-an-agent/07-failure-catalog.md), and the
-  eleven hazards in [`evals/HARNESS.md`](../../evals/HARNESS.md).
+  thirteen hazards in [`evals/HARNESS.md`](../../evals/HARNESS.md).
 - Terms defined once, in one place:
   [08-glossary](../creating-an-agent/08-glossary.md).
 - Using this repository as a starting point for your own:

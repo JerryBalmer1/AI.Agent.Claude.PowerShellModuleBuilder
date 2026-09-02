@@ -1,0 +1,154 @@
+TF FIXTURE CASE-COMMENT SCAN: findings listed
+=============================================
+Pass 0033, LEDGER item 25 applied to the second fixture line.
+Scope: evals/tf/fixture/repos/ — 40 files across TfFixtureShared,
+TfFixtureNetwork and TfFixtureApp.
+Method: every comment (`#`, `//`), every `description` string, every README,
+read against evals/tf/fixture/cases.md — the oracle's own case list.
+READ-ONLY. Nothing under evals/tf/ was amended by this scan; decision 0011
+freezes the fixture and a defect found in it is a finding, not an edit.
+
+VERDICT
+-------
+Not clean, and worse than the AzDO fixture on this vector rather than better.
+The ClaudeTesting fixture's comments explain the resolution *semantics*; several
+of these name the case number, name the trap, state the wrong answer a producer
+might give, and one points at the oracle document by path.
+
+The most direct: TfFixtureShared/README.md tells any reader to
+"see `evals/tf/fixture/cases.md` in the harness for what each part is a case
+for." That is a pointer from inside the fixture to the oracle's case list.
+
+FINDINGS, by severity
+---------------------
+
+A. NAMES A CASE NUMBER AND ITS MECHANISM
+  TfFixtureApp/main.tf:20-24
+    "# Case 3, the cross-repository output reference. The tie is the
+     # module "network" block below: these read TfFixtureNetwork's published
+     # outputs THROUGH it, so the reference is something the configuration
+     # states and a parser can follow. It used to be asserted only in a
+     # variable's description, which is prose - see decision 0012."
+    Names the case by number, states the mechanism, and cites the decision
+    record that amended it. Case 3 is the case decision 0012 exists for.
+
+B. POINTS AT THE ORACLE
+  TfFixtureShared/README.md:4-5
+    "Part of a three-repository configuration graph; see
+     `evals/tf/fixture/cases.md` in the harness for what each part is a case
+     for."
+    cases.md is the case list, the node-id scheme, the edge kinds and the exact
+    node and edge counts (78 nodes, 59 edges).
+
+C. NAMES THE TRAP AND THE WRONG ANSWER
+  TfFixtureApp/main.tf:64-66
+    "# Deliberate: the unresolved-reference case. A producer that drops it
+     # reports a graph that looks complete and is not."
+  TfFixtureApp/README.md "An unresolved module source ... Deliberate. A producer
+    that silently drops it reports a graph that looks complete and is not; the
+    contract's `resolved: false` plus a `reason` is where it belongs."
+    States case 7 AND the field convention the oracle wants for it.
+  TfFixtureShared/variables.tf:25
+    description = "Declared and referenced by nothing. The absence case: a graph
+    that invents a reference for this is wrong."
+    Case 6, named as a case, with the wrong answer spelled out.
+  TfFixtureApp/main.tf:7-9 and TfFixtureApp/README.md
+    "A graph that carries it as `references` and `passes-to` edges has
+     understood the configuration; one that reports four unrelated nodes has
+     not."
+    Names two of the three edge kinds by their oracle spelling.
+
+D. NAMES THE CASE WITHOUT THE NUMBER
+  TfFixtureNetwork/main.tf:3-4      "The chain is the nested-module case." (case 1)
+  TfFixtureNetwork/README.md        "That chain is the nested-module case, and it
+                                     is the reason `parentId` in the producer
+                                     graph has to be a chain rather than a flag."
+                                     (case 1, plus the containment rule)
+  TfFixtureNetwork/README.md        "which is the cross-repository output-
+                                     reference case" (case 3)
+  TfFixtureShared/main.tf:5-6       "which is the cross-repository case the
+                                     fixture is for" (case 2)
+  TfFixtureApp/main.tf:29-31        "that absence is what says 'the repository
+                                     root' - the distinction the //modules/naming
+                                     form below does not exercise" (case 2's
+                                     discriminator, stated outright)
+  TfFixtureNetwork/pipelines/network-legacy.yml:3-5
+                                    "the fixture carries four distinct versions
+                                     across its pipelines so a provider/version
+                                     case has something to tell apart" (case 4)
+  TfFixtureNetwork/README.md        "deliberately different from the other two
+                                     repositories so a version-pin case has
+                                     something to discriminate" (case 4)
+
+E. WALKS THE ANSWER, LINK BY NUMBERED LINK
+  TfFixtureApp/main.tf:5      "#   var.tags -> local.merged_tags ->
+                               module.service.tags -> module.worker.tags"
+  TfFixtureApp/main.tf:12     "# variable -> local. Link one."
+  TfFixtureApp/main.tf:54     "# Own nested module. local -> module. Link two."
+  TfFixtureApp/modules/service/main.tf:2-3     "# Link three: ..."
+  TfFixtureApp/modules/service/variables.tf:7  description "... Link two of the
+                                                chain arrives here."
+  TfFixtureApp/modules/service/modules/worker/variables.tf:7
+                                                description "... Link four."
+  TfFixtureShared/modules/naming/main.tf:8     "# variable -> local, then local
+                                                -> output. The second link of
+                                                the chain."
+  TfFixtureNetwork/main.tf:7,10-11 and modules/segment/main.tf:2-3, same shape.
+    Case 5 is "variable -> local -> module -> nested module". The fixture draws
+    that arrow diagram in a comment on line 5 of the file a builder opens first,
+    then numbers each link at the site where it occurs.
+
+F. BENIGN — recorded so the scan is complete, not as findings
+  "# Definition only. This pipeline is created and never queued." (all four
+  pipeline YAMLs) — a safety statement about the fixture's operation, carrying
+  no oracle content.
+  "Nothing here is ever applied." (all three READMEs) — same.
+  "The URL carries no credential and never will; to a parser it is inert text."
+  — a PAT-hygiene statement.
+  Ordinary domain descriptions ("CIDR block for this subnet.", "Where the
+  service answers.") — no case content.
+
+WHAT FOLLOWS, AND WHAT DOES NOT
+-------------------------------
+NOT amended. Decision 0011 freezes this fixture; decision 0012 amended it once,
+deliberately, with a re-falsification against all seven mutations before the
+re-freeze. Stripping comments now would silently change the instrument between
+tf-002 and tf-003, and tf-001 and tf-002 were both run against the annotated
+form. The fixture is also authored here and *published* to AzDO, so an edit is
+a push to the fixture repositories, not a local change.
+
+WHAT THIS PASS DOES INSTEAD:
+  1. HARNESS.md hazard 13 states the bound generally and names this file.
+  2. tf-003 cannot be described as "blind" without this disclosure. Its run
+     record must carry a `## Blindness caveats` section saying that the fixture
+     names its own cases — including case numbers — and that the traversal and
+     resolution result must be read with that attached. The AzDO runs' caveat
+     wording is the template.
+  3. tf-003 moves to the top of the backlog, GATED on the operator's answer
+     below rather than runnable as it stands.
+
+THE DECISION QUESTION, FOR THE OPERATOR
+---------------------------------------
+tf-003 is specified as the blind generalisation measurement against this
+fixture. The scan says the fixture tells a blind builder which cases exist, what
+each is for, what the wrong answer looks like, and — in one file — where the
+oracle document lives. Three answers are available and this pass does not pick
+one:
+
+  (a) Run tf-003 against the frozen fixture and DISCLOSE the bound, as the AzDO
+      line now does. Cheapest; comparable with tf-001 and tf-002; and the
+      resulting number measures "can it parse Terraform" much more than "can it
+      generalise", because the cases are labelled.
+  (b) A new decision unfreezing the fixture to strip case annotations, with a
+      re-falsification against all seven mutations and a re-freeze, as decision
+      0012 did. tf-001 and tf-002 then become incomparable with tf-003.
+  (c) Build a SECOND Terraform fixture, written without annotations from the
+      start, and run tf-003 against that. Preserves both the freeze and the
+      blindness, and costs a fixture. It also composes with backlog item 9,
+      which already proposes a second fixture for a different reason — that the
+      three `tf-<role>` skills were deliberately not written because they would
+      carry this fixture's answers.
+
+(c) answers two open questions with one artifact and is the recommendation this
+scan leaves; the choice is the operator's and no work has been done toward any
+of the three.

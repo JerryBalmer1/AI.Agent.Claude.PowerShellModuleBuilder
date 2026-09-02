@@ -48,6 +48,27 @@ it.
                          -ResultPath ./scratch/runs/<id>/result.json
 ```
 
+**To score a commit — clone, build, score — use `Score-Clone.ps1`, not the
+three steps by hand.**
+
+```powershell
+./Score-Clone.ps1 -Source https://github.com/JerryBalmer1/PSAzureDevOpsGraph.git `
+                  -Ref 95ca28d76c8eeb6dc33b09f77109dc96038c76aa `
+                  -WorkDir $env:TEMP/score-007
+```
+
+"After its build has been run" was the whole of the procedure for four runs and
+it was not enough, because nothing said the build had to happen in the *same*
+clone the suite then reads. Run 007's conformance clone was fresh and unbuilt,
+so the four `RequiresBuild` assertions graded a missing `output/` directory and
+the run reported 28/33 where the built commit scores 32/33. The three runs
+before it each got build output into the conformance tree by a different
+improvised route. `Score-Clone.ps1` is that step written down: it clones, runs
+the target's **own default** build (never an assumed task name), stops if the
+build is red, and then scores. `-SkipBuild` reproduces the old procedure and
+exists only as a falsification control. See
+`plans/0033-honest-headline/rescore.txt`.
+
 **The run path is the run directory itself.** It used to be documented as
 `./scratch/runs/<id>/PSAzureDevOpsGraph`, which no run has ever had:
 `Reset-Target.ps1` materialises the seed *at* the destination, so the module

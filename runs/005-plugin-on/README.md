@@ -208,6 +208,43 @@ separates reading the plugin from recalling the reasoning that produced it. What
 004 and 005 together measure is reliability at fixed inputs, and on that question
 they agree to the digit on every graded line.
 
+## Blindness caveats
+
+Added by pass 0033. The *Plugin-on caveat* above stands unchanged; this section
+is additive and states which of the project's now-disclosed bounds apply to this
+run. See `evals/HARNESS.md` hazards 12 and 13.
+
+**The fixture names its own cases, and this run read them.** Applies, as it does
+to every run in this line. The `ClaudeTesting` YAML carries leading comments
+naming the cases and stating what each is for, and reading the fixture through
+the module is what the task requires. Recorded in no run record before 007;
+true since run 002. **"Blind" means the oracle, the prior run records and the
+conformance suite were unread - never that the fixture was unread**, and
+`ClaudeTesting` is frozen, so the bound is permanent for the AzDO line.
+
+**Prompt-borne oracle content.** Applies, weakly, and this is the first run in
+the line where it does. `plans/0027-run-005/plan.md` task 7 - inside the Phase 1
+allowlist, because the prompt always is - told the builder that run 004's
+first-shot differences were *"four convention decisions, zero edge errors"*. It
+named no mechanism and no count, so it is far short of run 006's leak, but it
+did tell a builder that had not yet written a line which HALF of the answer the
+previous run got right. This run then reproduced exactly that shape: 26
+differences, all convention, zero edge errors. Recorded as a weakening of this
+run's first-shot independence, not as a breach.
+
+**Scoring protocol.** Applies to the raced first-shot figure only, and that was
+already corrected in this record. Pass 0033 found that four `RequiresBuild`
+assertions grade a gitignored `output/` (LEDGER item 24). This run's conformance
+job scored **a snapshot of the built tree** - so build output was present, which
+is why the reported 33/33 needs no correction - but the snapshot was not
+isolation, and `Clean` deleted `output/` mid-read at first shot, producing a
+false 51/56. Both commits were re-scored from fresh clones built from nothing.
+That is F-7, and it is the near-miss version of the defect run 007 hit head-on:
+here the conformance tree had build output and briefly lost it; there it never
+had any. Same root cause - nothing said what state the scored clone must be in.
+The rule is written down now, in `evals/conformance/Score-Clone.ps1` and
+`evals/HARNESS.md` step 4.
+
 ## Contents
 
 | File | What |

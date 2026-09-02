@@ -1,0 +1,12 @@
+ACCEPTANCE RED (pass 0033, before any work)
+Total: 10  Passed: 0  Failed: 10
+Failed  README carries the controlled claim
+Failed  README no longer overstates functional
+Failed  rescore evidence exists with both protocols
+Failed  HARNESS gains the two hazards
+Failed  affected run records carry the caveat
+Failed  TF fixture inspected for the same vector
+Failed  CHANGELOG has a user-facing 1.0.1 entry
+Failed  manifest is 1.0.1
+Failed  v1.0.1 on the remote
+Failed  docs maintained in the same pass (item 19)

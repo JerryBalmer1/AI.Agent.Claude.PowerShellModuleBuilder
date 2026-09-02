@@ -4,7 +4,7 @@ Every rule in this manual exists because something below happened first.
 
 That sentence is the whole point of this chapter, so it is worth spelling
 out before you read a single entry. The method in
-[method/METHOD.md](../../method/METHOD.md) and the eleven hazards in
+[method/METHOD.md](../../method/METHOD.md) and the thirteen hazards in
 [evals/HARNESS.md](../../evals/HARNESS.md) look, on the page, like a list of
 sensible precautions somebody thought up in advance. They are not. Each one
 is a scar. Somebody wrote a check that could not fail, or graded the wrong

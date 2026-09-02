@@ -61,6 +61,43 @@ the brief may in part be recall of the reasoning that produced the plugin. This
 run cannot separate the two, and its result should not be read as though it
 could.
 
+## Blindness caveats
+
+Added by pass 0033. The *Baseline caveat* above stands unchanged; this section
+is additive and states which of the project's now-disclosed bounds apply to this
+run specifically. See `evals/HARNESS.md` hazards 12 and 13.
+
+**The fixture names its own cases, and this run read them.** Applies. The
+`ClaudeTesting` YAML carries leading comments that name the cases and state what
+each is for — *"Both exist, so the wrong answer is a wrong file rather than an
+error"* and similar. Reading the fixture through the module is what the task
+requires, so every run from 002 onward has read them, this one included. It was
+recorded in no run record before 007 and has been true throughout. What it
+plausibly explains is why this run's dependency traversal was largely right
+while every output convention was wrong. **"Blind" here means the oracle, the
+prior run records and the plugin were unread. It has never meant the fixture was
+unread.** `ClaudeTesting` is frozen, so this bound is permanent for the AzDO
+line.
+
+**Prompt-borne oracle content.** Does not apply. This was the first plugin-off
+measurement in the line and no prior AzDO first-shot mechanism list existed to
+leak into its prompt.
+
+**Scoring protocol.** Does not apply, and the evidence is in this run's own
+result file. Pass 0033 found that four `RequiresBuild` assertions grade a
+gitignored `output/` and so fail in a clone that was never built (LEDGER item
+24). This run's conformance clone *was* built: `produced
+output/<ModuleName>/<ModuleName>.psm1` **passes** in
+[conformance-result.json](conformance-result.json). The 19/33 re-derived from
+this run is a built-clone number and needs no correction.
+
+**One consequence for run 007's comparison.** Run 007's record observes that 003
+and 007 "scored identically on conformance at first shot — 19/33". Under a
+single procedure they do not: 003's 19/33 is a built clone, 007's first-shot
+19/33 was an unbuilt one, and 007's first shot re-derived built is **20/33**.
+The two runs differ by one assertion, not zero. See
+[plans/0033-honest-headline/rescore.txt](../../plans/0033-honest-headline/rescore.txt).
+
 ## Contents
 
 | File | What |

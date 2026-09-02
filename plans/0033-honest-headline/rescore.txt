@@ -1,0 +1,150 @@
+RESCORE — LEDGER item 24, the conformance scoring procedure
+===========================================================
+Pass 0033.  Every line below was produced by running the command shown, not by
+quoting a prior record.  Re-derived by plans/0033-honest-headline/verify.ps1.
+
+Instrument:  evals/conformance/Score-Clone.ps1  (new this pass)
+Suite:       evals/conformance/Conformance.Tests.ps1  — UNCHANGED.  No assertion
+             was added, removed, weakened or edited.  What changed is the
+             procedure that feeds them.
+Score:       assertions passed / cases-defined.  An assertion counts as failed
+             if any of its cases failed.  cases-run is reported beside it and is
+             target-shaped, so it is not comparable between targets.
+Source:      https://github.com/JerryBalmer1/PSAzureDevOpsGraph.git
+Tags:        Universal, Repository, HouseStyle, RequiresBuild  (all four)
+Environment: pwsh 7.6.5, Pester 6.1.0, InvokeBuild 5.14.23, PSScriptAnalyzer
+             1.25.0, powershell-yaml 0.4.12, git 2.41.0.windows.1,
+             Windows 11 Home 10.0.26200.
+
+
+THE DEFECT
+----------
+Four RequiresBuild assertions read output/<Name>/, which is .gitignore'd and so
+absent from any clone that has not been built.  The scoring protocol said
+"score from a fresh clone" and did not say to build it.  Run 007's conformance
+clone was therefore never built, and those four assertions graded the absence of
+a directory rather than the module.
+
+THE REPAIR
+----------
+The conformance clone is BUILT before it is scored.  The target's OWN default
+build is invoked — no task name is assumed, because a non-house-style build file
+is one of the things being graded (run 007's first shot declares
+ValidateSet('Clean','Build','Test','All') and has no '.' task, so a wrapper that
+hard-codes `-Task .` fails the build of exactly the commits it must grade).
+A red build stops the scoring, per HARNESS.md step 3.
+
+
+FALSIFICATION — the repair proves nothing unless these three fire
+-----------------------------------------------------------------
+Row 1 — CONTROL: an unbuilt clone must STILL fail the four RequiresBuild
+        assertions.  If the repair had quietly weakened them, this row would
+        pass and the repair would be a cheat.
+
+    Score-Clone.ps1 -Ref 95ca28d... -SkipBuild
+    build: SKIPPED         result: 28 / 33   cases 50/55
+    FAILED  House style: generated module.produced output/<ModuleName>/<ModuleName>.psm1
+    FAILED  House style: generated module.marks the generated file as generated
+    FAILED  House style: generated module.sets $script:ModuleRoot
+    FAILED  House style: generated module.exports exactly the manifest surface
+    FAILED  House style: build file.throws on coverage below target rather than only reporting it
+    VERDICT: FIRES.  Four RequiresBuild assertions red, and the number is
+    exactly the 28/33 run 007 reported — the old procedure reproduced to the
+    digit, which is what makes this a control and not a coincidence.
+
+Row 2 — SABOTAGE: break the build, and the same four must go red.
+
+    A `throw` was committed into the Build task of 95ca28d on a throwaway
+    staging branch (sabotage commit 0a3fca0, local only, never pushed).
+    Score-Clone.ps1 -Ref sabotage -ScoreAnyway
+    build: exit 1          result: 28 / 33   cases 50/55
+    Same four RequiresBuild assertions red, plus the pre-existing coverage-gate
+    failure.  output/ absent after the build.
+    VERDICT: FIRES.
+
+Row 2b — GATE CONTROL: the same sabotaged commit WITHOUT -ScoreAnyway.
+
+    Score-Clone.ps1 -Ref sabotage      (no -ScoreAnyway)
+    THROWS: "Build exited 1. HARNESS.md step 3 gates on Phase 0: a conformance
+    failure against a target that does not build is unattributable."
+    No score produced.
+    VERDICT: FIRES.  A red build cannot silently become a conformance number.
+
+Row 3 — POSITIVE: a built, conforming clone must pass.
+
+    Score-Clone.ps1 -Ref 7066916...   (run 006 final, plugin-on)
+    build: exit 0          result: 33 / 33   cases 57/57
+    VERDICT: FIRES.  Zero failed assertions.
+
+All four rows fired.  The repair changes what the clone contains, not what the
+suite demands.
+
+
+RE-DERIVED SCORES — both runs, both protocols, same instrument
+--------------------------------------------------------------
+"protocol" = as reported by the run at the time, unbuilt conformance clone.
+"corrected" = re-cloned this pass and built before scoring.
+
+run 007 final (protocol):    28 / 33      95ca28d76c8eeb6dc33b09f77109dc96038c76aa
+run 007 final (corrected):   32 / 33      95ca28d76c8eeb6dc33b09f77109dc96038c76aa
+run 006 final (protocol):    33 / 33      70669167ea5f59a47efb282002052f9e926a34bf
+run 006 final (corrected):   33 / 33      70669167ea5f59a47efb282002052f9e926a34bf
+
+The first shots, re-derived the same way, because the README's headline
+comparison is a FIRST-SHOT comparison and it must not inherit the same defect:
+
+run 007 first shot (protocol):    19 / 33   1f2df30ab3e6a33853e35f5b00a29e5e1dc070dc
+run 007 first shot (corrected):   20 / 33   1f2df30ab3e6a33853e35f5b00a29e5e1dc070dc
+run 006 first shot (protocol):    33 / 33   15ab6e3dc00a50c61dca4fd0e656df632103babe
+run 006 first shot (corrected):   33 / 33   15ab6e3dc00a50c61dca4fd0e656df632103babe
+
+Reading of the deltas:
+
+  * 007 final moves 28 -> 32.  All four RequiresBuild assertions pass once the
+    clone is built; the module always satisfied them and the procedure could not
+    see it.  The one remaining failure is unchanged and real: "throws on
+    coverage below target rather than only reporting it" (run 007 findings C-6,
+    recorded unmet, not worked around).
+
+  * 007 first shot moves 19 -> 20.  Only ONE of the four recovers — "produced
+    output/.../PSAzureDevOpsGraph.psm1".  The first shot's build does emit a
+    psm1, but that psm1 is not marked generated, does not set $script:ModuleRoot
+    and does not export exactly the manifest surface, so three of the four stay
+    red on their merits.  The corrected first-shot gap is therefore 13
+    assertions, not 14.
+
+  * 006 does not move at either commit.  Its conformance clone already had build
+    output under the old procedure (see LADDER MECHANISM below), so the repair
+    finds nothing to correct there.  That is the expected result and it is why
+    006 is the positive falsification row.
+
+  * The gap the README must quote: 33/33 vs 19/33 as the two runs reported them,
+    33/33 vs 20/33 re-derived under one procedure.  Either way the plugin's
+    measured first-shot advantage is 13-14 house-style assertions, and the
+    corrected pair narrows it by one rather than widening it.
+
+
+LADDER MECHANISM: explained: every ladder conformance job had build output in its own tree by a different route — 004 ran the full build inside the conformance clone itself, 005 scored a snapshot of the already-built tree (and raced its own Clean, F-7), 006 cloned fresh AND built in all three jobs — so "three clones" never meant "unbuilt clone", and run 007 was the first to read it that way.
+
+Evidence for that line, each item checkable without rerunning anything:
+
+  004  runs/004-plugin-on/transcripts/final-b-conformance.txt line 5 is
+       "Build . ...\scratch\runs\004-verify-clone\PSAzureDevOpsGraph.build.ps1"
+       and line 328's conformance summary names the SAME directory as Target.
+       The conformance job built its own clone before scoring it.
+  005  runs/005-plugin-on/README.md provenance: "The conformance job scored a
+       snapshot of the built tree; that was not enough isolation and it raced
+       the build job's Clean at first shot.  Corrected by re-scoring both
+       commits from fresh clones."  The snapshot carried output/ with it.
+  006  runs/006-plugin-on/README.md: "the only run where all three jobs cloned
+       fresh *and* built from nothing".  Its conformance target (f-conf) is a
+       different directory from its build target (f-build), and "produced
+       output/PSAzureDevOpsGraph/PSAzureDevOpsGraph.psm1" passes in f-conf —
+       which is only possible if f-conf was itself built.
+  007  runs/007-baseline-iterated/conformance-result.json Target is
+       ...\Temp\r007\c, and that clone was never built.  Hence 28/33.
+
+So the three ladder runs and run 007 were not scored the same way, and the
+project did not know it until run 007 wrote the RequiresBuild failures down.
+The rule is now written down instead of re-invented per run: Score-Clone.ps1,
+and HARNESS.md "What a run consists of" step 4.

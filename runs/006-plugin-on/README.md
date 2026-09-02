@@ -277,6 +277,50 @@ in the same directions as 004 and 005. The independence of the first-shot number
 is weakened by the prompt and is not established by this run alone — but a run
 steered by that list would have scored above 1/12, and this one did not.
 
+## Blindness caveats
+
+Added by pass 0033. The *Plugin-on caveat* above stands unchanged - including
+its own declaration of this run's prompt leak, which pass 0033 promotes from a
+paragraph in one record to hazard 12 in `evals/HARNESS.md`. This section is
+additive.
+
+**The fixture names its own cases, and this run read them.** Applies, as it does
+to every run in this line. The `ClaudeTesting` YAML carries leading comments
+naming the cases and stating what each is for, and reading the fixture through
+the module is what the task requires, so a blind run reads them by design.
+Recorded in no run record before 007; true since run 002. It plausibly explains
+the shape this run's scores have - `case-12`, the empty repository that must
+produce no node, was the ONE case that passed at first shot, and the eleven that
+failed all failed on an output convention rather than on traversal. **"Blind"
+means the oracle, the prior run records and the conformance suite were unread -
+never that the fixture was unread**, and `ClaudeTesting` is frozen, so the bound
+is permanent for the AzDO line.
+
+**Prompt-borne oracle content.** Applies, and this run's is the worst instance
+in the line. As the *Plugin-on caveat* already states, this run's prompt named
+runs 004 and 005's four difference mechanisms **and their counts** - "15
+repo-on-pipeline, 8 alias-edge, 2 bare-reason, 1 missing `repo:consumer-app`" -
+inside the Phase 1 allowlist, because task 7's variance section needs them. The
+prompt is the first message of the session and is therefore always readable: a
+blind allowlist cannot exclude it. Flagged before any code was written and
+deliberately not acted on; three of the four conventions were still chosen
+wrongly, in the same directions as 004 and 005. **The first-shot number's
+independence is weakened and is not established by this run alone.** The general
+rule now lives in hazard 12: a comparison specification goes after the gate,
+referring to prior run records generically, never carrying what they say.
+
+**Scoring protocol.** Does not apply. Pass 0033 found that four `RequiresBuild`
+assertions grade a gitignored `output/` and so fail in a clone that was never
+built (LEDGER item 24). This run is the one that got it right: all three scoring
+jobs cloned fresh **and built from nothing**, which is why its scoring is the
+slowest of the three and why `produced output/PSAzureDevOpsGraph/PSAzureDevOpsGraph.psm1`
+passes in `f-conf`, a directory distinct from the build job's `f-build`. Both of
+this run's commits were re-cloned and re-scored under pass 0033's corrected
+procedure and **both still read 33/33** - see
+[plans/0033-honest-headline/rescore.txt](../../plans/0033-honest-headline/rescore.txt),
+where this run's final commit is the positive falsification row. Nothing in this
+record changes.
+
 ## Contents
 
 | File | What |

@@ -442,7 +442,7 @@ memory of tf-001 rather than its generality — are in
 | `commands/` | `/build` and `/test` |
 | `evals/conformance/` | The shape oracle: `Conformance.Tests.ps1`, its runner, the falsification record |
 | `evals/functional/` | The behaviour oracle: `BRIEF.md`, `fixture/`, the comparator, the seed |
-| `evals/HARNESS.md` | What a run consists of, and the eleven hazards |
+| `evals/HARNESS.md` | What a run consists of, and the thirteen hazards |
 | `runs/` | One directory per scored run, with its artifacts and transcripts |
 | `plans/` | One per pass: evidence per task, deviations, a verify script that re-derives the scores |
 | `journal/` | Append-only, six fields per pass |

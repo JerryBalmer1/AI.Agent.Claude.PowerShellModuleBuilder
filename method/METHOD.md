@@ -167,6 +167,30 @@ first build is still loaded when the second build's assertions run, and they
 then grade the wrong artifact. Give each job its own clone and its own process,
 and pay the wall-clock — about a minute, against a score nobody can trust.
 
+**PORTABLE. An isolated clone must still be put into the state the assertions
+grade — for a build-dependent assertion, that means building it.** "Each job
+gets its own fresh clone" says where the job works; it does not say what the
+job does there, and the two are not the same instruction. Four assertions in
+this project's suite read `output/`, which is gitignored, so a conformance job
+that clones and scores without building grades an empty directory and reports
+the module as failing. **Run 007 reported 28/33 that way; the same commit built
+first scores 32/33.** The three runs before it were unaffected only by accident
+— each had build output in its conformance tree by a *different* improvised
+route, so nothing in the record said which route was the rule.
+
+The general form: **a scoring procedure is not fully specified until it says
+what state the artifact is in when the assertions run.** An unspecified step
+does not stay unspecified; each run invents it, the inventions differ, and the
+scores stop being comparable without any of them being obviously wrong. Write
+the procedure down as an executable — this project's is
+`evals/conformance/Score-Clone.ps1` — so that the next run inherits the step
+instead of re-deriving it.
+
+Falsify the fix like any other gate. The unbuilt clone must still fail the
+build-dependent assertions, a sabotaged build must fail them, and a built
+conforming clone must pass; if the first row goes green, the "repair" quietly
+weakened the assertions instead of correcting the procedure.
+
 ## Evidence discipline
 
 **PORTABLE.** Distinguish observed from inferred. Anything claimed from a

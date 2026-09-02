@@ -31,7 +31,28 @@ without the run being repeated.
    > assume a task called `PreTag` exists, nor that a red non-default task is
    > always safe to continue past.
 4. **Score.** Run the conformance suite at both tag sets, writing each result to
-   an explicit path.
+   an explicit path. **The conformance clone is built before it is scored** —
+   `./build.ps1` in that clone, invoking the target's *own* default task, then
+   `Invoke-Conformance.ps1` against the same directory. `evals/conformance/Score-Clone.ps1`
+   is that sequence as one command; use it rather than reassembling the steps.
+
+   > **This rule is a correction, and the correction cost a comparison.** Four
+   > `RequiresBuild` assertions read `output/<Name>/`, which is `.gitignore`d and
+   > therefore absent from a clone that has not been built. The protocol said
+   > "score from a fresh clone" and said nothing about building it, so run 007's
+   > conformance clone was never built and those four assertions graded the
+   > absence of a directory: **28/33 reported, 32/33 when the same commit is
+   > built first.** The three ladder runs did not have the problem, but not
+   > because the rule prevented it — each of them happened to have build output
+   > in the conformance tree by a *different* route (004 built inside the
+   > conformance clone, 005 scored a snapshot of the built tree, 006 built all
+   > three clones). Nothing said which was correct, so run 007 chose the reading
+   > that made the score wrong. See `plans/0033-honest-headline/rescore.txt`.
+   >
+   > Do not assume the task name. Run 007's first shot declares
+   > `[ValidateSet('Clean','Build','Test','All')]` and has no `.` task at all, so
+   > a runner that hard-codes `-Task .` fails the build of precisely the commits
+   > whose non-house-style build file is the thing under measurement.
 5. **Sort the failures** into suite bugs and real findings.
 6. **Falsify anything new or changed** before the score is recorded.
 
@@ -396,6 +417,80 @@ plugin-on rung, and the one thing that varied"* rather than any number.
 The same applies to branch names and tag names, which `git branch -a` and
 `git tag -l` surface just as readily.
 
+### 12. A measured run's own prompt is prompt-borne oracle content
+
+Hazard 9 forbids the builder from *reading* run records. It does not stop the
+run's **prompt** from quoting them, and the prompt is the one document inside
+every blind phase's allowlist by construction — it is the first message of the
+session. **Mechanism lists, difference counts, expected values, convention names
+and prior scores written into a measured run's prompt are oracle knowledge
+delivered straight into Phase 1.**
+
+Two runs have now been damaged this way, and both flagged it themselves rather
+than being caught:
+
+- **Run 006.** Its prompt named runs 004 and 005's four difference mechanisms
+  *and their counts* — "15 repo-on-pipeline, 8 alias-edge, 2 bare-reason, 1
+  missing `repo:consumer-app`" — because the variance section the pass asked for
+  needs them. Three of the four were still chosen wrongly, in the same
+  directions as 004 and 005, which is weak evidence the leak did not steer the
+  build. Its record says the first-shot number's independence is weakened.
+- **Run 007.** Its prompt listed the same four mechanisms so the control
+  comparison could report against them. Three of the four recurred; the fourth —
+  `repo` on `pipeline` nodes, the 15-difference mechanism — did **not**, and it
+  is exactly the one a leak would most plausibly have prevented. That run cannot
+  separate "read the brief carefully" from "was told the answer" for that
+  mechanism, and its 6/12 first shot has to be read with that attached.
+
+The rule: **a comparison specification goes after the gate, not in the builder's
+prompt.** Write it as "report this run's first-shot differences grouped by
+mechanism, then compare against the mechanisms recorded in the prior run
+records" — a generic reference the *scorer* resolves — never as the list itself.
+The prompt may name which records to read; it may not contain what they say.
+
+The cheapest test before sending a measured run's prompt: **read the prompt as
+if it were the only thing you knew, and ask what it told you about the answers.**
+If deleting a phrase would cost the builder information about the oracle, that
+phrase belongs in the scoring instructions instead.
+
+### 13. The live fixture carries case-annotated comments, permanently
+
+The AzDO functional fixture in `ClaudeTesting` is annotated. Its YAML carries
+leading comments that name the cases and state what each one is *for* — one
+reads, in part, *"there is a second file at the repo root … Both exist, so the
+wrong answer is a wrong file rather than an error."* Reading the fixture through
+the module is what the task requires, so **every run, blind or not, has read
+these, by design, and always will.**
+
+This is not fixable and is not being fixed. `ClaudeTesting` is frozen — decision
+0011 records that its Terraform sibling is frozen *"like ClaudeTesting: changes
+require a new decision"* — and every one of runs 002 through 007 was scored
+against the annotated form. Stripping the comments now would make the next run
+incomparable with all seven and would invalidate the ladder, which is a far
+larger loss than the bound itself.
+
+So it is disclosed instead, and the vocabulary is corrected to match what is
+actually true: **"blind" in this project means the oracle, the run records and
+the plugin were unread. It has never meant the fixture was unread, and for the
+AzDO line it never can.**
+
+What the bound plausibly explains: the traversal and resolution semantics were
+right at first shot in *all* four measured runs, plugin on and off alike, while
+the output conventions were wrong in all four. The comments explain the
+resolution rules and say nothing about output conventions. That is the shape the
+scores have.
+
+What it does not excuse: it was recorded in no run record before 007, having
+been true since run 002. A bound that has always applied and has never been
+written down reads, to a later reader, as a bound that was discovered when it
+became inconvenient.
+
+**Every new fixture is written without case annotations**, and that is now the
+default for anything not already frozen. The Terraform fixture is authored in
+this repository at `evals/tf/fixture/repos/` and was scanned for the same vector
+in pass 0033 — see `plans/0033-honest-headline/tf-fixture-comments.txt` for the
+verdict and, if it is not clean, for the disclosure that tf-003 will need.
+
 ## What a run must record
 
 Enough that the score can be read months later without rerunning it:
@@ -406,6 +501,10 @@ Enough that the score can be read months later without rerunning it:
 - both result files, at explicit paths — never a default path relative to the
   working directory, which is how a zero-test result once ended up tracked at a
   repo root
+- **whether the conformance clone was built before it was scored**, and with
+  which task. Four runs each answered this differently and none of them wrote it
+  down, which is why 28/33 and 33/33 were compared as if they were the same
+  measurement for a month
 - the failure sort: suite bugs fixed, real findings left alone, with reasoning
 - the falsification table, including controls, and including which assertions
   were new or changed in this pass

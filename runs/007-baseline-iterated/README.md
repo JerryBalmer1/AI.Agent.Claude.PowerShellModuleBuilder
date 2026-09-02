@@ -203,6 +203,76 @@ surface is tagged.
 The current with/without section claims more for the plugin than these four runs
 support, and rewriting it against 007 is queued for the next release pass.
 
+## Blindness caveats
+
+Added by pass 0033. This run has no *caveat* section of its own; its caveats
+were distributed through [findings.md](findings.md) Part 3 and the *Control
+comparison* above. They are collected here, in the same shape as runs 003-006,
+and two of them are corrections to numbers printed higher up this page. See
+`evals/HARNESS.md` hazards 12 and 13.
+
+**The fixture names its own cases, and this run read them.** Applies, as it does
+to every run in this line, and this is the record that first wrote it down
+(findings.md C-3). The `ClaudeTesting` YAML carries leading comments naming the
+cases and stating what each is for - one reads *"Both exist, so the wrong answer
+is a wrong file rather than an error."* Reading the fixture through the module is
+what the task requires. **"Blind" means the oracle, the prior run records and
+the plugin were unread - never that the fixture was unread**, and `ClaudeTesting`
+is frozen, so the bound is permanent for the AzDO line. It is the most plausible
+account of the finding this record leads with: the dependency computation was
+right first time here and in all three plugin-on runs, while the output
+conventions - which the comments say nothing about - were wrong in all four.
+
+**Prompt-borne oracle content.** Applies, and it lands on the number this run
+exists to produce. `plans/0032-run-007/plan.md`'s step 7 named four convention
+mechanisms and their counts inside the Phase 1 allowlist, so the builder saw the
+names and counts of three of the five mechanisms it was about to be scored on
+before writing a line (findings.md C-2). Three of the four named recurred
+anyway; the fourth - `repo` on `pipeline` nodes, the 15-difference mechanism -
+did **not**, and it is precisely the one a leak would most plausibly have
+prevented. **This run cannot separate "read the brief carefully" from "was told
+the answer" for that mechanism, and its 6/12 first shot must be read with that
+attached.** Every claim on this page that rests on 007's first shot being closer
+than the ladder's - including the *Control comparison* table's 14 differences
+against 26 - inherits the caveat.
+
+The second channel is not a leak but belongs beside it: `Compare-Graph` prints
+the oracle's expected value for every wrong attribute, so the conventions were
+readable *from the scorer*, one difference at a time, after first shot. What this
+control shows is that they were not needed in advance - not that they were
+absent (findings.md C-1).
+
+**Scoring protocol - this run's conformance figures are superseded.** This run
+reported **28 / 33** because its conformance clone was fresh and never built,
+and four `RequiresBuild` assertions read a gitignored `output/`. That is LEDGER
+item 24, which this record raised (findings.md C-5) and pass 0033 repaired. Both
+of this run's commits have been re-cloned and re-scored with the clone built
+first, alongside run 006's under the same procedure:
+
+| | as reported | corrected |
+|---|---|---|
+| 007 first shot `1f2df30` | 19 / 33 | **20 / 33** |
+| 007 final `95ca28d` | 28 / 33 | **32 / 33** |
+| 006 first shot `15ab6e3` | 33 / 33 | 33 / 33 |
+| 006 final `7066916` | 33 / 33 | 33 / 33 |
+
+Read [plans/0033-honest-headline/rescore.txt](../../plans/0033-honest-headline/rescore.txt)
+for the falsification behind those numbers. Three consequences for this page:
+
+1. **The 28/33 in the header block and in *Scores* is the protocol figure and is
+   left as recorded.** It is what this run measured under the rule as written.
+   The comparable number against the ladder is 32/33, and the gap to 33/33 is
+   one assertion - findings.md C-6, the coverage-gate assertion recorded unmet -
+   not five.
+2. **The `32/33 built-clone` figure in *Control comparison* was right and is now
+   the reported one**, re-derived independently rather than quoted.
+3. **The claim that 003 and 007 "scored identically on conformance at first shot
+   - 19/33" does not survive the correction.** Run 003's conformance clone was
+   built (`produced output/...psm1` passes in its result file); this run's was
+   not. Under one procedure the two are 19/33 and 20/33 - one assertion apart,
+   not zero. The paragraph's larger point, that the two blind runs made the same
+   mistakes mechanism for mechanism, is untouched.
+
 ## Contents
 
 | File | What |

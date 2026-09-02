@@ -318,7 +318,7 @@ names something that no longer exists.
   many documents it writes. Both are about the agent's failure modes, not
   PowerShell's.
 - **The falsification rules.** METHOD.md's "The falsification harness"
-  section and the eleven hazards in
+  section and the thirteen hazards in
   [evals/HARNESS.md](../../evals/HARNESS.md). This is the part most likely
   to be skipped and least safe to skip. The hazards are not hypotheticals:
   hazard 4 is a break that changed nothing producing a green that proves

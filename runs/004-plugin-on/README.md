@@ -98,6 +98,41 @@ cannot separate reading the plugin from recalling the reasoning that produced it
 Runs 005 and 006 do not fix that either; what the three of them measure is
 reliability at fixed inputs.
 
+## Blindness caveats
+
+Added by pass 0033. The *Plugin-on caveat* above stands unchanged; this section
+is additive and states which of the project's now-disclosed bounds apply to this
+run. See `evals/HARNESS.md` hazards 12 and 13.
+
+**The fixture names its own cases, and this run read them.** Applies, as it does
+to every run in this line. The `ClaudeTesting` YAML carries leading comments
+naming the cases and stating what each is for. Reading the fixture through the
+module is what the task requires, so a blind run reads them by design. This was
+recorded in no run record before 007 and has been true since run 002. It
+plausibly explains why the dependency traversal was right at first shot here and
+in every other run, while the output conventions were not. **"Blind" means the
+oracle, the prior run records and the conformance suite were unread — never that
+the fixture was unread**, and `ClaudeTesting` is frozen, so the bound is
+permanent.
+
+**Prompt-borne oracle content.** Does not apply. This was the first plugin-on
+run; no prior plugin-on mechanism list existed, and none appears in
+`plans/0026-run-004/plan.md`'s prompt. Runs 006 and 007 are the two that carry
+this caveat.
+
+**Scoring protocol.** Does not apply. Pass 0033 found that four `RequiresBuild`
+assertions grade a gitignored `output/` and so fail in a clone that was never
+built (LEDGER item 24). **This run's conformance job built its own clone before
+scoring it** — [transcripts/final-b-conformance.txt](transcripts/final-b-conformance.txt)
+opens with `Build . ...\scratch\runs\004-verify-clone\PSAzureDevOpsGraph.build.ps1`
+and the result file names that same directory as its target. The 33/33 is a
+built-clone number and stands.
+
+That the build happened here at all was improvisation, not rule: 005 got build
+output into its conformance tree a different way and 006 a third way, and run
+007 — following the same written protocol — got none. The rule is written down
+now, in `evals/conformance/Score-Clone.ps1` and `evals/HARNESS.md` step 4.
+
 ## Contents
 
 | File | What |
