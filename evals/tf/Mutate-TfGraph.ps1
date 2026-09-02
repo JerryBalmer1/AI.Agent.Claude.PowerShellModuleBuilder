@@ -21,12 +21,20 @@
 .PARAMETER Mutation
     Which mechanism to break.
 
+.PARAMETER Fixture
+    Which fixture's node and edge ids to aim at. Defaults to fixture1, so every
+    caller written before pass 0034 mutates exactly what it mutated before and
+    `plans/0030-release/mutations.txt` stays reproducible.
+
 .OUTPUTS
     The mutated graph, as an object. Nothing is written.
 
 .EXAMPLE
     $bad = ./Mutate-TfGraph.ps1 -Path fixture/expected-graph.json -Mutation missing-edge
     ./Compare-TfGraph.ps1 -Expected fixture/expected-graph.json -ActualObject $bad
+
+.EXAMPLE
+    $bad = ./Mutate-TfGraph.ps1 -Path fixture2/expected-graph.json -Mutation wrong-parent -Fixture fixture2
 #>
 [CmdletBinding()]
 param(
@@ -37,7 +45,10 @@ param(
     [Parameter(Mandatory)]
     [ValidateSet('missing-node', 'extra-node', 'wrong-attribute', 'wrong-parent',
         'missing-edge', 'extra-edge', 'wrong-edge-kind')]
-    [string] $Mutation
+    [string] $Mutation,
+
+    [ValidateSet('fixture1', 'fixture2')]
+    [string] $Fixture = 'fixture1'
 )
 
 Set-StrictMode -Version Latest
@@ -52,11 +63,54 @@ $graph = Get-Content -LiteralPath $Path -Raw | ConvertFrom-Json
 # The targets are named rather than positional. An index would silently point
 # at something else the first time the oracle gains a node, and the mutation
 # would still "work" while testing nothing anybody chose.
-$targetNode = 'TfFixtureApp:modules/service#local.service_tags'
-$targetParentNode = 'TfFixtureNetwork:modules/segment/modules/subnet'
-$targetAttributeNode = 'TfFixtureShared:.#provider.random'
-$targetEdgeFrom = 'TfFixtureApp:.#local.merged_tags'
-$targetEdgeTo = 'TfFixtureApp:modules/service#var.tags'
+#
+# One set per fixture. Fixture 2's targets are not translations of fixture 1's:
+# each aims at a mechanism fixture 2 has and fixture 1 does not, so a producer
+# that passes fixture 1 by remembering it is broken here in a way it has not
+# seen. The mapping is stated in evals/tf/fixture2/cases.md.
+$targetSets = @{
+    fixture1 = @{
+        Node          = 'TfFixtureApp:modules/service#local.service_tags'
+        ParentNode    = 'TfFixtureNetwork:modules/segment/modules/subnet'
+        NewParent     = 'TfFixtureNetwork:.'
+        AttributeNode = 'TfFixtureShared:.#provider.random'
+        EdgeFrom      = 'TfFixtureApp:.#local.merged_tags'
+        EdgeTo        = 'TfFixtureApp:modules/service#var.tags'
+        ExtraNodeId   = 'TfFixtureApp:.#local.invented_by_the_mutator'
+        ExtraNodeScope = 'TfFixtureApp'
+        ExtraNodeParent = 'TfFixtureApp:.'
+        ExtraEdgeFrom = 'TfFixtureShared:.#var.unused_retention_days'
+        ExtraEdgeTo   = 'TfFixtureShared:.#local.effective_prefix'
+    }
+    fixture2 = @{
+        # The output BOTH sides of the diamond read.
+        Node          = 'TfSiteOps:modules/common#output.tag'
+        # Reparented to its CALLER instead of its directory parent - the exact
+        # defect fixture 2 was shaped to catch, and one fixture 1 cannot pose
+        # because there every module's caller is its parent.
+        ParentNode    = 'TfSiteOps:modules/common'
+        NewParent     = 'TfSiteOps:modules/collector'
+        # archive is pinned ~> 2.6 in TfSiteCore and 2.6.0 here. A producer that
+        # keys providers by name alone has already lost this before the mutation.
+        AttributeNode = 'TfSiteOps:.#provider.archive'
+        # The last hop of the value chain, and the one that is RENAMED on the way
+        # through: probe_window arrives as window.
+        EdgeFrom      = 'TfSiteEdge:modules/edge/modules/pop#var.probe_window'
+        EdgeTo        = 'TfSiteEdge:modules/edge/modules/pop/modules/probe#var.window'
+        ExtraNodeId   = 'TfSiteEdge:.#local.invented_by_the_mutator'
+        ExtraNodeScope = 'TfSiteEdge'
+        ExtraNodeParent = 'TfSiteEdge:.'
+        ExtraEdgeFrom = 'TfSiteCore:.#var.archive_retention_weeks'
+        ExtraEdgeTo   = 'TfSiteCore:.#local.code_slug'
+    }
+}
+$targets = $targetSets[$Fixture]
+
+$targetNode = $targets.Node
+$targetParentNode = $targets.ParentNode
+$targetAttributeNode = $targets.AttributeNode
+$targetEdgeFrom = $targets.EdgeFrom
+$targetEdgeTo = $targets.EdgeTo
 
 switch ($Mutation) {
     'missing-node' {
@@ -67,11 +121,11 @@ switch ($Mutation) {
 
     'extra-node' {
         $graph.graph.nodes = @($graph.graph.nodes) + @([pscustomobject]@{
-                id       = 'TfFixtureApp:.#local.invented_by_the_mutator'
+                id       = $targets.ExtraNodeId
                 label    = 'invented_by_the_mutator'
                 type     = 'local'
-                scope    = 'TfFixtureApp'
-                parentId = 'TfFixtureApp:.'
+                scope    = $targets.ExtraNodeScope
+                parentId = $targets.ExtraNodeParent
             })
     }
 
@@ -84,11 +138,13 @@ switch ($Mutation) {
     }
 
     'wrong-parent' {
-        # The third-level module reparented to the root: the nested-module
-        # chain flattened by one level, which is the most likely real defect
-        # in a producer that mishandles nesting.
+        # Fixture 1: the third-level module reparented to the root - the
+        # nested-module chain flattened by one level, which is the most likely
+        # real defect in a producer that mishandles nesting.
+        # Fixture 2: the shared module reparented to one of its two callers -
+        # containment taken from the call rather than from the path.
         foreach ($node in $graph.graph.nodes) {
-            if ($node.id -eq $targetParentNode) { $node.parentId = 'TfFixtureNetwork:.' }
+            if ($node.id -eq $targetParentNode) { $node.parentId = $targets.NewParent }
         }
     }
 
@@ -100,13 +156,14 @@ switch ($Mutation) {
 
     'extra-edge' {
         $graph.graph.edges = @($graph.graph.edges) + @([pscustomobject]@{
-                from = 'TfFixtureShared:.#var.unused_retention_days'
-                to   = 'TfFixtureShared:.#local.effective_prefix'
+                from = $targets.ExtraEdgeFrom
+                to   = $targets.ExtraEdgeTo
                 kind = 'references'
             })
-        # Deliberately the unused variable from case 6: this is exactly the
-        # edge a producer that invents a reference for every declaration would
-        # emit, so the mutation is a real defect rather than a made-up one.
+        # Deliberately the unused variable from case 6 - in both fixtures. This
+        # is exactly the edge a producer that invents a reference for every
+        # declaration would emit, so the mutation is a real defect rather than a
+        # made-up one.
     }
 
     'wrong-edge-kind' {

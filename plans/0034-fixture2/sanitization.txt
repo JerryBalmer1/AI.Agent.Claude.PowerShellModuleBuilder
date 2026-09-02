@@ -1,0 +1,57 @@
+==============================================================================
+FIXTURE SANITIZATION SCAN
+Generated 2026-09-02T08:13:22Z
+Fixture: fixture2
+Root:    C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/evals/tf/fixture2/repos
+==============================================================================
+
+Decision 0014: no comment, string, identifier, README line or commit message
+in a fixture may name a case, name the oracle, describe presence or absence as
+a case, use the word "graph", or point into the harness. Pass 0033 established
+why by reading fixture 1 by hand and finding all four; this is that reading,
+promoted to something anyone can re-run.
+
+COMMIT MESSAGES ARE IN SCOPE. They are read from Get-TfFixtureCommitMessage,
+the same function Publish-TfFixture.ps1 pushes with, so a mute repository
+cannot leak its cases one git log later.
+
+ALLOWLIST, stated rather than silent:
+  edge (singular)  domain vocabulary here - TfSiteEdge, modules/edge. The
+                   plural "edges" is graph prose and is refused.
+  presence         allowed only inside "point(s) of presence".
+
+------------------------------------------------------------------------------
+RULES: 38 patterns in four categories.
+  A. points at the harness or the oracle - 10 pattern(s)
+  B. names a case or its answer - 13 pattern(s)
+  C. graph or producer vocabulary - 9 pattern(s)
+  D. measurement vocabulary - 6 pattern(s)
+
+------------------------------------------------------------------------------
+SCANNED: 46 file(s) under 3 top-level director(ies):
+         TfSiteCore, TfSiteEdge, TfSiteOps
+         plus 3 commit message(s) for fixture2.
+
+------------------------------------------------------------------------------
+FINDINGS: none.
+
+------------------------------------------------------------------------------
+FALSIFICATION - a scan that has only ever agreed with a clean fixture is
+indistinguishable from a scan that cannot disagree. One banned comment is
+planted in a SCRATCH COPY; the fixture itself is never written to.
+
+PLANTED into the copy at TfSiteCore/main.tf:1
+  # Case 6, the absence case: a graph that invents a reference for this is wrong.
+
+CAUGHT: 3 finding(s) on the planted line, across these rules:
+  [\babsence\b]  B. names a case or its answer
+  [\bcases?\b]  B. names a case or its answer
+  [\bgraphs?\b]  C. graph or producer vocabulary
+FALSIFICATION PASSED - the scanner can fail.
+
+The scratch copy has been removed. The fixture on disk is unchanged.
+
+==============================================================================
+FIXTURE2 SANITIZATION: clean
+FIXTURE2 FALSIFICATION: the scanner was shown to fail
+==============================================================================

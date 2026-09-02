@@ -1,0 +1,237 @@
+==============================================================================
+FIXTURE SANITIZATION SCAN
+Generated 2026-09-02T08:13:22Z
+Fixture: fixture1
+Root:    C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/evals/tf/fixture/repos
+==============================================================================
+
+Decision 0014: no comment, string, identifier, README line or commit message
+in a fixture may name a case, name the oracle, describe presence or absence as
+a case, use the word "graph", or point into the harness. Pass 0033 established
+why by reading fixture 1 by hand and finding all four; this is that reading,
+promoted to something anyone can re-run.
+
+COMMIT MESSAGES ARE IN SCOPE. They are read from Get-TfFixtureCommitMessage,
+the same function Publish-TfFixture.ps1 pushes with, so a mute repository
+cannot leak its cases one git log later.
+
+ALLOWLIST, stated rather than silent:
+  edge (singular)  domain vocabulary here - TfSiteEdge, modules/edge. The
+                   plural "edges" is graph prose and is refused.
+  presence         allowed only inside "point(s) of presence".
+
+------------------------------------------------------------------------------
+RULES: 38 patterns in four categories.
+  A. points at the harness or the oracle - 10 pattern(s)
+  B. names a case or its answer - 13 pattern(s)
+  C. graph or producer vocabulary - 9 pattern(s)
+  D. measurement vocabulary - 6 pattern(s)
+
+------------------------------------------------------------------------------
+SCANNED: 40 file(s) under 3 top-level director(ies):
+         TfFixtureApp, TfFixtureNetwork, TfFixtureShared
+         plus 3 commit message(s) for fixture1.
+
+------------------------------------------------------------------------------
+FINDINGS: 94
+
+A. points at the harness or the oracle
+  <commit message>   [\bevals/]
+      Terraform fixture for PSTerraformGraph scoring. Authored in the harness at evals/tf/fixture/repos/TfFixtureNetwork and pushed by pass 0023; that copy is the source of truth.
+  <commit message>   [\bevals/]
+      Terraform fixture for PSTerraformGraph scoring. Authored in the harness at evals/tf/fixture/repos/TfFixtureShared and pushed by pass 0023; that copy is the source of truth.
+  <commit message>   [\bevals/]
+      Terraform fixture for PSTerraformGraph scoring. Authored in the harness at evals/tf/fixture/repos/TfFixtureApp and pushed by pass 0023; that copy is the source of truth.
+  <commit message>   [\bharness\b]
+      Terraform fixture for PSTerraformGraph scoring. Authored in the harness at evals/tf/fixture/repos/TfFixtureNetwork and pushed by pass 0023; that copy is the source of truth.
+  <commit message>   [\bharness\b]
+      Terraform fixture for PSTerraformGraph scoring. Authored in the harness at evals/tf/fixture/repos/TfFixtureShared and pushed by pass 0023; that copy is the source of truth.
+  <commit message>   [\bharness\b]
+      Terraform fixture for PSTerraformGraph scoring. Authored in the harness at evals/tf/fixture/repos/TfFixtureApp and pushed by pass 0023; that copy is the source of truth.
+  <commit message>   [\bpass\s+00\d\d\b]
+      Terraform fixture for PSTerraformGraph scoring. Authored in the harness at evals/tf/fixture/repos/TfFixtureShared and pushed by pass 0023; that copy is the source of truth.
+  <commit message>   [\bpass\s+00\d\d\b]
+      Terraform fixture for PSTerraformGraph scoring. Authored in the harness at evals/tf/fixture/repos/TfFixtureApp and pushed by pass 0023; that copy is the source of truth.
+  <commit message>   [\bpass\s+00\d\d\b]
+      Terraform fixture for PSTerraformGraph scoring. Authored in the harness at evals/tf/fixture/repos/TfFixtureNetwork and pushed by pass 0023; that copy is the source of truth.
+  <commit message>   [PSTerraformGraph|PSGraphRender|PSAzureDevOpsGraph|PSModuleGraph]
+      Terraform fixture for PSTerraformGraph scoring. Authored in the harness at evals/tf/fixture/repos/TfFixtureShared and pushed by pass 0023; that copy is the source of truth.
+  <commit message>   [PSTerraformGraph|PSGraphRender|PSAzureDevOpsGraph|PSModuleGraph]
+      Terraform fixture for PSTerraformGraph scoring. Authored in the harness at evals/tf/fixture/repos/TfFixtureApp and pushed by pass 0023; that copy is the source of truth.
+  <commit message>   [PSTerraformGraph|PSGraphRender|PSAzureDevOpsGraph|PSModuleGraph]
+      Terraform fixture for PSTerraformGraph scoring. Authored in the harness at evals/tf/fixture/repos/TfFixtureNetwork and pushed by pass 0023; that copy is the source of truth.
+  TfFixtureApp/main.tf:24   [\bdecision\s+\d]
+      # description, which is prose - see decision 0012.
+  TfFixtureApp/README.md:3   [PSTerraformGraph|PSGraphRender|PSAzureDevOpsGraph|PSModuleGraph]
+      The traceability showcase of the PSTerraformGraph fixture.
+  TfFixtureNetwork/README.md:3   [PSTerraformGraph|PSGraphRender|PSAzureDevOpsGraph|PSModuleGraph]
+      Three module levels for the PSTerraformGraph fixture: the root calls
+  TfFixtureShared/README.md:3   [PSTerraformGraph|PSGraphRender|PSAzureDevOpsGraph|PSModuleGraph]
+      Reusable child modules for the PSTerraformGraph fixture. Part of a
+  TfFixtureShared/README.md:4   [\bevals/]
+      three-repository configuration graph; see `evals/tf/fixture/cases.md` in the
+  TfFixtureShared/README.md:4   [cases\.md]
+      three-repository configuration graph; see `evals/tf/fixture/cases.md` in the
+  TfFixtureShared/README.md:5   [\bharness\b]
+      harness for what each part is a case for.
+
+B. names a case or its answer
+  <commit message>   [\bfixtures?\b]
+      Terraform fixture for PSTerraformGraph scoring. Authored in the harness at evals/tf/fixture/repos/TfFixtureNetwork and pushed by pass 0023; that copy is the source of truth.
+  <commit message>   [\bfixtures?\b]
+      Terraform fixture for PSTerraformGraph scoring. Authored in the harness at evals/tf/fixture/repos/TfFixtureApp and pushed by pass 0023; that copy is the source of truth.
+  <commit message>   [\bfixtures?\b]
+      Terraform fixture for PSTerraformGraph scoring. Authored in the harness at evals/tf/fixture/repos/TfFixtureShared and pushed by pass 0023; that copy is the source of truth.
+  TfFixtureApp/main.tf:12   [\blink (one|two|three|four|five)\b]
+      # variable -> local. Link one.
+  TfFixtureApp/main.tf:20   [\bcases?\b]
+      # Case 3, the cross-repository output reference. The tie is the
+  TfFixtureApp/main.tf:30   [\babsence\b]
+      # carries no //subdirectory, and that absence is what says "the repository
+  TfFixtureApp/main.tf:31   [\bexercis(e|es|ed|ing)\b]
+      # root" - the distinction the //modules/naming form below does not exercise.
+  TfFixtureApp/main.tf:39   [\bfixtures?\b]
+      # concerned - no credential appears here or anywhere in this fixture.
+  TfFixtureApp/main.tf:54   [\blink (one|two|three|four|five)\b]
+      # Own nested module. local -> module. Link two.
+  TfFixtureApp/main.tf:64   [\bfixtures?\b]
+      # A module sourced from a path that exists in no repository in this fixture.
+  TfFixtureApp/main.tf:65   [\bcases?\b]
+      # Deliberate: the unresolved-reference case. A producer that drops it reports
+  TfFixtureApp/main.tf:65   [\bdeliberate(ly)?\b]
+      # Deliberate: the unresolved-reference case. A producer that drops it reports
+  TfFixtureApp/main.tf:65   [\bunresolv]
+      # Deliberate: the unresolved-reference case. A producer that drops it reports
+  TfFixtureApp/modules/service/main.tf:2   [\blink (one|two|three|four|five)\b]
+      # Link three: the tags arrive as a variable and are extended before being
+  TfFixtureApp/modules/service/modules/worker/variables.tf:7   [\blink (one|two|three|four|five)\b]
+      description = "Tags, arrived from the root by way of the service module. Link four."
+  TfFixtureApp/modules/service/variables.tf:7   [\blink (one|two|three|four|five)\b]
+      description = "Tags from the root. Link two of the chain arrives here."
+  TfFixtureApp/README.md:16   [\bcases?\b]
+      ## What else is a case here
+  TfFixtureApp/README.md:24   [\bunresolv]
+      - **An unresolved module source.** `module.legacy` sources
+  TfFixtureApp/README.md:26   [\bdeliberate(ly)?\b]
+      fixture. Deliberate. A producer that silently drops it reports a graph that
+  TfFixtureApp/README.md:26   [\bfixtures?\b]
+      fixture. Deliberate. A producer that silently drops it reports a graph that
+  TfFixtureApp/README.md:3   [\bfixtures?\b]
+      The traceability showcase of the PSTerraformGraph fixture.
+  TfFixtureApp/README.md:33   [\bfixtures?\b]
+      fixture; it is parsed as configuration text.
+  TfFixtureApp/variables.tf:4   [\bfixtures?\b]
+      default     = "fixture-app"
+  TfFixtureNetwork/main.tf:4   [\bcases?\b]
+      # modules/segment/modules/subnet. The chain is the nested-module case.
+  TfFixtureNetwork/pipelines/network-legacy.yml:3   [\bfixtures?\b]
+      # Pinned to an old Terraform on purpose: the fixture carries four distinct
+  TfFixtureNetwork/pipelines/network-legacy.yml:3   [\bon purpose\b]
+      # Pinned to an old Terraform on purpose: the fixture carries four distinct
+  TfFixtureNetwork/pipelines/network-legacy.yml:4   [\bcases?\b]
+      # versions across its pipelines so a provider/version case has something to
+  TfFixtureNetwork/README.md:10   [\bcases?\b]
+      version-pin case has something to discriminate.
+  TfFixtureNetwork/README.md:10   [\bdiscriminat]
+      version-pin case has something to discriminate.
+  TfFixtureNetwork/README.md:14   [\bcases?\b]
+      output-reference case.
+  TfFixtureNetwork/README.md:17   [\bfixtures?\b]
+      fixture; it is parsed as configuration text.
+  TfFixtureNetwork/README.md:3   [\bfixtures?\b]
+      Three module levels for the PSTerraformGraph fixture: the root calls
+  TfFixtureNetwork/README.md:5   [\bcases?\b]
+      the nested-module case, and it is the reason `parentId` in the producer graph
+  TfFixtureNetwork/README.md:9   [\bdeliberate(ly)?\b]
+      `>= 1.5.0`, deliberately different from the other two repositories so a
+  TfFixtureNetwork/variables.tf:4   [\bfixtures?\b]
+      default     = "fixture-net"
+  TfFixtureShared/main.tf:6   [\bcases?\b]
+      # git URL, which is the cross-repository case the fixture is for.
+  TfFixtureShared/main.tf:6   [\bfixtures?\b]
+      # git URL, which is the cross-repository case the fixture is for.
+  TfFixtureShared/README.md:17   [\bdeliberate(ly)?\b]
+      is deliberate: a graph that invents a reference for it is wrong, and the
+  TfFixtureShared/README.md:18   [\babsence\b]
+      absence is a case.
+  TfFixtureShared/README.md:18   [\bcases?\b]
+      absence is a case.
+  TfFixtureShared/README.md:21   [\bfixtures?\b]
+      fixture; it is parsed as configuration text.
+  TfFixtureShared/README.md:3   [\bfixtures?\b]
+      Reusable child modules for the PSTerraformGraph fixture. Part of a
+  TfFixtureShared/README.md:4   [\bcases?\b]
+      three-repository configuration graph; see `evals/tf/fixture/cases.md` in the
+  TfFixtureShared/README.md:4   [\bfixtures?\b]
+      three-repository configuration graph; see `evals/tf/fixture/cases.md` in the
+  TfFixtureShared/README.md:5   [\bcases?\b]
+      harness for what each part is a case for.
+  TfFixtureShared/variables.tf:25   [\babsence\b]
+      description = "Declared and referenced by nothing. The absence case: a graph that invents a reference for this is wrong."
+  TfFixtureShared/variables.tf:25   [\bcases?\b]
+      description = "Declared and referenced by nothing. The absence case: a graph that invents a reference for this is wrong."
+
+C. graph or producer vocabulary
+  TfFixtureApp/main.tf:1   [\btraceability\b]
+      # TfFixtureApp root. The traceability showcase.
+  TfFixtureApp/main.tf:23   [\bparsers?\b]
+      # and a parser can follow. It used to be asserted only in a variable's
+  TfFixtureApp/main.tf:65   [\bproducers?\b]
+      # Deliberate: the unresolved-reference case. A producer that drops it reports
+  TfFixtureApp/main.tf:66   [\bgraphs?\b]
+      # a graph that looks complete and is not.
+  TfFixtureApp/main.tf:7   [\bgraphs?\b]
+      # Four levels, crossing a module boundary twice. A graph that carries it as
+  TfFixtureApp/main.tf:8   [\bedges\b]
+      # `references` and `passes-to` edges has understood the configuration; one
+  TfFixtureApp/main.tf:8   [passes-to]
+      # `references` and `passes-to` edges has understood the configuration; one
+  TfFixtureApp/main.tf:9   [\bnodes?\b]
+      # that reports four unrelated nodes has not.
+  TfFixtureApp/README.md:12   [\bgraphs?\b]
+      Four levels, crossing a module boundary twice. A graph that carries it as
+  TfFixtureApp/README.md:13   [\bedges\b]
+      `references` and `passes-to` edges has understood the configuration; one that
+  TfFixtureApp/README.md:13   [passes-to]
+      `references` and `passes-to` edges has understood the configuration; one that
+  TfFixtureApp/README.md:14   [\bnodes?\b]
+      reports four unrelated nodes has not.
+  TfFixtureApp/README.md:20   [\bparsers?\b]
+      will; to a parser it is inert text.
+  TfFixtureApp/README.md:26   [\bgraphs?\b]
+      fixture. Deliberate. A producer that silently drops it reports a graph that
+  TfFixtureApp/README.md:26   [\bproducers?\b]
+      fixture. Deliberate. A producer that silently drops it reports a graph that
+  TfFixtureApp/README.md:27   [\bcontract\b]
+      looks complete and is not; the contract's `resolved: false` plus a `reason`
+  TfFixtureApp/README.md:3   [\btraceability\b]
+      The traceability showcase of the PSTerraformGraph fixture.
+  TfFixtureNetwork/README.md:5   [\bgraphs?\b]
+      the nested-module case, and it is the reason `parentId` in the producer graph
+  TfFixtureNetwork/README.md:5   [\bproducers?\b]
+      the nested-module case, and it is the reason `parentId` in the producer graph
+  TfFixtureNetwork/README.md:5   [parentId]
+      the nested-module case, and it is the reason `parentId` in the producer graph
+  TfFixtureShared/main.tf:10   [\bgraphs?\b]
+      # form of the traceability chain the graph has to carry.
+  TfFixtureShared/main.tf:10   [\btraceability\b]
+      # form of the traceability chain the graph has to carry.
+  TfFixtureShared/README.md:17   [\bgraphs?\b]
+      is deliberate: a graph that invents a reference for it is wrong, and the
+  TfFixtureShared/README.md:4   [\bgraphs?\b]
+      three-repository configuration graph; see `evals/tf/fixture/cases.md` in the
+  TfFixtureShared/variables.tf:25   [\bgraphs?\b]
+      description = "Declared and referenced by nothing. The absence case: a graph that invents a reference for this is wrong."
+
+D. measurement vocabulary
+  <commit message>   [\bscor(e|es|ed|ing)\b]
+      Terraform fixture for PSTerraformGraph scoring. Authored in the harness at evals/tf/fixture/repos/TfFixtureNetwork and pushed by pass 0023; that copy is the source of truth.
+  <commit message>   [\bscor(e|es|ed|ing)\b]
+      Terraform fixture for PSTerraformGraph scoring. Authored in the harness at evals/tf/fixture/repos/TfFixtureShared and pushed by pass 0023; that copy is the source of truth.
+  <commit message>   [\bscor(e|es|ed|ing)\b]
+      Terraform fixture for PSTerraformGraph scoring. Authored in the harness at evals/tf/fixture/repos/TfFixtureApp and pushed by pass 0023; that copy is the source of truth.
+
+
+==============================================================================
+FIXTURE1 SANITIZATION: 94 finding(s)
+==============================================================================

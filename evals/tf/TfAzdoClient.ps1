@@ -18,6 +18,12 @@ $script:TfAzdoProject = 'ClaudeTestingTerraform'
 $script:TfAzdoApi = '7.1'
 $script:TfFixtureRepos = @('TfFixtureShared', 'TfFixtureNetwork', 'TfFixtureApp')
 
+# Fixture 2, added by pass 0034 under decision 0014. A SECOND set of three
+# repositories in the same project, not a replacement: fixture 1 is frozen and
+# stays where it is. Every function below that takes -Fixture defaults to
+# fixture1, so no caller written before 0034 changes behaviour.
+$script:TfFixture2Repos = @('TfSiteCore', 'TfSiteEdge', 'TfSiteOps')
+
 function Assert-TfAzdoScope {
     <#
     .SYNOPSIS
@@ -118,6 +124,39 @@ function Invoke-TfAzdoJson {
 }
 
 function Get-TfFixtureRepoName {
-    <# The three repositories this fixture is, stated once. #>
+    <#
+    .SYNOPSIS
+        The three repositories a fixture is, stated once.
+    .DESCRIPTION
+        Defaults to fixture 1, so every caller written before pass 0034 keeps
+        the behaviour it had.
+    #>
+    param([ValidateSet('fixture1', 'fixture2')] [string] $Fixture = 'fixture1')
+    if ($Fixture -eq 'fixture2') { return $script:TfFixture2Repos }
     $script:TfFixtureRepos
+}
+
+function Get-TfFixtureCommitMessage {
+    <#
+    .SYNOPSIS
+        The message a fixture repository's initial commit carries.
+    .DESCRIPTION
+        Stated here rather than at the push site because two things read it:
+        Publish-TfFixture.ps1, which pushes with it, and
+        Test-FixtureSanitization.ps1, which scans it. Decision 0014 puts commit
+        messages in scope for sanitization — a repository whose files say
+        nothing and whose first commit says "Terraform fixture for
+        PSTerraformGraph scoring" has leaked the same thing one `git log`
+        later — and a message the scanner cannot see is a message the gate does
+        not cover.
+
+        Fixture 1's message is reproduced verbatim from what pass 0023 pushed.
+        It is frozen and this function does not get to improve it.
+    #>
+    param(
+        [Parameter(Mandatory)] [ValidateSet('fixture1', 'fixture2')] [string] $Fixture,
+        [Parameter(Mandatory)] [string] $RepositoryName
+    )
+    if ($Fixture -eq 'fixture2') { return "Add the $RepositoryName configuration." }
+    "Terraform fixture for PSTerraformGraph scoring. Authored in the harness at evals/tf/fixture/repos/$RepositoryName and pushed by pass 0023; that copy is the source of truth."
 }

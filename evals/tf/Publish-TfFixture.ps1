@@ -15,13 +15,22 @@
     **Nothing here queues a build.** Pipeline definitions are created; the
     definition and the run are different objects and only the first is made.
 
+.PARAMETER Fixture
+    Which fixture to publish. Defaults to fixture1, so a caller written before
+    pass 0034 still points at the three repositories it always pointed at.
+
 .PARAMETER Force
     Push into a repository that already has commits. Off by default: this
     fixture is frozen once its oracle is falsified, and an accidental second
     push is the way that freeze gets broken.
 #>
 [CmdletBinding(SupportsShouldProcess)]
-param([switch] $Force)
+param(
+    [ValidateSet('fixture1', 'fixture2')]
+    [string] $Fixture = 'fixture1',
+
+    [switch] $Force
+)
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
@@ -29,7 +38,7 @@ $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'TfAzdoClient.ps1')
 Assert-TfAzdoScope
 
-$fixtureRoot = Join-Path $PSScriptRoot 'fixture/repos'
+$fixtureRoot = Join-Path $PSScriptRoot ($Fixture -eq 'fixture2' ? 'fixture2/repos' : 'fixture/repos')
 $base = Get-TfAzdoBaseUri
 
 function Get-FixtureFile {
@@ -53,17 +62,23 @@ function Get-FixtureFile {
     }
 }
 
-$jobs = foreach ($name in (Get-TfFixtureRepoName)) {
+$jobs = foreach ($name in (Get-TfFixtureRepoName -Fixture $Fixture)) {
     $root = Join-Path $fixtureRoot $name
     if (-not (Test-Path -LiteralPath $root)) { throw "No fixture source for '$name' at $root." }
 
     $files = @(Get-FixtureFile -Root $root)
     if ($files.Count -eq 0) { throw "'$name' has no files; refusing to create an empty repository." }
 
+    # The commit message is fixture-scoped and comes from the client, because
+    # Test-FixtureSanitization.ps1 scans the same function. Decision 0014 puts
+    # commit messages in scope: a mute repository whose first commit names the
+    # harness has leaked the same thing one `git log` later.
+    $comment = Get-TfFixtureCommitMessage -Fixture $Fixture -RepositoryName $name
+
     if (-not $PSCmdlet.ShouldProcess($name, "create the repository and push $($files.Count) file(s)")) { continue }
 
-    Start-ThreadJob -Name $name -ArgumentList $name, $base, $files, $Force.IsPresent, (Join-Path $PSScriptRoot 'TfAzdoClient.ps1') -ScriptBlock {
-        param($Name, $Base, $Files, $ForcePush, $ClientPath)
+    Start-ThreadJob -Name $name -ArgumentList $name, $base, $files, $Force.IsPresent, (Join-Path $PSScriptRoot 'TfAzdoClient.ps1'), $comment -ScriptBlock {
+        param($Name, $Base, $Files, $ForcePush, $ClientPath, $Comment)
 
         . $ClientPath
         $result = [pscustomobject]@{ Name = $Name; Created = $false; Pushed = $false; FileCount = @($Files).Count; CommitId = $null; Detail = '' }
@@ -95,7 +110,7 @@ $jobs = foreach ($name in (Get-TfFixtureRepoName)) {
             $push = @{
                 refUpdates = @(@{ name = 'refs/heads/main'; oldObjectId = '0000000000000000000000000000000000000000' })
                 commits    = @(@{
-                        comment = "Terraform fixture for PSTerraformGraph scoring. Authored in the harness at evals/tf/fixture/repos/$Name and pushed by pass 0023; that copy is the source of truth."
+                        comment = $Comment
                         changes = @($changes)
                     })
             }

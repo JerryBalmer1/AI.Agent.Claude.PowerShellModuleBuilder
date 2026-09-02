@@ -1,0 +1,109 @@
+==============================================================================
+FALSIFYING Compare-TfGraph.ps1
+Generated 2026-09-02T08:10:00Z
+Oracle: C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/evals/tf/fixture2/expected-graph.json
+Fixture: fixture2
+==============================================================================
+
+A comparator is the one tool in a scoring harness that nothing else checks.
+If it under-reports, every score it produces is flattering and nothing says so.
+Each mutation below changes exactly ONE thing about a graph that is otherwise
+the oracle, and each is proved to have changed the document before its
+detection is trusted.
+
+------------------------------------------------------------------------------
+CONTROL FIRST - the oracle against itself must report ZERO differences.
+Every detection below is meaningless if a document differs from itself.
+
+IsMatch:          True
+DifferenceCount:  0
+compared:         99 nodes, 88 edges
+CONTROL GREEN
+
+------------------------------------------------------------------------------
+MUTATION: missing-node
+CHANGED:  drop TfSiteOps:modules/common#output.tag, the output both sides of the diamond read
+LANDED:   document changed, 26384 -> 26251 chars
+IsMatch:          False
+DifferenceCount:  1
+  MissingNode     TfSiteOps:modules/common#output.tag
+                  type=output scope=TfSiteOps
+DETECTED: missing-node [MissingNode]
+
+------------------------------------------------------------------------------
+MUTATION: extra-node
+CHANGED:  add a local nothing declares
+LANDED:   document changed, 26384 -> 26532 chars
+IsMatch:          False
+DifferenceCount:  1
+  ExtraNode       TfSiteEdge:.#local.invented_by_the_mutator
+                  type=local scope=TfSiteEdge
+DETECTED: extra-node [ExtraNode]
+
+------------------------------------------------------------------------------
+MUTATION: wrong-attribute
+CHANGED:  change the archive provider pin in TfSiteOps from 2.6.0 to 9.9.9, leaving the same provider pinned ~> 2.6 in TfSiteCore
+LANDED:   document changed, 26384 -> 26384 chars
+IsMatch:          False
+DifferenceCount:  1
+  WrongAttribute  TfSiteOps:.#provider.archive
+                  attributes.version : expected '2.6.0', got '9.9.9'
+DETECTED: wrong-attribute [WrongAttribute]
+
+------------------------------------------------------------------------------
+MUTATION: wrong-parent
+CHANGED:  reparent TfSiteOps:modules/common to one of its two CALLERS instead of its directory parent
+LANDED:   document changed, 26384 -> 26400 chars
+IsMatch:          False
+DifferenceCount:  1
+  WrongParent     TfSiteOps:modules/common
+                  expected parentId 'TfSiteOps:.', got 'TfSiteOps:modules/collector'
+DETECTED: wrong-parent [WrongParent]
+
+------------------------------------------------------------------------------
+MUTATION: missing-edge
+CHANGED:  drop the pop#var.probe_window -> probe#var.window passes-to edge, the hop where the value is renamed
+LANDED:   document changed, 26384 -> 26233 chars
+IsMatch:          False
+DifferenceCount:  1
+  MissingEdge     TfSiteEdge:modules/edge/modules/pop#var.probe_window -> TfSiteEdge:modules/edge/modules/pop/modules/probe#var.window
+                  kind=passes-to
+DETECTED: missing-edge [MissingEdge]
+
+------------------------------------------------------------------------------
+MUTATION: extra-edge
+CHANGED:  invent a reference out of the variable nothing references
+LANDED:   document changed, 26384 -> 26492 chars
+IsMatch:          False
+DifferenceCount:  1
+  ExtraEdge       TfSiteCore:.#var.archive_retention_weeks -> TfSiteCore:.#local.code_slug
+                  kind=references
+DETECTED: extra-edge [ExtraEdge]
+
+------------------------------------------------------------------------------
+MUTATION: wrong-edge-kind
+CHANGED:  change that same edge from passes-to to references
+LANDED:   document changed, 26384 -> 26385 chars
+IsMatch:          False
+DifferenceCount:  1
+  WrongEdgeKind   TfSiteEdge:modules/edge/modules/pop#var.probe_window -> TfSiteEdge:modules/edge/modules/pop/modules/probe#var.window
+                  expected kind 'passes-to', got 'references'
+DETECTED: wrong-edge-kind [WrongEdgeKind]
+
+------------------------------------------------------------------------------
+DISCRIMINATION - each mutation must be reported as its OWN mechanism.
+A comparator that reported everything as MissingNode would score 7/7 above and
+be useless, so the categories are checked to be distinct.
+
+  missing-node       -> MissingNode     (1 difference(s) total)
+  extra-node         -> ExtraNode       (1 difference(s) total)
+  wrong-attribute    -> WrongAttribute  (1 difference(s) total)
+  wrong-parent       -> WrongParent     (1 difference(s) total)
+  missing-edge       -> MissingEdge     (1 difference(s) total)
+  extra-edge         -> ExtraEdge       (1 difference(s) total)
+  wrong-edge-kind    -> WrongEdgeKind   (1 difference(s) total)
+distinct categories exercised: 7 of 7
+
+==============================================================================
+DETECTED: 7 / 7
+==============================================================================

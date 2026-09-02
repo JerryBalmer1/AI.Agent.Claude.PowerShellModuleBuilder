@@ -22,6 +22,9 @@
 #>
 [CmdletBinding()]
 param(
+    [ValidateSet('fixture1', 'fixture2')]
+    [string] $Fixture = 'fixture1',
+
     [string] $WorkRoot,
     [string] $ReportPath
 )
@@ -32,7 +35,7 @@ $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'TfAzdoClient.ps1')
 Assert-TfAzdoScope
 
-$fixtureRoot = Join-Path $PSScriptRoot 'fixture/repos'
+$fixtureRoot = Join-Path $PSScriptRoot ($Fixture -eq 'fixture2' ? 'fixture2/repos' : 'fixture/repos')
 $temporary = -not $WorkRoot
 if ($temporary) {
     $WorkRoot = Join-Path ([System.IO.Path]::GetTempPath()) ('tf-readback-' + [Guid]::NewGuid().ToString('N').Substring(0, 8))
@@ -64,10 +67,11 @@ $lines = [System.Collections.Generic.List[string]]::new()
 $lines.Add('=' * 78)
 $lines.Add('READ-BACK - the AzDO fixture against the harness copy')
 $lines.Add('Generated ' + [DateTime]::UtcNow.ToString('yyyy-MM-ddTHH:mm:ssZ'))
+$lines.Add('Fixture: ' + $Fixture)
 $lines.Add('=' * 78)
 $lines.Add('')
-$lines.Add('The harness copy under evals/tf/fixture/repos/ is the source of truth per')
-$lines.Add('decision 0011. Every file on both sides is hashed (SHA256 over content with')
+$lines.Add("The harness copy under evals/tf/$($Fixture -eq 'fixture2' ? 'fixture2' : 'fixture')/repos/ is the source of truth")
+$lines.Add("per decision $($Fixture -eq 'fixture2' ? '0014' : '0011'). Every file on both sides is hashed (SHA256 over content with")
 $lines.Add('line endings normalised to LF on BOTH sides, because every fixture repository')
 $lines.Add('carries .gitattributes with `* text=auto eol=lf`) and the sets are compared in')
 $lines.Add('both directions, so a file present on one side only is a named mismatch.')
@@ -77,7 +81,7 @@ $mismatches = [System.Collections.Generic.List[string]]::new()
 $totalFiles = 0
 
 try {
-    foreach ($name in (Get-TfFixtureRepoName)) {
+    foreach ($name in (Get-TfFixtureRepoName -Fixture $Fixture)) {
         $lines.Add('-' * 78)
         $lines.Add("REPOSITORY: $name")
 
@@ -133,7 +137,7 @@ finally {
 }
 
 $lines.Add('-' * 78)
-$lines.Add("$totalFiles file(s) compared across $((Get-TfFixtureRepoName).Count) repositories.")
+$lines.Add("$totalFiles file(s) compared across $((Get-TfFixtureRepoName -Fixture $Fixture).Count) repositories.")
 $lines.Add('')
 if ($mismatches.Count -eq 0) {
     $lines.Add('BYTE-IDENTICAL')
