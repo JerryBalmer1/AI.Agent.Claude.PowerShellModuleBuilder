@@ -5,8 +5,28 @@ for counters and pins. Update it in the same commit as the work
 that changes it.
 
 ## Passes
-Last landed: **0034**. Next: **tf-003**, which is now unblocked — see
-Runs and backlog 6. 0034 is a constructive pass: it took decision
+Last landed: **0035**. Next: **tf-003**, which now has nothing left
+blocking it — see Runs and backlog 6.
+
+0035 is a harness-only pass and released nothing; `git diff
+v1.1.0..main -- skills/ commands/ .claude-plugin/` is empty and its
+`verify.ps1` asserts that directly. It did the three things that stood
+between pass 0034 and a measurement: **repaired the comparator's
+blindness to duplicate node ids** (backlog 32, Stage 0 plus a
+two-directional falsification), **settled the pipeline-definition
+question in decision 0014** rather than in a plan (backlog 31), and
+**authored the tf-003 kit** — `evals/tf/BRIEF.md`, `evals/tf/seed/`,
+`Reset-TfTarget.ps1` — gated by a new `-RuleSet Kit` for the
+sanitization scanner whose strong control is the Azure DevOps kit at
+41 findings. Both fixture suites returned at their pinned counts and
+the fixture-1 sanitization control is still 94: detection was added
+and nothing was weakened.
+
+Its two own mistakes are items 33 and 34, both found by the work
+rather than by review, and both written up in
+[journal 0035](journal/0035-tf003-kit.md).
+
+0034 is a constructive pass: it took decision
 0014, built a **second Terraform fixture** (`TfSiteCore`,
 `TfSiteEdge`, `TfSiteOps`) written without case annotations, promoted
 pass 0033's hand-scan to `evals/tf/Test-FixtureSanitization.ps1` as a
@@ -54,9 +74,13 @@ measurement.
   to read before a blind build**, same as fixture 1's;
 - repositories `TfSiteCore`, `TfSiteEdge`, `TfSiteOps` in
   `ClaudeTestingTerraform`, at the Pins SHAs below;
-- comparator `Compare-TfGraph.ps1` unchanged; the mutator, the
-  falsification driver, the publisher and the read-back take
-  `-Fixture fixture2`;
+- comparator `Compare-TfGraph.ps1` **as repaired by pass 0035** — it
+  now refuses to call a graph a match while any node id is ambiguous;
+  the mutator, the falsification driver, the publisher and the
+  read-back take `-Fixture fixture2`;
+- the kit: `evals/tf/BRIEF.md` and `evals/tf/seed/`, at the Pins
+  blob and tree below. `Reset-TfTarget.ps1 -Destination
+  scratch/runs/tf-003` is how a run starts;
 - plugin surface pinned at **v1.1.0**, which is the first release
   carrying the three `tf-*` skills. Pinning v1.0.1 measures a plugin
   with no Terraform skills in it and is a different question.
@@ -64,12 +88,18 @@ measurement.
   clean at the run's preconditions.** It is the gate that says the
   instrument is still mute.
 
-Two known gaps tf-003 has to close or accept, both found by pass 0034:
-a fixture-2 counterpart to `Test-TfFixtureCase.ps1` does not exist
-(**backlog 29**); and `Compare-TfGraph.ps1` cannot see a duplicate
-node id, so `IsMatch` alone is not a sufficient verdict on a
-producer's graph — assert `ActualNodeCount -eq ExpectedNodeCount`
-beside it, or fix the comparator first (**backlog 32**).
+**One of the two gaps pass 0034 left is closed.** `Compare-TfGraph.ps1`
+now detects a duplicate node id as its own category, on either side,
+and `IsMatch` cannot be true while one exists — so the workaround that
+entry recommended (`ActualNodeCount -eq ExpectedNodeCount` beside
+`IsMatch`) is **not** needed and should not be written: it is a proxy
+that reads clean on a graph with one node duplicated and one missing.
+See *Resolved by pass 0035*.
+
+**The other is still open.** A fixture-2 counterpart to
+`Test-TfFixtureCase.ps1` does not exist (**backlog 29**), so tf-003
+can report a difference count against fixture 2 but not a case score.
+Close it or accept it, in writing, before the run reports a number.
 
 **007 — baseline off, iterated** (`runs/007-baseline-iterated`,
 target `run-007-baseline-iterated`, final `95ca28d`, first shot
@@ -145,7 +175,9 @@ Do not confuse it with the instrument pin below, which is about
 blind runs; the two are independent and neither constrains the
 other.
 
-Harness main: pass-0028-run-006 tip, fast-forwarded at pass close,
+Harness main: fast-forwarded to the `pass-0035-tf003-kit` tip at
+pass 0035's close, per decision 0009. Before that: pass-0028-run-006
+tip, fast-forwarded at pass close,
 then pass-0029-final-readme on top of it in the same session.
 Verified by ancestry and by `git ls-remote`, never by quoting a
 SHA this file cannot know about itself. It read
