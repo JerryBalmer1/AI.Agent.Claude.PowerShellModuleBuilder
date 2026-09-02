@@ -122,8 +122,9 @@ re-staging would have erased the corruption and proved nothing.
   via InvokeBuild and directly. In a clone, a dummy `marketplace.json` flips it
   to the checklist path at exit **0**, still pushing nothing; the working
   repository confirmed afterwards to have no `marketplace.json`.
-- **Markers**: **16** marker lines across README and the manual; the applying
-  script run four times with the file hash compared, stable after the first.
+- **Markers**: **19** marker lines across README and the manual — 8 blocks in
+  README, 11 in the chapters. The applying script was run four times with the
+  file hash compared, stable after the first.
   Zero markers under `skills/`, `commands/`, `evals/` or `method/`.
 - **`evals/tf/Compare-TfGraph.Tests.ps1` is red on `main`**: `Invoke-Pester`
   returns **14 passed, 1 failed**. Line 41 asserts 57 expected edges; the

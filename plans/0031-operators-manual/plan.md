@@ -239,7 +239,7 @@ carries its reason, not just its verb.
 ```
 $ (Select-String -Path ./README.md,./docs/creating-an-agent/*.md `
       -Pattern 'TEMPLATE:(remove|replace)' -AllMatches).Count
-16
+19
 ```
 
 The applying script was run four times and the file hash compared:
@@ -453,7 +453,7 @@ pwsh -NoProfile -Command "Set-Location scratch/audit-006; ./build.ps1"  # exit 0
 # --- markers -------------------------------------------------------------
 #   applying script run four times; file hash compared after each
 Select-String -Path ./README.md,./docs/creating-an-agent/*.md `
-    -Pattern 'TEMPLATE:(remove|replace)' -AllMatches       # 16
+    -Pattern TEMPLATE:(remove|replace) -AllMatches       # 19
 
 # --- the red test found while writing docs/testing -----------------------
 Invoke-Pester ./evals/tf/Compare-TfGraph.Tests.ps1        # 14 passed, 1 failed
