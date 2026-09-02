@@ -1,0 +1,30 @@
+==============================================================================
+PASS 0035 ACCEPTANCE - RED FIRST
+Generated 2026-09-02T17:22:18Z
+==============================================================================
+
+Run before any work. A suite that is green at the start is testing nothing
+this pass is about, and the pass stops.
+
+Total:  7
+Passed: 0
+Failed: 7
+
+  [FAIL] comparator rejects duplicate ids
+         Expected regular expression 'DUPLICATE-ID: detected on producer side' to match $null, but it did not match.
+  [FAIL] both fixture suites still green
+         Expected regular expression 'FIXTURE1: 15 passed, 0 failed' to match $null, but it did not match.
+  [FAIL] backlog 31 settled in writing
+         Expected regular expression 'pipeline definitions are outside the TF measurement surface' to match '# 0014 — A second Terraform fixture, written mute
+  [FAIL] the tf brief and seed exist
+         Expected $true, but got $false.
+  [FAIL] brief and seed are sanitized
+         Expected regular expression 'TF003 KIT SANITIZATION: clean' to match $null, but it did not match.
+  [FAIL] a reset exists for the tf measurement line
+         Expected $true, but got $false.
+  [FAIL] pins recorded for tf-003
+         Expected regular expression 'tf-003 brief blob:\s*[0-9a-f]{40}' to match '# LEDGER — maintained by the agent as the last task of every pass
+
+==============================================================================
+ACCEPTANCE RED: 7 of 7 failing
+==============================================================================
