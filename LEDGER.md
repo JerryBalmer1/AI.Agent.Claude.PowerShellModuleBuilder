@@ -5,11 +5,17 @@ for counters and pins. Update it in the same commit as the work
 that changes it.
 
 ## Passes
-Last landed: 0031. Next: 0030 — packaging (marketplace.json,
-cold-install proof). 0030 is still the next pass to run: 0031 was
-taken out of order, deliberately, because the manual and the local
-publish path do not depend on packaging and the guard in
-`tools/publish/Publish-Real.ps1` is what refuses until 0030 lands.
+Last landed: 0030. Next: the operator's decision — nothing is
+scheduled. 0030 ran after 0031 because 0031 was taken out of order
+deliberately (the manual and the local publish path do not depend on
+packaging), so the numbers do not read in landing order and that is
+expected. The guard in `tools/publish/Publish-Real.ps1` no longer
+refuses: 0030 landed the committed marketplace and it now prints the
+operator's checklist.
+
+The obvious next candidates, none of them chosen: the cold-install
+proof (backlog 2's remaining half), the second baseline run
+(backlog 17), and tf-003.
 
 ## Runs
 AzDO-module (runs/NNN-*): **ladder COMPLETE at 004–006** (passes
@@ -24,10 +30,26 @@ PSAzureDevOpsGraph: v0.2.0 (next touching plan: v0.3.0)
 PSGraphRender: v0.13.0
 PSGraphRenderToHtml: v0.1.0 (next: v0.2.0)
 PSTerraformGraph: v0.2.0
-psmodule manifest: 0.1.0 (re-versioned at packaging, 0030;
-v1.0.0 reserved for "passed the ladder")
+psmodule manifest: **1.0.0**, released and tagged `v1.0.0` by
+pass 0030 under decision 0013. The reservation is spent: v1.0.0 was
+"passed the ladder" and the ladder is closed. Next release version
+is decided by what changes — MAJOR breaks a consumer's existing
+use, MINOR adds skills/commands/conventions, PATCH corrects
+documents and defects (README "Versioning" states this in consumer
+words). The tag and `.claude-plugin/plugin.json` must always agree;
+`Publish-Local.ps1` checks it and `plans/0030-release/verify.ps1`
+re-derives it.
 
 ## Pins
+**Consumer pin (new at 0030).** Strangers install the plugin pinned
+to a release tag, not to a branch — `/plugin marketplace add
+JerryBalmer1/AI.Agent.Claude.PowerShellModuleBuilder@v1.0.0`. This
+is decision 0013 and it is why `main` can now move freely: work
+landing on `main` reaches no consumer until a release is tagged.
+Do not confuse it with the instrument pin below, which is about
+blind runs; the two are independent and neither constrains the
+other.
+
 Harness main: pass-0028-run-006 tip, fast-forwarded at pass close,
 then pass-0029-final-readme on top of it in the same session.
 Verified by ancestry and by `git ls-remote`, never by quoting a
@@ -233,6 +255,36 @@ wrongly later.
     did flag the mislabel itself. The rule the example teaches is right;
     one clause of its evidence is not. Correcting the protocol document
     is a deliberate act and was left to a pass that owns it.
+
+### Resolved by pass 0030
+
+- Item **2** (0030 packaging: marketplace.json, cold-install proof):
+  **half done.** `.claude-plugin/marketplace.json` is committed, the
+  manifest is 1.0.0, both are validated by `Publish-Local.ps1` and the
+  validator was falsified on all six rules it enforces. **The
+  cold-install proof is NOT done** and remains outstanding — nobody
+  has installed this on a machine that has never cloned the
+  repository. It is step 6 of the checklist `Publish-Real.ps1` now
+  prints, and it is named as unproven in README "Status, honestly",
+  SECURITY.md and CHANGELOG.md. Do not read this item as closed.
+- Item **20** (`Compare-TfGraph.Tests.ps1` red on `main`): **fixed.**
+  Line 41 now asserts 59, hard-coded with a comment citing decision
+  0012 rather than derived, because the fixture is frozen and a
+  derived count would follow a drifting fixture instead of catching
+  it. Suite 15/15. Proved not to be assertion-weakening by re-running
+  the seven mutations: `DETECTED: 7 / 7`
+  (`plans/0030-release/mutations.txt`).
+- Item **22** (`PLAN-PROTOCOL.md`'s false clause): **fixed.** The
+  worked example now says what plan 0012 §3 records — a near miss
+  whose full-tier artifacts existed because the prompt required them,
+  not because the light label did. The rule it teaches is unchanged.
+- Item **19** (doc maintenance as a standing obligation): **honoured
+  for this pass, and it stays open** — it is an obligation, not a
+  task. Chapter 09 and `method/METHOD.md` were updated in the same
+  pass as the behaviour they describe.
+
+Item **21** (three documents disagreeing about the falsification
+controls and corpus figures) was **not** touched and stays open.
 
 ### Numbering, reconciled by pass 0030
 
