@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
+  "name": "psmodule-builder",
+  "owner": {
+    "name": "Jerry Balmer",
+    "url": "https://github.com/JerryBalmer1"
+  },
+  "metadata": {
+    "description": "The PowerShell module builder plugin, released only at tags. Decision 0013.",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "psmodule",
+      "source": "./",
+      "description": "Builds, tests, and releases PowerShell modules to a fixed set of conventions enforced by a conformance suite.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Jerry Balmer"
+      },
+      "homepage": "https://github.com/JerryBalmer1/AI.Agent.Claude.PowerShellModuleBuilder",
+      "repository": "https://github.com/JerryBalmer1/AI.Agent.Claude.PowerShellModuleBuilder",
+      "license": "MIT",
+      "keywords": ["powershell", "module", "invokebuild", "pester", "azure-devops"],
+      "category": "development"
+    }
+  ]
+}

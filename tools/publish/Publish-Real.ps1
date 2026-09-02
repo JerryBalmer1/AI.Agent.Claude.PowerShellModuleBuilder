@@ -12,7 +12,15 @@
     not a -Force one. Adding one would make the rule a matter of restraint rather
     than of code, and this project's whole argument is that those are different.
 
-    The guard is red until pass 0030 lands the committed marketplace.json.
+    The guard was red until pass 0030 landed the committed marketplace.json.
+    Pass 0030 landed it, so the live path below is the one that now runs; the
+    refusal branch is kept because deleting the marketplace file must put this
+    script back to refusing, not to succeeding vacuously.
+
+    Note what is still absent after 0030: a push path. Decision 0013 permits the
+    AGENT to create the release tag on a green release pass, which it does with
+    git directly in that pass. It does not permit this script to push anything,
+    and this script still cannot.
 #>
 [CmdletBinding()]
 param(
@@ -75,13 +83,17 @@ Write-Host ''
 Write-Host '  3. Commit and push to the default branch, by fast-forward only.'
 Write-Host '       git push origin main'
 Write-Host ''
-Write-Host "  4. Tag the release and push the tag."
-Write-Host "       git tag -a v$($plugin.version) -m 'psmodule v$($plugin.version)'"
-Write-Host "       git push origin v$($plugin.version)"
+Write-Host "  4. The release tag is NOT yours to make - decision 0013 gives it to"
+Write-Host "     the release pass, which creates it only once its acceptance test"
+Write-Host "     is green, and never moves it afterwards. Confirm it is there:"
+Write-Host "       git ls-remote --tags origin 'v$($plugin.version)*'"
+Write-Host "     If it is missing, the release pass did not finish. Do not tag by"
+Write-Host "     hand to cover for that - re-run the pass."
 Write-Host ''
-Write-Host '  5. Anyone installing then pastes these inside Claude Code:'
+Write-Host '  5. Anyone installing then pastes these inside Claude Code. The add is'
+Write-Host '     PINNED TO THE TAG, so main can move without shipping to anyone:'
 $slug = ($plugin.repository -replace '^https://github\.com/', '' -replace '\.git$', '')
-Write-Host "       /plugin marketplace add $slug"
+Write-Host "       /plugin marketplace add $slug@v$($plugin.version)"
 Write-Host "       /plugin install $($plugin.name)@$($market.name)"
 Write-Host ''
 Write-Host '  6. Prove it cold: install on a machine that has never cloned this'

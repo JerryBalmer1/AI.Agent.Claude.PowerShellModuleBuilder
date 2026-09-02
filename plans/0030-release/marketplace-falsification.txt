@@ -1,0 +1,44 @@
+==============================================================================
+FALSIFYING the committed-marketplace validator (Publish-Local.ps1)
+Generated 2026-09-02T01:57:38Z
+==============================================================================
+
+Test-CommittedMarketplace is new in pass 0030. A check that has never been
+red is a claim, so each rule it enforces is broken in turn and the red is
+recorded. The file is restored from the committed copy after every probe,
+and the control at the end proves the restore worked.
+
+PROBE A  -- plugin entry version disagrees with plugin.json
+  exit   : 1
+  says   : - committed: committed entry 'psmodule' version '9.9.9' disagrees with plugin.json version '1.0.0'
+  RESULT : RED, as required
+
+PROBE B  -- source is not a relative ./ path
+  exit   : 1
+  says   : - committed: committed entry 'psmodule' source 'plugins/psmodule' is not a relative './' path | - committed: committed entry 'psmodule' source 'plugins/psmodule' does not exist at C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\plugins\psmodule
+  RESULT : RED, as required
+
+PROBE C  -- source resolves to a directory with no plugin.json
+  exit   : 1
+  says   : - committed: committed entry 'psmodule' source './docs' has no .claude-plugin/plugin.json
+  RESULT : RED, as required
+
+PROBE D  -- committed marketplace.json is missing
+  exit   : 1
+  says   : - committed: missing: C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\.claude-plugin\marketplace.json
+  RESULT : RED, as required
+
+PROBE E  -- committed marketplace.json is malformed JSON
+  exit   : 1
+  says   : - committed: does not parse as JSON: C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\.claude-plugin\marketplace.json -- Conversion from JSON failed with error: Unterminated string. Expected delimiter: ". Path 'plugins[0].category', line 25, position 24.
+  RESULT : RED, as required
+
+PROBE F  -- no plugin entry matches the manifest name
+  exit   : 1
+  says   : - committed: committed marketplace.json has 0 entries named 'psmodule'; expected exactly 1
+  RESULT : RED, as required
+
+CONTROL (restored): exit 0
+Validating the staged tree at C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\scratch\local-marketplace (no copy, no repair). Validation passed. 
+
+ALL PROBES: the validator fires on every rule it claims to enforce.
