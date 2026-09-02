@@ -20,17 +20,37 @@
                 moves it has either weakened an assertion or moved the frozen
                 fixture.
 
-      FIXTURE2  Invoke-TfOracleFalsification.ps1 -Fixture fixture2. One control
-                (the oracle against itself) plus seven mutations, each of which
-                must be detected AS ITS OWN MECHANISM. Fixture 2 has no Pester
-                suite; this falsification is what stands in for one, and
-                counting it as "8 checks" rather than "7/7" is what lets the
-                two lines be read side by side.
+      FIXTURE2  TWO LAYERS, and since pass 0037 both are inside the headline.
 
-    Mutation 8 is deliberately in NEITHER. It is two-directional and has its own
-    probe, Invoke-TfDuplicateIdFalsification.ps1, which this script runs last as
-    a third line - reported, never folded into either headline, because folding
-    it in would move the 15 and the 7/7 that are the tripwires.
+                Layer 1, the ORACLE layer: Invoke-TfOracleFalsification.ps1
+                -Fixture fixture2. One control (the oracle against itself) plus
+                seven mutations, each of which must be detected AS ITS OWN
+                MECHANISM. Fixture 2 has no Pester suite; this falsification is
+                what stands in for one, and counting it as "8 checks" rather
+                than "7/7" is what lets the two lines be read side by side.
+
+                Layer 2, the CASE layer, new at pass 0037:
+                fixture2/Invoke-TfFixture2CaseFalsification.ps1. The case scorer
+                was written at pass 0036 into a plan directory, where the next
+                run would not have found it; promoting it is backlog 36 and 29.
+                Ten checks - one oracle-vs-self control, seven mutations one per
+                case, the duplicate-id refusal, and the demonstration that the
+                corrected case 6 is stricter than the form it replaced.
+
+                THE COUNT WAS DELIBERATELY RE-PINNED 8 -> 18. A gained check
+                reads as a failure until the pin moves, which is the point of
+                pinning; moving it is an act with a reason, recorded here and in
+                the LEDGER, not a number quietly kept in step with whatever ran.
+                The two layers grade DIFFERENT INSTRUMENTS against the same
+                fixture - the comparator, and the case scorer - so the report
+                keeps their sub-lines separate even though the headline adds up.
+
+    Mutation 8 is deliberately outside BOTH headlines, at the comparator level.
+    It is two-directional and has its own probe,
+    Invoke-TfDuplicateIdFalsification.ps1, which this script runs last as a
+    third line - reported, never folded in, because folding it in would move the
+    15 that is fixture 1's tripwire. The case scorer's own duplicate-id REFUSAL
+    is a different check on a different instrument and is inside the case layer.
 
     A FAILURE IS NEVER A MISSING LINE. Every suite that cannot be run at all is
     reported with its failure count set to the number of checks it should have
@@ -56,7 +76,8 @@ $ErrorActionPreference = 'Stop'
 $suite1Path = Join-Path $PSScriptRoot 'Compare-TfGraph.Tests.ps1'
 $falsify = Join-Path $PSScriptRoot 'Invoke-TfOracleFalsification.ps1'
 $duplicate = Join-Path $PSScriptRoot 'Invoke-TfDuplicateIdFalsification.ps1'
-foreach ($path in $suite1Path, $falsify, $duplicate) {
+$caseFalsify = Join-Path $PSScriptRoot 'fixture2/Invoke-TfFixture2CaseFalsification.ps1'
+foreach ($path in $suite1Path, $falsify, $duplicate, $caseFalsify) {
     if (-not (Test-Path -LiteralPath $path)) { throw "Missing: '$path'." }
 }
 
@@ -64,7 +85,12 @@ foreach ($path in $suite1Path, $falsify, $duplicate) {
 # the same reason Compare-TfGraph.Tests.ps1 hard-codes 78 and 59: a number read
 # out of the thing it is checking agrees with it wherever it goes.
 $Fixture1Expected = 15
-$Fixture2Expected = 8   # one control + seven mutations
+# Re-pinned 8 -> 18 by pass 0037, deliberately and with the composition stated:
+#   ORACLE layer  1 control + 7 mutations                              =  8
+#   CASE   layer  1 control + 7 mutations + 1 refusal + 1 strictening  = 10
+$Fixture2Expected = 18
+$Fixture2OracleExpected = 8
+$Fixture2CaseExpected = 10
 
 function Invoke-Child {
     <#
@@ -88,10 +114,15 @@ $lines.Add('BOTH TERRAFORM FIXTURE SUITES')
 $lines.Add('Generated ' + [DateTime]::UtcNow.ToString('yyyy-MM-ddTHH:mm:ssZ'))
 $lines.Add($rule)
 $lines.Add('')
-$lines.Add('Run after the Stage 0 duplicate-id repair (LEDGER backlog 32). The repair ADDS')
-$lines.Add('a detection and weakens nothing, so both suites must come back exactly where')
-$lines.Add('they were - a repair that moved either number would have changed the')
-$lines.Add('instrument while claiming to fix it.')
+$lines.Add('FIXTURE1 is pinned at 15 and must come back exactly there: a suite that gained')
+$lines.Add('or lost a test is not the suite the pin is about, and the pin is what would')
+$lines.Add('notice an assertion weakened or a frozen fixture moved.')
+$lines.Add('')
+$lines.Add('FIXTURE2 was RE-PINNED 8 -> 18 at pass 0037, when the promoted case scorer and')
+$lines.Add('its falsification joined the fixture-2 suite as a second layer. The move is')
+$lines.Add('deliberate and additive - ten checks gained, none weakened, none removed - and')
+$lines.Add('is stated here rather than absorbed, because a pin that follows whatever ran is')
+$lines.Add('not a pin.')
 $lines.Add('')
 
 # ---------------------------------------------------------------------------
@@ -114,7 +145,7 @@ $lines.Add('')
 
 # ---------------------------------------------------------------------------
 $lines.Add($thin)
-$lines.Add('SUITE 2 - Invoke-TfOracleFalsification.ps1 -Fixture fixture2.')
+$lines.Add('SUITE 2, LAYER 1 (the ORACLE layer) - Invoke-TfOracleFalsification.ps1 -Fixture fixture2.')
 $lines.Add('One control plus seven mutations, each detected as its own mechanism.')
 $lines.Add('')
 $suite2 = Invoke-Child -Path $falsify -Arguments @('-Fixture', 'fixture2')
@@ -125,28 +156,75 @@ $lines.Add("  [$(($sevenOfSeven ? 'ok  ' : 'FAIL'))] seven mutations, each detec
 foreach ($line in ($suite2.Output -split "`r?`n" | Where-Object { $_ -match '^(DETECTED:|FAILED:|distinct categories)' })) {
     $lines.Add('  ' + $line.Trim())
 }
-$suite2Passed = 0
-if ($controlGreen) { $suite2Passed += 1 }
-if ($sevenOfSeven) { $suite2Passed += 7 }
-$suite2Failed = $Fixture2Expected - $suite2Passed
-if ($suite2.ExitCode -ne 0 -and $suite2Failed -eq 0) {
+$oraclePassed = 0
+if ($controlGreen) { $oraclePassed += 1 }
+if ($sevenOfSeven) { $oraclePassed += 7 }
+$oracleFailed = $Fixture2OracleExpected - $oraclePassed
+if ($suite2.ExitCode -ne 0 -and $oracleFailed -eq 0) {
     # A non-zero exit with both headlines present means something failed that
     # neither headline covers. Counted as a failure rather than argued away.
     $lines.Add("  [FAIL] the driver exited $($suite2.ExitCode) with both headlines present; read the report")
-    $suite2Failed = 1
-    $suite2Passed = $Fixture2Expected - 1
+    $oracleFailed = 1
+    $oraclePassed = $Fixture2OracleExpected - 1
 }
+$lines.Add('')
+
+# ---------------------------------------------------------------------------
+$lines.Add($thin)
+$lines.Add('SUITE 2, LAYER 2 (the CASE layer) - fixture2/Invoke-TfFixture2CaseFalsification.ps1.')
+$lines.Add('The case scorer promoted out of plans/0036-tf-003/ at pass 0037, and its own')
+$lines.Add('falsification. A DIFFERENT INSTRUMENT from the comparator, against the same')
+$lines.Add('fixture: it grades the seven named cases, not the difference count.')
+$lines.Add('')
+$suite2case = Invoke-Child -Path $caseFalsify
+$caseChecks = [ordered]@{
+    'control: the fixture-2 oracle scored against itself is 7 / 7' =
+    [bool]($suite2case.Output -match 'ORACLE VS SELF: 7 / 7')
+    'seven mutations, each defeating its OWN case and no other'    =
+    [bool]($suite2case.Output -match 'FALSIFIED: 7 / 7 cases each defeated by its own mutation')
+    'duplicate-id refused rather than scored'                      =
+    [bool]($suite2case.Output -match 'DUPLICATE-ID \(mutation 8\): refused, not scored')
+    'corrected case 6 is stricter than the form it replaced'       =
+    [bool]($suite2case.Output -match 'STRICTER THAN THE PLANS-ERA FORM: demonstrated')
+}
+# Weights, so the ten checks are ten and not four: the seven mutations are one
+# headline line but seven separate defeats, and the report says which.
+$caseWeights = @(1, 7, 1, 1)
+$casePassed = 0
+$index = 0
+foreach ($check in $caseChecks.GetEnumerator()) {
+    $lines.Add(('  [{0}] {1}' -f ($check.Value ? 'ok  ' : 'FAIL'), $check.Key))
+    if ($check.Value) { $casePassed += $caseWeights[$index] }
+    $index++
+}
+foreach ($line in ($suite2case.Output -split "`r?`n" | Where-Object { $_ -match '^(ORACLE VS SELF:|FALSIFIED:|DUPLICATE-ID|STRICTER THAN|\d+ CHECK\(S\) FAILED)' })) {
+    $lines.Add('  ' + $line.Trim())
+}
+$caseFailed = $Fixture2CaseExpected - $casePassed
+if ($suite2case.ExitCode -ne 0 -and $caseFailed -eq 0) {
+    $lines.Add("  [FAIL] the case driver exited $($suite2case.ExitCode) with every headline present; read the report")
+    $caseFailed = 1
+    $casePassed = $Fixture2CaseExpected - 1
+}
+$lines.Add('')
+$lines.Add($thin)
+$lines.Add(('FIXTURE2 layers: oracle {0}/{1}, case {2}/{3}   (pinned at {4} = {1} + {3})' -f
+        $oraclePassed, $Fixture2OracleExpected, $casePassed, $Fixture2CaseExpected, $Fixture2Expected))
+$suite2Passed = $oraclePassed + $casePassed
+$suite2Failed = $oracleFailed + $caseFailed
 $lines.Add('')
 $lines.Add("FIXTURE2: $suite2Passed passed, $suite2Failed failed")
 $lines.Add('')
 
 # ---------------------------------------------------------------------------
 $lines.Add($thin)
-$lines.Add('MUTATION 8 - reported, NOT folded into either headline above.')
+$lines.Add('MUTATION 8, AT THE COMPARATOR - reported, NOT folded into either headline above.')
 $lines.Add('')
 $lines.Add('duplicate-id is two-directional and belongs to neither suite. Folding it in')
-$lines.Add('would move the 15 and the 7/7 that are those suites tripwires, which is the')
-$lines.Add('one thing this report exists to notice.')
+$lines.Add('would move the 15 that is fixture 1 tripwire, which is the one thing this')
+$lines.Add('report exists to notice. Not to be confused with the case layer duplicate-id')
+$lines.Add('REFUSAL above: that is the same mutation put to a different instrument, and it')
+$lines.Add('is inside FIXTURE2 because the case scorer is what fixture 2 suite grades.')
 $lines.Add('')
 $mutation8 = Invoke-Child -Path $duplicate -Arguments @('-Fixture', 'fixture2')
 $bothDirections = ($mutation8.Output -match 'DUPLICATE-ID: detected on producer side') -and
@@ -161,7 +239,7 @@ $failed = $suite1.FailedCount + $suite2Failed + ($bothDirections ? 0 : 1) +
 
 $lines.Add($rule)
 if ($failed -eq 0) {
-    $lines.Add('BOTH SUITES GREEN, at the counts they were pinned at before the repair.')
+    $lines.Add("BOTH SUITES GREEN, at their pinned counts: FIXTURE1 $Fixture1Expected, FIXTURE2 $Fixture2Expected.")
 }
 else {
     $lines.Add("$failed CHECK(S) FAILED across the two suites and mutation 8.")

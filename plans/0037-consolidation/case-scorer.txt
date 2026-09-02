@@ -1,0 +1,67 @@
+==============================================================================
+FIXTURE-2 CASE SCORER - FALSIFICATION
+evals/tf/fixture2/Test-TfFixture2Case.ps1, promoted from plans/0036-tf-003/ by pass 0037
+Generated 2026-09-02T21:13:36Z
+==============================================================================
+
+A case scorer that has only ever been green is indistinguishable from one that
+cannot fail. Eight mutations: the seven originals, one per case, plus mutation 8
+from Mutate-TfGraph.ps1, whose required outcome is a REFUSAL rather than a
+failed case. The oracle on disk is never written to.
+
+------------------------------------------------------------------------------
+CONTROL - the oracle scored against itself. Grade the grader before the graded.
+
+  [ok  ] oracle vs self: 7 / 7
+         PASS   1 nested-module chain, four levels
+         PASS   2 cross-repository source, git:: with //subdirectory
+         PASS   3 cross-repository output reference
+         PASS   4 provider version pin
+         PASS   5 value chain, renamed on the last hop
+         PASS   6 unused variable, the absence case
+         PASS   7 unresolved module sources, two shapes
+
+Run for the first time at pass 0036 this came back 6 / 7, and the defect was in
+cases.md prose - the unscoped "only node with neither" clause, corrected at 0037.
+The fixture and the oracle were not touched then and are not touched now.
+
+------------------------------------------------------------------------------
+SEVEN MUTATIONS - each must redden ITS OWN case and no other.
+
+mutation                                             score    case(s) that went red
+---------------------------------------------------- -------- ----------------------------------------
+case 1: drop the sources edge modules/edge -> pop    6 / 7    1 nested-module chain, four levels
+case 2: drop the cross-repo //subdirectory source    6 / 7    2 cross-repository source, git:: with //subdirectory
+case 3: drop a cross-repo output reference           6 / 7    3 cross-repository output reference
+case 4: collapse the two archive provider pins       6 / 7    4 provider version pin
+case 5: drop the renamed last hop                    6 / 7    5 value chain, renamed on the last hop
+case 6: invent an edge for the unused variable       6 / 7    6 unused variable, the absence case
+case 7: claim the vendor git:: URL resolved          6 / 7    7 unresolved module sources, two shapes
+
+------------------------------------------------------------------------------
+MUTATION 8 - duplicate-id. Not a failed case: an UNSCOREABLE graph.
+
+Every node is keyed by id, so a duplicate overwrites its own entry and the graph
+scores clean - the blindness LEDGER backlog 32 found in Compare-TfGraph.ps1, in a
+second instrument. The required outcome is that scoring THROWS.
+
+  [ok  ] duplicate-id refused rather than scored
+         Cannot score '(object)': 1 duplicated node id(s) - TfSiteOps:modules/common#output.tag. A graph whose ids are not unique is not scoreable; every case here is keyed by id.
+
+------------------------------------------------------------------------------
+THE STRICTENING - the 0037 case 6 against the plans-era form it replaced.
+
+Mutation: isolate TfSiteOps:modules/common by dropping both sources edges into it.
+No named case asserts either edge, so this is a defect BOTH forms are entitled to
+miss - and one of them does.
+
+  [ok  ] promoted form (whole edgeless set pinned by id): 6 / 7   red: 6 unused variable, the absence case
+         plans-era form (value flow only), same graph: functional-tf (fixture 2): 7 / 7
+         The form it replaced calls this graph clean. That is the strictening,
+         and it is why the cases.md correction is not a weakening.
+
+==============================================================================
+STRICTER THAN THE PLANS-ERA FORM: demonstrated
+DUPLICATE-ID (mutation 8): refused, not scored
+ORACLE VS SELF: 7 / 7
+FALSIFIED: 7 / 7 cases each defeated by its own mutation

@@ -1,0 +1,89 @@
+==============================================================================
+BOTH TERRAFORM FIXTURE SUITES
+Generated 2026-09-02T21:13:38Z
+==============================================================================
+
+FIXTURE1 is pinned at 15 and must come back exactly there: a suite that gained
+or lost a test is not the suite the pin is about, and the pin is what would
+notice an assertion weakened or a frozen fixture moved.
+
+FIXTURE2 was RE-PINNED 8 -> 18 at pass 0037, when the promoted case scorer and
+its falsification joined the fixture-2 suite as a second layer. The move is
+deliberate and additive - ten checks gained, none weakened, none removed - and
+is stated here rather than absorbed, because a pin that follows whatever ran is
+not a pin.
+
+------------------------------------------------------------------------------
+SUITE 1 - Compare-TfGraph.Tests.ps1, the comparator Pester suite (fixture 1).
+
+  [ok  ] has both scripts
+  [ok  ] reports zero differences comparing the oracle with itself
+  [ok  ] states what it compared, not just that it matched
+  [ok  ] detects missing-node and categorises it as MissingNode
+  [ok  ] detects extra-node and categorises it as ExtraNode
+  [ok  ] detects wrong-attribute and categorises it as WrongAttribute
+  [ok  ] detects wrong-parent and categorises it as WrongParent
+  [ok  ] detects missing-edge and categorises it as MissingEdge
+  [ok  ] detects extra-edge and categorises it as ExtraEdge
+  [ok  ] detects wrong-edge-kind and categorises it as WrongEdgeKind
+  [ok  ] names the node id for a missing node
+  [ok  ] produces a human diff as well as an object
+  [ok  ] sorts stably, so two runs produce the same diff
+  [ok  ] reports a changed edge kind as WrongEdgeKind, not as one missing and one extra
+  [ok  ] reports a moved parent as WrongParent, not as a missing and an extra node
+
+total 15, pinned at 15
+
+FIXTURE1: 15 passed, 0 failed
+
+------------------------------------------------------------------------------
+SUITE 2, LAYER 1 (the ORACLE layer) - Invoke-TfOracleFalsification.ps1 -Fixture fixture2.
+One control plus seven mutations, each detected as its own mechanism.
+
+  [ok  ] control: the fixture-2 oracle against itself reports zero differences
+  [ok  ] seven mutations, each detected as its own mechanism
+  DETECTED: missing-node [MissingNode]
+  DETECTED: extra-node [ExtraNode]
+  DETECTED: wrong-attribute [WrongAttribute]
+  DETECTED: wrong-parent [WrongParent]
+  DETECTED: missing-edge [MissingEdge]
+  DETECTED: extra-edge [ExtraEdge]
+  DETECTED: wrong-edge-kind [WrongEdgeKind]
+  distinct categories exercised: 7 of 7
+  DETECTED: 7 / 7
+
+------------------------------------------------------------------------------
+SUITE 2, LAYER 2 (the CASE layer) - fixture2/Invoke-TfFixture2CaseFalsification.ps1.
+The case scorer promoted out of plans/0036-tf-003/ at pass 0037, and its own
+falsification. A DIFFERENT INSTRUMENT from the comparator, against the same
+fixture: it grades the seven named cases, not the difference count.
+
+  [ok  ] control: the fixture-2 oracle scored against itself is 7 / 7
+  [ok  ] seven mutations, each defeating its OWN case and no other
+  [ok  ] duplicate-id refused rather than scored
+  [ok  ] corrected case 6 is stricter than the form it replaced
+  STRICTER THAN THE PLANS-ERA FORM: demonstrated
+  DUPLICATE-ID (mutation 8): refused, not scored
+  ORACLE VS SELF: 7 / 7
+  FALSIFIED: 7 / 7 cases each defeated by its own mutation
+
+------------------------------------------------------------------------------
+FIXTURE2 layers: oracle 8/8, case 10/10   (pinned at 18 = 8 + 10)
+
+FIXTURE2: 18 passed, 0 failed
+
+------------------------------------------------------------------------------
+MUTATION 8, AT THE COMPARATOR - reported, NOT folded into either headline above.
+
+duplicate-id is two-directional and belongs to neither suite. Folding it in
+would move the 15 that is fixture 1 tripwire, which is the one thing this
+report exists to notice. Not to be confused with the case layer duplicate-id
+REFUSAL above: that is the same mutation put to a different instrument, and it
+is inside FIXTURE2 because the case scorer is what fixture 2 suite grades.
+
+  [ok  ] mutation 8 detected on both the producer side and the oracle side
+MUTATION8: exit 0
+
+==============================================================================
+BOTH SUITES GREEN, at their pinned counts: FIXTURE1 15, FIXTURE2 18.
+==============================================================================

@@ -243,8 +243,31 @@ that assumes a child variable has at most one source.
 ### 6. Unused variable — the absence case
 
 `TfSiteCore:.#var.archive_retention_weeks` is declared and referenced by
-nothing. It is a node with **no outgoing edge and no incoming edge** — the only
-node in the fixture with neither.
+nothing. It is a node with **no outgoing edge and no incoming edge**, and it is
+the only node **that carries a value** — the only `variable`, `local` or
+`output` — with neither.
+
+**That scope is a correction, made at pass 0037, and it is a correction to this
+document and to nothing else.** The clause used to read ~~the only node in the
+fixture with neither~~, unscoped — struck rather than deleted, because a
+corrected sentence whose old wording is gone stops explaining what was wrong
+with it. Read literally that is **false of the oracle**:
+ten nodes have neither an incoming nor an outgoing edge — this variable, the
+three `repository` nodes, and all six `provider` nodes — because containment is
+`parentId` and those nine take part in nothing else. So the oracle failed its own
+case 6, and it was **scoring the oracle against itself that found it**
+([pass 0036's control](../../../plans/0036-tf-003/cases-oracle-control.txt),
+LEDGER backlog 40), not a producer and not review.
+
+**The prose was wrong. The fixture and the oracle are not touched by this.**
+`expected-graph.json` is byte-identical to the file
+[decision 0014](../../../decisions/0014-second-unannotated-fixture.md) froze, and
+the nine nodes named above are read out of it: they are the evidence that the
+sentence was wrong, and a document that disagrees with a frozen oracle is the
+document that changes. `Test-TfFixture2Case.ps1` asserts the corrected
+discriminator by pinning the whole edgeless set of ten by id, which is
+**stricter** than the sentence it replaces and not looser — a correction that
+made the case easier to pass would be indistinguishable from giving up on it.
 
 Its `description` in the fixture reads *"How many weeks archived bundles are
 kept."* and says nothing else. Fixture 1's equivalent reads *"Declared and

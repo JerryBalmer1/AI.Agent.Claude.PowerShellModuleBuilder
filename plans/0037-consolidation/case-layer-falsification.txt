@@ -1,0 +1,48 @@
+==============================================================================
+FIXTURE-2 CASE LAYER - GATE FALSIFICATION
+Generated 2026-09-02T21:12:39Z
+==============================================================================
+
+A gate that has only ever been green is indistinguishable from one that cannot
+fail. The case layer was added to the fixture-2 suite by pass 0037 and re-pinned
+its count 8 -> 18, so before that 18 is trusted, each new check is broken on
+purpose and seen red. Every break is restored from a backup in a finally block,
+and the clean re-run at the end is what says the file came back.
+
+------------------------------------------------------------------------------
+BREAK 1. the duplicate-id refusal is disabled
+  why:    The refusal is the scorer half of LEDGER backlog 32. Without it a graph with a duplicated node id scores clean.
+  driver: exit 1, headline "DUPLICATE-ID (mutation 8): NOT REFUSED" PRESENT
+  suite:  FIXTURE1: 15 passed, 0 failed
+  suite:  FIXTURE2 layers: oracle 8/8, case 9/10   (pinned at 18 = 8 + 10)
+  suite:  FIXTURE2: 17 passed, 1 failed
+  suite:  exit 1
+  RESULT: RED as required - this check can fail.
+
+------------------------------------------------------------------------------
+BREAK 2. case 6 reverted to the plans-era value-flow-only form
+  why:    The 0037 correction claims to be STRICTER. Drop the whole-edgeless-set clause and the strictening check must notice.
+  driver: exit 1, headline "STRICTER THAN THE PLANS-ERA FORM: NOT DEMONSTRATED" PRESENT
+  suite:  FIXTURE1: 15 passed, 0 failed
+  suite:  FIXTURE2 layers: oracle 8/8, case 9/10   (pinned at 18 = 8 + 10)
+  suite:  FIXTURE2: 17 passed, 1 failed
+  suite:  exit 1
+  RESULT: RED as required - this check can fail.
+
+------------------------------------------------------------------------------
+RESTORED - the scorer is back to the committed bytes, and both re-run clean.
+
+  driver: STRICTER THAN THE PLANS-ERA FORM: demonstrated
+  driver: DUPLICATE-ID (mutation 8): refused, not scored
+  driver: ORACLE VS SELF: 7 / 7
+  driver: FALSIFIED: 7 / 7 cases each defeated by its own mutation
+  driver: exit 0
+  suite:  FIXTURE1: 15 passed, 0 failed
+  suite:  FIXTURE2 layers: oracle 8/8, case 10/10   (pinned at 18 = 8 + 10)
+  suite:  FIXTURE2: 18 passed, 0 failed
+  suite:  BOTH SUITES GREEN, at their pinned counts: FIXTURE1 15, FIXTURE2 18.
+  suite:  exit 0
+
+==============================================================================
+GATE FALSIFIED: 2 / 2 breaks turned the case layer red, and it came back green.
+==============================================================================
