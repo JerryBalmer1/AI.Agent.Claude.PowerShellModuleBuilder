@@ -38,7 +38,7 @@ written, and then to prove that the oracle can actually disagree.
 | Functional | Does it produce the right answer? | [`Compare-Graph.ps1`](../../evals/functional/Compare-Graph.ps1) | [Run 004](../../runs/004-plugin-on/README.md) scored 33 / 33 on shape and **1 / 12** here, first shot. |
 | Falsification | Can an assertion fail at all, and only for its own reason? | [`FALSIFICATION.md`](../../evals/conformance/baseline/FALSIFICATION.md) | The coverage assertion was inert from the day it was written and passed every green run for free. |
 | Ordered runner | Of fifty red lines, which one is the cause? | [`Invoke-OrderedTests.ps1`](../../skills/powershell-module-test/scripts/Invoke-OrderedTests.ps1) | One unclosed brace: one line naming the file and column, against eighteen lines naming three innocent files. |
-| Mutation testing | Can the comparator disagree with anything? | [`Invoke-TfOracleFalsification.ps1`](../../evals/tf/Invoke-TfOracleFalsification.ps1) | Seven mutations, seven distinct mechanisms, control at zero. |
+| Mutation testing | Can the comparator disagree with anything? | [`Invoke-TfOracleFalsification.ps1`](../../evals/tf/Invoke-TfOracleFalsification.ps1), [`Invoke-TfDuplicateIdFalsification.ps1`](../../evals/tf/Invoke-TfDuplicateIdFalsification.ps1) | Seven mutations, seven distinct mechanisms, control at zero — plus mutation 8, which is two-directional and has its own driver. |
 | Sanitization | Does the fixture tell a builder its own answers? | [`Test-FixtureSanitization.ps1`](../../evals/tf/Test-FixtureSanitization.ps1) | Clean on fixture 2 and **94 findings on fixture 1**, which is what makes the clean verdict mean something. |
 
 ---
@@ -353,6 +353,64 @@ Same length, different content. [Journal
 0023](../../journal/0023-tf-fixture.md) records why that matters: a landing
 check written as a length comparison would have passed this mutation while
 proving nothing.
+
+### Mutation 8, and the hazard that hid from all seven
+
+Those seven mutations were 7 / 7 for four passes, and the comparator was
+blind the whole time.
+
+Pass 0034's `verify.ps1` carried a probe that duplicated a node id in the
+fixture-2 oracle and expected the control — the oracle against itself — to go
+red. **It stayed green**, over a document that had just grown from 99 nodes to
+100. Both graphs were keyed into an ordered dictionary by id before anything
+was compared, and `$byId[$node.id] = $node` discards the earlier entry, so the
+duplicate deleted itself on *both* sides and the two sides agreed.
+
+> **A dictionary is a deduplicator. A comparator that keys by id must assert
+> uniqueness before it keys anything.**
+
+The evidence was on screen throughout: `expected: 99 node(s)` printed directly
+above `actual: 100 node(s)`, with a clean verdict underneath. That is the worst
+combination available, because a reader who trusts the verdict never reads the
+header. A producer emitting a node twice would have scored clean.
+
+Pass 0035 added **Stage 0** to the comparator — uniqueness asserted on both
+graphs before the first assignment into a hashtable — and `DuplicateId` as its
+own category, naming every duplicated id and which side carries it. Three
+details are the whole lesson:
+
+- **Its own category, not a nearby one.** A duplicate is not an `ExtraNode`
+  and not a `WrongAttribute` on the survivor. Neither copy is the extra one;
+  the id is ambiguous, so every comparison keyed on it is *meaningless* rather
+  than merely wrong. Reporting it as something else names a defect that is not
+  the defect, and a reader cannot act on it.
+- **The category was taken over the cheap proxy.** The obvious alternative was
+  asserting `ActualNodeCount -eq ExpectedNodeCount`. It is wrong in exactly the
+  case that matters: a graph with one node duplicated and one node missing has
+  the right total and two defects.
+- **Mutation 8 is two-directional, so it has its own driver.** The other seven
+  break the graph under test. A duplicated id is the same defect whichever side
+  carries it, and the side nobody thinks about is the *oracle* — which is
+  precisely the direction that made the control green.
+  [`mutation8.txt`](../../plans/0035-tf003-kit/mutation8.txt) records
+  `DUPLICATE-ID: detected on producer side` and `…on oracle side`, with both
+  clean oracles matching themselves before *and* after, so a repair that had
+  made every document differ from itself would fail rather than look like
+  success. `Invoke-TfOracleFalsification.ps1` now says in its own report that
+  it covers seven of eight, because a green there is no longer a falsified
+  comparator on its own.
+
+Both suites re-run at their pinned counts afterwards —
+[`suites.txt`](../../plans/0035-tf003-kit/suites.txt), `FIXTURE1: 15 passed,
+0 failed` and `FIXTURE2: 8 passed, 0 failed`. The pinning matters as much as
+the numbers: a suite that gained or lost a test is itself reported as a
+failure, because a repair that quietly moved a count would have changed the
+instrument while claiming to fix it.
+
+**What found it was a probe that did not fire.** The comparator's suite was
+15 / 15 and its mutations 7 / 7 before and after the defect was known. The
+finding came from writing something that was *supposed* to turn red, and then
+reading the result honestly instead of filing it as a broken probe.
 
 **What the Terraform runs actually showed.**
 [tf-001](../../runs/tf-001-first-build/README.md) took a producer from 94

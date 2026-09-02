@@ -258,6 +258,41 @@ check that iterates over a collection is vacuously true when the collection
 is empty. "Every exported command has help." "No node has a duplicate id."
 "All references resolve." Each one passes perfectly against nothing.
 
+### A dictionary is a deduplicator
+
+Pass 0034's own `verify.ps1` carried a probe that duplicated a node id in the
+Terraform oracle and expected the oracle-against-itself control to go red.
+**It stayed green** — over a document that had just grown from 99 nodes to
+100. `Compare-TfGraph.ps1` keyed both graphs into an ordered dictionary by id
+before comparing anything, and `$byId[$node.id] = $node` silently discards the
+earlier entry. The duplicate deleted itself on *both* sides, the two sides
+agreed, and the comparison was clean.
+
+The evidence was printed the whole time. The diff header said
+`expected: 99 node(s)` directly above `actual: 100 node(s)`, and the verdict
+underneath it said no differences — the worst available combination, because a
+reader who trusts a verdict does not read the header.
+
+> **A dictionary is a deduplicator. A comparator that keys by id must assert
+> uniqueness before it keys anything.**
+
+Two things about this belong in this chapter rather than in a bug list.
+
+- **The falsification found it, not the tests.** The comparator's own suite was
+  15 for 15 and its seven mutations were 7 for 7, before and after the defect
+  was known. What produced it was writing a probe that was *supposed* to turn
+  something red and then reading the result honestly when it did not. A probe
+  that does not fire is a finding; the temptation is to file it as a broken
+  probe. [LEDGER backlog 32](../../LEDGER.md)
+- **The repair had to be two-directional, so its probe is too.** Every other
+  mutation breaks the graph under test and asks whether the comparator
+  notices. A duplicated id is the same defect whichever side carries it, and
+  the side that has to be checked is the one nobody thinks about: the
+  *oracle*. Pass 0035's probe runs both — a duplicate in the produced graph
+  and a duplicate in the reference — with both clean references matching
+  themselves before and after, so a "repair" that had made every document
+  differ from itself would fail rather than look like success.
+
 ### The PreTag gate that selected no tests
 
 The third is the purest form, because every individual claim was true.
