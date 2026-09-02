@@ -457,6 +457,17 @@ and 88 edges. Fixture 1's falsification re-runs byte-identical against the
 copy committed at v1.0.0, which is what says the parameterization added a
 fixture rather than weakening a check.
 
+**One asymmetry between the two, and why it is not one.** Fixture 1 has four
+AzDO pipeline definitions and fixture 2 has none, which looks like an
+instrument difference and was carried as LEDGER backlog 31 until pass 0035
+settled it in decision 0014: *pipeline definitions are outside the TF
+measurement surface.* Both fixtures carry four pipeline YAML files as file
+content; **neither oracle holds a single pipeline node** — six node types
+each, all of them HCL — so the four definitions contribute nothing to what
+tf-001 or tf-002 measured. The TF oracles score HCL parsed from clones. A
+capability that reads definitions through the REST API is a different surface
+and gets its own fixture decision before it gets a run.
+
 ---
 
 ## 6. What each number in a run record means

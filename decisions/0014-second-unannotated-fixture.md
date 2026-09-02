@@ -187,3 +187,55 @@ Verified in the same check, and stated because a freeze that only checks its own
 subject is not a check on the constraint it was given: fixture 1's three
 repositories are still at their decision-0012 SHAs; the project holds four
 pipeline definitions and all four are fixture 1's; and the build list is empty.
+
+---
+
+## Amendment, pass 0035 — the pipeline-definition asymmetry, settled
+
+LEDGER backlog 31 recorded an asymmetry between the two instruments and asked
+that it be decided **before tf-003**: fixture 1 has four AzDO pipeline
+definitions, created by pass 0023 and never queued; fixture 2 has none. A
+producer that read pipelines from the **REST API** rather than from repository
+files would therefore see one fixture and not the other.
+
+This is that decision, and it settles the question by narrowing the surface
+rather than by creating four more objects.
+
+**Amendment (pass 0035): fixture 2 carries pipeline YAML as file content but
+no AzDO pipeline definitions; fixture 1's four definitions predate the oracle
+and contribute nothing to it —
+pipeline definitions are outside the TF measurement surface.
+The TF oracles score HCL configuration parsed from clones; any future
+capability that reads definitions via REST gets its own fixture decision
+first.**
+
+### Why this is a narrowing and not an excuse
+
+The claim is checkable and was checked rather than assumed. Both oracles hold
+six node types — `local`, `module`, `output`, `provider`, `repository`,
+`variable` — and **zero** nodes of any pipeline kind, in either fixture. Both
+fixtures carry four pipeline YAML files. Neither oracle's node set, edge set or
+case list refers to a definition, an AzDO build object, or anything reachable
+only through `build/definitions`.
+
+So the asymmetry backlog 31 named is real at the level of the AzDO project and
+**empty at the level of the measurement**. Fixture 1's four definitions are not
+part of what tf-001 or tf-002 scored; they are an artifact of the order pass
+0023 did things in. Creating four more in fixture 2 would have bought parity in
+a dimension no oracle reads, at the cost of editing a fixture that decision 0014
+froze — a new decision, three pushes, and a re-freeze, to make two instruments
+agree about something neither one measures.
+
+### What it forecloses, deliberately
+
+A capability that reads pipeline **definitions** through the REST API is a
+different measurement surface from the one either TF oracle describes, and it
+does not get to arrive by having the definitions already sitting there. It gets
+its own fixture decision first: which fixture, what the oracle says about a
+definition, and what the case list is. This clause exists so that the cheap path
+— "the objects exist, so let the run read them" — is closed before anyone is
+under time pressure to take it.
+
+**tf-003 reads HCL configuration from clones.** That was already true of the
+brief; it is now true of the decision, and backlog 31 is closed rather than
+carried.
