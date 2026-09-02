@@ -1,0 +1,12 @@
+ACCEPTANCE RED (pass 0034, before any work)
+Total: 10  Passed: 0  Failed: 10
+Failed  decision 0014 exists
+Failed  fixture-2 source committed
+Failed  fixture-2 oracle and cases exist
+Failed  sanitization scan of fixture 2 is clean
+Failed  oracle falsified
+Failed  read-back verified
+Failed  tf skill batch exists
+Failed  the two candidate skill lines landed
+Failed  manifest is 1.1.0 with a CHANGELOG entry
+Failed  v1.1.0 on the remote
