@@ -71,8 +71,8 @@ The general form of the rule lives in the pass protocol, written at pass 0010
 ([plan](../../plans/0010-plan-protocol/plan.md),
 [journal](../../journal/0010-plan-protocol.md)): a pass that changes
 executable behaviour requires an acceptance test that was **red before the
-work began**. Chapter 03 is about that rule and why it is the load-bearing
-one.
+work began**. [Chapter 03](./03-test-first-or-nothing.md) is about that rule
+and why it is the load-bearing one.
 
 ## 2. A conformance suite — and falsified, not merely written
 
@@ -159,9 +159,10 @@ Pass 0014 wrote it. `evals/functional/seed/` holds the starting files, and
 [Reset-Target.ps1](../../evals/functional/Reset-Target.ps1) materialises them
 into a run directory, initialises git and commits once. It refuses any
 destination outside `scratch/runs/`, and it compares resolved paths rather
-than the raw string, because "a prefix test on the raw text accepts
-`scratch/runs/../../../PSAzureDevOpsGraph`" — and the accident being
-prevented is a mistyped path, which does not read documentation.
+than raw strings. The journal's reason: "A prefix test on the raw text
+accepts `scratch/runs/../../../PSAzureDevOpsGraph`. The accident being
+prevented is a mistyped path, and a mistyped path does not read
+documentation."
 
 Starting a run is one command:
 
@@ -233,8 +234,10 @@ encodes the answers to the test you are about to sit is not a capability.
 
 **Why 6 must come first, and must then stop.** A ladder is N consecutive
 blind runs at *fixed inputs*: same seed, same brief, same pinned plugin
-commit, same pinned model version, each in a distinct session. Its whole
-value is that when two rungs differ, the difference is information about the
+commit, same pinned model version, each in a distinct session — the session
+rule has a chapter of its own,
+[04](./04-fresh-sessions-and-contamination.md). The ladder's whole value is
+that when two rungs differ, the difference is information about the
 instrument rather than noise. Change a skill halfway up and you no longer
 have a ladder; you have two single runs of two different things.
 
@@ -382,18 +385,20 @@ consequence and the other described a real defect.
 
 ## The minimum version
 
-Nine stages is what this repository did with one operator over thirty-odd
-passes. If your project is smaller, METHOD.md's *Known limits* says what to
-cut:
+Nine stages is what this repository did, with one operator, one pass at a
+time, across the sequence recorded in [journal/](../../journal/). If your
+project is smaller, METHOD.md's *Known limits* says what to cut:
 
 > On a small project, use the minimum: an oracle, falsification with
 > controls, and a journal. Skip the harness and the decisions log. Do not
 > skip the corpus: it is the cheapest part of the method when one already
-> exists, and it is what breaks the closed loop.
+> exists, and it is what breaks the closed loop — here it cost one pass and
+> invalidated five of ten assertions in the tag it tested.
 
 The stage nobody may skip is 2, and specifically the falsification half of
-it. Chapter 03 is that half: how to prove an assertion can fail, and the four
-times in this repository that a green light turned out to be nothing at all.
+it. [Chapter 03](./03-test-first-or-nothing.md) is that half: how to prove an
+assertion can fail, and the times in this repository when a green light
+turned out to be nothing at all.
 
 <!-- TEMPLATE:replace — the pass numbers in this chapter are this
      repository's. In a copy, keep the order and the dependencies, and

@@ -6,9 +6,12 @@ them apart by looking at the output, because both print green.
 
 This chapter is the whole of the defence against that: write the test first
 and watch it fail, then break the thing it guards and watch it fail again.
-Everything else in the method rests on it. This repository has found four
-assertions that were incapable of failing, and every one of them was
-contributing to a published number at the time.
+It is stage 2 of the build order in
+[chapter 02](./02-order-of-operations.md), and it is the stage nobody may
+skip. This repository keeps finding assertions that were incapable of
+failing — by pass 0011 the journal is already numbering them, calling the
+fixture's `node ids are unique` "the third this project has found" — and each
+of them was contributing to a published number at the time.
 
 Some vocabulary, defined once and used throughout. An **assertion** is one
 check with a name — "throws on coverage below target rather than only
@@ -255,8 +258,8 @@ is empty. "Every exported command has help." "No node has a duplicate id."
 
 The third is the purest form, because every individual claim was true.
 
-A repository declared a `PreTag` task — the gate that seals a release — and
-its default test task was configured to exclude `PreTag`-tagged tests. The
+A repository declared a `PreTag` task — the gate that seals a tag — and its
+default test task was configured to exclude `PreTag`-tagged tests. The
 conformance suite asserted both facts, and both were true. But **no test
 carried the tag**. The gate selected nothing, so it could only ever throw its
 own guard, and it had been that way since the version it was supposed to be
@@ -264,10 +267,11 @@ sealing was tagged. Nothing in the suite could catch it, because nothing
 asserted that a tagged test exists.
 [METHOD.md](../../method/METHOD.md), *The falsification harness*.
 
-It was found only because pass 0025 tried to *run* it.
-[journal 0025](../../journal/0025-findings-batch.md) files it under a heading
-worth stealing: "Three gates that had never been able to fail. None of these
-came from the fixture. All three came from running something nobody had run."
+It was found only because pass 0025 tried to *run* it. That journal entry
+collects it with two others under the heading "Three gates that had never
+been able to fail", and the sentence under the heading is the one to steal:
+"None of these came from the fixture. All three came from running something
+nobody had run." [journal 0025](../../journal/0025-findings-batch.md)
 
 ---
 
@@ -361,9 +365,9 @@ The rule this lands on is METHOD.md's, stated there in bold:
 METHOD.md turns all of the above into one thing you can actually do, for
 every gate you own:
 
-> For every gate, name the observation that would be different if the gate
-> were removed, and produce it. Declaration is evidence about the document.
-> Only a red is evidence about the gate.
+> The rule that follows: for every gate, name the observation that would be
+> different if the gate were removed, and produce it. Declaration is evidence
+> about the document. Only a red is evidence about the gate.
 
 Three practical readings of that:
 
@@ -377,9 +381,11 @@ Three practical readings of that:
   gate, an inert gate, a gate that selected zero tests, and a gate whose
   input was `$null`. Only a red discriminates.
 
-The next chapter, on fresh sessions and contamination, is about the other way
-a measurement quietly stops measuring: not an assertion that cannot fail, but
-a run that already knows the answer.
+[Chapter 04](./04-fresh-sessions-and-contamination.md), on fresh sessions and
+contamination, is about the other way a measurement quietly stops measuring:
+not an assertion that cannot fail, but a run that already knows the answer.
+[Chapter 05](./05-calling-bullshit-verification.md) is the habit that follows
+from both — how to check a claim, including one of your own.
 
 <!-- TEMPLATE:replace — the assertion names, probe counts and run numbers
      here are this repository's. Keep the polarity rules and the operational

@@ -402,9 +402,9 @@ after flip:
     plugin      : psmodule 0.1.0
 ```
 
-It flips to the operator's checklist and exits 0. The working repository was
-left alone — `Test-Path .claude-plugin/marketplace.json -> False` — and the
-clone was removed. The conclusion the file records: "GUARD IS FALSIFIABLE:
+It flips to the operator's checklist and exits 0. The working repository
+was left alone — `Test-Path .claude-plugin/marketplace.json -> False` — and
+the clone was removed. The conclusion the file records: "GUARD IS FALSIFIABLE:
 refuses (exit 1) without the file, prints the operator's checklist (exit 0)
 with it, and publishes nothing on either path."
 
@@ -454,10 +454,10 @@ decision than either trust or suspicion.
 
 - To understand *why* the repository is shaped this way before adopting any
   of it, [02 — order of operations](./02-order-of-operations.md).
+- For how a claim gets checked here rather than believed,
+  [05 — calling bullshit](./05-calling-bullshit-verification.md).
 - For the list of ways this project's own gates have failed, so you know
-  what to watch for in yours,
-  [07 — failure catalog](./07-failure-catalog.md).
-- For any term above that was new,
-  [08 — glossary](./08-glossary.md).
+  what to watch for in yours, chapter 07 — the failure catalog. For any
+  term above that was new, chapter 08 — the glossary.
 - To take the method and leave the domain,
   [10 — using this as a template](./10-using-as-a-template.md).

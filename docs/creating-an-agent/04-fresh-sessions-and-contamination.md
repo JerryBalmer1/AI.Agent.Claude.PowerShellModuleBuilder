@@ -10,6 +10,13 @@ and about the four or five channels that leak knowledge without looking
 like they leak anything. Most of them are boring. That is exactly why they
 work.
 
+If you have not read [00 — Start here](./00-start-here.md), start there;
+this chapter assumes you know what a run and a pass are. The chapter that
+follows this one on the same theme is
+[05 — Calling bullshit](./05-calling-bullshit-verification.md), which is
+about checking an agent's claims once the run is over. This one is about
+the state the run began in.
+
 ## The words you need first
 
 **Session.** One continuous conversation with the agent. Everything in it —
@@ -17,8 +24,8 @@ your messages, the agent's replies, the contents of every file it opened,
 the output of every command it ran — sits in one shared buffer.
 
 **Context window.** That buffer. The agent can read all of it, all the
-time. There is no partition inside it between "things I was told" and
-"things I happened to see while looking for something else."
+time. There is no partition inside it between *things I was told* and
+*things I happened to see while looking for something else*.
 
 **`/clear`.** The Claude Code command that empties the context window and
 starts a new session. It is the only thing that reliably makes an agent
@@ -244,11 +251,11 @@ asserted."
 **The trap run 006 records is worth the detour**, because it is the kind of
 thing you only meet by building the check. Run 006's acceptance test asserts
 that its record does not match either predecessor's identifier, and it
-matches against the *whole document*. So the obvious way to prove the point
-— writing "differs from run 004's `b0a48c69…` and run 005's `cc4d301c…`" —
-makes the assertion go red, because a document that quotes both strings is
-indistinguishable, to a whole-document regex, from a document that is one of
-those runs.
+matches against the *whole document*. So the obvious way to prove the
+point — writing "differs from run 004's `b0a48c69…` and run 005's
+`cc4d301c…`" — makes the assertion go red, because a document that quotes
+both strings is indistinguishable, to a whole-document regex, from a
+document that is one of those runs.
 
 [`runs/006-plugin-on/README.md`](../../runs/006-plugin-on/README.md) states
 it in the record itself:
@@ -493,3 +500,9 @@ Before a measured run, in the session that will do the measuring:
 
 Afterwards, when you write the commit: say what the commit is, not how it
 scored.
+
+The mechanics of the pass that wraps all of this — the plan file, the
+preconditions table, the deviations section — are
+[06 — The pass protocol](./06-the-pass-protocol.md). The red-first
+discipline that the acceptance tests in this chapter depend on is
+[03 — Test first, or nothing](./03-test-first-or-nothing.md).

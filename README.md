@@ -31,6 +31,12 @@ again, before anything public is involved.
 
 ---
 
+<!-- TEMPLATE:remove — every score below this line to the end of "The
+     recurring findings" is a measurement of THIS agent against THIS
+     fixture. A new project has taken no measurements, and a table of
+     scores with the numbers blanked out invites filling them in with
+     guesses. Delete the four sections; do not adapt them. -->
+
 ## With the plugin and without it
 
 One baseline with the plugin unread, three consecutive runs with it readable.
@@ -187,6 +193,10 @@ the instrument, not noise.
 
 ---
 
+<!-- TEMPLATE:replace — a reader of a templated copy still needs three
+     paste-able commands in exactly this position. The script paths, the
+     module name and the tag set are this project's; the shape is not. -->
+
 ## Running it
 
 Needs PowerShell 7.2+, Pester 6.x, PSScriptAnalyzer, InvokeBuild. Three commands
@@ -225,6 +235,11 @@ undecidable and stops, naming both, rather than grading the wrong module silentl
 
 ---
 
+<!-- TEMPLATE:replace — keep the section and the discipline. $env:AZDO_PAT,
+     the read-only claim and the Azure DevOps coordinates are DOMAIN in
+     method/METHOD.md's sense; the credential rule and the blind gate are
+     PORTABLE and should survive re-nouning. -->
+
 ## Guardrails
 
 **Credentials.** `$env:AZDO_PAT`, and nothing else, everywhere. Never a
@@ -256,6 +271,11 @@ forced — [0009](decisions/0009-agent-moves-both-mains.md) for the target,
 
 ---
 
+<!-- TEMPLATE:remove — this section argues from this project's four runs.
+     The argument is only as good as the measurements behind it, and a
+     templated repository has none yet. Write it again at the end, from
+     your own journal, the way pass 0029 wrote this one. -->
+
 ## Why not just prompt Claude to write a module?
 
 You can, and it will produce something that looks right. The four runs above are
@@ -282,6 +302,10 @@ or two iterations, at 23–34 minutes a run, reproducibly, three times.** And
 equally, where it does not help: four conventions, unchanged, run after run.
 
 ---
+
+<!-- TEMPLATE:replace — a plugin needs a table of what it contains and what
+     each part is for. These fourteen names, their prefixes and the two
+     findings noted against them are this project's. -->
 
 ## The skills
 
@@ -312,6 +336,11 @@ owns. Recorded for the operator to settle if a second cross-cutting skill appear
 | `task-tree-reporting` | Response formatting during multi-skill work. |
 
 ---
+
+<!-- TEMPLATE:replace — a new project also has more than one repository and
+     also needs one place saying which they are and which is governed from
+     where. Swap the rows, keep the table. Everything from here to the end
+     of the tf-001/tf-002 subsection is this project's content. -->
 
 ## The ecosystem
 
@@ -348,6 +377,9 @@ memory of tf-001 rather than its generality — are in
 
 ---
 
+<!-- TEMPLATE:replace — the directory contract is worth keeping almost
+     verbatim; only the evals/ rows describe a domain. -->
+
 ## Layout
 
 | Path | What |
@@ -364,6 +396,10 @@ memory of tf-001 rather than its generality — are in
 | `method/` | The method, including its known limits |
 
 ---
+
+<!-- TEMPLATE:remove — an honest status section is mandatory and its
+     CONTENT cannot be inherited. Delete these bullets and write your own
+     the first time you have something to be honest about. -->
 
 ## Status, honestly
 
