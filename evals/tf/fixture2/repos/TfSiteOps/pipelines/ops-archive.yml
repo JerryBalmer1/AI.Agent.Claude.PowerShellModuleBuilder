@@ -1,0 +1,17 @@
+trigger: none
+pr: none
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  terraformVersion: '1.4.6'
+
+steps:
+  - task: TerraformInstaller@1
+    displayName: Install Terraform $(terraformVersion)
+    inputs:
+      terraformVersion: $(terraformVersion)
+
+  - script: terraform fmt -check -recursive
+    displayName: terraform fmt

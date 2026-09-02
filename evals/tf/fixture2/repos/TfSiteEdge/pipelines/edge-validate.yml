@@ -1,0 +1,20 @@
+trigger: none
+pr: none
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  terraformVersion: '1.7.5'
+
+steps:
+  - task: TerraformInstaller@1
+    displayName: Install Terraform $(terraformVersion)
+    inputs:
+      terraformVersion: $(terraformVersion)
+
+  - script: terraform init -backend=false
+    displayName: terraform init
+
+  - script: terraform validate
+    displayName: terraform validate
