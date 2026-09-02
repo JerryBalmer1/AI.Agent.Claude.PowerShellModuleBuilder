@@ -9,6 +9,60 @@ Versions follow [semantic versioning](https://semver.org/) as described in
 [Versioning](README.md#versioning) — MAJOR when something you rely on breaks,
 MINOR when capability is added, PATCH for corrections.
 
+## 1.1.1 — 2026-09-02
+
+**Nothing you install changes.** `skills/` and `commands/` are byte-identical to
+1.1.0 — the same seventeen skills, the same two commands, the same conventions.
+`git diff v1.1.0..v1.1.1 -- skills/ commands/` is empty. Only the manifest
+version moves. Upgrade freely, or don't; the plugin behaves the same either way.
+
+What changed is what this repository **claims**, and the claim it can now make
+is one it could not make before.
+
+### The Terraform skills have now been measured
+
+1.1.0 shipped three `tf-*` skills and said, in this file, that they were
+**unmeasured** — that no run had scored a Terraform build with them readable.
+That was true then. A blind run has since been taken.
+
+[**tf-003**](runs/tf-003-generalisation/) built a Terraform producer from a
+four-file seed and a brief, with the plugin readable, against a **second
+Terraform fixture and an oracle the session did not open until its module was
+built and pushed**. It came back **6 / 7 on the named cases at first shot** with
+node and edge counts exact, and **7 / 7 after one of three permitted
+iterations**. All 184 first-shot differences were four naming conventions;
+**not one was structural**. Every mechanism the first Terraform run lost a wave
+of edges to was read correctly the first time.
+
+### And here is what that does not mean
+
+**It is not evidence that the plugin generalises**, and the reason is in the
+plugin rather than in the run. Those three `tf-*` skills were written *from* the
+earlier Terraform runs and cite their findings by mechanism and by count. So the
+fixture was unseen and **the catalogue of mistakes was not**.
+
+What the run supports is narrower and still useful to you: **a plugin carrying a
+domain's recorded findings stops those findings recurring on a fixture in that
+domain it has never seen.** If you are adopting this method for your own domain,
+that is the effect you can expect from writing your findings down — and it is
+not the same as "the agent got better at the domain".
+
+Settling the bigger question needs a third domain the skills say nothing about,
+or the same run again with the plugin unread. Neither has been done, and the
+[README](README.md#tf-003--the-blind-run-and-exactly-what-it-licenses) now says
+so in the same paragraph as the result rather than in a footnote.
+
+### One correction, in the harness rather than in the plugin
+
+The document describing the second fixture's cases contained a false sentence:
+it called the unused variable *"the only node in the fixture with neither"* an
+incoming nor an outgoing edge, when ten nodes satisfy that literally. It was
+caught by scoring the oracle **against itself** — the answer key failing its own
+paper — and the scoring instrument is now stricter than the one that produced
+the numbers above, which were re-derived under it and did not move. This affects
+no installed file. It is here because this project's changelogs say when a
+number was wrong, not only when a feature was added.
+
 ## 1.1.0 — 2026-09-02
 
 **Three new skills, for Terraform.** The plugin now carries seventeen skills

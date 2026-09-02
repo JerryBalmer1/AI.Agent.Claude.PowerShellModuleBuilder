@@ -35,15 +35,15 @@ useless exactly when you need it.
 
 Then paste these three inside **Claude Code**, not in a shell:
 
-    /plugin marketplace add JerryBalmer1/AI.Agent.Claude.PowerShellModuleBuilder@v1.1.0
+    /plugin marketplace add JerryBalmer1/AI.Agent.Claude.PowerShellModuleBuilder@v1.1.1
     /plugin install psmodule@psmodule-builder
     /psmodule:build
 
 The first adds this repository as a plugin marketplace, **pinned to the
-`v1.1.0` tag**. The pin is deliberate and is
+`v1.1.1` tag**. The pin is deliberate and is
 [decision 0013](decisions/0013-harness-release-tagging.md): `main` moves as work
 lands, and pinning means none of that reaches you until a release is tagged.
-Drop the `@v1.1.0` and you are tracking whatever `main` happens to be, which is
+Drop the `@v1.1.1` and you are tracking whatever `main` happens to be, which is
 not a release and is not what these measurements are about.
 
 The second installs the plugin from that marketplace. The third is the plugin

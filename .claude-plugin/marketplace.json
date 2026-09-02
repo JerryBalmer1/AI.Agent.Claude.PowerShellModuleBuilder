@@ -7,14 +7,14 @@
   },
   "metadata": {
     "description": "The PowerShell module builder plugin, released only at tags. Decision 0013.",
-    "version": "1.1.0"
+    "version": "1.1.1"
   },
   "plugins": [
     {
       "name": "psmodule",
       "source": "./",
       "description": "Builds, tests, and releases PowerShell modules to a fixed set of conventions enforced by a conformance suite.",
-      "version": "1.1.0",
+      "version": "1.1.1",
       "author": {
         "name": "Jerry Balmer"
       },
