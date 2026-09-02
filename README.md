@@ -505,7 +505,7 @@ Six repositories, governed from here.
 | [PSModuleGraph](https://github.com/JerryBalmer1/PSModuleGraph) | the first producer, and the repository the renderer was extracted from | the renderer's first consumer |
 | [PSTerraformGraph](https://github.com/JerryBalmer1/PSTerraformGraph) | the second producer, and the first that is not PowerShell | v0.2.0 |
 
-### The cross-language measurement — tf-001 and tf-002
+### The cross-language measurement — tf-001, tf-002 and tf-003
 
 The renderer's boundary is the claim the ecosystem exists to test: **a producer in
 any language can drive it without changing it.**
@@ -518,17 +518,82 @@ line of either changed to allow it.**
 [**tf-002**](runs/tf-002-convention-and-case3/) re-scored it at **0 differences
 and 7 / 7**, after the fixture's case 3 was repaired under
 [decision 0012](decisions/0012-fixture-case3-repair.md) and two producer defects
-were closed. The oracle was visible for both, so this is a statement about one
-fixture and **not** a generalisation claim. **tf-003, the blind measurement, is
-now blocked rather than merely unscheduled**: pass 0033 scanned the Terraform
-fixture and found it annotates its own cases by name and by number, and one of
-its READMEs points at the oracle document by path
-([the scan](plans/0033-honest-headline/tf-fixture-comments.txt)). The fixture is
-frozen, so nothing was changed and the operator has a decision to make first.
-That composes with two of tf-002's own findings — that the `tf-<role>` skills
-were deliberately *not* written, because writing them first would measure the
-plugin's memory of tf-001 rather than its generality — which are in
-[the LEDGER backlog](LEDGER.md).
+were closed. The oracle was visible for both, so both are statements about one
+fixture and **neither is a generalisation claim.**
+
+### tf-003 — the blind run, and exactly what it licenses
+
+[**tf-003**](runs/tf-003-generalisation/) is the first genuinely blind run in
+this project: plugin v1.1.0 readable, a **second domain**, and an **unseen
+fixture** — fixture 2 and its oracle, which the building session did not open
+until its module was built and pushed. The fixture is written mute on purpose
+([decision 0014](decisions/0014-second-unannotated-fixture.md)) and a standing
+scanner is what keeps it that way, because pass 0033 had found fixture 1
+annotating its own cases by name and by number.<sup>f</sup>
+
+It came back **6 / 7 functional-tf at first shot with node and edge counts exact
+— 99 / 99 and 88 / 88 — and 7 / 7 after one of its three permitted iterations**.
+The 184 first-shot differences were **four naming conventions and not one
+structural error**.<sup>g</sup> Every mechanism tf-001 lost a wave of edges to —
+nested module resolution, both `required_providers` spellings, expression text,
+a `git::` source with no `//` — was read correctly first time.
+
+**That is not yet a generalisation result, and the reason is in the plugin.**
+v1.1.0's three `tf-*` skills were written from tf-001 and tf-002 and cite their
+findings by mechanism and by count, so the fixture was unseen but **the
+mechanism catalogue was not** — which is the thing
+[tf-002](runs/tf-002-convention-and-case3/) warned about when it left those
+skills deliberately unwritten. What tf-003 establishes is that **a plugin
+carrying a domain's recorded findings stops those findings recurring on an
+unseen fixture in that domain.** That is worth having and it is a smaller claim.
+Domain-independent generalisation is not measured here and needs a **third
+domain or a plugin-off control** — one the `tf-*` skills say nothing about, or
+this one run again with the plugin unread.
+
+| | [tf-001](runs/tf-001-first-build/) | [tf-002](runs/tf-002-convention-and-case3/) | [tf-003](runs/tf-003-generalisation/) |
+|---|---|---|---|
+| fixture | fixture 1, **annotated** | fixture 1, **annotated** | fixture 2, **written mute** <sup>f</sup> |
+| oracle | visible throughout | visible, and **amended by the pass** | **unread until the module was pushed** |
+| plugin | v1.0.x, **no `tf-*` skills** | v1.0.x, **no `tf-*` skills** | v1.1.0, **three `tf-*` skills** <sup>h</sup> |
+| first-shot differences | 94 | — <sup>i</sup> | **184** <sup>g</sup> |
+| final differences | 31 | **0** | **0** |
+| functional-tf, first shot | not scored separately | not scored separately | **6 / 7** |
+| functional-tf, final | 6 / 7 | **7 / 7** | **7 / 7** |
+| iterations used | 3 of 3 | — <sup>i</sup> | **1 of 3** |
+| Phase 1 wall clock | ~55 min (whole run) | — <sup>i</sup> | **31 min** |
+
+**The raw counts across these three do not compare, and the table is not an
+invitation to try.** Different fixtures, different sizes, and a comparator that
+has since gained a category. 184 > 94 says nothing: tf-001's 94 were twelve node
+differences and forty-eight missing edges — *structure* — and tf-003's 184 were
+four names. Compare the mechanisms, which is what the run record does.
+
+- <sup>f</sup> **Fixture 2 says nothing about its own cases**, and that is
+  enforced rather than intended: `evals/tf/Test-FixtureSanitization.ps1` is a
+  standing gate that refuses a fixture file naming a case, the oracle, or a path
+  into the harness. Fixture 1 fails it and is expected to — it is frozen and its
+  bound is [disclosed, not repaired](plans/0033-honest-headline/tf-fixture-comments.txt).
+  "Blind" here still means the oracle, the prior run records and the plugin were
+  unread; for tf-003 it also means the fixture's case knowledge was, which is new.
+- <sup>g</sup> **All 184 were four naming conventions**, and the node and edge
+  counts were exact at first shot and never moved: `label`, `varType` versus
+  `type`, `resolved`, and the unresolved-target id.
+  ([findings](runs/tf-003-generalisation/findings.md) F-1 and F-2.)
+- <sup>h</sup> **The `tf-*` skills are the bound, stated as a number.**
+  `tf-hcl-parse` cites *"63 of that run's 94 differences"*; `producer-contract`
+  states an asymmetry with *"28 differences"* beside it. Those are tf-001's and
+  tf-002's counts, written into the plugin before tf-003 ran.
+- <sup>i</sup> **tf-002 has no first-shot column** because it was not that kind
+  of run: it re-scored an existing tagged build after a fixture repair and two
+  defect fixes, rather than building from the seed. Its record states the same.
+
+**Every functional-tf number above was re-derived at pass 0037**, from fresh
+clones of tf-003's own commits, built, with the graphs regenerated from
+read-only clones of the fixture repositories and scored by the promoted
+`evals/tf/fixture2/Test-TfFixture2Case.ps1` — whose case 6 is *stricter* than
+the scorer that first produced them. They did not move
+([the rescore](plans/0037-consolidation/tf-003-rescore.txt), and
+[the correction note](runs/tf-003-generalisation/README.md) appended to the run).
 
 ---
 
@@ -605,9 +670,23 @@ plugin's memory of tf-001 rather than its generality — which are in
   **unmeasured**, and is the next question worth a run.
 - **The Terraform fixture annotates its own cases too**, by name and by case
   number, and one of its READMEs points at the oracle document by path. It is
-  frozen, nothing was changed, and the blind tf-003 measurement is now gated on
-  an operator decision about what to do instead.
-  ([the scan](plans/0033-honest-headline/tf-fixture-comments.txt).)
+  frozen and nothing was changed; a **second** Terraform fixture was built
+  written mute instead, with a standing scanner enforcing it, and that is what
+  the blind run used.
+  ([the scan](plans/0033-honest-headline/tf-fixture-comments.txt),
+  [decision 0014](decisions/0014-second-unannotated-fixture.md).)
+- **The blind run happened, and it does not say what it would be nice for it to
+  say.** [tf-003](runs/tf-003-generalisation/) scored 6 / 7 at first shot and
+  7 / 7 after one iteration against an unseen fixture, with zero structural
+  errors. But v1.1.0's `tf-*` skills were written from tf-001 and tf-002 and
+  cite their findings by count, so what is measured is a plugin preventing the
+  recurrence of findings it already carries — **not** domain-independent
+  generalisation, which needs a third domain or a plugin-off control. One run,
+  one model, no control, and two fixtures built to the same case taxonomy.
+- **Nothing in this repository has yet compared plugin-on with plugin-off on the
+  Terraform line.** The whole with/without table is the Azure DevOps line. A
+  tf-004 plugin-off control is written up as an operator decision in the
+  [LEDGER](LEDGER.md) with its cost, and has not been taken.
 
 <!-- TEMPLATE:replace — every project that becomes installable needs a
      versioning promise and a support statement, and both must be honest about
