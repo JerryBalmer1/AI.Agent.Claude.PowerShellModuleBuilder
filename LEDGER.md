@@ -105,6 +105,20 @@ hardening lines added to `azdo-rest` and
 seventeen-skill count is now stated in `README.md`, `SECURITY.md` and
 chapters 07/08/09; the *fourteen* that remain in ablation sentences
 are deliberate and refer to the roster the ladder measured.
+
+**The tag names `df63806`, one commit behind the pass tip `3b66366`** —
+the third consecutive release to diverge this way, and for the same
+reason every time: `verify.ps1`'s falsification can only be
+transcribed after it has run, so the commit recording it necessarily
+lands after the commit being tagged. Here that later commit also
+carries **backlog 32**, a comparator defect the falsification found.
+The tag is a complete release; the later commit is plan artifacts, a
+LEDGER entry and a corrected probe description, and touches nothing
+under `skills/`, `commands/` or `.claude-plugin/`. A pushed tag is not
+moved. **This is now a pattern rather than an accident, and the
+cheapest fix is ordering** — run the verify falsification before the
+release commit, so the tag can name the tip.
+
 Previously **1.0.1**, released and tagged `v1.0.1` by
 pass 0033 under decision 0013. That tag names `1a947a4`, one commit
 behind the pass tip: `verify.ps1`'s falsification transcripts could
