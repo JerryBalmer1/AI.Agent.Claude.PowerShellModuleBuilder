@@ -1,0 +1,23 @@
+Pass 0037 acceptance test - GREEN.
+
+Pester 6.1.0   2026-09-02T21:43:32Z
+
+  [ok  ] fixture-2 case scorer promoted and falsified
+  [ok  ] cases.md false clause corrected
+  [ok  ] suite counts re-pinned and green
+  [ok  ] README carries the bounded generalisation claim
+  [ok  ] tf-003 record re-scored by the promoted scorer
+  [ok  ] manifest is 1.1.1 with a CHANGELOG entry
+  [ok  ] v1.1.1 on the remote
+  [ok  ] the operator decision is queued, not taken
+
+TOTAL: 8 passed, 0 failed, of 8
+
+----------------------------------------------------------------------------
+The tag assertion was the LAST thing made true, per decision 0013: green first,
+then the tag, and nothing outstanding at tagging time except the tag own
+assertion. At the moment v1.1.1 was cut this file read 7 passed, 1 failed.
+
+Reminder from accept-red.txt: the cases.md assertion was green at start too,
+because the clause it names is line-wrapped in the file. It witnesses nothing
+in either direction; case-scorer.txt is what witnesses that correction.

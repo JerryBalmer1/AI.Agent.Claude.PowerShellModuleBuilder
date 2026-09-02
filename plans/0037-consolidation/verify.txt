@@ -1,0 +1,27 @@
+==============================================================================
+PASS 0037 VERIFICATION
+plans/0037-consolidation/verify.ps1, five named checks from the pass prompt
+Generated 2026-09-02T21:43:18Z
+==============================================================================
+
+Nothing below is read out of the document it checks. Checks 1, 2 and 4 run from
+a FRESH CLONE of the harness at the committed tip, not from the working tree.
+Check 1 regenerates mutations 3 and 8 in verify.ps1 itself rather than asking
+the falsification driver whether its own report is right. Check 3 clones and
+builds the tf-003 target again and regenerates its graph from read-only clones
+of the three fixture repositories.
+
+The target's build transcript (96 passing tests, coverage 92.39%) is elided; the
+build exit code it produced is reported inside check 3.
+
+Pass 0037 verification
+  PASS  1 promoted scorer: control, mutation 3, mutation 8       oracle vs self 7 / 7; mutation 3 -> 6 / 7, red: 3 cross-repository output reference; mutation 8 refused
+  PASS  2 fixture-1 at 15/15, fixture-2 at its new pin 18/18     FIXTURE1: 15 passed, 0 failed; FIXTURE2: 18 passed, 0 failed; suite exit 0
+  PASS  3 tf-003 rescore reproduced from a fresh built clone     sha matches; fixtures at their pins; build exit 0; 7 / 7; 0 differences; graph byte-identical; note present True
+  PASS  4 every generalisation-section number resolves to an artifact 10 / 10 resolve
+  PASS  5 skills/ and commands/ byte-identical; only version fields moved skills+commands diff empty; .claude-plugin changed lines 6, all version fields: True
+VERIFY: 5 passed, 0 failed, 0 skipped, of 5   (clone 8dae37e)
+
+exit 0
+
+Falsified, one row per check: verify-falsification.txt
