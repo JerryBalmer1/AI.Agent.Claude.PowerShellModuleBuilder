@@ -1,0 +1,35 @@
+
+Containers            : {[-] C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\plans\0036-tf-003\accept.Tests.ps1}
+Result                : Failed
+FailedCount           : 10
+FailedBlocksCount     : 0
+FailedContainersCount : 0
+PassedCount           : 0
+SkippedCount          : 0
+InconclusiveCount     : 0
+NotRunCount           : 0
+TotalCount            : 10
+Duration              : 00:00:01.1133043
+Executed              : True
+ExecutedAt            : 9/2/2026 10:55:44 AM
+Version               : 6.1.0
+PSVersion             : 7.6.5
+PSBoundParameters     : {[Path, System.String[]], [PassThru, True], [Output, Detailed]}
+Plugins               : 
+PluginConfiguration   : 
+PluginData            : 
+Configuration         : PesterConfiguration
+DiscoveryDuration     : 00:00:00.2012243
+UserDuration          : 00:00:00.3106842
+FrameworkDuration     : 00:00:00.6013958
+Failed                : {[-] has a run README, [-] records the plugin pin, [-] records the model pin, [-] records a fifth distinct session identifier…}
+FailedBlocks          : {}
+FailedContainers      : {}
+Passed                : {}
+Skipped               : {}
+Inconclusive          : {}
+NotRun                : {}
+Tests                 : {[-] has a run README, [-] records the plugin pin, [-] records the model pin, [-] records a fifth distinct session identifier…}
+CodeCoverage          : 
+
+
