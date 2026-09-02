@@ -1,8 +1,8 @@
 #Requires -Version 7.2
 <#
 .SYNOPSIS
-    Prove Compare-TfGraph.ps1 can fail: run all seven mutations against the
-    oracle and report which mechanism each was detected as.
+    Prove Compare-TfGraph.ps1 can fail: run the seven one-directional mutations
+    against the oracle and report which mechanism each was detected as.
 
 .DESCRIPTION
     Pass 0023 did this from a script in scratch/ that was never committed, so
@@ -25,6 +25,18 @@
 
     Writes nothing but the report. The oracle on disk is never touched - the
     mutator returns an object and the fixture is frozen.
+
+    SEVEN, NOT EIGHT. Pass 0035 added mutation 8, `duplicate-id`, and did NOT
+    add it here. It is the one mutation that has to be applied to the ORACLE as
+    well as to the graph under test - a duplicated id is the same defect
+    whichever side carries it, and the direction this driver cannot express is
+    the one that made the control green over a broken document in the first
+    place. It has its own two-directional probe:
+
+        ./Invoke-TfDuplicateIdFalsification.ps1
+
+    Running only this file therefore does NOT falsify the whole comparator, and
+    the report says so where a reader will see it.
 
 .PARAMETER Fixture
     Which fixture to falsify. Selects the default oracle and the mutation
@@ -113,6 +125,11 @@ $lines.Add('If it under-reports, every score it produces is flattering and nothi
 $lines.Add('Each mutation below changes exactly ONE thing about a graph that is otherwise')
 $lines.Add('the oracle, and each is proved to have changed the document before its')
 $lines.Add('detection is trusted.')
+$lines.Add('')
+$lines.Add('SEVEN OF EIGHT. Mutation 8 (duplicate-id) is two-directional - it is applied')
+$lines.Add('to the ORACLE as well as to the graph under test - and is falsified by')
+$lines.Add('Invoke-TfDuplicateIdFalsification.ps1. This report does not cover it, and a')
+$lines.Add('green here is not a falsified comparator on its own.')
 $lines.Add('')
 
 # The oracle's own text length, so "the mutation changed the document" is a

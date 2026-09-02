@@ -1,0 +1,64 @@
+==============================================================================
+BOTH TERRAFORM FIXTURE SUITES
+Generated 2026-09-02T17:27:23Z
+==============================================================================
+
+Run after the Stage 0 duplicate-id repair (LEDGER backlog 32). The repair ADDS
+a detection and weakens nothing, so both suites must come back exactly where
+they were - a repair that moved either number would have changed the
+instrument while claiming to fix it.
+
+------------------------------------------------------------------------------
+SUITE 1 - Compare-TfGraph.Tests.ps1, the comparator Pester suite (fixture 1).
+
+  [ok  ] has both scripts
+  [ok  ] reports zero differences comparing the oracle with itself
+  [ok  ] states what it compared, not just that it matched
+  [ok  ] detects missing-node and categorises it as MissingNode
+  [ok  ] detects extra-node and categorises it as ExtraNode
+  [ok  ] detects wrong-attribute and categorises it as WrongAttribute
+  [ok  ] detects wrong-parent and categorises it as WrongParent
+  [ok  ] detects missing-edge and categorises it as MissingEdge
+  [ok  ] detects extra-edge and categorises it as ExtraEdge
+  [ok  ] detects wrong-edge-kind and categorises it as WrongEdgeKind
+  [ok  ] names the node id for a missing node
+  [ok  ] produces a human diff as well as an object
+  [ok  ] sorts stably, so two runs produce the same diff
+  [ok  ] reports a changed edge kind as WrongEdgeKind, not as one missing and one extra
+  [ok  ] reports a moved parent as WrongParent, not as a missing and an extra node
+
+total 15, pinned at 15
+
+FIXTURE1: 15 passed, 0 failed
+
+------------------------------------------------------------------------------
+SUITE 2 - Invoke-TfOracleFalsification.ps1 -Fixture fixture2.
+One control plus seven mutations, each detected as its own mechanism.
+
+  [ok  ] control: the fixture-2 oracle against itself reports zero differences
+  [ok  ] seven mutations, each detected as its own mechanism
+  DETECTED: missing-node [MissingNode]
+  DETECTED: extra-node [ExtraNode]
+  DETECTED: wrong-attribute [WrongAttribute]
+  DETECTED: wrong-parent [WrongParent]
+  DETECTED: missing-edge [MissingEdge]
+  DETECTED: extra-edge [ExtraEdge]
+  DETECTED: wrong-edge-kind [WrongEdgeKind]
+  distinct categories exercised: 7 of 7
+  DETECTED: 7 / 7
+
+FIXTURE2: 8 passed, 0 failed
+
+------------------------------------------------------------------------------
+MUTATION 8 - reported, NOT folded into either headline above.
+
+duplicate-id is two-directional and belongs to neither suite. Folding it in
+would move the 15 and the 7/7 that are those suites tripwires, which is the
+one thing this report exists to notice.
+
+  [ok  ] mutation 8 detected on both the producer side and the oracle side
+MUTATION8: exit 0
+
+==============================================================================
+BOTH SUITES GREEN, at the counts they were pinned at before the repair.
+==============================================================================

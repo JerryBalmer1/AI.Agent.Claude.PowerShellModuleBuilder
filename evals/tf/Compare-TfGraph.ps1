@@ -9,8 +9,9 @@
     field, then edges are matched by (from, to) and only then by kind. The
     staging is what lets one defect be reported as one difference.
 
-    Seven categories, one per mechanism a graph can be wrong in:
+    Eight categories, one per mechanism a graph can be wrong in:
 
+      DuplicateId      one graph uses the same node id twice; see Stage 0
       MissingNode      the oracle has a node the actual does not
       ExtraNode        the actual has a node the oracle does not
       WrongAttribute   both have the node; a field disagrees
@@ -18,6 +19,10 @@
       MissingEdge      the oracle has an edge the actual does not
       ExtraEdge        the actual has an edge the oracle does not
       WrongEdgeKind    both have an edge between the same pair; the kind differs
+
+    DuplicateId is checked BEFORE anything is keyed, and it is the one category
+    that can be raised against the ORACLE as well as against the graph under
+    test. See Stage 0 for why it has to come first.
 
     WrongParent and WrongEdgeKind exist so that a moved thing reads as ONE
     difference rather than as a removal plus an addition. Reported the second
@@ -113,10 +118,69 @@ else {
 
 $differences = [System.Collections.Generic.List[object]]::new()
 
-# ---- Stage 1: nodes, matched by id --------------------------------------
-
 $expectedNodes = @($expectedGraph.nodes)
 $actualNodes = @($actualGraph.nodes)
+
+# ---- Stage 0: id uniqueness, on BOTH graphs, before anything is keyed ----
+
+function Get-DuplicateId {
+    <#
+    .SYNOPSIS
+        Every node id that occurs more than once, with how many times.
+    .DESCRIPTION
+        Counted off the raw node list, deliberately, because the dictionary
+        that every later stage uses is exactly what cannot see this.
+    #>
+    param([Parameter(Mandatory)] [AllowEmptyCollection()] [object[]] $Node)
+
+    $count = [ordered]@{}
+    foreach ($item in $Node) {
+        $id = [string](Get-Field -Object $item -Name 'id')
+        if ($count.Contains($id)) { $count[$id] = $count[$id] + 1 }
+        else { $count[$id] = 1 }
+    }
+    foreach ($id in $count.Keys) {
+        if ($count[$id] -gt 1) { [pscustomobject]@{ Id = $id; Count = $count[$id] } }
+    }
+}
+
+# A DICTIONARY IS A DEDUPLICATOR. Every stage below keys nodes by id, and
+# `$byId[$node.id] = $node` silently discards the earlier entry - so a graph
+# carrying the same id twice is compared as though it had one fewer node, on
+# whichever side the duplicate is. The oracle against itself is the worst case:
+# both sides lose the same entry, the counts agree, and a document with a
+# repeated id reports ZERO differences against itself.
+#
+# That is not a hypothetical. Pass 0034's own verify.ps1 planted a duplicated
+# node id in the fixture-2 oracle expecting the control to go red; the control
+# stayed green over a document that now held 100 nodes, and LEDGER backlog 32
+# is the write-up. A producer that emitted a duplicate scored clean.
+#
+# So it is checked HERE, before the first assignment into a hashtable, and on
+# BOTH graphs. A duplicate is its own category rather than an ExtraNode or a
+# WrongAttribute on the survivor, because neither copy is the extra one: the id
+# is ambiguous, and every comparison keyed on it - fields, parents, edge
+# endpoints - is meaningless rather than merely wrong. Reporting it as anything
+# else would name a defect that is not the defect.
+$expectedDuplicates = @(Get-DuplicateId -Node $expectedNodes)
+$actualDuplicates = @(Get-DuplicateId -Node $actualNodes)
+
+foreach ($duplicate in $expectedDuplicates) {
+    $differences.Add([pscustomobject]@{
+            Category = 'DuplicateId'
+            Id       = $duplicate.Id
+            Detail   = "on the expected side: the id occurs $($duplicate.Count) times; every comparison keyed on it is ambiguous"
+        })
+}
+foreach ($duplicate in $actualDuplicates) {
+    $differences.Add([pscustomobject]@{
+            Category = 'DuplicateId'
+            Id       = $duplicate.Id
+            Detail   = "on the actual side: the id occurs $($duplicate.Count) times; every comparison keyed on it is ambiguous"
+        })
+}
+
+# ---- Stage 1: nodes, matched by id --------------------------------------
 
 $expectedById = [ordered]@{}
 foreach ($node in $expectedNodes) { $expectedById[[string]$node.id] = $node }
@@ -297,6 +361,13 @@ $sorted = @($differences | Sort-Object `
 $lines = [System.Collections.Generic.List[string]]::new()
 $lines.Add("expected: $(@($expectedNodes).Count) node(s), $(@($expectedGraph.edges).Count) edge(s)")
 $lines.Add("actual:   $(@($actualNodes).Count) node(s), $(@($actualGraph.edges).Count) edge(s)")
+if ($expectedDuplicates.Count -gt 0 -or $actualDuplicates.Count -gt 0) {
+    # Said at the top of the diff and not only in the list below, because every
+    # other line in this report was computed by keying on ids that are not
+    # unique, and a reader needs to know that before reading any of them.
+    $lines.Add("AMBIGUOUS: $($expectedDuplicates.Count) duplicated id(s) on the expected side, $($actualDuplicates.Count) on the actual side.")
+    $lines.Add('           Nothing else in this report was compared on a stable key.')
+}
 $lines.Add('')
 if ($sorted.Count -eq 0) {
     $lines.Add('No differences.')
@@ -321,14 +392,27 @@ if ($DiffPath) {
     Set-Content -LiteralPath $DiffPath -Value $diff -Encoding utf8NoBOM
 }
 
+# IsMatch names the duplicate check a SECOND time rather than resting on the
+# difference count alone. The two are equivalent today - a duplicate is added to
+# the list like anything else - and the redundancy is the point: a later change
+# that filtered, capped or categorised the list differently could make the count
+# zero again, and this line makes that change fail loudly instead of quietly
+# restoring the blindness backlog 32 was about. A graph whose ids are ambiguous
+# has not been compared, whatever else came back.
+$duplicateIdCount = $expectedDuplicates.Count + $actualDuplicates.Count
+
 [pscustomobject]@{
-    PSTypeName        = 'TfGraph.ComparisonResult'
-    IsMatch           = ($sorted.Count -eq 0)
-    DifferenceCount   = $sorted.Count
-    Differences       = $sorted
-    Diff              = $diff
-    ExpectedNodeCount = @($expectedNodes).Count
-    ExpectedEdgeCount = @($expectedGraph.edges).Count
-    ActualNodeCount   = @($actualNodes).Count
-    ActualEdgeCount   = @($actualGraph.edges).Count
+    PSTypeName               = 'TfGraph.ComparisonResult'
+    IsMatch                  = ($sorted.Count -eq 0 -and $duplicateIdCount -eq 0)
+    DifferenceCount          = $sorted.Count
+    Differences              = $sorted
+    Diff                     = $diff
+    ExpectedNodeCount        = @($expectedNodes).Count
+    ExpectedEdgeCount        = @($expectedGraph.edges).Count
+    ActualNodeCount          = @($actualNodes).Count
+    ActualEdgeCount          = @($actualGraph.edges).Count
+    # Which SIDE carries a duplicate, as numbers rather than as prose a caller
+    # would have to parse out of Detail.
+    ExpectedDuplicateIdCount = $expectedDuplicates.Count
+    ActualDuplicateIdCount   = $actualDuplicates.Count
 }

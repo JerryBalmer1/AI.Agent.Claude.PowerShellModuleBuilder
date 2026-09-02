@@ -4,10 +4,27 @@
     Break the oracle in exactly one way, so the comparator can be shown to fail.
 
 .DESCRIPTION
-    Seven mutations, one per mechanism Compare-TfGraph.ps1 claims to detect. A
+    Eight mutations, one per mechanism Compare-TfGraph.ps1 claims to detect. A
     comparator that has only ever agreed with itself is indistinguishable from
     one that cannot disagree, and these are what turn "it found the differences
     we showed it" into "it finds differences".
+
+    Mutation 8, `duplicate-id`, was added in pass 0035 and is the odd one out in
+    two ways worth knowing before using it.
+
+      * It is TWO-DIRECTIONAL. The other seven are only ever meaningful applied
+        to the graph under test; a duplicated id is the same defect whether the
+        producer emits it or the oracle carries it, and the comparator has to
+        raise it against either side. `Invoke-TfDuplicateIdFalsification.ps1`
+        is what exercises both directions.
+      * It was invisible until pass 0035. Both graphs were keyed into ordered
+        dictionaries by id, so a duplicate overwrote its own entry on both
+        sides and even the oracle-against-itself control stayed green over it.
+        LEDGER backlog 32 is the write-up; the repair is Stage 0 of the
+        comparator.
+
+    `Invoke-TfOracleFalsification.ps1` still runs SEVEN, on purpose - see its
+    own notes.
 
     Each mutation changes ONE thing about a graph that is otherwise the oracle,
     so a detection names the mechanism rather than a document. None of them
@@ -44,7 +61,7 @@ param(
 
     [Parameter(Mandatory)]
     [ValidateSet('missing-node', 'extra-node', 'wrong-attribute', 'wrong-parent',
-        'missing-edge', 'extra-edge', 'wrong-edge-kind')]
+        'missing-edge', 'extra-edge', 'wrong-edge-kind', 'duplicate-id')]
     [string] $Mutation,
 
     [ValidateSet('fixture1', 'fixture2')]
@@ -172,6 +189,25 @@ switch ($Mutation) {
                 $edge.kind = 'references'
             }
         }
+    }
+
+    'duplicate-id' {
+        # The same node twice, under the same id, byte-identical.
+        #
+        # Identical ON PURPOSE. A copy with a changed field would also be
+        # detectable as a WrongAttribute on whichever copy survived the
+        # dictionary, and a mutation detected by two mechanisms cannot tell you
+        # which one you have. This one changes exactly one thing - the id is no
+        # longer unique - so a detection names the mechanism and nothing else.
+        #
+        # The target is the same node `missing-node` drops, so the two
+        # mutations are the same node handled two ways: removed, and repeated.
+        $original = @($graph.graph.nodes | Where-Object { $_.id -eq $targetNode })
+        if ($original.Count -ne 1) {
+            throw "Cannot duplicate '$targetNode': found $($original.Count) node(s) with that id in '$Path'."
+        }
+        $copy = $original[0] | ConvertTo-Json -Depth 30 | ConvertFrom-Json
+        $graph.graph.nodes = @($graph.graph.nodes) + @($copy)
     }
 }
 
