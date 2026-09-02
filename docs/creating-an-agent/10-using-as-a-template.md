@@ -81,7 +81,22 @@ stripping the repository down.
 
 They are HTML comments, so they render as nothing and are invisible to a
 reader of the finished page. A marker sits on the line immediately before
-the passage it governs.
+the passage it governs, and in practice it carries a reason after an em
+dash, wrapped over as many lines as the reason needs:
+
+```
+<!-- TEMPLATE:remove — this section argues from this project's four runs.
+     The argument is only as good as the measurements behind it, and a
+     templated repository has none yet. Write it again at the end, from
+     your own journal, the way pass 0029 wrote this one. -->
+```
+
+That one is real, and it sits above README.md's "Why not just prompt Claude
+to write a module?" section.
+
+Write the reason. A bare marker tells the person stripping the repository
+*that* a decision was made and not *why*, and six months later they are the
+same person as you and will not remember either.
 
 **They are used in `README.md` and in these chapters, and nowhere else.**
 Not in `skills/`, not in `commands/`, not in `evals/`, not in `method/`. The
@@ -95,24 +110,40 @@ make. The markers stay in the documentation tier, which is not pinned.
 
 ### An example of each, from real content
 
-**`<!-- TEMPLATE:remove -->`.** README.md's "With the plugin and without it"
-table is the four-run comparison: `19 / 33` against `33 / 33` on shape,
-`0 / 12` against `1 / 12` on first-shot behaviour, with a row for wall-clock
-per run. Every cell of it is a measurement of *this* agent against *this*
-fixture. There is no version of that table a new project can keep. It is not
-a shape to fill in — a new project has taken no measurements, and a table of
-scores with the numbers blanked out is worse than no table, because it
-invites filling them in with guesses. Marked `remove`, and gone on the first
-day.
+**`remove`.** README.md's "With the plugin and without it" table is the
+four-run comparison: `19 / 33` against `33 / 33` on shape, `0 / 12` against
+`1 / 12` on first-shot behaviour, with a row for wall-clock per run. Every
+cell of it is a measurement of *this* agent against *this* fixture, and
+there is no version of it a new project can keep. The marker above it says
+so, and says why the blanked-out version is worse than none:
 
-**`<!-- TEMPLATE:replace -->`.** README.md's "The ecosystem" table is six
-rows: a repository, what it is, and what state it is in. The *content* is
-this project's — `PSAzureDevOpsGraph`, `PSGraphRender`, and the rest — and
-none of it survives. The *shape* is worth keeping exactly as it is: a new
-project also has more than one repository, also needs one place that says
-which they are and which is governed from where, and will otherwise
-rediscover that need three months in. Marked `replace`: swap the rows, keep
-the table.
+```
+<!-- TEMPLATE:remove — every score below this line to the end of "The
+     recurring findings" is a measurement of THIS agent against THIS
+     fixture. A new project has taken no measurements, and a table of
+     scores with the numbers blanked out invites filling them in with
+     guesses. Delete the four sections; do not adapt them. -->
+```
+
+Note the scope: it governs four sections, not one paragraph. A marker is
+allowed to name how far it reaches, and should when the answer is not "the
+next block".
+
+**`replace`.** README.md's "The ecosystem" table is six rows: a repository,
+what it is, and what state it is in. The *content* is this project's —
+`PSAzureDevOpsGraph`, `PSGraphRender`, and the rest — and none of it
+survives. The *shape* is worth keeping exactly as it is:
+
+```
+<!-- TEMPLATE:replace — a new project also has more than one repository and
+     also needs one place saying which they are and which is governed from
+     where. Swap the rows, keep the table. Everything from here to the end
+     of the tf-001/tf-002 subsection is this project's content. -->
+```
+
+Delete that table and a new project rediscovers the need for it three
+months in, with two repositories already disagreeing about which one is
+authoritative.
 
 The same distinction appears in this chapter's neighbour. In
 [09 — try before you trust](./09-try-before-you-trust.md), the clone command
@@ -142,12 +173,21 @@ Select-String -Path ./README.md, ./docs/creating-an-agent/*.md `
     -Pattern 'TEMPLATE:(remove|replace)'
 ```
 
-Both print one line per marker: the file, the line number, and the marker
-itself. That is the whole output — a marker is a line of its own, so there
-is no surrounding text on the line to read. Sort the list by file and work
-down it; the passage each marker governs starts on the line after.
+Both print one line per marker: the file, the line number, and the marker's
+**first line only** — the label plus the beginning of its reason. An
+excerpt of the real output:
 
-Two honest notes about that command.
+```
+README.md:34:<!-- TEMPLATE:remove — every score below this line to the end of "The
+README.md:340:<!-- TEMPLATE:replace — a new project also has more than one repository and
+```
+
+Because a reason wraps over several lines and only the first one carries
+the label, that is a list of *where to look*, not a list of reasons. Work
+down it in file order and open each hit; the reason finishes a line or two
+below, and the passage the marker governs starts after the closing `-->`.
+
+Four honest notes about that command.
 
 - **Scope it to the two places markers are allowed.** Running it across the
   whole repository is not more thorough, it is just slower, and a hit
@@ -158,6 +198,21 @@ Two honest notes about that command.
   state this repository has been in — and not that the repository has
   nothing project-specific in it. Point it at `README.md` and `docs/`
   separately if you want to know which of the two is bare.
+- **This chapter is in its own output, and is a false positive.** The
+  fenced examples above contain the literal marker text, so the grep
+  reports them alongside the real ones. They are illustrations, not
+  passages to strip. That is the same shape as a defect the conformance
+  suite hit repeatedly: a text search cannot tell a thing from a quotation
+  of the thing, which is why the suite's assertions read syntax rather than
+  text. Here the cost is a handful of lines of noise in one file, which is
+  cheaper than any fix worth making.
+- **The list is a floor, not a ceiling.** A marker exists only where
+  somebody thought to put one, so the grep enumerates the passages that
+  were *noticed*, not the passages that are project-specific. Run it first,
+  then read METHOD.md's labels, then read what is left with your own eyes.
+  This is the same failure the repository records elsewhere in a harder
+  form: an assertion about a declaration is not an assertion about the
+  thing declared.
 
 ---
 

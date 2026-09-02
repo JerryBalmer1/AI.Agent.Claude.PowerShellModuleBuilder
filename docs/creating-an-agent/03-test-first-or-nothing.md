@@ -54,8 +54,8 @@ there).
 
 ### What this looks like in practice
 
-Every full-tier pass here committed its acceptance test red before the work,
-and the number is in the plan:
+A full-tier pass here commits its acceptance test red before the work, and
+the failing count goes in the plan and the journal:
 
 - **Pass 0011**, the fixture design, ran its acceptance test against a disk
   with no fixture on it: 1 passed, 6 failed, 1 container failed. After the
@@ -72,8 +72,9 @@ and the number is in the plan:
   the clock started: 0 of 10 for [pass 0026](../../journal/0026-run-004.md),
   0 of 11 for [0027](../../journal/0027-run-005.md), 0 of 11 for
   [0028](../../journal/0028-run-006.md).
-- **Pass 0029**, which wrote the final README, was red at 21 of 24 and green
-  at 24 of 24. [journal](../../journal/0029-final-readme.md)
+- **Pass 0029**, which wrote the final README, had 21 of its 24 acceptance
+  assertions failing before the work and all 24 passing after.
+  [journal](../../journal/0029-final-readme.md)
 
 ### Where the rule deliberately does not apply
 
@@ -155,8 +156,9 @@ Both directions have bitten here, which is why both are written down:
   found it; one control did.
   [journal 0007](../../journal/0007-controls-tag-split-corpus.md)
 - **Inert.** In pass 0008, five build-file assertions passed the specified
-  comment-only control and were then defeated by the mirror probe — delete
-  the code, leave the comment. All five stayed green.
+  comment-only control, and were then run against the mirror probe — delete
+  the code, leave the comment. All five stayed green where they should have
+  gone red, which is the coverage assertion's original defect exactly.
   [journal 0008](../../journal/0008-repair-universal-tag.md). Pass 0009 then
   swept every positive assertion in the suite with the polarity-correct
   control: 22 probes, three more defects, in one sitting.
@@ -198,7 +200,7 @@ both have already produced false results here:
 
 ---
 
-## (c) What this buys: three assertions that could not fail
+## (c) What this buys: three greens that meant nothing
 
 None of these were sloppy code. All three read correctly, passed review, and
 had been green for a long time.
@@ -226,9 +228,11 @@ Pass 0006 replaced it with an assertion that parses the build file, finds the
 the coverage percentage, and requires a `throw` inside that `if`'s own body —
 then proved the replacement with three probes: delete the throw and keep the
 comment (red), delete both (red), and leave the gate intact while deleting
-two unrelated guards in the same task (green). That third probe is the
-control, and it is what separates "watching the gate" from "watching the
-task". [journal 0006](../../journal/0006-fix-the-inert-assertion.md)
+both Pester version guards (green). That third probe is the control, and it
+is what separates "watching the gate" from "watching the task" — one of the
+two guards it deletes sits inside the `Test` task but outside the gate, "which
+is what makes it a discriminator rather than a formality."
+[journal 0006](../../journal/0006-fix-the-inert-assertion.md)
 
 The general lesson is in METHOD.md: **prefer semantic inspection over text
 matching.** Text matching produces both failure modes — matching something
@@ -258,8 +262,9 @@ is empty. "Every exported command has help." "No node has a duplicate id."
 
 The third is the purest form, because every individual claim was true.
 
-A repository declared a `PreTag` task — the gate that seals a tag — and its
-default test task was configured to exclude `PreTag`-tagged tests. The
+One of the ecosystem's modules, PSTerraformGraph, declared a `PreTag` task —
+the gate that seals a tag — and its default test task was configured to
+exclude `PreTag`-tagged tests. The
 conformance suite asserted both facts, and both were true. But **no test
 carried the tag**. The gate selected nothing, so it could only ever throw its
 own guard, and it had been that way since the version it was supposed to be
@@ -287,7 +292,7 @@ target off the result, throws if the percentage is below the target, and
 prints a coverage line. It is exactly the shape you would write yourself:
 
 ```powershell
-$result   = Invoke-Pester -Configuration $cfg
+$result = Invoke-Pester -Configuration $cfg
 $coverage = $result.CodeCoverage
 $percent  = [math]::Round($coverage.CoveragePercent, 2)
 $target   = $coverage.CoveragePercentTarget
@@ -336,9 +341,10 @@ different claim from the one anybody wanted, which is that the gate can fire.
 
 Nothing announced the difference. The build was green. The suite was green.
 The coverage line printed a number. Three independent blind sessions built
-the module from the same template and all three shipped both dead gates —
-F-1 in the recurring-findings table of [README.md](../../README.md), ticked
-for runs 004, 005 and 006.
+the module from the same template, and all three shipped a coverage gate that
+could not fail — F-1 in the recurring-findings table of
+[README.md](../../README.md), ticked for runs 004, 005 and 006, and described
+there as "the most serious" of the ten.
 
 **What did find it, all three times: falsifying the gate on purpose.** Run
 004 raised the target to 99 against real coverage of 94.91% and watched the

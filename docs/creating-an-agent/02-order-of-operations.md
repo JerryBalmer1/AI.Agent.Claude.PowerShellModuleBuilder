@@ -188,8 +188,11 @@ Pass 0020 did this as run 003:
 [plan](../../plans/0020-baseline-off/plan.md),
 [journal](../../journal/0020-baseline-off.md),
 [run record](../../runs/003-baseline-off/README.md). Conformance 39 / 55
-cases-run at the time, functional 0 / 12, 29 differences, 32.6 minutes of
-blind build.
+cases-run as scored at the time, functional 0 / 12, 29 differences, 32.6
+minutes of blind build. The 19 / 33 that appears in the final README is that
+same branch re-scored later with the stable denominator, because run 003's
+own result file predates it — the same instrument against a different target,
+which is the only comparison that means anything.
 
 The protocol around the number matters as much as the number. The prompt said
 one attempt, no score-and-retry, and the pass explicitly rejected a one-line
@@ -214,10 +217,12 @@ score go up, and be unable to say which one moved it — or whether the model
 could always do that and the skill changed nothing. The baseline is the
 denominator of every claim this stage makes.
 
-Skills are written *from* measured failures. Pass 0025 took a run's recorded
-findings and landed them: two producer defects fixed, one fixture case
-repaired under a decision record, four findings folded into skills, and the
-roster taken from 13 skills to 14.
+Skills are written *from* measured failures. Pass 0025 took run tf-001's
+recorded findings and landed them: two producer defects fixed, one fixture
+case repaired under a decision record, four findings folded into skills, and
+the roster taken from 13 skills to 14. The same pass gave the conformance
+score a denominator that does not move with the target's shape — the
+`cases-defined` figure the ladder is reported on.
 [plan](../../plans/0025-findings-batch/plan.md),
 [journal](../../journal/0025-findings-batch.md).
 

@@ -57,7 +57,11 @@ PowerShell and do not involve Claude at all.
 
 ## Step 1 — clone it
 
-<!-- TEMPLATE:replace -->
+<!-- TEMPLATE:replace — a reader of a templated copy still needs a clone
+     command in exactly this position, and a paragraph saying where the URL
+     came from. The URL, the repository name and the manifest path are this
+     project's; the shape is not. Everything from here to the end of
+     "Step 4" names psmodule, its two commands and its fourteen skills. -->
 
 ```powershell
 git clone https://github.com/JerryBalmer1/AI.Agent.Claude.PowerShellModuleBuilder

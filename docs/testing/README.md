@@ -613,8 +613,8 @@ not quietly tidy them away.
 
 - **Eleven of twelve controls, or twelve of twelve.** The root README and
   [the suite README](../../evals/conformance/README.md) both say eleven of
-  twelve controls stay green, with row 7's failing and "recorded, not yet
-  fixed".
+  twelve controls stay green, and the suite README's account of row 7's
+  failing control ends "Recorded, not yet fixed."
   [`FALSIFICATION.md`](../../evals/conformance/baseline/FALSIFICATION.md)
   says "All twelve are now correct; row 7's was failing until Pass 0008
   converted that assertion to AST", and

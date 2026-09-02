@@ -306,8 +306,11 @@ failing."
 
 Reading a verify script's output sceptically is its own skill, and it has
 its own chapter:
-[05 — Calling bullshit](./05-calling-bullshit-verification.md). If you would
-rather run one yourself before believing any of this, see
+[05 — Calling bullshit](./05-calling-bullshit-verification.md). For where
+`verify.ps1` sits among the other layers of checking in this repository —
+acceptance tests, the conformance suite, the functional oracle — see
+[the test stack, layer by layer](../testing/README.md). If you would rather
+run one yourself before believing any of this, see
 [09 — Try before you trust](./09-try-before-you-trust.md).
 
 Capable of failing is checkable, and this project checks it. Every ladder
