@@ -401,6 +401,35 @@ plan artifacts frozen, so it is correct that this pass did not touch it. Noted
 because a reader who sees "the guard now passes" and then finds a green test
 asserting it refuses should know the two are not in conflict.
 
+**6. `verify.ps1` found a defect in this pass's own correction, and the tag was
+already pushed when it did.** Check 4 went red: the corrected worked example in
+`PLAN-PROTOCOL.md` quoted plan 0012's red-first line as
+`Passed=315 Failed=15 Total=330`, dropping the `RED-FIRST: ` prefix the source
+line actually carries — while the same check confirmed the full string *does*
+exist in plan 0012. A quotation not matching its source is precisely the defect
+this pass was fixing one clause over. **The document was corrected, not the
+check.**
+
+The fix landed at `1f3804f`, one commit after `v1.0.0` was tagged at `a5aa4a9`.
+**The tag was not moved**, because decision 0013 — written in this same pass —
+says a tag once pushed is immutable and that a release that was wrong is
+superseded by a new version, never by moving a tag. Applying that rule to itself
+on the day it was written is the point of writing it down.
+
+What this means for anyone installing `v1.0.0`, stated exactly:
+
+    git diff v1.0.0..HEAD -- skills/ commands/ .claude-plugin/    # empty
+    git diff --stat v1.0.0..HEAD                                  # PLAN-PROTOCOL.md only
+
+The **plugin surface a consumer installs is byte-identical** between the tag and
+`HEAD`. The sole difference is six lines of prose in `PLAN-PROTOCOL.md`, a
+harness document that is not part of the plugin and is not installed. No patch
+release is warranted for it; it rides along with whatever ships next.
+
+One consequence to know before re-running the verification: `verify.ps1` defaults
+to `HEAD`. Run it at `v1.0.0` explicitly and **check 4 will be red**, correctly,
+for the reason above.
+
 ## 6. Journal
 
 `journal/0030-release.md`.
@@ -413,6 +442,9 @@ against the **origin**, not the clone, because a tag that exists only locally is
 exactly the failure it is for. `-FailCheck` runs seven falsification probes,
 each of which asserts it actually changed its target before re-running the check
 it is probing.
+
+**Result at `1f3804f`: all checks agree, exit 0**; `-FailCheck`: **all seven
+probes fired**, exit 0. Transcript: `plans/0030-release/verify-run.txt`.
 
 The two checks worth noting: check 3 does not stop at the comparator suite being
 green — it re-runs the seven mutations and requires `DETECTED: 7 / 7`, so a

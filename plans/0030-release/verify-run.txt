@@ -1,0 +1,96 @@
+==============================================================================
+VERIFY TRANSCRIPT - pass 0030
+Generated 2026-09-02T02:16:23Z
+==============================================================================
+
+MODE 1: checks, at HEAD.
+
+Pass 0030 verification
+  repository : C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder
+  commit     : 1f3804f2b984f8bf82907668f71b9d0f1b17e025
+  clone      : C:\Users\jlbal\AppData\Local\Temp\verify-0030-42ec74dd
+  mode       : checks
+
+Check 1 - packaging manifests
+  [ok]   marketplace 'psmodule-builder' -> psmodule 1.0.0, source './', versions agree
+
+Check 2 - adoption boilerplate
+  [ok]   SECURITY.md, CHANGELOG.md and LICENSE present; MIT consistent with the manifest
+  [ok]   README carries Install, Versioning and Support sections
+
+Check 3 - TF comparator (backlog 20)
+  [ok]   comparator suite green: 15 passed, 0 failed
+  [ok]   all seven mutations still detected as distinct mechanisms (re-run, not quoted)
+  [ok]   oracle really holds 78 nodes and 59 edges (decision 0012)
+
+Check 4 - PLAN-PROTOCOL worked example (backlog 22)
+  [ok]   the false clause is gone
+  [ok]   the corrected example cites what plan 0012 section 3 records
+  [ok]   the rule the example illustrates is intact
+  [ok]   plan 0012 really contains the line the correction quotes
+
+Check 5 - prerequisite checker
+  [ok]   checker exits 0 on this machine (control)
+  [ok]   no #Requires line: the checker runs on the PowerShell it diagnoses
+  [ok]   falsification record present and conclusive
+  [ok]   all five prerequisites were probed and each went red
+
+Check 6 - Publish-Real invokes nothing that publishes
+  [ok]   Publish-Real.ps1 invokes only: ConvertFrom-Json, Get-Content, Join-Path, Resolve-Path, Test-Path, Write-Host
+  [ok]   chapter 09's Select-String check still returns no output
+
+Check 7 - release tag
+  [ok]   v1.0.0 is on the remote https://github.com/JerryBalmer1/AI.Agent.Claude.PowerShellModuleBuilder.git
+  [ok]   v1.0.0 is an annotated tag
+  [ok]   tag message carries '19 / 33'
+  [ok]   tag message carries '33 / 33'
+  [ok]   tag message carries '0 / 12'
+  [ok]   tag message carries '1 / 12'
+  [ok]   tag message states the baseline caveat, not only the win
+
+Check 8 - acceptance test against the clone
+
+Running tests from 1 files.
+[+] C:\Users\jlbal\AppData\Local\Temp\verify-0030-42ec74dd\evals\tf\Compare-TfGraph.Tests.ps1 1.73s (15 tests)
+Tests completed in 1.74s
+Tests Passed: 15, Failed: 0, Skipped: 0, Inconclusive: 0, NotRun: 0
+  [ok]   acceptance: 10 passed, 0 failed
+
+All checks agree.
+VERIFY EXIT: 0
+
+==============================================================================
+MODE 2: -FailCheck. Each probe breaks what a check depends on, IN THE CLONE
+ONLY, and asserts the check goes red. A check that stays green under its own
+probe is reported as DOES NOT FIRE.
+==============================================================================
+
+Pass 0030 verification
+  repository : C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder
+  commit     : 1f3804f2b984f8bf82907668f71b9d0f1b17e025
+  clone      : C:\Users\jlbal\AppData\Local\Temp\verify-0030-6d348930
+  mode       : FailCheck (falsification probes)
+
+Check 1 - packaging manifests
+  [fires] version disagreement between marketplace.json and plugin.json
+
+Check 2 - adoption boilerplate
+  [fires] SECURITY.md deleted is detected as missing
+
+Check 3 - TF comparator (backlog 20)
+  [fires] restoring the stale 57 turns the comparator suite red
+
+Check 4 - PLAN-PROTOCOL worked example (backlog 22)
+  [fires] the false clause is detectable when present
+
+Check 5 - prerequisite checker
+  [fires] clearing $env:AZDO_PAT gives exit 1 and exactly one named line
+
+Check 6 - Publish-Real invokes nothing that publishes
+  [fires] the AST check sees a real git push when one is present
+
+Check 7 - release tag
+  [fires] ls-remote returns nothing for a tag that does not exist
+
+All probes fired: every check can go red.
+FAILCHECK EXIT: 0

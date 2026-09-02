@@ -25,6 +25,7 @@ artifacts:
   - plans/0030-release/packaging.txt
   - plans/0030-release/marketplace-falsification.txt
   - plans/0030-release/hostile-first-run.txt
+  - plans/0030-release/verify-run.txt
 ---
 
 # Pass 0030 — Packaging, adoption boilerplate, and the first release tag
@@ -135,6 +136,9 @@ install. The absence is load-bearing and `verify.ps1` asserts it.
   `ConvertFrom-Json, Get-Content, Join-Path, Resolve-Path, Test-Path,
   Write-Host` (`plans/0030-release/packaging.txt`).
 - **Diff**: 23 files, **+1264 / −30**, before plan artifacts and tag.
+- **`verify.ps1` from a fresh clone**: **all checks agree, exit 0**;
+  `-FailCheck`: **all seven probes fired**, exit 0
+  (`plans/0030-release/verify-run.txt`).
 
 ## Learned
 
@@ -148,6 +152,19 @@ install. The absence is load-bearing and `verify.ps1` asserts it.
   Fixed by rewrapping the prose, not by loosening the pattern; `verify.ps1` now
   re-runs that command so it cannot rot again silently. **A documented check is
   part of the file's contract, and prose edits can break it.**
+- **The verify script caught this pass correcting a misquotation with a
+  misquotation.** `PLAN-PROTOCOL.md`'s repaired worked example quoted plan
+  0012's red-first line without the `RED-FIRST: ` prefix the source carries,
+  and check 4 went red while confirming the full string did exist in plan 0012.
+  Backlog 22 was a false quotation; the fix for it was very nearly a second
+  one. The document was corrected rather than the check.
+- **The fix arrived one commit after the tag, and the tag was not moved.**
+  Decision 0013 says a tag once pushed is immutable and a wrong release is
+  superseded, never relocated. It was written this pass and applied to itself
+  within the hour. The plugin surface is byte-identical between `v1.0.0` and
+  `HEAD` — `git diff v1.0.0..HEAD -- skills/ commands/ .claude-plugin/` is
+  empty — so nothing a consumer installs is affected, and no patch release is
+  warranted for six lines of harness prose.
 - **Masking `PSModulePath` wholesale would have let one probe take credit for
   another's line.** Removing both Pester and InvokeBuild at once produces two
   named errors from one break, and each probe would have looked like it fired.
