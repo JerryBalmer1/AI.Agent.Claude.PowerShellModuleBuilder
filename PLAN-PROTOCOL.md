@@ -68,12 +68,13 @@ mislabelled as light.
 
 It is a near miss and not a casualty, which is the more useful half of the
 example. The pass shipped the full-tier artifacts anyway — plan 0012 §3
-records the red-first run at `Passed=315 Failed=15 Total=330`, every failure
-in the amended assertion, and §7 is the verify script. They exist because
-the *prompt* happened to require them, not because the tier label asked for
-anything: the label said light, and light says in terms "no acceptance test
-and no verify script". Had the prompt been consistent with its own label, the
-one change that could break something would have shipped untested.
+records the red-first run at `RED-FIRST: Passed=315 Failed=15 Total=330`,
+every failure in the amended assertion, and §7 is the verify script. They
+exist because the *prompt* happened to require them, not because the tier
+label asked for anything: the label said light, and light says in terms
+"no acceptance test and no verify script". Had the prompt been consistent
+with its own label, the one change that could break something would have
+shipped untested.
 
 The pass flagged the disagreement in Deviations 7 rather than absorbing it,
 and named the rule this section now states — that "changes an assertion"
