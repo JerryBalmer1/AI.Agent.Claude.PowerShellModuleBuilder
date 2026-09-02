@@ -5,8 +5,11 @@ for counters and pins. Update it in the same commit as the work
 that changes it.
 
 ## Passes
-Last landed: 0029. Next: 0030 — packaging (marketplace.json,
-cold-install proof).
+Last landed: 0031. Next: 0030 — packaging (marketplace.json,
+cold-install proof). 0030 is still the next pass to run: 0031 was
+taken out of order, deliberately, because the manual and the local
+publish path do not depend on packaging and the guard in
+`tools/publish/Publish-Real.ps1` is what refuses until 0030 lands.
 
 ## Runs
 AzDO-module (runs/NNN-*): **ladder COMPLETE at 004–006** (passes
@@ -181,3 +184,61 @@ TF fixture SHAs (decision-0012 re-freeze):
     `powershell-module-build` and `powershell-module-scaffold` for the
     conformance delta, `azdo-graph-assembly` and
     `azdo-pipeline-yaml-refs` for the four behavioural fixes.
+
+### Added by pass 0031
+
+The prompt for this pass asked for the first of these as "17". Items 17
+and 18 were already taken by pass 0029, so it lands as 19 with its
+wording unchanged. Recorded rather than silently renumbered, because a
+backlog item whose number moved is a backlog item somebody will cite
+wrongly later.
+
+19. **Doc maintenance is a standing obligation** — any pass that changes
+    behavior the manual or docs/testing describes updates those chapters
+    in the same pass; 0029/0030 outcomes fold into chapters 02/05/07/09
+    and docs/testing when they land.
+20. **`evals/tf/Compare-TfGraph.Tests.ps1` is RED as committed on
+    `main`.** Line 41 asserts `$result.ExpectedEdgeCount | Should-Be 57`.
+    The oracle amended under decision 0012 holds **59** edges and the
+    comparator returns 59. Measured, not inferred: `Invoke-Pester` on
+    that file returns 14 passed, 1 failed, and the failing case is
+    `states what it compared, not just that it matched`. Found by pass
+    0031's testing document re-running the artifact instead of quoting
+    it. Not fixed there because `evals/` was read-only to that pass, and
+    a one-line edit inside a pinned path is what the pin exists to
+    prevent. Belongs to the next pass that opens `evals/tf/`.
+21. **Three documents disagree about the falsification controls and the
+    corpus figures, and the drift is one-directional.**
+    (a) `README.md` and `evals/conformance/README.md` say eleven of
+    twelve controls stay green with the twelfth documented as failing;
+    `evals/conformance/baseline/FALSIFICATION.md` says all twelve are now
+    correct because pass 0008 converted row 7's assertion to AST, and
+    `TASK.md`'s pass 0008 outcome says "control now green". One of the
+    two is stale and only reading the suite settles which.
+    (b) `evals/conformance/README.md`'s *Validation status* paragraph
+    says five of ten `Universal` assertions survive all nine targets;
+    its own *Known limits* section, `README.md` and `UNIVERSAL-CORPUS.md`
+    all say seven of nine, and UNIVERSAL-CORPUS.md records it explicitly
+    as "up from five of ten". `evals/HARNESS.md`'s Open questions still
+    carries the stale five-of-ten too. Two files carry both numbers in
+    different sections, which is how this survived four passes.
+22. **`PLAN-PROTOCOL.md`'s own worked example contains a false clause.**
+    Its tier section says pass 0012 "shipped without the red-first test
+    the tier requires". `plans/0012-case-split-and-corrections/plan.md`
+    §3 is headed *Acceptance test — red first* and records
+    `RED-FIRST: Passed=315 Failed=15 Total=330`; the pass's prompt
+    required both a red-first test and a `verify.ps1` regardless of the
+    light label, and both are present. Everything else in the example is
+    correct — the pass did amend an assertion in `Fixture.Tests.ps1` and
+    did flag the mislabel itself. The rule the example teaches is right;
+    one clause of its evidence is not. Correcting the protocol document
+    is a deliberate act and was left to a pass that owns it.
+
+**Precondition note for any pass written against the four-path pin.**
+Pass 0031's prompt asserted that
+`git diff f25d05d..HEAD -- skills/ commands/ .claude-plugin/ evals/` is
+empty at start. It was not, and has not been since pass 0029 — see the
+Pins section above, which already prescribes the three-path form. The
+second consecutive prompt to carry the stale form. Pass 0031 changed
+nothing under any of the four paths; its `verify.ps1` asserts that
+directly rather than asserting the pin the prompt named.

@@ -173,8 +173,9 @@ it.
 **A test that passed vacuously on a hashtable.** *Happened:* the first
 `hasValidation` assertion reached for `PSObject.Properties.Name` on a
 hashtable — which lists `Count` and `Keys` and never the keys themselves —
-and went green against a producer that was still writing the field. *Caught
-by:* the same pass that went looking for gates nobody had ever run. *Rule:*
+and went green against a producer that was still writing the field.
+*Caught by:* the same pass that went looking for gates nobody had ever
+run. *Rule:*
 prefer semantic inspection over shape or text matching, and treat a green
 that nothing has ever broken as unverified.
 ([journal 0025](../../journal/0025-findings-batch.md))
@@ -214,8 +215,9 @@ so the suite graded that and reported 81.82% with nothing in the output to
 say so. Third, a lone surviving candidate in the control sweep. Fourth,
 after a repair: deleting the reference's own manifest produced a confident
 score against a vendored `PSCorpus` module instead of an error, because the
-repair had fixed the first two selection rules and left the third. *Caught
-by:* each time, removing the thing the assertion was about — never by a
+repair had fixed the first two selection rules and left the third.
+*Caught by:* each time, removing the thing the assertion was about —
+never by a
 normal run, because every corpus target resolved on the earlier rules.
 *Rule:* **ambiguous input fails loudly.** Resolution rules end in a stop,
 never in a guess, and the operator gets an explicit way to answer the
@@ -728,8 +730,9 @@ stores LF and a Windows render writes CRLF; the same trap anticipated and
 fenced off in the Terraform fixture, where every repository carries
 `* text=auto eol=lf` and read-backs normalise on both sides; and an exported
 artifact that does not byte-compare across a git round-trip, where raw
-comparison says "different" and parsed comparison says identical. *Caught
-by:* measuring the difference rather than assuming it. *Rule:* normalise
+comparison says "different" and parsed comparison says identical.
+*Caught by:* measuring the difference rather than assuming it. *Rule:*
+normalise
 line endings on both sides of a read-back, and write down why — otherwise
 the next reader spends the same hour.
 ([journal 0012](../../journal/0012-case-split-and-corrections.md),
@@ -1060,8 +1063,9 @@ the ref name and so returns only the tag object, never the dereferenced
 form, so neither alternative in the supplied regex can appear; and
 `Should -Match` tests each element of a piped array, so even with both lines
 returned the tag-object line fails it. The same prompt's spot-check 1 said
-"the nine roster paths" while its acceptance test checked thirteen. *Caught
-by:* the test going red against a tag that was correct — and by the pass
+"the nine roster paths" while its acceptance test checked thirteen.
+*Caught by:* the test going red against a tag that was correct — and by
+the pass
 counting the prompt's own lists against each other. *Rule:* the test was
 corrected minimally with the regex untouched, and the correction itself
 falsified against a non-existent tag. Thirteen were built, and the verify
@@ -1076,8 +1080,9 @@ session without connecting it until the test went red.
 **A prompt that scoped the pass out of the documents it falsified.**
 *Happened:* the same pass made two committed documents false — a README
 sentence and a slash-command's guidance about an option that had stopped
-being mandatory — and the prompt's scope forbade touching either. *Caught
-by:* the pass noticing. *Rule:* flagged in Deviations rather than silently
+being mandatory — and the prompt's scope forbade touching either.
+*Caught by:* the pass noticing. *Rule:* flagged in Deviations rather than
+silently
 fixed or silently ignored. Both remedies are worse than the flag: the fix is
 out of scope, and the silence would have left two documents lying.
 ([journal 0017](../../journal/0017-skill-roster.md))

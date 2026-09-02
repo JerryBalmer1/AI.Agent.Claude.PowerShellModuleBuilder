@@ -461,7 +461,8 @@ decision than either trust or suspicion.
 - For how a claim gets checked here rather than believed,
   [05 — calling bullshit](./05-calling-bullshit-verification.md).
 - For the list of ways this project's own gates have failed, so you know
-  what to watch for in yours, chapter 07 — the failure catalog. For any
-  term above that was new, chapter 08 — the glossary.
+  what to watch for in yours,
+  [07 — the failure catalog](./07-failure-catalog.md). For any term above
+  that was new, [08 — the glossary](./08-glossary.md).
 - To take the method and leave the domain,
   [10 — using this as a template](./10-using-as-a-template.md).
