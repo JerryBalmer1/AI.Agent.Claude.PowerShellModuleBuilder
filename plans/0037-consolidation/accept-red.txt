@@ -1,0 +1,41 @@
+Pass 0037 acceptance test - RED, run before any work.
+
+Pester 6.1.0   2026-09-02T20:59:29Z
+
+  [FAIL] fixture-2 case scorer promoted and falsified
+         Expected $true, but got $false.
+  [ok  ] cases.md false clause corrected
+  [FAIL] suite counts re-pinned and green
+         Expected regular expression 'FIXTURE1: 15 passed, 0 failed' to match $null, but it did not match.
+  [FAIL] README carries the bounded generalisation claim
+         Expected regular expression 'unseen fixture' to match '# AI.Agent.Claude.PowerShellModuleBuilder
+  [FAIL] tf-003 record re-scored by the promoted scorer
+         Expected regular expression 'rescored by evals/tf/fixture2/Test-TfFixture2Case\.ps1' to match '# Run tf-003 — the generalisation measurement
+  [FAIL] manifest is 1.1.1 with a CHANGELOG entry
+         Expected strings to be the same, but they were different.
+  [FAIL] v1.1.1 on the remote
+         Expected a value, but got $null or empty.
+  [FAIL] the operator decision is queued, not taken
+         Expected regular expression 'tf-004 plugin-off control: OPERATOR DECISION' to match '# LEDGER — maintained by the agent as the last task of every pass
+
+TOTAL: 1 passed, 7 failed, of 8
+
+----------------------------------------------------------------------------
+ONE ASSERTION IS GREEN AT START, AND IT IS GREEN FOR THE WRONG REASON.
+
+'cases.md false clause corrected' asserts
+
+    Should -Not -Match 'only node in the fixture with neither'
+
+and passes before anything is corrected, because the false clause is
+LINE-WRAPPED in the file (cases.md:246-247):
+
+    ... **no outgoing edge and no incoming edge** - the only
+    node in the fixture with neither.
+
+so the literal one-line pattern never had anything to match. The assertion
+cannot witness the correction it names, in either direction. It is recorded
+as supplied and NOT rewritten - a plan's acceptance test is frozen (decision
+0004) - and the correction is instead witnessed by the falsification set:
+the oracle-vs-self control plus a mutation per case, in case-scorer.txt.
+Seven of eight failing is the red this pass starts from.
