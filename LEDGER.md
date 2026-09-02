@@ -193,8 +193,50 @@ Frozen on decision 0011's terms: changes require a new decision. A
 defect found in it is a finding, not an edit. **No pipeline
 definitions were created for these three**, deliberately — the YAML
 files exist in the repositories and carry `trigger: none` / `pr:
-none`, and nothing was ever queued. See backlog 31 if a future run
-wants definition parity with fixture 1.
+none`, and nothing was ever queued. Backlog 31 asked whether that
+asymmetry had to be repaired before tf-003; **pass 0035 settled it as
+an amendment to decision 0014 — pipeline definitions are outside the
+TF measurement surface**, and no definitions are to be created.
+
+**The tf-003 kit (pass 0035).** What a builder is handed for the
+Terraform measurement line, pinned so a run can prove it was handed
+the same thing this pass wrote:
+
+  tf-003 brief blob: dc25fcd0d1e4d5651073240374ee19c28499c70e
+  tf-003 seed tree:  040ab2503aa7ccd5d67500d2e1d9983818807d86
+
+`git rev-parse <commit>:evals/tf/BRIEF.md` and
+`git rev-parse <commit>:evals/tf/seed` re-derive both. **The seed tree
+is derivable a second, independent way:** `Reset-TfTarget.ps1`
+materialises the seed into a fresh `git init` and the commit it makes
+carries that same tree, because a tree object is a function of the
+bytes and names and nothing else. The two agreeing is what says the
+thing on disk and the thing a run starts from are the same thing.
+
+The seed COMMIT is `81ba3e97adc0fcf048da631828d1cbbb6e202c17` and is
+reproducible, unlike the AzDO seed's — see item 16, which is why
+`Reset-TfTarget.ps1` pins **both** git stamps rather than passing
+`--date`. It is recorded, not pinned: the tree is what the pin is
+about, and a check written against the commit would fail for reasons
+that are not about the seed.
+
+**TF comparator, post-repair (backlog 32):**
+
+  Compare-TfGraph.ps1   6475606ab7c5767fb1b4aa5f4b0d221abbd0c8c3
+  Mutate-TfGraph.ps1    012ca8fab4da96a2f5122ad04a1f74aa5a6f7c68
+
+Stage 0 asserts node-id uniqueness on both graphs before anything is
+keyed. Falsified in both directions by
+`Invoke-TfDuplicateIdFalsification.ps1` →
+`plans/0035-tf003-kit/mutation8.txt`. Both fixture suites re-run at
+their pinned counts → `plans/0035-tf003-kit/suites.txt`.
+
+**Plugin pin, unchanged by pass 0035: `v1.1.0` =
+`df638064e9f77111cb4f7d290d39f2b8f8b40415`.** Pass 0035 is harness-only
+and released nothing; `git diff v1.1.0..HEAD -- skills/ commands/
+.claude-plugin/` is empty and its `verify.ps1` asserts that directly.
+The installed surface a tf-003 builder reads is therefore the one
+v1.1.0 published.
 
 ## Backlog (priority order; operator reorders)
 1. Runs 004-006 + 0029 final README
@@ -610,8 +652,12 @@ controls and corpus figures) was **not** touched and stays open.
     conventions per function and say which in the function's comment.
     Candidate line for a PowerShell authoring skill. **Recorded, not
     taken.**
-31. **Fixture 2 has pipeline YAML files but no AzDO pipeline
-    definitions.** Fixture 1 has four definitions, created by pass 0023
+31. **~~Fixture 2 has pipeline YAML files but no AzDO pipeline
+    definitions.~~ CLOSED by pass 0035 — see *Resolved by pass 0035*.**
+    The original entry stands below, unedited, because a closed item
+    whose text is rewritten stops explaining why it was open.
+
+    Fixture 1 has four definitions, created by pass 0023
     and never queued; fixture 2 has four YAML files in its repositories
     and zero definitions, because pass 0034's plan asked for repository
     creation and a push and nothing else. A producer that reads
@@ -622,8 +668,12 @@ controls and corpus figures) was **not** touched and stays open.
     four definitions have to be created first, and creating them is a
     change to a frozen fixture and therefore a new decision.
 
-32. **`Compare-TfGraph.ps1` cannot see a duplicate node id, and a
-    producer that emits one scores clean.** Found by falsifying pass
+32. **~~`Compare-TfGraph.ps1` cannot see a duplicate node id, and a
+    producer that emits one scores clean.~~ CLOSED by pass 0035 — see
+    *Resolved by pass 0035*.** The original entry stands below,
+    unedited.
+
+    Found by falsifying pass
     0034's own `verify.ps1`: a probe written to prove that duplicating
     a node turns the oracle-vs-self control red **did not fire on the
     control**. Both graphs are keyed into an ordered dictionary by id
@@ -658,6 +708,100 @@ controls and corpus figures) was **not** touched and stays open.
     run's own scoring step. Belongs to the next pass that opens
     `evals/tf/Compare-TfGraph.ps1`.
 
+### Resolved by pass 0035
+
+- Item **32** (the comparator cannot see a duplicate node id):
+  **CLOSED.** `Compare-TfGraph.ps1` gained a Stage 0 that asserts id
+  uniqueness on **both** graphs before the first assignment into a
+  dictionary. A duplicate is its own category, `DuplicateId`, naming
+  every duplicated id and which side carries it — neither copy is the
+  extra one, so reporting it as `ExtraNode` or `WrongAttribute` would
+  name a defect that is not the defect. `IsMatch` states the check a
+  second time rather than resting on the difference count, so a later
+  change that filtered the list cannot quietly restore the blindness.
+
+  The item offered two repairs — a category, or asserting
+  `ActualNodeCount -eq ExpectedNodeCount` in the run's scoring step.
+  **The category was taken, and the count assertion was not, on
+  purpose.** The counts are equal in the case that matters least: a
+  graph with one node duplicated and one node missing has the right
+  total and two defects, and a count check calls it clean. Uniqueness
+  is the property; the count is a proxy for it that is wrong in exactly
+  the situation a scoring run will meet.
+
+  Mutation 8 (`duplicate-id`) duplicates a node byte-identically —
+  identical so the detection names one mechanism rather than two — and
+  is **two-directional**, so it is falsified by its own script rather
+  than folded into the seven-mutation driver.
+  `Invoke-TfDuplicateIdFalsification.ps1` →
+  `plans/0035-tf003-kit/mutation8.txt`: detected on the producer side
+  and on the oracle side, with both clean oracles matching themselves
+  before and after. The driver's own report now says it covers seven of
+  eight, so a green there is not read as a falsified comparator.
+
+  **Nothing was weakened.** `plans/0035-tf003-kit/suites.txt`:
+  `FIXTURE1: 15 passed, 0 failed` (the count is pinned, and a suite
+  that gained or lost a test is itself reported as a failure) and
+  `FIXTURE2: 8 passed, 0 failed` — one control plus seven mechanisms.
+- Item **31** (fixture 2 has pipeline YAML but no AzDO definitions):
+  **CLOSED, by narrowing rather than by building.** Amendment to
+  decision 0014: *pipeline definitions are outside the TF measurement
+  surface.* The asymmetry is real in the Azure DevOps project and empty
+  in the measurement — checked rather than assumed: both oracles hold
+  six node types, all of them HCL, and **zero** pipeline nodes, while
+  both fixtures carry four pipeline YAML files as content. Fixture 1's
+  four definitions are an artifact of the order pass 0023 did things
+  in, not part of what tf-001 or tf-002 scored.
+
+  Creating four more would have bought parity in a dimension no oracle
+  reads, at the cost of editing a fixture decision 0014 froze. The
+  amendment also closes the cheap path in advance: a capability that
+  reads definitions through the REST API gets its own fixture decision
+  before it gets a run.
+- Item **6** (tf-003): the last thing blocking it is gone. The
+  instrument is repaired, the kit exists and is pinned, and the
+  definition question is answered. **tf-003 is the next run**, and it
+  targets fixture 2. It is not run by this pass — a pass that authored
+  the brief cannot be the session that builds against it.
+- Item **16** (`Reset-Target.ps1` stamps wall-clock dates): **half
+  taken.** The new `Reset-TfTarget.ps1` pins both git stamps, so its
+  commit SHA is reproducible as well as its tree; `Reset-Target.ps1` is
+  **left alone on purpose**, because runs 004–006 were produced by it
+  and changing it would change an instrument three recorded runs were
+  measured with. The item stays open for the AzDO line.
+
+### Added by pass 0035
+
+33. **`git commit --date=` pins only the AUTHOR date.** The committer
+    date still comes from the wall clock and a commit SHA is a function
+    of both, so a "reproducible" seed commit written with `--date`
+    alone drifts as soon as a second passes. Worse, the obvious probe
+    hides it: two resets run back to back agree with each other for
+    exactly as long as the clock takes to tick. Found in this pass, in
+    `Reset-TfTarget.ps1`, by resetting twice with a gap rather than
+    without one. Set `GIT_AUTHOR_DATE` **and** `GIT_COMMITTER_DATE`, and
+    check the mechanism — read the stamps back — rather than comparing
+    two SHAs made in the same second. Skill-line candidate for a git or
+    PowerShell authoring skill. **Recorded, not taken.**
+34. **A file that matches no extension rule falls to `* text=auto` and
+    checks out CRLF on Windows.** The root `.gitattributes` already
+    carried this lesson for `evals/functional/seed/`, and
+    `evals/tf/seed/LICENSE` walked into it anyway: `git ls-files --eol`
+    showed `attr/text=auto` with no `eol`, so a fresh Windows clone
+    would have produced different bytes and a different seed tree from
+    the one pinned above. The rule exists; what was missing was
+    **applying it to the new directory**. Any pass adding a seed, a
+    fixture or anything else copied byte-for-byte should run
+    `git ls-files --eol` over it before pinning anything derived from
+    its bytes. **Recorded, and the rule was added.**
+35. **The kit rule set's allowlist has the same decay risk as the
+    fixture one, and one fewer control.** `-RuleSet Kit` is falsified
+    two ways today — a planted line, and 41 findings against the Azure
+    DevOps kit — but the AzDO kit is frozen, so that strong control can
+    never get any stronger and will not notice a kit rule that stops
+    firing. If a third kit is ever written, scan it with both rule sets
+    and record the difference. **Recorded, not taken.**
+
 ### Numbering, reconciled by pass 0030
 
 Pass 0031 recorded a 17→19 drift and asked that numbers never move. This is
@@ -675,11 +819,16 @@ re-derive it:
   **resolved by pass 0033**.
 - **26, 27 and 28 were consumed by pass 0033**; 26 and 27 were
   **resolved by pass 0034** and 28 remains open.
-- **29, 30, 31 and 32 were consumed by pass 0034**; **33 is the next
-  free number.** 32 was written late in the pass, after `verify.ps1`'s
-  own falsification produced a probe that did not fire for the reason
-  it was written to prove. Pass 0030 consumes none: everything it
-  touched was already numbered.
+- **29, 30, 31 and 32 were consumed by pass 0034**; 31 and 32 were
+  **resolved by pass 0035**, 29 and 30 remain open. 32 was written late
+  in that pass, after `verify.ps1`'s own falsification produced a probe
+  that did not fire for the reason it was written to prove. Pass 0030
+  consumes none: everything it touched was already numbered.
+- **33, 34 and 35 were consumed by pass 0035**; **36 is the next free
+  number.** All three were found by the pass's own work going wrong
+  rather than by review: a reproducibility claim that was true only
+  within one second, a line-ending rule that existed and was not
+  applied, and a control that cannot get stronger.
 
 Numbers are consumed, never reused and never renumbered — including the ones
 belonging to resolved items, which stay where they are so that a citation
