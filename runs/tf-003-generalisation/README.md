@@ -324,3 +324,54 @@ Drafted, and it is a smaller claim than the section it replaces:
 > in that domain**, which is worth having and is not the same claim. The
 > generalisation claim needs a third domain the `tf-*` skills say nothing
 > about, or a plugin-off control on this one.
+
+---
+
+## Correction note — 2026-09-02, pass 0037: rescored
+
+**Appended, not rewritten.** Everything above is what pass 0036 recorded and
+stays as written. This section says what a later pass re-derived, and it is
+here because the instrument moved after the run.
+
+The `functional-tf` numbers above were produced by
+[`plans/0036-tf-003/Test-Tf003Case.ps1`](../../plans/0036-tf-003/Test-Tf003Case.ps1),
+a case scorer that lived in a plan directory because pass 0036 could not touch
+`evals/`. Pass 0037 promoted it to
+[`evals/tf/fixture2/Test-TfFixture2Case.ps1`](../../evals/tf/fixture2/Test-TfFixture2Case.ps1)
+and changed two things about it while doing so:
+
+- **case 6 was corrected**, because `cases.md`'s "only node in the fixture with
+  neither" clause was false of the oracle — ten nodes satisfy it literally — and
+  the corrected form pins the whole edgeless set by id, which is **stricter**
+  than the form that produced the numbers above, not looser;
+- **a duplicated node id is now refused rather than scored**, the scorer half of
+  the blindness LEDGER backlog 32 found in the comparator.
+
+So the numbers above were taken with an instrument that no longer exists in that
+form, and re-deriving them is not a formality.
+
+**They held. Both of them, and every number beside them.**
+**Rescored by evals/tf/fixture2/Test-TfFixture2Case.ps1**, from fresh clones of
+this run's own commits — built, graphs regenerated from read-only clones of the
+three fixture repositories at their decision-0014 SHAs, and scored. Nothing was
+read back out of this record.
+
+| | recorded above | re-derived at 0037 |
+| --- | --- | --- |
+| build, first shot `d788f7c` / final `d76d16b` | exit 0 / exit 0 | exit 0 / exit 0 |
+| module tests | 92 / 92, 96 / 96 | 92 / 92, 96 / 96 |
+| coverage | 92.48%, 92.39% | 92.48%, 92.39% |
+| differences | 184 → 0 | 184 → 0 |
+| nodes / edges | 99 / 99, 88 / 88 | 99 / 99, 88 / 88 |
+| **functional-tf** | **6 / 7 → 7 / 7** | **6 / 7 → 7 / 7** |
+
+Case 7 is still the single first-shot failure, and still for the id convention
+alone. The regenerated final graph is **byte-identical** to `graph.json` beside
+this file (SHA256 `203e80a6…`), so this record reproduces from the commit it
+names rather than from the file it ships.
+
+Evidence: [`plans/0037-consolidation/tf-003-rescore.txt`](../../plans/0037-consolidation/tf-003-rescore.txt).
+The promoted scorer's own falsification — the oracle-against-itself control,
+seven mutations one per case, the duplicate-id refusal, and the demonstration
+that the corrected case 6 is stricter — is
+[`case-scorer.txt`](../../plans/0037-consolidation/case-scorer.txt).

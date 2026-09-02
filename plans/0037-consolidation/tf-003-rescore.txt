@@ -1,0 +1,56 @@
+==============================================================================
+tf-003 RE-SCORED BY THE PROMOTED SCORER
+evals/tf/fixture2/Test-TfFixture2Case.ps1, pass 0037
+Generated 2026-09-02T21:17:27Z
+==============================================================================
+
+The numbers in runs/tf-003-generalisation/ were produced by a scorer that lived
+in a plan directory. That scorer has been promoted, its case 6 corrected and its
+assertions tightened, so the run record numbers were taken with an instrument
+that no longer exists in that form. This re-derives them with the promoted one.
+
+NOT re-read from the record. Fresh clones, built, graphs regenerated, scored.
+
+------------------------------------------------------------------------------
+WHAT WAS SCORED
+
+  firstshot  clone of run-tf-003-generalisation at d788f7c7ecb1aa471eea01de6878d253df4c4ae4
+  final      clone of run-tf-003-generalisation at d76d16bb5083f422ccc05671e21cefde3c1a004e
+
+  fixture    TfSiteCore   a228e78c247d2d4367303f303c4363d9906e06f2
+  fixture    TfSiteEdge   1ae66c2712f799a69304cb4364e91e4d10d694c4
+  fixture    TfSiteOps    fe27a34f7585b86b6fdbf12b609e17d4cb0f4b83
+  (all three match the decision-0014 freeze SHAs; cloned read-only)
+
+------------------------------------------------------------------------------
+RESULT
+
+  measure                            record (plans-era)     re-derived (0037)      held?
+  ---------------------------------- ---------------------- ---------------------- -----
+  build, first shot                  exit 0                 exit 0                 yes
+  module tests, first shot           92 / 92                92 / 92                yes
+  coverage, first shot               92.48%                 92.48%                 yes
+  differences, first shot            184                    184                    yes
+  functional-tf, first shot          6 / 7                  6 / 7                  yes
+  build, final                       exit 0                 exit 0                 yes
+  module tests, final                96 / 96                96 / 96                yes
+  coverage, final                    92.39%                 92.39%                 yes
+  differences, final                 0                      0                      yes
+  functional-tf, final               7 / 7                  7 / 7                  yes
+  nodes / edges, both                99 / 99, 88 / 88       99 / 99, 88 / 88       yes
+
+  The only failing case at first shot is, as recorded, case 7 - and for the same
+  reason: the id convention alone. Both unresolvable targets are emitted, both
+  flagged, neither invents a passes-to edge.
+
+------------------------------------------------------------------------------
+THE REGENERATED FINAL GRAPH AGAINST THE RECORDED ONE
+
+  regenerated  SHA256 203E80A6FF89E07C69A736108717D4167CDD5DE696EBCA6CFE9FAB3E8B0D040E
+  recorded     SHA256 203E80A6FF89E07C69A736108717D4167CDD5DE696EBCA6CFE9FAB3E8B0D040E
+  BYTE-IDENTICAL - the record is reproducible from the commit it names.
+
+==============================================================================
+RESCORE: the plans-era numbers HELD. 6 / 7 first shot, 7 / 7 final, unmoved by
+the promoted scorer, whose case 6 is stricter than the form that produced them.
+==============================================================================
