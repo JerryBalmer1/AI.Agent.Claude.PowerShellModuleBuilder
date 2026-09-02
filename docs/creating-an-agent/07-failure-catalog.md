@@ -376,6 +376,32 @@ implying an answer.
 ([journal 0029](../../journal/0029-final-readme.md),
 [the run 003 plan](../../plans/0020-baseline-off/plan.md))
 
+**28 / 33 and 33 / 33 were not the same measurement, and the rule that was
+supposed to make them one is what allowed it.** *Happened:* four conformance
+assertions read the module's build output directory, which is gitignored.
+The scoring protocol said "score from a fresh clone" and never said to build
+it, so run 007's conformance clone was never built and those four graded the
+absence of a directory: 28 / 33 reported, **32 / 33** for the same commit
+built first. The three runs before it were unaffected — but not because the
+rule protected them. Each got build output into its conformance tree by a
+different improvised route: 004 ran the build inside the conformance clone,
+005 scored a snapshot of an already-built tree, 006 built all three clones.
+*Caught by:* the fourth run reading the failure messages instead of the
+score. One of them says, in the assertion's own words, *"because run the
+build before the RequiresBuild tag"* — the suite had been saying so all
+along, once per failure, to nobody. *Rule:* **a scoring procedure is not
+fully specified until it says what state the artifact is in when the
+assertions run.** An unspecified step does not stay unspecified; each run
+invents it, the inventions differ, and the scores stop being comparable
+without any of them looking wrong. The step is now an executable
+([`Score-Clone.ps1`](../../evals/conformance/Score-Clone.ps1)) rather than a
+sentence, both affected runs were re-scored under it, and the repair was
+falsified three ways before the new numbers were believed — including the
+control that the *unbuilt* clone must still fail, or the repair is an
+assertion-weakening in disguise.
+([rescore.txt](../../plans/0033-honest-headline/rescore.txt),
+[run 007 findings C-5](../../runs/007-baseline-iterated/findings.md))
+
 ---
 
 ## Probes that never applied, and expectations that went stale
@@ -948,6 +974,27 @@ no plan of its own, rather than solved by widening the allowlist, because
 widening the allowlist is how a blind run stops being blind.
 ([journal 0015](../../journal/0015-repository-corrections.md))
 
+**The fixture told every blind run what its own cases were, for five runs,
+and no record said so.** *Happened:* the live AzDO fixture is annotated —
+its YAML carries leading comments naming each case and stating what it is
+for, including which of two plausible answers is the wrong one. Reading the
+fixture through the module is the task, so the allowlist cannot exclude it:
+every run from 002 onward has read them by design. *Caught by:* the control
+run, run 007, writing down the channels its corrections came through instead
+of only its score — four runs had the same exposure and none had mentioned
+it. *Rule:* the fixture is frozen, so this is **disclosed, not repaired**:
+stripping the comments now would invalidate the comparability of five runs,
+which costs more than the bound. Two things change instead. The vocabulary
+is fixed — "blind" means the oracle, the run records and the plugin were
+unread, and has never meant the fixture was unread. And every fixture
+written from now on keeps its commentary in the *oracle* document, on the
+far side of the gate. A bound that has always applied and was written down
+only when it became inconvenient reads, later, exactly like a bound that was
+invented then.
+([hazard 13](../../evals/HARNESS.md),
+[run 007 findings C-3](../../runs/007-baseline-iterated/findings.md),
+[the Terraform fixture scan](../../plans/0033-honest-headline/tf-fixture-comments.txt))
+
 ---
 
 ## The director's own mistakes
@@ -1152,6 +1199,34 @@ run written against the four-path form would hard-stop for a reason that is
 not about the instrument, which is the same failure shape as every stale
 expectation in this chapter, aimed this time at a prompt.
 ([LEDGER.md](../../LEDGER.md))
+
+**The mechanism list, put into the builder's prompt twice — the second time
+into the run the headline depends on.** *Happened:* a measured run's prompt
+is inside its own read-allowlist by construction; the agent must read its
+instructions. Pass 0028's prompt named runs 004 and 005's first-shot
+difference mechanisms *and their counts* to run 006's builder, because the
+variance section it asked for needs them. The run flagged it, did not act on
+it, and recorded its own first-shot number as weakened. Hazard 9 was then
+amended with the prescription: write the comparison requirement without the
+answers. **Pass 0032's prompt did the same thing to run 007**, for the same
+reason and in the same words. *Caught by:* both runs, against their own
+prompts, in their own findings — which is what a required Deviations
+section buys. *Rule:* the cost is not constant, and that is the part worth
+carrying. Run 006 was the third of three identical runs and its first-shot
+number was already corroborated twice; run 007 was **one** run, the only
+control the project has, and its first-shot figures are the whole evidence
+for the sentence now on the front page. Three of the four leaked mechanisms
+recurred anyway; the fourth did not, and it is the one that made 007's first
+shot look best. The rule is now [hazard 12](../../evals/HARNESS.md) rather
+than a corollary at the end of hazard 9, on the principle that something two
+runs have tripped over is not a corollary: **a comparison specification goes
+after the gate**, referring to prior run records generically so the scorer
+resolves the reference and the builder never sees what it resolves to.
+Writing a rule down was not enough to stop it happening a second time, which
+is itself the entry.
+([hazard 12](../../evals/HARNESS.md),
+[run 007 findings C-2](../../runs/007-baseline-iterated/findings.md),
+[run 006 record](../../runs/006-plugin-on/README.md))
 
 ---
 

@@ -201,6 +201,64 @@ that says which claims it could not reach.
 
 ---
 
+## Re-derive, don't quote — the worked example
+
+"Re-derive rather than read" sounds like fussiness until it changes a number.
+Pass 0033 is the case where it did, and it is worth walking because the
+quotable number was not wrong by carelessness. It was wrong by *procedure*,
+and only re-running it could say so.
+
+Run 007 reported **28 / 33** conformance. That figure is in its record, in
+its `conformance-result.json`, and in the README table. Nothing about it
+looks suspect: the result file is real, the clone was fresh and SHA-pinned,
+and the run's own findings even sort the five failures by name.
+
+The defect was one level below the number. Four assertions read the module's
+build output directory, which is gitignored and therefore absent from any
+clone that has not been built — and the scoring protocol said "score from a
+fresh clone" without ever saying to build it. So those four assertions were
+grading the absence of a directory. Re-cloned and **built** before scoring,
+the same commit scores **32 / 33**.
+
+Three things about how that was established, each of which is the chapter's
+rule doing work:
+
+**The number was re-derived, not re-read.** Both affected runs — 007 and 006
+— were re-cloned from their pushed SHAs and re-scored under one procedure.
+006 was included precisely because it was *expected not to move*: a re-score
+that only touches the number you suspect has told you nothing about whether
+the new procedure is sane. It read 33 / 33 both times, and that is the
+control.
+
+**The repair was falsified before it was trusted.** A procedure change that
+makes a score go up is the most suspicious thing in this book — it is
+indistinguishable, from the outside, from quietly weakening the assertions.
+So three rows were run
+([rescore.txt](../../plans/0033-honest-headline/rescore.txt)): an unbuilt
+clone must **still** fail those four (it does, at exactly the 28 / 33 the old
+procedure produced); a sabotaged build must fail them (it does); a built
+conforming clone must pass (it does, 33 / 33). If the first row had gone
+green, the "repair" would have been a cheat. **Making a number go up is not
+evidence; making it go up while the control still goes down is.**
+
+**The mechanism was investigated rather than assumed.** The obvious story —
+"the ladder runs had the same bug and nobody noticed" — is false, and the
+transcripts say so. Each ladder run had build output in its conformance tree
+by a *different improvised route*: 004 ran the build inside the conformance
+clone, 005 scored a snapshot of an already-built tree, 006 built all three
+clones. The written rule permitted all four readings and named none. That is
+the actual finding, and it is bigger than the four assertions: **an
+unspecified step does not stay unspecified — each run invents it, the
+inventions differ, and the scores stop being comparable without any of them
+looking wrong.**
+
+The general lesson for an auditor: when two numbers from the same instrument
+disagree, the interesting question is rarely "which is right". It is "what
+did each of them actually measure", and the only way to answer it is to run
+both yourself.
+
+---
+
 ## The instrument pin, and a director's mistake caught by this method
 
 Runs 004–006 each assert that the plugin was unchanged from a pinned commit:
@@ -236,6 +294,9 @@ Before you believe a report:
 - [ ] `merge-base --is-ancestor` for any ancestry claim, with tags fetched first
 - [ ] every gate's exit code **observed**, not assumed
 - [ ] the claims you could *not* verify, written down as unverified
+- [ ] for any number that *moved*: the old procedure re-run as a control, and
+      an unrelated subject re-measured to show the new procedure does not
+      move everything it touches
 
 Next: [6. The pass protocol](./06-the-pass-protocol.md) — how the prompt is
 shaped so that there is something to audit in the first place.

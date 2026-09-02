@@ -175,6 +175,44 @@ records `v0.2.0`'s "message carrying the carried-forward scores." A tag
 message is a body, like a README body. `git tag -l` shows you names and is
 safe; anything that prints the message is a read of a run record.
 
+### The fixture, when the fixture is chatty
+
+The three channels above can all be closed. This one cannot, and the reason
+it belongs here is that it went unwritten for five runs.
+
+**The thing under test is inside the allowlist too.** A functional run's
+task is to read the fixture and produce a graph of it; forbidding the
+fixture forbids the run. So whatever the fixture *says* is inside the blind
+phase, permanently.
+
+This project's AzDO fixture is annotated. Its YAML carries leading comments
+that name the cases and state what each one is for — one reads, in part,
+*"Both exist, so the wrong answer is a wrong file rather than an error."*
+Every run from 002 onward has read them, by design of its own task. The
+fixture is frozen, so this cannot be fixed without invalidating five runs'
+worth of comparability; it is
+[hazard 13](../../evals/HARNESS.md), and it is disclosed rather than
+repaired.
+
+Two things follow that generalise past this project.
+
+**Fix your vocabulary to what is actually true.** "Blind" here means the
+oracle, the prior run records and the plugin were unread. It has never meant
+the fixture was unread, and saying "blind" without that qualifier was an
+overstatement in every run record written before 007.
+
+**Write the next fixture without the annotations.** The commentary is
+genuinely useful — it is how a maintainer remembers what each part is for —
+so put it in the *oracle* document, on the far side of the gate, and leave
+the fixture mute. Pass 0033 scanned this project's second fixture, the
+Terraform one, for the same vector and found it worse: it names cases by
+number and one of its READMEs points at the oracle by path
+([the scan](../../plans/0033-honest-headline/tf-fixture-comments.txt)). That
+fixture is frozen too, so a blind run against it is now blocked on a
+decision rather than merely unscheduled. **The cost of a chatty fixture is
+paid at the moment you want a blind measurement, which is long after the
+moment it is cheap to fix.**
+
 ## Hazard 10 — the half with no visible failure mode
 
 Everything above has a symptom you could in principle notice. This one does
@@ -372,6 +410,13 @@ in hazards 9, 10 and 11 exist to make the asserted half as small as
 possible. Anyone claiming their agent evaluation proves more than that has
 not looked closely at the same problem.
 
+And there is a second limit, added by pass 0033 after two more channels were
+found: **even a genuinely fresh session is not an uninformed one.** Its
+prompt is inside its own allowlist (hazard 12) and so is the fixture it must
+read (hazard 13). Freshness bounds what the session *remembers*; it says
+nothing about what the session is *handed*. Both halves have to be checked,
+and only the first one has a control.
+
 ## The real self-stop
 
 The reason this chapter lives in a repository rather than in a style guide
@@ -478,6 +523,47 @@ Hazard 9's own prescription for next time is one sentence, and it is the
 thing to write on a card: write the variance requirement without the
 answers, or accept that the third run's first-shot line is not independent.
 
+### It happened again, on the run the headline depends on
+
+The prescription above was written after run 006 and was not followed. Run
+007's prompt — the control run, the one the project had been waiting for —
+named the same four mechanisms and their counts, for the same reason: its
+task 7 asked for a comparison, and the comparison needed the list.
+
+The damage is worse this time, and the reason is worth understanding. Run
+006 was the third of three identical runs; its first-shot number was already
+corroborated twice over. Run 007 was **one** run, and its first-shot figures
+are the entire evidence for the sentence now on the front page — that the
+control's first shot was the closest of the five. Three of the four leaked
+mechanisms recurred anyway. The fourth, the 15-difference
+`repo`-on-`pipeline` mechanism, did **not** — and that absence is most of
+why 007's first shot beat the ladder's. It is also precisely what a leak
+would most plausibly have prevented.
+[`runs/007-baseline-iterated/findings.md`](../../runs/007-baseline-iterated/findings.md)
+C-2 states it flatly: the run cannot separate "read the brief carefully"
+from "was told the answer" for that mechanism.
+
+So the same defect, committed twice, cost a corroborated number the first
+time and an uncorroborated one the second. That is the shape of this kind of
+mistake: it does not get more likely, it gets more expensive, because you
+only build a control once.
+
+Pass 0033 promoted the rule out of hazard 9's tail and into a hazard of its
+own — **hazard 12, "prompt-borne oracle content"** — on the principle that a
+corollary two runs have tripped over is not a corollary. Its wording is the
+generalisation: **the prompt itself is a contamination channel**, and it is
+the only one an allowlist cannot close, because the allowlist is written in
+the thing being read. Mechanism lists, difference counts, expected values,
+convention names and prior scores do not go in a measured run's prompt. A
+comparison specification goes **after the gate**, referring to prior run
+records generically — "compare against the mechanisms recorded in the prior
+run records" — so the *scorer* resolves the reference and the builder never
+sees what it resolves to.
+
+The cheapest test, which is step 6 of the checklist below and which nobody
+ran twice in a row: read the prompt as if it were the only thing you knew,
+and ask what it just told you about the answers.
+
 ## A checklist you can actually run
 
 Before a measured run, in the session that will do the measuring:
@@ -494,7 +580,11 @@ Before a measured run, in the session that will do the measuring:
 5. Write the allowlist into the prompt as a positive list, and name the
    dangerous paths explicitly anyway.
 6. Read your own prompt back and ask what it tells the agent that the agent
-   is supposed to work out for itself. That is where the leak will be.
+   is supposed to work out for itself. That is where the leak will be. Two
+   runs have now failed this step — 006 and 007 — so treat it as the step
+   most likely to be skipped, not the one most likely to be clean. If
+   deleting a phrase would cost the builder information about the oracle,
+   that phrase belongs in the scoring instructions instead.
 7. Record the session identifier in the run record, so the next run can be
    shown to be a different one.
 

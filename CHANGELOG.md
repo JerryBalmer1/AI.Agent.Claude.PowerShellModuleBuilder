@@ -9,6 +9,80 @@ Versions follow [semantic versioning](https://semver.org/) as described in
 [Versioning](README.md#versioning) — MAJOR when something you rely on breaks,
 MINOR when capability is added, PATCH for corrections.
 
+## 1.0.1 — 2026-09-02
+
+**Nothing you install changes.** `skills/` and `commands/` are byte-identical to
+1.0.0 — the same fourteen skills, the same two commands, the same conventions.
+Only the manifest version moves. Upgrade freely, or don't; the plugin behaves
+the same either way.
+
+What changed is what this repository **claims** about the plugin, and one thing
+was overstated.
+
+### The measured claim is corrected, and it moved down
+
+1.0.0 shipped with one plugin-off baseline that had never been allowed to fix
+its own mistakes. A control run has since been done properly — plugin unread,
+same seed and brief, and the same three-iteration budget the plugin-on runs
+had. It reached the functional oracle exactly, 12 / 12, in one iteration.
+
+So: **all four runs that were permitted to iterate reached 12 / 12, and the
+control's first shot was the closest of them.** The plugin's effect on
+correctness, on this fixture, is not measurable. What it does supply, large and
+repeatably, is first-shot conformance to house style — 33 / 33 against the
+control's 19 / 33, about fourteen assertions that are not derivable from the
+brief and that the control needed two extra iterations to recover most of.
+
+**The plugin buys shape, not correctness.** If you installed 1.0.0 expecting it
+to make the agent write correct code first time, the README now says plainly
+that it will not, and that a single control cannot say whether the conventions
+are the hard part or the traversal was never hard for this model. The
+[with/without table](README.md#with-the-plugin-and-without-it) is rewritten
+around that, with every caveat attached to the number it qualifies.
+
+### The conformance score was measured wrongly for one run, and is fixed
+
+Four of the 33 conformance assertions grade the module's **build output**, which
+is gitignored. The scoring procedure said "score from a fresh clone" and never
+said to build it, so one run's clone was never built and those four assertions
+graded a missing directory: 28 / 33 reported where the same commit scores
+32 / 33 when built first.
+
+The procedure is corrected, not the suite — **no assertion was added, removed,
+weakened or edited.** The clone is now built before it is scored, by one script
+(`evals/conformance/Score-Clone.ps1`) rather than by four runs each improvising
+it. Both affected runs were re-scored under the corrected procedure and the
+repair was falsified three ways first, including the control that an unbuilt
+clone must *still* fail those four.
+
+This matters to you only if you run the conformance suite against your own
+module: **build it before you score it, or six assertions grade nothing.**
+
+### Two limits on the measurements are now disclosed
+
+Neither is new. Both had always been true and neither had been written down.
+
+- **A measured run's own prompt is inside its own read-allowlist.** Two runs'
+  prompts named the earlier runs' mistakes to the builder before it wrote a
+  line. Both runs flagged it themselves; both records say the affected numbers
+  are weakened.
+- **The test fixture names its own cases in comments,** and reading the fixture
+  is the task, so every run has read them. The fixture is frozen, so this is
+  permanent: "blind", in this project, means the oracle and the plugin were
+  unread. It has never meant the fixture was unread.
+
+Both are now hazards in the harness specification, and every affected run record
+carries a `## Blindness caveats` section saying which apply to it.
+
+### Nothing else moved
+
+No skill text, no command text, no conformance assertion, no fixture. The
+[known limits](#known-limits-stated-up-front) listed under 1.0.0 all still
+stand, including that nobody has yet installed this cold on a machine that has
+never cloned the repository.
+
+---
+
 ## 1.0.0 — 2026-09-02
 
 The first release anyone else can install. Everything below already existed;

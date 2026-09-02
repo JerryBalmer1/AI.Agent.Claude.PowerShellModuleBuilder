@@ -194,6 +194,18 @@ same branch re-scored later with the stable denominator, because run 003's
 own result file predates it — the same instrument against a different target,
 which is the only comparison that means anything.
 
+One detail of *how* it was scored turned out to matter, four runs later, and
+it is the kind of thing worth deciding once at this stage rather than
+discovering later. Some assertions grade build **output**, which is normally
+gitignored and so absent from a fresh clone. "Score it from a fresh clone" is
+therefore an incomplete instruction: it says where, not in what state. Run
+003's conformance clone happened to be built; run 007's was not, and four
+assertions spent that run grading a missing directory. Write the state into
+the procedure, and make the procedure a script
+([`Score-Clone.ps1`](../../evals/conformance/Score-Clone.ps1)) rather than a
+sentence in a document, so that runs cannot each improvise it differently —
+which is precisely what runs 004, 005 and 006 did.
+
 The protocol around the number matters as much as the number. The prompt said
 one attempt, no score-and-retry, and the pass explicitly rejected a one-line
 fix that would have addressed fifteen of the twenty-nine differences: "a
@@ -204,10 +216,24 @@ would have broken comparability with the run before it — the rule in
 [decision 0003](../../decisions/0003-score-comparability.md).
 
 Be as honest about your baseline's limits as this repository is about its
-own. Run 003 was never permitted to iterate, so the with-and-without table
-has no plugin-off final column and cannot have one. That missing control is
-[LEDGER](../../LEDGER.md) backlog item 17, recorded as the highest-value
-single run remaining.
+own. Run 003 was never permitted to iterate, so for a year the
+with-and-without table had no plugin-off final column and could not have
+one. That missing control was [LEDGER](../../LEDGER.md) backlog item 17, and
+it is now **run 007**: plugin-off, with the ladder's three-iteration budget.
+
+It is worth saying what it cost to leave that gap open, because the lesson is
+about ordering. Every claim made from the ladder in the meantime was a claim
+about three runs of one condition with no second condition to compare
+against — and when the control finally ran, it reached the same 12 / 12 the
+plugin-on runs reached, in the same one iteration. **The plugin's effect on
+correctness, on this fixture, was zero, and the project had been describing
+it as the headline for four passes.** What the plugin does buy is real and
+large, but it is the *shape* score, not the behaviour score. A baseline you
+never let iterate cannot tell you which of those two you have.
+
+Run the iterated control early, while the answer can still change what you
+build. See [run 007](../../runs/007-baseline-iterated/README.md) and the
+rewritten section of the root [README.md](../../README.md).
 
 ## 6. The findings-to-skills batch
 

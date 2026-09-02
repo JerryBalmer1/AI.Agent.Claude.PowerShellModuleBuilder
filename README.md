@@ -35,15 +35,15 @@ useless exactly when you need it.
 
 Then paste these three inside **Claude Code**, not in a shell:
 
-    /plugin marketplace add JerryBalmer1/AI.Agent.Claude.PowerShellModuleBuilder@v1.0.0
+    /plugin marketplace add JerryBalmer1/AI.Agent.Claude.PowerShellModuleBuilder@v1.0.1
     /plugin install psmodule@psmodule-builder
     /psmodule:build
 
 The first adds this repository as a plugin marketplace, **pinned to the
-`v1.0.0` tag**. The pin is deliberate and is
+`v1.0.1` tag**. The pin is deliberate and is
 [decision 0013](decisions/0013-harness-release-tagging.md): `main` moves as work
 lands, and pinning means none of that reaches you until a release is tagged.
-Drop the `@v1.0.0` and you are tracking whatever `main` happens to be, which is
+Drop the `@v1.0.1` and you are tracking whatever `main` happens to be, which is
 not a release and is not what these measurements are about.
 
 The second installs the plugin from that marketplace. The third is the plugin
@@ -61,10 +61,11 @@ plugin as a local marketplace under `scratch/` and installs it from a path on
 your own disk. Nothing is fetched and nothing is pushed.
 
 **Before you install, read what this does and does not do.** The
-[with/without table](#with-the-plugin-and-without-it) is the measured effect and
-one of its two rows is nearly flat; [Status, honestly](#status-honestly) is the
-list of what is still unproven, including the fact that nobody has yet installed
-this cold on a machine that has never cloned the repository.
+[with/without table](#with-the-plugin-and-without-it) is the measured effect, and
+the control run says it buys shape rather than correctness;
+[Status, honestly](#status-honestly) is the list of what is still unproven,
+including the fact that nobody has yet installed this cold on a machine that has
+never cloned the repository.
 
 ## Creating a new agent, start here:
 
@@ -93,72 +94,138 @@ again, before anything public is involved.
 
 ## With the plugin and without it
 
-One baseline with the plugin unread, three consecutive runs with it readable.
-Same seed, same brief, same fixture, same scoring, one blind session each.
+Five blind runs against the same seed, the same brief, the same fixture and the
+same oracle. Three with the plugin readable, and two with it unread — the second
+of those given the same three-iteration budget as the plugin-on runs, which is
+what makes it a control rather than a handicap.
 
-| | [003](runs/003-baseline-off/) plugin **off** | [004](runs/004-plugin-on/) **on** | [005](runs/005-plugin-on/) **on** | [006](runs/006-plugin-on/) **on** |
-|---|---|---|---|---|
-| build | exit 0 | exit 0 | exit 0 | exit 0 |
-| **conformance (cases-defined)** | **19 / 33** | **33 / 33** | **33 / 33** | **33 / 33** |
-| conformance (cases-run) | 39 / 55 | 57 / 57 | 56 / 56 | 57 / 57 |
-| **functional (first-shot)** | **0 / 12** | **1 / 12** | **1 / 12** | **1 / 12** |
-| first-shot differences | 29 | 26 | 26 | 26 |
-| **functional (final)** | *never permitted* | **12 / 12** | **12 / 12** | **12 / 12** |
-| iterations allowed / used | 0 / — | ≤3 / 1 | ≤3 / 1 | ≤3 / **2** |
-| Phase 1 wall clock | 32.6 min | 33 min | 23 min | 34 min |
+**The headline, in one paragraph.** All four runs that were permitted to iterate
+reached the functional oracle exactly — 12 / 12, zero differences — within two
+fix iterations, and the control's first shot was the closest of the four. What
+the plugin reliably supplies is first-shot conformance to house style, which is
+not derivable from the brief: plugin-on runs scored 33 / 33 at first shot and
+held it, while the control started at 19 / 33 and reached 28 / 33 only by
+spending two of its three iterations on house conventions alone. On the evidence
+so far the plugin buys shape, not correctness — and a single control cannot tell
+us whether that is because the conventions are the hard part, or because the
+dependency computation was never the hard part for this model.
 
-Evidence: each run's `README.md`, `conformance-result.json`, `compare-report.json`
-and `diff.txt` in the directories linked above. `cases-defined` is the stable
-denominator introduced in pass 0025; run 003's result file predates it, so its
-19 / 33 was **re-derived** for this table by re-scoring
-[its pushed branch](https://github.com/JerryBalmer1/PSAzureDevOpsGraph/tree/run-003-baseline-off)
-with today's suite — the same instrument against a different target.
+| | [003](runs/003-baseline-off/) **off** | [004](runs/004-plugin-on/) **on** | [005](runs/005-plugin-on/) **on** | [006](runs/006-plugin-on/) **on** | [007](runs/007-baseline-iterated/) **off** |
+|---|---|---|---|---|---|
+| iterations allowed / used | 0 / — | ≤3 / 1 | ≤3 / 1 | ≤3 / **2** | ≤3 / **3** |
+| build | exit 0 | exit 0 | exit 0 | exit 0 | exit 0 |
+| **functional (first shot)** | **0 / 12** | **1 / 12** | **1 / 12** | **1 / 12** | **6 / 12** <sup>c</sup> |
+| first-shot differences | 29 | 26 | 26 | 26 | **14** <sup>c</sup> |
+| **functional (final)** | *never permitted* <sup>a</sup> | **12 / 12** | **12 / 12** | **12 / 12** | **12 / 12** |
+| iterations to 12 / 12 | — | 1 | 1 | 2 | 1 |
+| **conformance, first shot** | **19 / 33** | **33 / 33** | **33 / 33** | **33 / 33** | **19 / 33** <sup>d</sup> |
+| **conformance, final** | *never permitted* <sup>a</sup> | **33 / 33** | **33 / 33** | **33 / 33** | **28 / 33** <sup>d</sup> |
+| conformance, final, re-derived <sup>d</sup> | 19 / 33 | — | — | **33 / 33** | **32 / 33** |
+| conformance cases-run (final) | 39 / 55 | 57 / 57 | 56 / 56 | 57 / 57 | 50 / 55 |
+| Phase 1 wall clock | 32.6 min | 33 min | 23 min | 34 min | 181 min <sup>e</sup> |
 
-**Read the "final" row honestly.** Run 003 was run under a protocol that said
-*"No fixes, no re-runs — the first scores stand"*
-([plan](plans/0020-baseline-off/plan.md)). It has no final score because it was
-never allowed one, not because it failed to reach one. Nobody knows what run 003
-would have scored with three iterations, and this table cannot say.
+Conformance is scored per assertion against `cases-defined`, the denominator
+that does not move with the target's shape; `cases-run` is beside it because
+[decision 0003](decisions/0003-score-comparability.md) requires both wherever
+two scores are compared. Evidence for every cell: each run's `README.md`,
+`conformance-result.json`, `compare-report.json` and `diff.txt`, in the
+directories linked in the header row.
 
-**The fair comparison is the first-shot row, and it is nearly flat: 0 / 12
-against 1 / 12.** The plugin moved the functional score by one case out of
-twelve, and that one case is the absence case. Anyone reading `0 → 12` off this
-table has read it wrong.
+**The caveats, each with the artifact that states it.** None of them is small
+enough to leave in a footnote nobody reads, so they are here:
+
+- <sup>a</sup> **Run 003 was never allowed a final score.** Its protocol said
+  *"No fixes, no re-runs — the first scores stand"*
+  ([plan 0020](plans/0020-baseline-off/plan.md)). The blank cells are a rule,
+  not a failure. Run 007 exists to fill them.
+- <sup>b</sup> **All five runs read a fixture that names its own cases.** The
+  `ClaudeTesting` YAML carries comments identifying each case and stating what
+  it is for. Reading the fixture through the module is what the task *is*, so
+  every run has read them by design and always will — the fixture is frozen.
+  **"Blind" in this project means the oracle, the prior run records and the
+  plugin were unread. It has never meant the fixture was unread.**
+  ([hazard 13](evals/HARNESS.md), and
+  [run 007 findings C-3](runs/007-baseline-iterated/findings.md).)
+- <sup>c</sup> **Run 007's first-shot functional figures are contaminated by its
+  own prompt.** A measured run's prompt is inside its own read-allowlist, and
+  this one named four convention mechanisms and their counts before the builder
+  wrote a line. Three of the four recurred anyway; the fourth — the
+  15-difference `repo`-on-`pipeline` mechanism — did not, and it is exactly the
+  one a leak would most plausibly have prevented. **The 6 / 12 and the 14
+  differences cannot be separated from "was told part of the answer", and the
+  claim that the control's first shot was closest rests on them.** Run 006's
+  prompt leaked the same list, weakening its first-shot number the same way.
+  ([hazard 12](evals/HARNESS.md),
+  [run 007 findings C-2](runs/007-baseline-iterated/findings.md),
+  [run 006 record](runs/006-plugin-on/README.md).)
+- <sup>d</sup> **The conformance scoring procedure was defective and is now
+  fixed, so two numbers are printed.** Four assertions read the build output
+  directory, which is gitignored; the protocol said "score from a fresh clone"
+  and never said to build it. Run 007's conformance clone was not built, so it
+  reported 28 / 33 where the same commit built first scores **32 / 33**. The
+  ladder runs were unaffected — each had build output in its conformance tree by
+  a different improvised route, which is why nobody noticed. Both runs' finals
+  were re-cloned and re-scored under one procedure for the re-derived row, and
+  run 007's first shot moves 19 / 33 → 20 / 33 the same way. The "as reported"
+  rows are what each run measured under the rule as written; the re-derived row
+  is the comparable one. ([rescore.txt](plans/0033-honest-headline/rescore.txt),
+  [Score-Clone.ps1](evals/conformance/Score-Clone.ps1).)
+- <sup>e</sup> **Wall clock is not comparable across the two protocols.** 181
+  minutes against 23–34 is a run that spent two of its three iterations on house
+  conventions the other three never had to think about, not a slower model.
 
 ### Where the plugin actually moved the number
 
 The functional score is dominated by one omitted property, so it hides the
-result. The difference *breakdown* does not. Every plugin-on run produced
+result. The difference *breakdown* does not. All three plugin-on runs produced
 **exactly the same 26 differences by the same four mechanisms**, so one column
-covers all three:
+covers them; run 007 is the control with the same budget.
 
-| Mechanism | 003 off | 004 / 005 / 006 on | |
-|---|---:|---:|---|
-| `repo` omitted from `pipeline` nodes | 15 | 15 | unchanged |
-| `alias` written where the oracle omits it | 8 | 8 | unchanged |
-| `reason` written as a bare token | 2 | 2 | unchanged |
-| `extraNode` — the empty repository emitted as a node | **1** | **0** | fixed |
-| `extraEdge` — `checkout: self` turned into an edge | **1** | **0** | fixed |
-| `wrongEdgeTarget` — unresolved targets given colliding ids | **2** | **0** | fixed |
-| `missingNode` — `repo:consumer-app` | 0 | **1** | **introduced** |
-| **total** | **29** | **26** | |
+| Mechanism | 003 off | 004 / 005 / 006 on | 007 off, iterated |
+|---|---:|---:|---:|
+| `repo` omitted from `pipeline` nodes | 15 | 15 | **0** |
+| `alias` written where the oracle omits it | 8 | 8 | 8 |
+| `reason` written as a bare token | 2 | 2 | 2 |
+| `wrongEdgeTarget` — unresolved targets given colliding ids | 2 | **0** | 2 |
+| `extraNode` — the empty repository emitted as a node | 1 | **0** | 1 |
+| `extraEdge` — `checkout: self` turned into an edge | 1 | **0** | 1 |
+| `missingNode` — `repo:consumer-app` | 0 | **1** | 0 |
+| **total** | **29** | **26** | **14** |
 
 Read across, that is the whole result:
 
-- **The plugin fixed four behavioural errors and nothing else.** `checkout: self`
-  produces nothing; a repository nothing references is not a node (that is
-  case 12, which run 003 failed and all three plugin runs passed); an unresolved
-  edge's target must not collide with a real node. Those are four rules the
-  skills state and the brief does not.
-- **The plugin changed nothing about the three conventions**, 25 of the 29
-  differences. It does not state them either. Three blind sessions guessed, and
-  all three guessed the same three things wrong in the same direction.
+- **The plugin fixes three behavioural errors at first shot, and the control
+  fixes them in one iteration.** `checkout: self` produces nothing; a repository
+  nothing references is not a node; an unresolved edge's target must not collide
+  with a real node. Those are rules the skills state and the brief does not — so
+  the plugin-on runs never made them. Run 007 made all three and had them fixed
+  by iteration 1, along with everything else. **What the plugin buys here is the
+  first shot, not the destination.**
+- **The plugin changed nothing about the two output conventions** it does not
+  state — `alias` and the `reason` format. Four blind sessions guessed, and all
+  four guessed the same two things wrong in the same direction.
 - **The plugin introduced one error of its own.** `azdo-graph-assembly` states
   the repository-node rule too narrowly, and every run that follows it exactly
   is missing one node. That is F-2, below.
-- **The unambiguous win is shape, not behaviour: 19 / 33 → 33 / 33**, three
-  times, first shot, from a fresh clone. Fourteen house-style assertions about
-  the build file, the generated psm1, one-function-per-file and root files.
+- **The one mechanism the plugin-on runs share with 003 and 007 does not,**
+  `repo` on `pipeline` nodes, is worth its own line: it cost 15 differences in
+  four of the five runs and zero in run 007, which took it from one clause of
+  the brief. Whether that is a better reading or a consequence of caveat
+  <sup>c</sup> is not decidable from one run.
+- **The measured, repeatable effect is shape: 19 / 33 → 33 / 33** at first shot,
+  three times, from a fresh clone — about fourteen house-style assertions
+  covering the build file, the generated psm1, one-function-per-file and the
+  root files. Re-derived under the corrected procedure it is 20 / 33 → 33 / 33,
+  thirteen assertions. Neither figure is derivable from the brief, and the
+  control needed two of its three iterations to recover most of it.
+
+**What five runs still cannot tell you.** Whether the conventions are the hard
+part, or whether the dependency computation was never hard for this model. One
+control, contaminated by its own prompt, against three runs of one instrument on
+one fixture, is not enough to separate those, and this table does not pretend
+otherwise. The next measurement worth taking is
+[per-skill ablation](LEDGER.md) — which of the fourteen skills carries the
+19 → 33 — not another run of the same shape.
 
 ---
 
@@ -197,15 +264,23 @@ builds that no assertion in the harness can detect, and it was predicted by run
 
 | | |
 |---|---|
-| Phase 1, blind build | **23–34 minutes** (33, 23, 34 across runs 004–006) |
+| Phase 1, blind build, plugin on | **23–34 minutes** (33, 23, 34 across runs 004–006) |
+| Phase 1, blind build, plugin off, same budget | **181 minutes** (run 007) |
 | Scoring, three jobs in parallel from three fresh clones | **~60 seconds**, twice — first shot and final |
 | The live graph command against a 15-definition fixture | **9.8 s / 15.3 s / 10.7 s**, against a 5-minute cap |
-| Iterations | 1–2, of 3 allowed |
+| Iterations | 1–3, of 3 allowed |
 
-Provenance sections in each run README. The scoring figures are not comparable
-between runs 004/005 and 006 — 006 is slowest because it is the only one where
-every job both cloned fresh *and* built from nothing, which is what run 005's
-race concluded the method should be.
+Provenance sections in each run README. **The two Phase 1 figures are not one
+measurement.** Run 007 spent two of its three iterations on house conventions
+the plugin-on runs never had to think about; counting only to 12 / 12 functional
+it used one iteration, like 004 and 005. Read the 181 as the cost of arriving
+without the conventions, not as a slower model.
+
+The scoring figures are likewise not comparable between runs 004/005 and 006 —
+006 is slowest because it is the only one where every job both cloned fresh
+*and* built from nothing. That was the right method and nothing said so, which
+is why run 007's conformance clone was never built at all, and why the procedure
+is now one script: [`Score-Clone.ps1`](evals/conformance/Score-Clone.ps1).
 
 ---
 
@@ -301,7 +376,7 @@ parameter, never a file, never in a URL — a value passed as a parameter reache
 `PSReadLine` history, `Start-Transcript` output and the ScriptBlock logging event
 log, and the token is a bearer credential for a whole organisation. Every run
 scans its own artifacts, its clones and its tracked blobs for the PAT **by value**
-before committing; all four runs report zero occurrences.
+before committing; all five runs report zero occurrences.
 
 **Read-only, permanently.** The target module never queues, runs or triggers a
 pipeline and never creates, updates or deletes anything. It is `GET` only, no
@@ -325,14 +400,14 @@ forced — [0009](decisions/0009-agent-moves-both-mains.md) for the target,
 
 ---
 
-<!-- TEMPLATE:remove — this section argues from this project's four runs.
+<!-- TEMPLATE:remove — this section argues from this project's five runs.
      The argument is only as good as the measurements behind it, and a
      templated repository has none yet. Write it again at the end, from
      your own journal, the way pass 0029 wrote this one. -->
 
 ## Why not just prompt Claude to write a module?
 
-You can, and it will produce something that looks right. The four runs above are
+You can, and it will produce something that looks right. The five runs above are
 what happens when you then try to find out whether it *is* right.
 
 - **Without the plugin, the module scored 19 / 33 on shape and emitted a node for
@@ -340,9 +415,10 @@ what happens when you then try to find out whether it *is* right.
   project, which the naive implementation picks up from the repositories
   endpoint. Nothing about the output announces that. It reads as a complete
   graph, and it answers a different question from the one asked.
-- **The conventions the brief does not state get guessed**, and three
-  independent sessions guessed the same three things wrong. A prompt does not
-  fix that; a scored oracle finds it in one run.
+- **The conventions the brief does not state get guessed**, and four
+  independent sessions guessed the same two things wrong in the same direction,
+  plugin or no plugin. A prompt does not fix that; a scored oracle finds it in
+  one run.
 - **The gates you write to catch this are themselves usually broken.** F-1 is a
   coverage gate, copied from a skill, that could not fail. It was green on every
   build until somebody raised the threshold on purpose and watched it go red.
@@ -351,9 +427,15 @@ what happens when you then try to find out whether it *is* right.
 
 The plugin is not the interesting artifact here — the measurement is. What this
 repository provides is a way to state, with an artifact behind every number, what
-an agent's output actually does: **33 / 33 on shape, 12 / 12 on behaviour, in one
-or two iterations, at 23–34 minutes a run, reproducibly, three times.** And
-equally, where it does not help: four conventions, unchanged, run after run.
+an agent's output actually does: **33 / 33 on shape and 12 / 12 on behaviour, in
+one or two iterations, at 23–34 minutes a run, reproducibly, three times.**
+
+And equally, where it does not help. The control reached 12 / 12 too, in one
+iteration, with the plugin unread — so on this fixture the plugin buys the shape
+and the first shot, not the final answer. Two conventions it does not state were
+guessed wrongly by every session, plugin or no plugin. **Knowing which half is
+which is the thing that needed measuring, and it took a control run to find
+out.**
 
 ---
 
@@ -423,10 +505,15 @@ line of either changed to allow it.**
 and 7 / 7**, after the fixture's case 3 was repaired under
 [decision 0012](decisions/0012-fixture-case3-repair.md) and two producer defects
 were closed. The oracle was visible for both, so this is a statement about one
-fixture and **not** a generalisation claim; tf-003 is the blind measurement and is
-not yet scheduled. Two of tf-002's own findings — that the `tf-<role>` skills were
-deliberately *not* written, because writing them first would measure the plugin's
-memory of tf-001 rather than its generality — are in
+fixture and **not** a generalisation claim. **tf-003, the blind measurement, is
+now blocked rather than merely unscheduled**: pass 0033 scanned the Terraform
+fixture and found it annotates its own cases by name and by number, and one of
+its READMEs points at the oracle document by path
+([the scan](plans/0033-honest-headline/tf-fixture-comments.txt)). The fixture is
+frozen, so nothing was changed and the operator has a decision to make first.
+That composes with two of tf-002's own findings — that the `tf-<role>` skills
+were deliberately *not* written, because writing them first would measure the
+plugin's memory of tf-001 rather than its generality — which are in
 [the LEDGER backlog](LEDGER.md).
 
 ---
@@ -461,19 +548,38 @@ memory of tf-001 rather than its generality — are in
   seed, brief, plugin SHA and model version, each scored from fresh clones. Every
   graded line matches.
 - **The plugin's effect is measured and it is uneven.** Large and repeatable on
-  shape (19 / 33 → 33 / 33). Nearly nil on the functional first-shot score
-  (0 / 12 → 1 / 12). Real but narrow on behaviour: four rules fixed, one error
-  introduced.
-- **The baseline is one run and it was not allowed to iterate.** A second
-  plugin-off run, permitted the same three iterations, is the missing control.
-  Nothing here says what run 003 would have reached.
+  shape (19 / 33 → 33 / 33 at first shot). Nil on the converged functional
+  score: all four runs allowed to iterate reached 12 / 12. Real but narrow on
+  first-shot behaviour: three rules right immediately, one error introduced.
+  **It buys shape, not correctness.**
+- **The control now exists, and it closed the question the other way round.**
+  Run 007 is plugin-off with the ladder's three-iteration budget. It reached
+  12 / 12 in one iteration and its first shot was the closest of the five. What
+  it could not do without the plugin is house style: 19 / 33, recovered to
+  28 / 33 only by spending two more iterations on nothing else.
+- **A single control cannot say why.** Whether the conventions are the hard part
+  or the dependency computation was never hard for this model is not decidable
+  from one run, and nothing here decides it.
 - **The builder is the same model family that wrote the skills.** None of the
-  four runs can separate reading the plugin from recalling the reasoning that
+  five runs can separate reading the plugin from recalling the reasoning that
   produced it. What they measure is reliability at fixed inputs.
-- **Run 006's prompt leaked** the prior runs' difference mechanisms into its own
-  blind phase. Flagged and deliberately not acted on — three of four conventions
-  were still chosen wrongly — but the independence of that run's first-shot
-  number is weakened and is stated as weakened in its record.
+- **Two runs' prompts leaked oracle content into their own blind phases.** A
+  measured run's prompt is inside its own read-allowlist. Run 006's named the
+  prior runs' difference mechanisms and counts; run 007's did the same, and
+  run 007's first-shot figures are the ones the headline comparison rests on.
+  Both were flagged by the runs themselves, and both records say the first-shot
+  independence is weakened. It is now
+  [hazard 12](evals/HARNESS.md).
+- **Every run has read a fixture that names its own cases**, because reading the
+  fixture is the task. The fixture is frozen, so this is permanent and
+  disclosed rather than fixable: "blind" here means the oracle, the run records
+  and the plugin were unread. [Hazard 13](evals/HARNESS.md).
+- **The conformance scoring procedure was wrong for one run and is fixed.**
+  Four assertions read gitignored build output and the protocol never said to
+  build the clone being scored. Run 007 reported 28 / 33 where the built commit
+  scores 32 / 33; both affected runs were re-scored under one procedure. No
+  assertion was changed.
+  ([rescore.txt](plans/0033-honest-headline/rescore.txt).)
 - The conformance suite is **falsified against one reference module**; eleven of
   twelve controls stay green and the twelfth is documented as failing.
 - `Universal` has run against nine targets; **seven of nine assertions survive
@@ -483,6 +589,11 @@ memory of tf-001 rather than its generality — are in
   satisfy.
 - Per-skill ablation — which of the fourteen skills carries the 19 → 33 — is
   **unmeasured**, and is the next question worth a run.
+- **The Terraform fixture annotates its own cases too**, by name and by case
+  number, and one of its READMEs points at the oracle document by path. It is
+  frozen, nothing was changed, and the blind tf-003 measurement is now gated on
+  an operator decision about what to do instead.
+  ([the scan](plans/0033-honest-headline/tf-fixture-comments.txt).)
 
 <!-- TEMPLATE:replace — every project that becomes installable needs a
      versioning promise and a support statement, and both must be honest about

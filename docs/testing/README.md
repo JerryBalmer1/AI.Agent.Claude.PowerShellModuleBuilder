@@ -377,7 +377,14 @@ closed.
 [README](../../README.md) states the limit and this page does not go past
 it: **the oracle was visible for both tf-001 and tf-002, so this is a
 statement about one fixture and not a generalisation claim; tf-003 is the
-blind measurement and is not yet scheduled.** tf-002 also iterated zero
+blind measurement and is not yet scheduled.** It is now **blocked** as well:
+pass 0033 scanned the Terraform fixture for the vector hazard 13 describes
+and found it names its own cases by number, states what the wrong answer to
+several of them looks like, and — in one README — points at the oracle
+document by path. The fixture is frozen, so nothing was changed and the
+operator has a decision to make before a blind run against it means
+anything. [The scan](../../plans/0033-honest-headline/tf-fixture-comments.txt).
+tf-002 also iterated zero
 times, which — as [journal 0025](../../journal/0025-findings-batch.md) puts
 it — means a run that scores 0 tests *less* than a run that scores 31. What
 carries the claim in that run is the comparator's re-falsification against
@@ -456,6 +463,35 @@ has no `CasesDefined` field at all, because it predates the change. Its
 19 / 33 in the root README's table was **re-derived** by re-scoring its
 pushed branch with today's suite, and the table says so.
 
+### A third thing the denominator does not protect you from
+
+`CasesDefined` holds the denominator still. It says nothing about whether the
+target was in the right *state* when the assertions ran, and that turned out
+to be the next way two scores stopped being one measurement.
+
+Six of the 33 assertions carry the `RequiresBuild` tag, and four of those
+read `output/<Name>/` — the build's product, which is gitignored and so
+absent from any clone that has not been built. The scoring protocol said
+"score from a fresh clone" and never said to build it. Run 007's conformance
+clone was not built, so those four graded a missing directory: **28 / 33
+reported, 32 / 33 for the same commit built first.** Runs 004, 005 and 006
+were unaffected, but each by a different accident — one built inside the
+conformance clone, one scored a snapshot of a built tree, one built all three
+clones — so nothing in the record said which was the rule.
+
+The fix is a procedure, not an assertion: the conformance clone is built
+before it is scored, and the sequence is one script,
+[`Score-Clone.ps1`](../../evals/conformance/Score-Clone.ps1), so runs cannot
+each improvise it. Both affected runs were re-scored under it and the repair
+was falsified in three rows before the new numbers were used — including the
+control that an unbuilt clone must *still* fail those four, which is what
+distinguishes a corrected procedure from a weakened assertion. The evidence
+is [rescore.txt](../../plans/0033-honest-headline/rescore.txt).
+
+**The generalisation, if you take one thing from this section:** a score is
+`(assertions) × (denominator) × (state of the thing being graded)`, and only
+the first two are usually written down.
+
 ### first-shot versus final
 
 `first-shot` is what the agent produced before it was allowed to see any
@@ -465,10 +501,34 @@ plugin-on and plugin-off runs.
 
 **Run 003 has no final score, and not because it failed to reach one.** Its
 protocol said *"No fixes, no re-runs — the first scores stand"*. It was
-never permitted an iteration. Nobody knows what it would have scored with
-three, and the root README says so rather than letting the table imply
-otherwise. That is the most common way a comparison table lies, and it is
-worth checking for in anyone else's numbers too.
+never permitted an iteration. That is the most common way a comparison table
+lies, and it is worth checking for in anyone else's numbers too.
+
+**[Run 007](../../runs/007-baseline-iterated/README.md) is what happened when
+the missing column was finally measured**, and it is the strongest argument
+in this document for keeping first-shot and final apart. Plugin off, same
+seed and brief, the ladder's three-iteration budget:
+
+| | plugin on (004 / 005 / 006) | plugin off, iterated (007) |
+|---|---|---|
+| functional, first shot | 1 / 12 | 6 / 12 |
+| functional, final | 12 / 12 | **12 / 12** |
+| iterations to 12 / 12 | 1 / 1 / 2 | 1 |
+| conformance, first shot | 33 / 33 | 19 / 33 |
+
+**On `final`, the plugin's measured effect is nothing.** On `first-shot`
+conformance it is thirteen or fourteen assertions. A table that reported only
+`final` would say the plugin does nothing; one that reported only
+`first-shot` would say it does everything. Both would be quoting real numbers
+from the same five runs.
+
+Two caveats travel with 007's first-shot row and are stated wherever it is
+quoted: its own prompt named several of the convention mechanisms to the
+builder before it wrote a line, and the comparator prints the oracle's
+expected value for every wrong attribute, so the conventions were legible
+from the scorer during iteration. See the run's
+[findings](../../runs/007-baseline-iterated/findings.md) Part 3 and hazards
+12 and 13 in [`evals/HARNESS.md`](../../evals/HARNESS.md).
 
 ---
 
@@ -479,6 +539,15 @@ commands reproduce a run end to end. These are the root
 [README](../../README.md)'s commands verbatim, warnings included.
 
 ```powershell
+# 0. To score a PUSHED commit rather than a working tree, use the one command
+#    that clones, builds and scores in the same clone. The build is not
+#    optional: four assertions read output/, which is gitignored.
+./evals/conformance/Score-Clone.ps1 `
+    -Source https://github.com/JerryBalmer1/PSAzureDevOpsGraph.git `
+    -Ref <sha> -WorkDir $env:TEMP/score-run
+
+# The steps below are the same thing unrolled, for a run in progress.
+
 # 1. Wipe the target back to the four-file seed. This is the start of a run.
 ./evals/functional/Reset-Target.ps1 -Destination scratch/runs/007-my-run
 
@@ -497,8 +566,14 @@ commands reproduce a run end to end. These are the root
     -ReportPath scratch/runs/007-my-run/compare-report.json
 ```
 
-Three things in that block are not decoration:
+Four things in that block are not decoration:
 
+- **Build the clone you are about to score.** Step 2 grades `output/` in six
+  of its 33 assertions, and `output/` is gitignored. Running the conformance
+  suite in a clone that has not been built scores those four as failures of
+  the module rather than of the procedure — which is exactly what happened
+  to run 007, at a cost of four assertions. `Score-Clone.ps1` exists so that
+  this cannot be forgotten.
 - **Read the score from `result.json`, never from the exit code.** The
   runner exits 0 on a red run on purpose, because a red conformance run is
   data and not a crash. Pass `-PassExitCode` if you genuinely want the

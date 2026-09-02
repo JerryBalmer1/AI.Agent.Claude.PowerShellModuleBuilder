@@ -5,8 +5,11 @@ for counters and pins. Update it in the same commit as the work
 that changes it.
 
 ## Passes
-Last landed: 0032. Next: the operator's decision — nothing is
-scheduled. 0030 ran after 0031 because 0031 was taken out of order
+Last landed: 0033. Next: the operator's decision — nothing is
+scheduled. 0033 is a docs/method patch: it rewrote the with/without
+claim against run 007, repaired the conformance scoring procedure,
+disclosed two blindness bounds, and released **v1.0.1**. It changed
+nothing under `skills/` or `commands/`. 0030 ran after 0031 because 0031 was taken out of order
 deliberately (the manual and the local publish path do not depend on
 packaging), so the numbers do not read in landing order and that is
 expected. The guard in `tools/publish/Publish-Real.ps1` no longer
@@ -18,17 +21,23 @@ outstanding: harness `main` was fast-forwarded `c8330d7..ec07aef`
 before any work began.
 
 The obvious next candidates, none of them chosen: the cold-install
-proof (backlog 2's remaining half), the README with/without rewrite
-against run 007 (backlog 23, queued by 0032 and deliberately not done
-there), and tf-003.
+proof (backlog 2's remaining half), per-skill ablation (backlog 18),
+and the tf-003 decision — which is now a **decision** rather than a
+run, and is described under backlog item 6.
 
 ## Runs
 AzDO-module (runs/NNN-*): **ladder COMPLETE at 004–006** (passes
 0026-0028), **control COMPLETE at 007** (pass 0032). All four show
 three complete score lines. The next run series is the operator's
 decision — nothing is scheduled.
-Terraform (runs/tf-NNN-*): last tf-002, next tf-003 (measured,
-blind — not yet scheduled).
+Terraform (runs/tf-NNN-*): last tf-002, next tf-003 — **BLOCKED, not
+merely unscheduled.** Pass 0033 scanned the Terraform fixture for the
+vector in hazard 13 and it is not clean: it names its own cases by
+number, states the wrong answer to several, and one README points at
+`evals/tf/fixture/cases.md` by path. The fixture is frozen (decision
+0011) so nothing was amended. tf-003 is not a blind measurement until
+the operator answers the question in
+`plans/0033-honest-headline/tf-fixture-comments.txt`.
 
 **007 — baseline off, iterated** (`runs/007-baseline-iterated`,
 target `run-007-baseline-iterated`, final `95ca28d`, first shot
@@ -43,13 +52,22 @@ and `Compare-Graph` prints the oracle's expected values, so
 being readable anywhere" is not. See `runs/007-baseline-iterated/findings.md`
 Part 3.
 
+**007's conformance figures were re-derived by pass 0033 and the
+final one moved: 28/33 as reported, 32/33 under the corrected
+procedure** (the conformance clone is now built before it is scored).
+First shot 19/33 → 20/33 the same way. Run 006 re-scored under the
+same procedure and did not move, at either commit — which is what
+makes it the control for the repair. `plans/0033-honest-headline/rescore.txt`.
+
 ## Versions
 PSAzureDevOpsGraph: v0.2.0 (next touching plan: v0.3.0)
 PSGraphRender: v0.13.0
 PSGraphRenderToHtml: v0.1.0 (next: v0.2.0)
 PSTerraformGraph: v0.2.0
-psmodule manifest: **1.0.0**, released and tagged `v1.0.0` by
-pass 0030 under decision 0013. The reservation is spent: v1.0.0 was
+psmodule manifest: **1.0.1**, released and tagged `v1.0.1` by
+pass 0033 under decision 0013 — a docs/method patch with `skills/`
+and `commands/` byte-identical to `v1.0.0`. Previously **1.0.0**,
+tagged `v1.0.0` by pass 0030. The reservation is spent: v1.0.0 was
 "passed the ladder" and the ladder is closed. Next release version
 is decided by what changes — MAJOR breaks a consumer's existing
 use, MINOR adds skills/commands/conventions, PATCH corrects
@@ -110,7 +128,16 @@ TF fixture SHAs (decision-0012 re-freeze):
 3. Fixture restore drill (Sync-Fixture restore direction)
 4. Per-skill ablation runs (suspects first)
 5. Mirror assertion + dependency-wave ordering (post-ladder)
-6. tf-003 generalisation measurement (blind Phase 1)
+6. **tf-003 — OPERATOR DECISION FIRST, then the run.** Was "blind
+   Phase 1"; pass 0033's scan says the fixture names its own cases by
+   number and one README points at the oracle by path, so a run
+   against it as it stands measures parsing, not generalisation. The
+   fixture is frozen (0011). Three options, none taken, all costed in
+   `plans/0033-honest-headline/tf-fixture-comments.txt`: (a) run it
+   and disclose the bound, (b) a new decision to strip the
+   annotations and re-falsify, (c) a second unannotated fixture —
+   which also answers item 9. Top of the backlog because it blocks
+   the only generalisation claim the project has queued.
 7. Portability / non-graph functional layer (on trigger only)
 
 ### Added by pass 0025
@@ -356,6 +383,83 @@ wrongly later.
 Item **21** (three documents disagreeing about the falsification
 controls and corpus figures) was **not** touched and stays open.
 
+### Resolved by pass 0033
+
+- Item **23** (the README's with/without section overstates the
+  plugin): **CLOSED.** Rewritten against run 007 from its drafted
+  sentence; the table carries 007's row, both conformance protocols,
+  and every caveat footnoted to its artifact. The claim is now "the
+  plugin buys shape, not correctness", with the limit that a single
+  control cannot say why.
+- Item **24** (`RequiresBuild` and the three-clone rule are
+  incompatible): **CLOSED.** The procedure was the defect and it is
+  repaired — the conformance clone is built before it is scored,
+  as `evals/conformance/Score-Clone.ps1`, HARNESS step 4 and
+  METHOD.md. No assertion changed. Falsified four ways (unbuilt
+  control still red at exactly 28/33, sabotaged build red, Phase-0
+  gate fires, built conforming clone green at 33/33). Both runs
+  re-scored: 007 final 28 → **32/33**, 006 final unchanged at
+  **33/33**. The ladder mechanism is **explained, not assumed**:
+  each ladder run had build output in its conformance tree by a
+  different improvised route (004 built inside the conformance
+  clone, 005 scored a snapshot of a built tree, 006 built all
+  three), so "three clones" never meant "unbuilt clone" and 007 was
+  the first to read it that way.
+  `plans/0033-honest-headline/rescore.txt`.
+- Item **25** (the live fixture is annotated with case identifiers):
+  **CLOSED as disclosed, not as fixed.** `ClaudeTesting` is frozen
+  and all five AzDO runs were scored against the annotated form, so
+  stripping it now would cost more comparability than the bound is
+  worth. It is `evals/HARNESS.md` hazard 13, it is in the README's
+  honest-status list, and runs 003–007 each carry a
+  `## Blindness caveats` section. The vocabulary is corrected with
+  it: "blind" means the oracle, the run records and the plugin were
+  unread — never that the fixture was unread. The same scan was run
+  against the Terraform fixture and it is **not** clean; see backlog
+  item 6.
+- Item **19** (doc maintenance as a standing obligation):
+  **honoured, and it stays open** — it is an obligation, not a
+  task. Chapters 02, 04, 05 and 07, `docs/testing/README.md`,
+  `method/METHOD.md` and `evals/conformance/README.md` were updated
+  in the same pass as the behaviour they describe, and the
+  "eleven hazards" count was corrected to thirteen in the four live
+  documents that state it.
+
+### Added by pass 0033
+
+26. **Skill-line candidate: a StrictMode property read drops the
+    object instead of erroring.** Run 007 D-1. `Get-AzDoRepository`
+    read `$repo.defaultBranch` directly; a repository with no commits
+    has no such property *at all*, so under
+    `Set-StrictMode -Version Latest` the read threw, the pipeline
+    swallowed the terminating error per object, and four repositories
+    came back where five exist — with no gap in the output. Test
+    `PSObject.Properties[...]` before reading, and mock the missing
+    property by *omitting* it: an object that sets it to `$null` does
+    not reproduce the failure. Candidate line for
+    `powershell-module-analysis` or the AzDO client skill.
+    **Skill edits are not this pass's work** — recorded, not taken.
+27. **Skill-line candidate: `Join-Path` on an already-rooted path.**
+    Run 007 D-2. `Join-Path (Get-Location) $Path` produces
+    `C:\here\C:	here` when `$Path` is absolute. Every use in that
+    run passed a relative path so it never fired; the first absolute
+    path came from `$TestDrive`. Test `IsPathRooted` first, and
+    resolve against `(Get-Location).ProviderPath` rather than the
+    process working directory, which PowerShell does not keep in step
+    with `Set-Location`. Candidate line for
+    `powershell-module-commands`. **Recorded, not taken.**
+28. **`.claude-plugin/` carries three version strings, not one.**
+    `plugin.json.version`, `marketplace.json.metadata.version` and
+    `marketplace.json.plugins[0].version`. `Publish-Local.ps1`
+    enforces agreement between the first and the third and ignores
+    the second. Pass 0033's prompt pinned the release to "the single
+    version line" and there is no single version line; bumping only
+    `plugin.json` makes the committed-marketplace validator go red,
+    which was observed before all three were bumped together. Either
+    derive the marketplace versions from the manifest at validation
+    time, or state the three-line rule wherever the one-line rule is
+    currently written.
+
 ### Numbering, reconciled by pass 0030
 
 Pass 0031 recorded a 17→19 drift and asked that numbers never move. This is
@@ -369,7 +473,9 @@ re-derive it:
   was written down, and it landed in `evals/HARNESS.md` as hazard 10. The gap
   is left open on purpose. Closing it would move 14 and every number above it.
 - **14–22** exist as numbered entries.
-- **23, 24 and 25 were consumed by pass 0032**; **26 is the next free
+- **23, 24 and 25 were consumed by pass 0032**, and all three were
+  **resolved by pass 0033**.
+- **26, 27 and 28 were consumed by pass 0033**; **29 is the next free
   number.** Pass 0030 consumes none: everything it
   touched was already numbered.
 
