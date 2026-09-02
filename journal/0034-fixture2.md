@@ -192,6 +192,24 @@ before the amendment carrying the SHAs, so the git history shows the two-step �
 but the body was authored after the thing it decides about existed. Recorded in
 Deviations rather than presented as the plan's order.
 
+**Falsifying the verify script found a defect in the comparator, which is the
+whole argument for falsifying verify scripts.** Probe 1 duplicates a node id in
+the fixture-2 oracle and was written expecting the oracle-vs-self control to go
+red. It did not. `Compare-TfGraph.ps1` keys both graphs into an ordered
+dictionary by id, so a duplicate overwrites its own entry on both sides and the
+staged matching never sees it: `IsMatch: True`, `DifferenceCount: 0`,
+`ActualNodeCount: 100` against an expected 99. The two counts are printed side
+by side in the diff header the whole time, and the verdict above them still says
+clean.
+
+The probe did fire — against the pinned-size and self-consistency checks, which
+are the two things standing between this pass and that blindness — so the
+verify script is sound. What was wrong was the sentence describing the probe,
+and it now says what the probe actually proves. **A probe that fires for a
+different reason than the one you wrote it for is a finding, not a pass.** Left
+unread, it would have been a green line asserting something false about the
+comparator. Backlog 32.
+
 **A "different surface" is easy to claim and easy to under-deliver.** The first
 draft of fixture 2 had four-level nesting and a diamond and was otherwise
 fixture 1 with site/edge/ops vocabulary. What made it a genuinely different

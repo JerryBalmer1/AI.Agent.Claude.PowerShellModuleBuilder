@@ -797,6 +797,38 @@ pushes the three on `Start-ThreadJob`, three concurrent against the prompt's
 limit of eight, with the client's existing 429 retry. Task 8's documents were
 likewise written serially.
 
+**10. `verify.ps1`'s own falsification found a defect in the comparator, and the
+probe is left pointing at what it actually proves.** Probe 1 duplicates a node
+id in the fixture-2 oracle and was written expecting the oracle-vs-self
+**control** to go red. It does not. `Compare-TfGraph.ps1` keys both graphs into
+an ordered dictionary by id, so a duplicated id overwrites its own entry on both
+sides and the staged matching never sees it. Demonstrated directly:
+
+```
+actual node count: 100  (oracle has 99)
+IsMatch:         True
+DifferenceCount: 0
+ActualNodeCount: 100
+```
+
+The counts are printed in the diff header the whole time — `expected: 99
+node(s)` above `actual: 100 node(s)` — and the verdict is still clean, which is
+the worst combination, because a reader who trusts the verdict never reads the
+header.
+
+What fired instead were checks 1d and 1e, the pinned size and the structural
+self-check, which are the two things standing between this pass and that
+blindness. The probe's description in `verify.ps1` was rewritten to say so
+rather than left claiming a control it does not falsify.
+
+**Not fixed here.** The tag was already pushed; `Compare-TfGraph.ps1` is a
+scoring instrument; and fixture 1's falsification report is byte-pinned against
+`plans/0030-release/mutations.txt`, so adding a difference category has to be
+re-falsified against both fixtures by a pass that owns it. No current score is
+affected — verify check 1e proves both oracles duplicate-free. It matters for
+tf-003, which scores a producer's graph rather than an oracle, and it is
+**backlog 32** with the remedy stated.
+
 ## 10. Cost
 
 | | |

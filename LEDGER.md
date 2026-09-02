@@ -64,8 +64,12 @@ measurement.
   clean at the run's preconditions.** It is the gate that says the
   instrument is still mute.
 
-A fixture-2 counterpart to `Test-TfFixtureCase.ps1` does not exist —
-backlog 29.
+Two known gaps tf-003 has to close or accept, both found by pass 0034:
+a fixture-2 counterpart to `Test-TfFixtureCase.ps1` does not exist
+(**backlog 29**); and `Compare-TfGraph.ps1` cannot see a duplicate
+node id, so `IsMatch` alone is not a sufficient verdict on a
+producer's graph — assert `ActualNodeCount -eq ExpectedNodeCount`
+beside it, or fix the comparator first (**backlog 32**).
 
 **007 — baseline off, iterated** (`runs/007-baseline-iterated`,
 target `run-007-baseline-iterated`, final `95ca28d`, first shot
@@ -604,6 +608,42 @@ controls and corpus figures) was **not** touched and stays open.
     four definitions have to be created first, and creating them is a
     change to a frozen fixture and therefore a new decision.
 
+32. **`Compare-TfGraph.ps1` cannot see a duplicate node id, and a
+    producer that emits one scores clean.** Found by falsifying pass
+    0034's own `verify.ps1`: a probe written to prove that duplicating
+    a node turns the oracle-vs-self control red **did not fire on the
+    control**. Both graphs are keyed into an ordered dictionary by id
+    (`$expectedById[[string]$node.id] = $node`, and the same for the
+    actual), so a duplicated id overwrites its own entry on both sides
+    and the staged matching never sees it.
+
+    Demonstrated directly, not inferred: the fixture-2 oracle with one
+    node appended twice returns
+
+        IsMatch: True   DifferenceCount: 0   ActualNodeCount: 100
+
+    against an `ExpectedNodeCount` of 99. **The evidence is printed in
+    the diff header the whole time** — `expected: 99 node(s)` above
+    `actual: 100 node(s)` — and the verdict is still clean, which is
+    the worst combination: a reader who trusts the verdict never reads
+    the header.
+
+    **Not fixed in 0034, and the reason is a rule.** The tag was
+    already pushed; `Compare-TfGraph.ps1` is a scoring instrument, and
+    fixture 1's falsification report is byte-pinned against
+    `plans/0030-release/mutations.txt`, so adding a category is a
+    change that has to be re-falsified against both fixtures in a pass
+    that owns it. **No current score is affected** — both oracles are
+    verified duplicate-free by pass 0034's verify check 1e.
+
+    **It matters for tf-003**, which scores a producer's graph rather
+    than an oracle, and where a node emitted twice is a plausible
+    defect. Either add the check (an `id` seen twice is its own
+    category, so it reads as one defect) or assert
+    `ActualNodeCount -eq ExpectedNodeCount` alongside `IsMatch` in the
+    run's own scoring step. Belongs to the next pass that opens
+    `evals/tf/Compare-TfGraph.ps1`.
+
 ### Numbering, reconciled by pass 0030
 
 Pass 0031 recorded a 17→19 drift and asked that numbers never move. This is
@@ -621,8 +661,10 @@ re-derive it:
   **resolved by pass 0033**.
 - **26, 27 and 28 were consumed by pass 0033**; 26 and 27 were
   **resolved by pass 0034** and 28 remains open.
-- **29, 30 and 31 were consumed by pass 0034**; **32 is the next free
-  number.** Pass 0030 consumes none: everything it
+- **29, 30, 31 and 32 were consumed by pass 0034**; **33 is the next
+  free number.** 32 was written late in the pass, after `verify.ps1`'s
+  own falsification produced a probe that did not fire for the reason
+  it was written to prove. Pass 0030 consumes none: everything it
   touched was already numbered.
 
 Numbers are consumed, never reused and never renumbered — including the ones

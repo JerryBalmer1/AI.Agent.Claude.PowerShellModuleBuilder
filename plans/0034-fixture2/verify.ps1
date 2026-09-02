@@ -156,8 +156,19 @@ Write-Host '1. Both fixture suites, from the fresh clone.'
 # ---------------------------------------------------------------------------
 if ($FailCheck) {
     Mark
-    # Break the fixture-2 oracle so it no longer agrees with itself: duplicate a
-    # node id. The control must go non-zero.
+    # Duplicate a node id in the fixture-2 oracle.
+    #
+    # This probe was written expecting the CONTROL to go red, and it does not.
+    # Compare-TfGraph.ps1 keys both graphs into an ordered dictionary by id, so
+    # a duplicated id overwrites its own entry on both sides and oracle-vs-self
+    # still reports zero differences over a document that now has 100 nodes.
+    # See LEDGER backlog 32: the comparator cannot see a duplicate node id, and
+    # a producer that emitted one would score clean.
+    #
+    # What the probe therefore falsifies is checks 1d and 1e - the pinned size
+    # and the structural self-check - which are the two things standing between
+    # this pass and that blindness. It is left pointing at what it actually
+    # proves rather than at what it was written to prove.
     $before = Get-Content -LiteralPath $oracle2 -Raw
     $graph = $before | ConvertFrom-Json
     $extra = $graph.graph.nodes[2] | ConvertTo-Json -Depth 30 | ConvertFrom-Json
@@ -217,7 +228,7 @@ else {
 }
 
 if ($FailCheck) {
-    Fired '1' 'a duplicated node id in the fixture-2 oracle turns the control red'
+    Fired '1' 'a duplicated node id is caught by the pinned-size and self-consistency checks (NOT by the control - backlog 32)'
     Set-Content -LiteralPath $oracle2 -Value $before -Encoding utf8NoBOM -NoNewline
 }
 
@@ -421,7 +432,7 @@ else {
         Ok "git diff $PrevTag..$Tag -- commands/ is empty"
     }
     else {
-        Bad '5d' "commands/ changed between $PrevTag and $Tag: $($commandsDiff -join ', ')"
+        Bad '5d' "commands/ changed between $PrevTag and ${Tag}: $($commandsDiff -join ', ')"
     }
 
     $skillsDiff = @(& git -C $clone diff --name-only "$PrevTag..$Tag" -- skills/)
@@ -517,7 +528,7 @@ if ($doAzdo) {
         Ok "evals/tf/fixture/ unchanged since $PrevTag"
     }
     else {
-        Bad '6e' "evals/tf/fixture/ changed since $PrevTag: $($f1Diff -join ', ')"
+        Bad '6e' "evals/tf/fixture/ changed since ${PrevTag}: $($f1Diff -join ', ')"
     }
 }
 else {
@@ -527,7 +538,7 @@ else {
         Ok "evals/tf/fixture/ unchanged since $PrevTag (the half that needs no PAT)"
     }
     else {
-        Bad '6e' "evals/tf/fixture/ changed since $PrevTag: $($f1Diff -join ', ')"
+        Bad '6e' "evals/tf/fixture/ changed since ${PrevTag}: $($f1Diff -join ', ')"
     }
 }
 
