@@ -1,0 +1,6 @@
+Compare-Graph
+  expected  : C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\functional\fixture\expected-graph.json
+  candidate : c:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/runs/006-plugin-on/graph.json
+
+  The graphs agree. 0 differences.
+

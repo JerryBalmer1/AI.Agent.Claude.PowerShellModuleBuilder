@@ -1,0 +1,225 @@
+{
+  "Target": "C:\\Users\\jlbal\\AppData\\Local\\Temp\\claude\\c----Code---AI-Agent-Claude-PowerShellModuleBuilder-AI-Agent-Claude-PowerShellModuleBuilder\\f0302223-28f1-436d-85f3-04e168c8534c\\scratchpad\\f-conf",
+  "Tags": [
+    "Universal",
+    "Repository",
+    "HouseStyle",
+    "RequiresBuild"
+  ],
+  "RunAt": "2026-09-01T17:14:57.6454345-07:00",
+  "Total": 57,
+  "Passed": 57,
+  "Failed": 0,
+  "Skipped": 0,
+  "NotRun": 0,
+  "CasesRun": 57,
+  "CasesDefined": 33,
+  "CasesDefinedPerTag": {
+    "HouseStyle": 14,
+    "Repository": 4,
+    "RequiresBuild": 6,
+    "Universal": 9
+  },
+  "ScorePct": 100.0,
+  "Assertions": [
+    {
+      "Name": "House style: build file.declares the task <_>",
+      "Ran": 5,
+      "Passed": 5,
+      "Failed": 0
+    },
+    {
+      "Name": "House style: build file.disables Pester v5 assertion syntax",
+      "Ran": 1,
+      "Passed": 1,
+      "Failed": 0
+    },
+    {
+      "Name": "House style: build file.excludes PreTag-tagged tests from the Test task",
+      "Ran": 1,
+      "Passed": 1,
+      "Failed": 0
+    },
+    {
+      "Name": "House style: build file.has a build file named <ModuleName>.build.ps1",
+      "Ran": 1,
+      "Passed": 1,
+      "Failed": 0
+    },
+    {
+      "Name": "House style: build file.makes the default task Clean, Lint, Build, Test",
+      "Ran": 1,
+      "Passed": 1,
+      "Failed": 0
+    },
+    {
+      "Name": "House style: build file.measures coverage against the built psm1, not the source tree",
+      "Ran": 1,
+      "Passed": 1,
+      "Failed": 0
+    },
+    {
+      "Name": "House style: build file.throws on coverage below target rather than only reporting it",
+      "Ran": 1,
+      "Passed": 1,
+      "Failed": 0
+    },
+    {
+      "Name": "House style: build file.throws rather than exits when tests fail",
+      "Ran": 1,
+      "Passed": 1,
+      "Failed": 0
+    },
+    {
+      "Name": "House style: generated module.copies culture directories so Get-Help finds about_ topics",
+      "Ran": 1,
+      "Passed": 1,
+      "Failed": 0
+    },
+    {
+      "Name": "House style: generated module.exports exactly the manifest surface",
+      "Ran": 1,
+      "Passed": 1,
+      "Failed": 0
+    },
+    {
+      "Name": "House style: generated module.includes functions from Private subfolders",
+      "Ran": 1,
+      "Passed": 1,
+      "Failed": 0
+    },
+    {
+      "Name": "House style: generated module.marks the generated file as generated",
+      "Ran": 1,
+      "Passed": 1,
+      "Failed": 0
+    },
+    {
+      "Name": "House style: generated module.produced output/<ModuleName>/<ModuleName>.psm1",
+      "Ran": 1,
+      "Passed": 1,
+      "Failed": 0
+    },
+    {
+      "Name": "House style: generated module.sets $script:ModuleRoot",
+      "Ran": 1,
+      "Passed": 1,
+      "Failed": 0
+    },
+    {
+      "Name": "House style: source layout.agrees three ways: Public filenames, manifest exports, and their count",
+      "Ran": 1,
+      "Passed": 1,
+      "Failed": 0
+    },
+    {
+      "Name": "House style: source layout.declares the PowerShell editions it claims to support",
+      "Ran": 1,
+      "Passed": 1,
+      "Failed": 0
+    },
+    {
+      "Name": "House style: source layout.defines exactly one function in <_.Name>, named for the file",
+      "Ran": 7,
+      "Passed": 7,
+      "Failed": 0
+    },
+    {
+      "Name": "House style: source layout.keeps Public/ flat",
+      "Ran": 1,
+      "Passed": 1,
+      "Failed": 0
+    },
+    {
+      "Name": "House style: source layout.pins build dependencies only in Requirements.psd1",
+      "Ran": 1,
+      "Passed": 1,
+      "Failed": 0
+    },
+    {
+      "Name": "House style: source layout.places source under src/<ModuleName>/",
+      "Ran": 1,
+      "Passed": 1,
+      "Failed": 0
+    },
+    {
+      "Name": "Manifest.declares a GUID that parses as a GUID",
+      "Ran": 1,
+      "Passed": 1,
+      "Failed": 0
+    },
+    {
+      "Name": "Manifest.declares a ModuleVersion that parses as a version",
+      "Ran": 1,
+      "Passed": 1,
+      "Failed": 0
+    },
+    {
+      "Name": "Manifest.declares a RootModule",
+      "Ran": 1,
+      "Passed": 1,
+      "Failed": 0
+    },
+    {
+      "Name": "Manifest.exists, and its base name matches its directory",
+      "Ran": 1,
+      "Passed": 1,
+      "Failed": 0
+    },
+    {
+      "Name": "Manifest.exports functions by explicit name, never by wildcard",
+      "Ran": 1,
+      "Passed": 1,
+      "Failed": 0
+    },
+    {
+      "Name": "Manifest.exports no cmdlets, variables, or aliases implicitly",
+      "Ran": 3,
+      "Passed": 3,
+      "Failed": 0
+    },
+    {
+      "Name": "Manifest.parses as PowerShell data",
+      "Ran": 1,
+      "Passed": 1,
+      "Failed": 0
+    },
+    {
+      "Name": "Public surface.defines every function the manifest exports somewhere in source",
+      "Ran": 1,
+      "Passed": 1,
+      "Failed": 0
+    },
+    {
+      "Name": "Public surface.gives <_.Name> comment-based help with a synopsis",
+      "Ran": 7,
+      "Passed": 7,
+      "Failed": 0
+    },
+    {
+      "Name": "Repository shape.exercises the exported command <_.BaseName> somewhere in tests",
+      "Ran": 7,
+      "Passed": 7,
+      "Failed": 0
+    },
+    {
+      "Name": "Repository shape.has a build entrypoint at the repository root",
+      "Ran": 1,
+      "Passed": 1,
+      "Failed": 0
+    },
+    {
+      "Name": "Repository shape.has a tests directory",
+      "Ran": 1,
+      "Passed": 1,
+      "Failed": 0
+    },
+    {
+      "Name": "Repository shape.has analyzer settings at the repository root",
+      "Ran": 1,
+      "Passed": 1,
+      "Failed": 0
+    }
+  ],
+  "Failures": []
+}

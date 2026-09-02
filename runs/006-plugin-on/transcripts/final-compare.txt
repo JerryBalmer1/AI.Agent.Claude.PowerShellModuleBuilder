@@ -1,0 +1,8 @@
+Compare-Graph
+  expected  : C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\functional\fixture\expected-graph.json
+  candidate : C:\Users\jlbal\AppData\Local\Temp\claude\c----Code---AI-Agent-Claude-PowerShellModuleBuilder-AI-Agent-Claude-PowerShellModuleBuilder\f0302223-28f1-436d-85f3-04e168c8534c\scratchpad\f-cmp/artifacts/graph.json
+
+  The graphs agree. 0 differences.
+
+  report    : C:\Users\jlbal\AppData\Local\Temp\claude\c----Code---AI-Agent-Claude-PowerShellModuleBuilder-AI-Agent-Claude-PowerShellModuleBuilder\f0302223-28f1-436d-85f3-04e168c8534c\scratchpad\f-cmp/diff.json
+

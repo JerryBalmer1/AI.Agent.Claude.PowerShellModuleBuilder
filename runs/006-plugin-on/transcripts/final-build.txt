@@ -1,0 +1,36 @@
+Build . C:\Users\jlbal\AppData\Local\Temp\claude\c----Code---AI-Agent-Claude-PowerShellModuleBuilder-AI-Agent-Claude-PowerShellModuleBuilder\f0302223-28f1-436d-85f3-04e168c8534c\scratchpad\f-build\PSAzureDevOpsGraph.build.ps1
+Task /./Clean
+Removed output/.
+Done /./Clean 00:00:00.0284327
+Task /./Lint
+PSScriptAnalyzer: 0 findings.
+Done /./Lint 00:00:04.6458456
+Task /./Build/Resolve
+Runtime dependencies:
+  powershell-yaml: 0.4.12 at C:\Users\jlbal\OneDrive\Documents\PowerShell\Modules\powershell-yaml\0.4.12\powershell-yaml.psd1
+Done /./Build/Resolve 00:00:00.0792856
+Task /./Build
+  copied culture directory en-US/
+Built 12 private + 7 public into output/PSAzureDevOpsGraph/.
+Done /./Build 00:00:00.1785849
+Done /./Test/Build
+Task /./Test
+
+Running tests from 8 files.
+Starting code coverage.
+[+] C:\Users\jlbal\AppData\Local\Temp\claude\c----Code---AI-Agent-Claude-PowerShellModuleBuilder-AI-Agent-Claude-PowerShellModuleBuilder\f0302223-28f1-436d-85f3-04e168c8534c\scratchpad\f-build\tests\Module.Quality.Tests.ps1 1.61s (19 tests)
+[+] C:\Users\jlbal\AppData\Local\Temp\claude\c----Code---AI-Agent-Claude-PowerShellModuleBuilder-AI-Agent-Claude-PowerShellModuleBuilder\f0302223-28f1-436d-85f3-04e168c8534c\scratchpad\f-build\tests\Integration\Fixture.Integration.Tests.ps1 23.01s (18 tests)
+[+] C:\Users\jlbal\AppData\Local\Temp\claude\c----Code---AI-Agent-Claude-PowerShellModuleBuilder-AI-Agent-Claude-PowerShellModuleBuilder\f0302223-28f1-436d-85f3-04e168c8534c\scratchpad\f-build\tests\Private\GraphInternals.Tests.ps1 243ms (18 tests)
+[+] C:\Users\jlbal\AppData\Local\Temp\claude\c----Code---AI-Agent-Claude-PowerShellModuleBuilder-AI-Agent-Claude-PowerShellModuleBuilder\f0302223-28f1-436d-85f3-04e168c8534c\scratchpad\f-build\tests\Public\Credential.Tests.ps1 160ms (7 tests)
+[+] C:\Users\jlbal\AppData\Local\Temp\claude\c----Code---AI-Agent-Claude-PowerShellModuleBuilder-AI-Agent-Claude-PowerShellModuleBuilder\f0302223-28f1-436d-85f3-04e168c8534c\scratchpad\f-build\tests\Public\Export-AzDoPipelineDependencyGraph.Tests.ps1 197ms (8 tests)
+[+] C:\Users\jlbal\AppData\Local\Temp\claude\c----Code---AI-Agent-Claude-PowerShellModuleBuilder-AI-Agent-Claude-PowerShellModuleBuilder\f0302223-28f1-436d-85f3-04e168c8534c\scratchpad\f-build\tests\Public\Get-AzDoPipelineReference.Tests.ps1 179ms (13 tests)
+[+] C:\Users\jlbal\AppData\Local\Temp\claude\c----Code---AI-Agent-Claude-PowerShellModuleBuilder-AI-Agent-Claude-PowerShellModuleBuilder\f0302223-28f1-436d-85f3-04e168c8534c\scratchpad\f-build\tests\Public\Resolve-AzDoPipelineReference.Tests.ps1 203ms (12 tests)
+Tests completed in 25.76s
+Tests Passed: 95, Failed: 0, Skipped: 0, Inconclusive: 0, NotRun: 10
+Processing code coverage result.
+Covered 89.81% / 70%. 736 analyzed Commands in 1 File.
+Line coverage: 89.81% (target 70%)
+Done /./Test 00:00:29.4422660
+Done /. 00:00:34.3183317
+Build succeeded. 6 tasks, 0 errors, 0 warnings 00:00:34.5235965
+

@@ -5,11 +5,14 @@ for counters and pins. Update it in the same commit as the work
 that changes it.
 
 ## Passes
-Last landed: 0027. Next: 0028.
+Last landed: 0028. Next: 0029-in-progress (final-README rider,
+running in the same session as 0028 per its prompt).
 
 ## Runs
-AzDO-module (runs/NNN-*): last 005, next 006 (passes 0026-0028;
-0029 final-README rider on 006).
+AzDO-module (runs/NNN-*): **ladder COMPLETE at 004–006** (passes
+0026-0028). All three show three complete score lines, so the 0029
+rider is eligible and ran. The next run series is the operator's
+decision — nothing is scheduled.
 Terraform (runs/tf-NNN-*): last tf-002, next tf-003 (measured,
 blind — not yet scheduled).
 
@@ -22,7 +25,8 @@ psmodule manifest: 0.1.0 (re-versioned at packaging, 0030;
 v1.0.0 reserved for "passed the ladder")
 
 ## Pins
-Harness main: pass-0027-run-005 tip, fast-forwarded at pass close.
+Harness main: pass-0028-run-006 tip, fast-forwarded at pass close,
+then pass-0029-final-readme on top of it in the same session.
 Verified by ancestry and by `git ls-remote`, never by quoting a
 SHA this file cannot know about itself. It read
 pass-0025-findings-batch until pass 0027; pass 0026 landed run 004
@@ -108,3 +112,21 @@ TF fixture SHAs (decision-0012 re-freeze):
     via git log at preconditions** — message convention: run and pass
     commits carry no scores in subjects; scores live in README/plan
     bodies only (fold into HARNESS.md with 12/13 at 0029).
+
+### Added by pass 0028
+
+15. **`pwsh -File` flattens a comma-separated array into one token** —
+    `-Tag Universal,Repository,HouseStyle,RequiresBuild` arrives as a
+    single string and the tag filter then selects nothing, or the wrong
+    set, without erroring. Bit run 005 three times, including inside its
+    own `verify.ps1`. Use `-Command` with a real `@(...)`, or call the
+    script in-process. Skill line for `powershell-module-build` /
+    `powershell-module-test` when the plugin unpins.
+
+16. **`Reset-Target.ps1` stamps wall-clock author and committer dates**,
+    so the seed COMMIT SHA is irreproducible by design and differs in
+    every run — 004 `f613e4b`, 005 `6dc6673`, 006 `bcaaacc` — while the
+    seed TREE is identical in all three (`cb05cda4c4c52391f371f6b2abae4dd814464948`).
+    The tree is the pin; the commit is not, and a check written against
+    the commit SHA fails for a reason that is not about the seed. Either
+    document it or add `-Epoch` when `evals/` unfreezes.
