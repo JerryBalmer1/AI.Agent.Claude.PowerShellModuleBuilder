@@ -1,0 +1,15 @@
+Test-Tf003Case.ps1 falsification -- one mutation per case, each must redden its OWN case and no other.
+
+A case scorer that has only ever been green is indistinguishable from one that cannot fail.
+
+mutation                                       score   case(s) that went red
+---------------------------------------------- ------- ----------------------------------------
+case 1: drop the sources edge modules/edge -> pop 6 / 7   1 nested-module chain, four levels
+case 2: drop the cross-repo //subdir source    6 / 7   2 cross-repository source, git:: with //subdirectory
+case 3: drop a cross-repo output reference     6 / 7   3 cross-repository output reference
+case 4: collapse the two archive provider pins 6 / 7   4 provider version pin
+case 5: drop the renamed last hop              6 / 7   5 value chain, renamed on the last hop
+case 6: invent an edge for the unused variable 6 / 7   6 unused variable, the absence case
+case 7: claim the vendor git:: URL resolved    6 / 7   7 unresolved module sources, two shapes
+
+Control: the oracle scored against itself is 7 / 7 (cases-oracle-control.txt).

@@ -1,0 +1,7 @@
+verify.ps1 falsification -- each -FailCheck must turn its own check red
+
+-FailCheck 1  exit=1  red: FAIL 1 fresh built clone reproduces build and score sha matches | build exit 0 | differences 0 | graph bytes DIFFER
+-FailCheck 2  exit=1  red: FAIL 2 battery on the regenerated graph 6 / 7
+-FailCheck 3  exit=1  red: FAIL 3 duplicate-id assertion refuses a planted duplicate IsMatch False | ActualDuplicateIdCount 0 | planted id 'not-actually-a-duplicate'
+-FailCheck 4  exit=1  red: FAIL 4 fixtures at their pinned SHAs, zero builds queued fixture 2 pinned (TfSiteCore a228e78c247d2d4367303f303c4363d9906e06f2 != deadbeef; TfSiteEdge 1ae66c2712f799a69304cb4364e91e4d10d694c4 != deadbeef; TfSiteOps fe27a34f7585b86b6fdbf12b609e17d4cb0f4b83 != deadbeef) | evals/ clean | builds queued: 0 since phase 1 started
+-FailCheck 5  exit=1  red: FAIL 5 five distinct session ids, PAT scan zero 5 ids, 4 distinct | credential-shaped strings in this pass's records: 0

@@ -1,0 +1,10 @@
+
+Pass 0036 verification
+
+  PASS  1 fresh built clone reproduces build and score       sha matches | build exit 0 | differences 0 | graph bytes identical to the record
+  PASS  2 battery on the regenerated graph                   7 / 7
+  PASS  3 duplicate-id assertion refuses a planted duplicate IsMatch False | ActualDuplicateIdCount 1 | planted id 'repo:TfSiteCore'
+  PASS  4 fixtures at their pinned SHAs, zero builds queued  fixture 2 pinned | evals/ clean | builds queued: 0 since phase 1 started
+  PASS  5 five distinct session ids, PAT scan zero           5 ids, 5 distinct | credential-shaped strings in this pass's records: 0
+
+5 passed, 0 failed, 0 skipped.

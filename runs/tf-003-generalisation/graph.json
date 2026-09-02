@@ -1,0 +1,1350 @@
+{
+  "graph": {
+    "nodes": [
+      {
+        "id": "repo:TfSiteCore",
+        "label": "TfSiteCore",
+        "type": "repository",
+        "scope": "TfSiteCore"
+      },
+      {
+        "id": "repo:TfSiteEdge",
+        "label": "TfSiteEdge",
+        "type": "repository",
+        "scope": "TfSiteEdge"
+      },
+      {
+        "id": "repo:TfSiteOps",
+        "label": "TfSiteOps",
+        "type": "repository",
+        "scope": "TfSiteOps"
+      },
+      {
+        "id": "TfSiteCore:.",
+        "label": "root",
+        "type": "module",
+        "scope": "TfSiteCore",
+        "parentId": "repo:TfSiteCore",
+        "attributes": {
+          "requiredVersion": ">= 1.6.0"
+        }
+      },
+      {
+        "id": "TfSiteCore:.#local.code_slug",
+        "label": "code_slug",
+        "type": "local",
+        "scope": "TfSiteCore",
+        "parentId": "TfSiteCore:."
+      },
+      {
+        "id": "TfSiteCore:.#output.label_prefix",
+        "label": "label_prefix",
+        "type": "output",
+        "scope": "TfSiteCore",
+        "parentId": "TfSiteCore:."
+      },
+      {
+        "id": "TfSiteCore:.#output.label_short",
+        "label": "label_short",
+        "type": "output",
+        "scope": "TfSiteCore",
+        "parentId": "TfSiteCore:."
+      },
+      {
+        "id": "TfSiteCore:.#output.policy_document",
+        "label": "policy_document",
+        "type": "output",
+        "scope": "TfSiteCore",
+        "parentId": "TfSiteCore:."
+      },
+      {
+        "id": "TfSiteCore:.#provider.archive",
+        "label": "archive",
+        "type": "provider",
+        "scope": "TfSiteCore",
+        "parentId": "TfSiteCore:.",
+        "attributes": {
+          "source": "hashicorp/archive",
+          "version": "~> 2.6"
+        }
+      },
+      {
+        "id": "TfSiteCore:.#provider.tls",
+        "label": "tls",
+        "type": "provider",
+        "scope": "TfSiteCore",
+        "parentId": "TfSiteCore:.",
+        "attributes": {
+          "source": "hashicorp/tls",
+          "version": "4.0.6"
+        }
+      },
+      {
+        "id": "TfSiteCore:.#var.archive_retention_weeks",
+        "label": "archive_retention_weeks",
+        "type": "variable",
+        "scope": "TfSiteCore",
+        "parentId": "TfSiteCore:.",
+        "attributes": {
+          "varType": "number",
+          "hasDefault": true
+        }
+      },
+      {
+        "id": "TfSiteCore:.#var.region",
+        "label": "region",
+        "type": "variable",
+        "scope": "TfSiteCore",
+        "parentId": "TfSiteCore:.",
+        "attributes": {
+          "varType": "string",
+          "hasDefault": true,
+          "hasValidation": true
+        }
+      },
+      {
+        "id": "TfSiteCore:.#var.site_code",
+        "label": "site_code",
+        "type": "variable",
+        "scope": "TfSiteCore",
+        "parentId": "TfSiteCore:.",
+        "attributes": {
+          "varType": "string",
+          "hasDefault": true
+        }
+      },
+      {
+        "id": "TfSiteCore:.#var.steward",
+        "label": "steward",
+        "type": "variable",
+        "scope": "TfSiteCore",
+        "parentId": "TfSiteCore:.",
+        "attributes": {
+          "varType": "string",
+          "hasDefault": true
+        }
+      },
+      {
+        "id": "TfSiteCore:modules/label",
+        "label": "label",
+        "type": "module",
+        "scope": "TfSiteCore",
+        "parentId": "TfSiteCore:."
+      },
+      {
+        "id": "TfSiteCore:modules/label#local.full",
+        "label": "full",
+        "type": "local",
+        "scope": "TfSiteCore",
+        "parentId": "TfSiteCore:modules/label"
+      },
+      {
+        "id": "TfSiteCore:modules/label#output.prefix",
+        "label": "prefix",
+        "type": "output",
+        "scope": "TfSiteCore",
+        "parentId": "TfSiteCore:modules/label"
+      },
+      {
+        "id": "TfSiteCore:modules/label#output.short",
+        "label": "short",
+        "type": "output",
+        "scope": "TfSiteCore",
+        "parentId": "TfSiteCore:modules/label"
+      },
+      {
+        "id": "TfSiteCore:modules/label#var.region",
+        "label": "region",
+        "type": "variable",
+        "scope": "TfSiteCore",
+        "parentId": "TfSiteCore:modules/label",
+        "attributes": {
+          "varType": "string",
+          "hasDefault": true
+        }
+      },
+      {
+        "id": "TfSiteCore:modules/label#var.slug",
+        "label": "slug",
+        "type": "variable",
+        "scope": "TfSiteCore",
+        "parentId": "TfSiteCore:modules/label",
+        "attributes": {
+          "varType": "string",
+          "hasDefault": false,
+          "hasValidation": true
+        }
+      },
+      {
+        "id": "TfSiteCore:modules/policy",
+        "label": "policy",
+        "type": "module",
+        "scope": "TfSiteCore",
+        "parentId": "TfSiteCore:."
+      },
+      {
+        "id": "TfSiteCore:modules/policy#local.document",
+        "label": "document",
+        "type": "local",
+        "scope": "TfSiteCore",
+        "parentId": "TfSiteCore:modules/policy"
+      },
+      {
+        "id": "TfSiteCore:modules/policy#output.document",
+        "label": "document",
+        "type": "output",
+        "scope": "TfSiteCore",
+        "parentId": "TfSiteCore:modules/policy"
+      },
+      {
+        "id": "TfSiteCore:modules/policy#output.steward",
+        "label": "steward",
+        "type": "output",
+        "scope": "TfSiteCore",
+        "parentId": "TfSiteCore:modules/policy"
+      },
+      {
+        "id": "TfSiteCore:modules/policy#var.max_sessions",
+        "label": "max_sessions",
+        "type": "variable",
+        "scope": "TfSiteCore",
+        "parentId": "TfSiteCore:modules/policy",
+        "attributes": {
+          "varType": "number",
+          "hasDefault": true,
+          "hasValidation": true
+        }
+      },
+      {
+        "id": "TfSiteCore:modules/policy#var.region",
+        "label": "region",
+        "type": "variable",
+        "scope": "TfSiteCore",
+        "parentId": "TfSiteCore:modules/policy",
+        "attributes": {
+          "varType": "string",
+          "hasDefault": true
+        }
+      },
+      {
+        "id": "TfSiteCore:modules/policy#var.steward",
+        "label": "steward",
+        "type": "variable",
+        "scope": "TfSiteCore",
+        "parentId": "TfSiteCore:modules/policy",
+        "attributes": {
+          "varType": "string",
+          "hasDefault": false
+        }
+      },
+      {
+        "id": "TfSiteEdge:.",
+        "label": "root",
+        "type": "module",
+        "scope": "TfSiteEdge",
+        "parentId": "repo:TfSiteEdge",
+        "attributes": {
+          "requiredVersion": "~> 1.7.0"
+        }
+      },
+      {
+        "id": "TfSiteEdge:.#local.edge_name",
+        "label": "edge_name",
+        "type": "local",
+        "scope": "TfSiteEdge",
+        "parentId": "TfSiteEdge:."
+      },
+      {
+        "id": "TfSiteEdge:.#local.probe_window",
+        "label": "probe_window",
+        "type": "local",
+        "scope": "TfSiteEdge",
+        "parentId": "TfSiteEdge:."
+      },
+      {
+        "id": "TfSiteEdge:.#output.edge_endpoint",
+        "label": "edge_endpoint",
+        "type": "output",
+        "scope": "TfSiteEdge",
+        "parentId": "TfSiteEdge:."
+      },
+      {
+        "id": "TfSiteEdge:.#output.label_prefix",
+        "label": "label_prefix",
+        "type": "output",
+        "scope": "TfSiteEdge",
+        "parentId": "TfSiteEdge:."
+      },
+      {
+        "id": "TfSiteEdge:.#output.pop_ids",
+        "label": "pop_ids",
+        "type": "output",
+        "scope": "TfSiteEdge",
+        "parentId": "TfSiteEdge:."
+      },
+      {
+        "id": "TfSiteEdge:.#output.region",
+        "label": "region",
+        "type": "output",
+        "scope": "TfSiteEdge",
+        "parentId": "TfSiteEdge:."
+      },
+      {
+        "id": "TfSiteEdge:.#provider.http",
+        "label": "http",
+        "type": "provider",
+        "scope": "TfSiteEdge",
+        "parentId": "TfSiteEdge:.",
+        "attributes": {
+          "source": "hashicorp/http",
+          "version": ">= 3.4.0, < 4.0.0"
+        }
+      },
+      {
+        "id": "TfSiteEdge:.#provider.tls",
+        "label": "tls",
+        "type": "provider",
+        "scope": "TfSiteEdge",
+        "parentId": "TfSiteEdge:.",
+        "attributes": {
+          "source": "hashicorp/tls",
+          "version": "4.0.6"
+        }
+      },
+      {
+        "id": "TfSiteEdge:.#var.enable_tls",
+        "label": "enable_tls",
+        "type": "variable",
+        "scope": "TfSiteEdge",
+        "parentId": "TfSiteEdge:.",
+        "attributes": {
+          "varType": "bool",
+          "hasDefault": true
+        }
+      },
+      {
+        "id": "TfSiteEdge:.#var.pop_count",
+        "label": "pop_count",
+        "type": "variable",
+        "scope": "TfSiteEdge",
+        "parentId": "TfSiteEdge:.",
+        "attributes": {
+          "varType": "number",
+          "hasDefault": true
+        }
+      },
+      {
+        "id": "TfSiteEdge:.#var.probe_interval_seconds",
+        "label": "probe_interval_seconds",
+        "type": "variable",
+        "scope": "TfSiteEdge",
+        "parentId": "TfSiteEdge:.",
+        "attributes": {
+          "varType": "number",
+          "hasDefault": true
+        }
+      },
+      {
+        "id": "TfSiteEdge:.#var.region",
+        "label": "region",
+        "type": "variable",
+        "scope": "TfSiteEdge",
+        "parentId": "TfSiteEdge:.",
+        "attributes": {
+          "varType": "string",
+          "hasDefault": true,
+          "hasValidation": true
+        }
+      },
+      {
+        "id": "TfSiteEdge:.#var.site_name",
+        "label": "site_name",
+        "type": "variable",
+        "scope": "TfSiteEdge",
+        "parentId": "TfSiteEdge:.",
+        "attributes": {
+          "varType": "string",
+          "hasDefault": true
+        }
+      },
+      {
+        "id": "TfSiteEdge:git::https://jlbalmerjr1@dev.azure.com/jlbalmerjr1/ClaudeTestingTerraform/_git/TfSiteVendor//modules/probe?ref=main",
+        "label": "probe",
+        "type": "module",
+        "scope": "TfSiteEdge",
+        "parentId": "TfSiteEdge:.",
+        "attributes": {
+          "unresolved": true
+        }
+      },
+      {
+        "id": "TfSiteEdge:modules/edge",
+        "label": "edge",
+        "type": "module",
+        "scope": "TfSiteEdge",
+        "parentId": "TfSiteEdge:."
+      },
+      {
+        "id": "TfSiteEdge:modules/edge/modules/pop",
+        "label": "pop",
+        "type": "module",
+        "scope": "TfSiteEdge",
+        "parentId": "TfSiteEdge:modules/edge"
+      },
+      {
+        "id": "TfSiteEdge:modules/edge/modules/pop/modules/probe",
+        "label": "probe",
+        "type": "module",
+        "scope": "TfSiteEdge",
+        "parentId": "TfSiteEdge:modules/edge/modules/pop"
+      },
+      {
+        "id": "TfSiteEdge:modules/edge/modules/pop/modules/probe#output.id",
+        "label": "id",
+        "type": "output",
+        "scope": "TfSiteEdge",
+        "parentId": "TfSiteEdge:modules/edge/modules/pop/modules/probe"
+      },
+      {
+        "id": "TfSiteEdge:modules/edge/modules/pop/modules/probe#output.name",
+        "label": "name",
+        "type": "output",
+        "scope": "TfSiteEdge",
+        "parentId": "TfSiteEdge:modules/edge/modules/pop/modules/probe"
+      },
+      {
+        "id": "TfSiteEdge:modules/edge/modules/pop/modules/probe#output.window",
+        "label": "window",
+        "type": "output",
+        "scope": "TfSiteEdge",
+        "parentId": "TfSiteEdge:modules/edge/modules/pop/modules/probe"
+      },
+      {
+        "id": "TfSiteEdge:modules/edge/modules/pop/modules/probe#var.name",
+        "label": "name",
+        "type": "variable",
+        "scope": "TfSiteEdge",
+        "parentId": "TfSiteEdge:modules/edge/modules/pop/modules/probe",
+        "attributes": {
+          "varType": "string",
+          "hasDefault": false
+        }
+      },
+      {
+        "id": "TfSiteEdge:modules/edge/modules/pop/modules/probe#var.window",
+        "label": "window",
+        "type": "variable",
+        "scope": "TfSiteEdge",
+        "parentId": "TfSiteEdge:modules/edge/modules/pop/modules/probe",
+        "attributes": {
+          "varType": "number",
+          "hasDefault": true
+        }
+      },
+      {
+        "id": "TfSiteEdge:modules/edge/modules/pop#local.probe_name",
+        "label": "probe_name",
+        "type": "local",
+        "scope": "TfSiteEdge",
+        "parentId": "TfSiteEdge:modules/edge/modules/pop"
+      },
+      {
+        "id": "TfSiteEdge:modules/edge/modules/pop#output.id",
+        "label": "id",
+        "type": "output",
+        "scope": "TfSiteEdge",
+        "parentId": "TfSiteEdge:modules/edge/modules/pop"
+      },
+      {
+        "id": "TfSiteEdge:modules/edge/modules/pop#output.probe_id",
+        "label": "probe_id",
+        "type": "output",
+        "scope": "TfSiteEdge",
+        "parentId": "TfSiteEdge:modules/edge/modules/pop"
+      },
+      {
+        "id": "TfSiteEdge:modules/edge/modules/pop#output.region",
+        "label": "region",
+        "type": "output",
+        "scope": "TfSiteEdge",
+        "parentId": "TfSiteEdge:modules/edge/modules/pop"
+      },
+      {
+        "id": "TfSiteEdge:modules/edge/modules/pop#var.name",
+        "label": "name",
+        "type": "variable",
+        "scope": "TfSiteEdge",
+        "parentId": "TfSiteEdge:modules/edge/modules/pop",
+        "attributes": {
+          "varType": "string",
+          "hasDefault": false
+        }
+      },
+      {
+        "id": "TfSiteEdge:modules/edge/modules/pop#var.probe_window",
+        "label": "probe_window",
+        "type": "variable",
+        "scope": "TfSiteEdge",
+        "parentId": "TfSiteEdge:modules/edge/modules/pop",
+        "attributes": {
+          "varType": "number",
+          "hasDefault": true
+        }
+      },
+      {
+        "id": "TfSiteEdge:modules/edge/modules/pop#var.region",
+        "label": "region",
+        "type": "variable",
+        "scope": "TfSiteEdge",
+        "parentId": "TfSiteEdge:modules/edge/modules/pop",
+        "attributes": {
+          "varType": "string",
+          "hasDefault": true
+        }
+      },
+      {
+        "id": "TfSiteEdge:modules/edge#local.pop_prefix",
+        "label": "pop_prefix",
+        "type": "local",
+        "scope": "TfSiteEdge",
+        "parentId": "TfSiteEdge:modules/edge"
+      },
+      {
+        "id": "TfSiteEdge:modules/edge#output.endpoint",
+        "label": "endpoint",
+        "type": "output",
+        "scope": "TfSiteEdge",
+        "parentId": "TfSiteEdge:modules/edge"
+      },
+      {
+        "id": "TfSiteEdge:modules/edge#output.plan_summary",
+        "label": "plan_summary",
+        "type": "output",
+        "scope": "TfSiteEdge",
+        "parentId": "TfSiteEdge:modules/edge"
+      },
+      {
+        "id": "TfSiteEdge:modules/edge#output.pop_ids",
+        "label": "pop_ids",
+        "type": "output",
+        "scope": "TfSiteEdge",
+        "parentId": "TfSiteEdge:modules/edge"
+      },
+      {
+        "id": "TfSiteEdge:modules/edge#var.name",
+        "label": "name",
+        "type": "variable",
+        "scope": "TfSiteEdge",
+        "parentId": "TfSiteEdge:modules/edge",
+        "attributes": {
+          "varType": "string",
+          "hasDefault": false
+        }
+      },
+      {
+        "id": "TfSiteEdge:modules/edge#var.pop_count",
+        "label": "pop_count",
+        "type": "variable",
+        "scope": "TfSiteEdge",
+        "parentId": "TfSiteEdge:modules/edge",
+        "attributes": {
+          "varType": "number",
+          "hasDefault": true,
+          "hasValidation": true
+        }
+      },
+      {
+        "id": "TfSiteEdge:modules/edge#var.probe_window",
+        "label": "probe_window",
+        "type": "variable",
+        "scope": "TfSiteEdge",
+        "parentId": "TfSiteEdge:modules/edge",
+        "attributes": {
+          "varType": "number",
+          "hasDefault": true
+        }
+      },
+      {
+        "id": "TfSiteEdge:modules/edge#var.region",
+        "label": "region",
+        "type": "variable",
+        "scope": "TfSiteEdge",
+        "parentId": "TfSiteEdge:modules/edge",
+        "attributes": {
+          "varType": "string",
+          "hasDefault": true
+        }
+      },
+      {
+        "id": "TfSiteEdge:modules/edge#var.terminate_tls",
+        "label": "terminate_tls",
+        "type": "variable",
+        "scope": "TfSiteEdge",
+        "parentId": "TfSiteEdge:modules/edge",
+        "attributes": {
+          "varType": "bool",
+          "hasDefault": true
+        }
+      },
+      {
+        "id": "TfSiteOps:.",
+        "label": "root",
+        "type": "module",
+        "scope": "TfSiteOps",
+        "parentId": "repo:TfSiteOps",
+        "attributes": {
+          "requiredVersion": ">= 1.4.0, < 1.10.0"
+        }
+      },
+      {
+        "id": "TfSiteOps:../site-archive/modules/vault",
+        "label": "vault",
+        "type": "module",
+        "scope": "TfSiteOps",
+        "parentId": "TfSiteOps:.",
+        "attributes": {
+          "unresolved": true
+        }
+      },
+      {
+        "id": "TfSiteOps:.#local.edge_pop_ids",
+        "label": "edge_pop_ids",
+        "type": "local",
+        "scope": "TfSiteOps",
+        "parentId": "TfSiteOps:."
+      },
+      {
+        "id": "TfSiteOps:.#local.ops_name",
+        "label": "ops_name",
+        "type": "local",
+        "scope": "TfSiteOps",
+        "parentId": "TfSiteOps:."
+      },
+      {
+        "id": "TfSiteOps:.#output.collected_ids",
+        "label": "collected_ids",
+        "type": "output",
+        "scope": "TfSiteOps",
+        "parentId": "TfSiteOps:."
+      },
+      {
+        "id": "TfSiteOps:.#output.edge_endpoint",
+        "label": "edge_endpoint",
+        "type": "output",
+        "scope": "TfSiteOps",
+        "parentId": "TfSiteOps:."
+      },
+      {
+        "id": "TfSiteOps:.#output.policy_steward",
+        "label": "policy_steward",
+        "type": "output",
+        "scope": "TfSiteOps",
+        "parentId": "TfSiteOps:."
+      },
+      {
+        "id": "TfSiteOps:.#output.report",
+        "label": "report",
+        "type": "output",
+        "scope": "TfSiteOps",
+        "parentId": "TfSiteOps:."
+      },
+      {
+        "id": "TfSiteOps:.#provider.archive",
+        "label": "archive",
+        "type": "provider",
+        "scope": "TfSiteOps",
+        "parentId": "TfSiteOps:.",
+        "attributes": {
+          "source": "hashicorp/archive",
+          "version": "2.6.0"
+        }
+      },
+      {
+        "id": "TfSiteOps:.#provider.external",
+        "label": "external",
+        "type": "provider",
+        "scope": "TfSiteOps",
+        "parentId": "TfSiteOps:.",
+        "attributes": {
+          "source": "hashicorp/external",
+          "version": "~> 2.3.4"
+        }
+      },
+      {
+        "id": "TfSiteOps:.#var.region",
+        "label": "region",
+        "type": "variable",
+        "scope": "TfSiteOps",
+        "parentId": "TfSiteOps:.",
+        "attributes": {
+          "varType": "string",
+          "hasDefault": true
+        }
+      },
+      {
+        "id": "TfSiteOps:.#var.report_format",
+        "label": "report_format",
+        "type": "variable",
+        "scope": "TfSiteOps",
+        "parentId": "TfSiteOps:.",
+        "attributes": {
+          "varType": "string",
+          "hasDefault": true
+        }
+      },
+      {
+        "id": "TfSiteOps:.#var.retention_days",
+        "label": "retention_days",
+        "type": "variable",
+        "scope": "TfSiteOps",
+        "parentId": "TfSiteOps:.",
+        "attributes": {
+          "varType": "number",
+          "hasDefault": true,
+          "hasValidation": true
+        }
+      },
+      {
+        "id": "TfSiteOps:.#var.site_name",
+        "label": "site_name",
+        "type": "variable",
+        "scope": "TfSiteOps",
+        "parentId": "TfSiteOps:.",
+        "attributes": {
+          "varType": "string",
+          "hasDefault": true
+        }
+      },
+      {
+        "id": "TfSiteOps:modules/collector",
+        "label": "collector",
+        "type": "module",
+        "scope": "TfSiteOps",
+        "parentId": "TfSiteOps:."
+      },
+      {
+        "id": "TfSiteOps:modules/collector#local.collector_name",
+        "label": "collector_name",
+        "type": "local",
+        "scope": "TfSiteOps",
+        "parentId": "TfSiteOps:modules/collector"
+      },
+      {
+        "id": "TfSiteOps:modules/collector#output.collected_ids",
+        "label": "collected_ids",
+        "type": "output",
+        "scope": "TfSiteOps",
+        "parentId": "TfSiteOps:modules/collector"
+      },
+      {
+        "id": "TfSiteOps:modules/collector#output.retention_days",
+        "label": "retention_days",
+        "type": "output",
+        "scope": "TfSiteOps",
+        "parentId": "TfSiteOps:modules/collector"
+      },
+      {
+        "id": "TfSiteOps:modules/collector#output.tag",
+        "label": "tag",
+        "type": "output",
+        "scope": "TfSiteOps",
+        "parentId": "TfSiteOps:modules/collector"
+      },
+      {
+        "id": "TfSiteOps:modules/collector#var.name",
+        "label": "name",
+        "type": "variable",
+        "scope": "TfSiteOps",
+        "parentId": "TfSiteOps:modules/collector",
+        "attributes": {
+          "varType": "string",
+          "hasDefault": false
+        }
+      },
+      {
+        "id": "TfSiteOps:modules/collector#var.pop_ids",
+        "label": "pop_ids",
+        "type": "variable",
+        "scope": "TfSiteOps",
+        "parentId": "TfSiteOps:modules/collector",
+        "attributes": {
+          "varType": "list(string)",
+          "hasDefault": true
+        }
+      },
+      {
+        "id": "TfSiteOps:modules/collector#var.retention_days",
+        "label": "retention_days",
+        "type": "variable",
+        "scope": "TfSiteOps",
+        "parentId": "TfSiteOps:modules/collector",
+        "attributes": {
+          "varType": "number",
+          "hasDefault": true
+        }
+      },
+      {
+        "id": "TfSiteOps:modules/common",
+        "label": "common",
+        "type": "module",
+        "scope": "TfSiteOps",
+        "parentId": "TfSiteOps:."
+      },
+      {
+        "id": "TfSiteOps:modules/common#local.tag",
+        "label": "tag",
+        "type": "local",
+        "scope": "TfSiteOps",
+        "parentId": "TfSiteOps:modules/common"
+      },
+      {
+        "id": "TfSiteOps:modules/common#output.tag",
+        "label": "tag",
+        "type": "output",
+        "scope": "TfSiteOps",
+        "parentId": "TfSiteOps:modules/common"
+      },
+      {
+        "id": "TfSiteOps:modules/common#var.layer",
+        "label": "layer",
+        "type": "variable",
+        "scope": "TfSiteOps",
+        "parentId": "TfSiteOps:modules/common",
+        "attributes": {
+          "varType": "string",
+          "hasDefault": true
+        }
+      },
+      {
+        "id": "TfSiteOps:modules/common#var.name",
+        "label": "name",
+        "type": "variable",
+        "scope": "TfSiteOps",
+        "parentId": "TfSiteOps:modules/common",
+        "attributes": {
+          "varType": "string",
+          "hasDefault": false
+        }
+      },
+      {
+        "id": "TfSiteOps:modules/reporter",
+        "label": "reporter",
+        "type": "module",
+        "scope": "TfSiteOps",
+        "parentId": "TfSiteOps:."
+      },
+      {
+        "id": "TfSiteOps:modules/reporter#local.reporter_name",
+        "label": "reporter_name",
+        "type": "local",
+        "scope": "TfSiteOps",
+        "parentId": "TfSiteOps:modules/reporter"
+      },
+      {
+        "id": "TfSiteOps:modules/reporter#output.name",
+        "label": "name",
+        "type": "output",
+        "scope": "TfSiteOps",
+        "parentId": "TfSiteOps:modules/reporter"
+      },
+      {
+        "id": "TfSiteOps:modules/reporter#output.report",
+        "label": "report",
+        "type": "output",
+        "scope": "TfSiteOps",
+        "parentId": "TfSiteOps:modules/reporter"
+      },
+      {
+        "id": "TfSiteOps:modules/reporter#var.format",
+        "label": "format",
+        "type": "variable",
+        "scope": "TfSiteOps",
+        "parentId": "TfSiteOps:modules/reporter",
+        "attributes": {
+          "varType": "string",
+          "hasDefault": true,
+          "hasValidation": true
+        }
+      },
+      {
+        "id": "TfSiteOps:modules/reporter#var.name",
+        "label": "name",
+        "type": "variable",
+        "scope": "TfSiteOps",
+        "parentId": "TfSiteOps:modules/reporter",
+        "attributes": {
+          "varType": "string",
+          "hasDefault": false
+        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "TfSiteCore:.",
+        "to": "TfSiteCore:modules/label",
+        "kind": "sources",
+        "resolved": true
+      },
+      {
+        "from": "TfSiteCore:.",
+        "to": "TfSiteCore:modules/policy",
+        "kind": "sources",
+        "resolved": true
+      },
+      {
+        "from": "TfSiteCore:.#local.code_slug",
+        "to": "TfSiteCore:modules/label#var.slug",
+        "kind": "passes-to"
+      },
+      {
+        "from": "TfSiteCore:.#var.region",
+        "to": "TfSiteCore:modules/label#var.region",
+        "kind": "passes-to"
+      },
+      {
+        "from": "TfSiteCore:.#var.region",
+        "to": "TfSiteCore:modules/policy#var.region",
+        "kind": "passes-to"
+      },
+      {
+        "from": "TfSiteCore:.#var.site_code",
+        "to": "TfSiteCore:.#local.code_slug",
+        "kind": "references"
+      },
+      {
+        "from": "TfSiteCore:.#var.steward",
+        "to": "TfSiteCore:modules/policy#var.steward",
+        "kind": "passes-to"
+      },
+      {
+        "from": "TfSiteCore:modules/label#local.full",
+        "to": "TfSiteCore:modules/label#output.prefix",
+        "kind": "references"
+      },
+      {
+        "from": "TfSiteCore:modules/label#output.prefix",
+        "to": "TfSiteCore:.#output.label_prefix",
+        "kind": "references"
+      },
+      {
+        "from": "TfSiteCore:modules/label#output.prefix",
+        "to": "TfSiteEdge:.#output.label_prefix",
+        "kind": "references"
+      },
+      {
+        "from": "TfSiteCore:modules/label#output.short",
+        "to": "TfSiteCore:.#output.label_short",
+        "kind": "references"
+      },
+      {
+        "from": "TfSiteCore:modules/label#var.region",
+        "to": "TfSiteCore:modules/label#local.full",
+        "kind": "references"
+      },
+      {
+        "from": "TfSiteCore:modules/label#var.slug",
+        "to": "TfSiteCore:modules/label#local.full",
+        "kind": "references"
+      },
+      {
+        "from": "TfSiteCore:modules/label#var.slug",
+        "to": "TfSiteCore:modules/label#output.short",
+        "kind": "references"
+      },
+      {
+        "from": "TfSiteCore:modules/policy#local.document",
+        "to": "TfSiteCore:modules/policy#output.document",
+        "kind": "references"
+      },
+      {
+        "from": "TfSiteCore:modules/policy#output.document",
+        "to": "TfSiteCore:.#output.policy_document",
+        "kind": "references"
+      },
+      {
+        "from": "TfSiteCore:modules/policy#output.steward",
+        "to": "TfSiteOps:.#output.policy_steward",
+        "kind": "references"
+      },
+      {
+        "from": "TfSiteCore:modules/policy#var.max_sessions",
+        "to": "TfSiteCore:modules/policy#local.document",
+        "kind": "references"
+      },
+      {
+        "from": "TfSiteCore:modules/policy#var.region",
+        "to": "TfSiteCore:modules/policy#local.document",
+        "kind": "references"
+      },
+      {
+        "from": "TfSiteCore:modules/policy#var.steward",
+        "to": "TfSiteCore:modules/policy#local.document",
+        "kind": "references"
+      },
+      {
+        "from": "TfSiteCore:modules/policy#var.steward",
+        "to": "TfSiteCore:modules/policy#output.steward",
+        "kind": "references"
+      },
+      {
+        "from": "TfSiteEdge:.",
+        "to": "TfSiteCore:modules/label",
+        "kind": "sources",
+        "resolved": true
+      },
+      {
+        "from": "TfSiteEdge:.",
+        "to": "TfSiteEdge:git::https://jlbalmerjr1@dev.azure.com/jlbalmerjr1/ClaudeTestingTerraform/_git/TfSiteVendor//modules/probe?ref=main",
+        "kind": "sources",
+        "resolved": false,
+        "reason": "source 'git::https://jlbalmerjr1@dev.azure.com/jlbalmerjr1/ClaudeTestingTerraform/_git/TfSiteVendor//modules/probe?ref=main' names repository TfSiteVendor, which is not among the scanned repositories"
+      },
+      {
+        "from": "TfSiteEdge:.",
+        "to": "TfSiteEdge:modules/edge",
+        "kind": "sources",
+        "resolved": true
+      },
+      {
+        "from": "TfSiteEdge:.#local.edge_name",
+        "to": "TfSiteEdge:modules/edge#var.name",
+        "kind": "passes-to"
+      },
+      {
+        "from": "TfSiteEdge:.#local.probe_window",
+        "to": "TfSiteEdge:modules/edge#var.probe_window",
+        "kind": "passes-to"
+      },
+      {
+        "from": "TfSiteEdge:.#output.edge_endpoint",
+        "to": "TfSiteOps:.#output.edge_endpoint",
+        "kind": "references"
+      },
+      {
+        "from": "TfSiteEdge:.#output.pop_ids",
+        "to": "TfSiteOps:.#local.edge_pop_ids",
+        "kind": "references"
+      },
+      {
+        "from": "TfSiteEdge:.#var.enable_tls",
+        "to": "TfSiteEdge:modules/edge#var.terminate_tls",
+        "kind": "passes-to"
+      },
+      {
+        "from": "TfSiteEdge:.#var.pop_count",
+        "to": "TfSiteEdge:modules/edge#var.pop_count",
+        "kind": "passes-to"
+      },
+      {
+        "from": "TfSiteEdge:.#var.probe_interval_seconds",
+        "to": "TfSiteEdge:.#local.probe_window",
+        "kind": "references"
+      },
+      {
+        "from": "TfSiteEdge:.#var.region",
+        "to": "TfSiteCore:modules/label#var.region",
+        "kind": "passes-to"
+      },
+      {
+        "from": "TfSiteEdge:.#var.region",
+        "to": "TfSiteEdge:.#output.region",
+        "kind": "references"
+      },
+      {
+        "from": "TfSiteEdge:.#var.region",
+        "to": "TfSiteEdge:modules/edge#var.region",
+        "kind": "passes-to"
+      },
+      {
+        "from": "TfSiteEdge:.#var.site_name",
+        "to": "TfSiteCore:modules/label#var.slug",
+        "kind": "passes-to"
+      },
+      {
+        "from": "TfSiteEdge:.#var.site_name",
+        "to": "TfSiteEdge:.#local.edge_name",
+        "kind": "references"
+      },
+      {
+        "from": "TfSiteEdge:modules/edge",
+        "to": "TfSiteEdge:modules/edge/modules/pop",
+        "kind": "sources",
+        "resolved": true
+      },
+      {
+        "from": "TfSiteEdge:modules/edge/modules/pop",
+        "to": "TfSiteEdge:modules/edge/modules/pop/modules/probe",
+        "kind": "sources",
+        "resolved": true
+      },
+      {
+        "from": "TfSiteEdge:modules/edge/modules/pop/modules/probe#output.id",
+        "to": "TfSiteEdge:modules/edge/modules/pop#output.probe_id",
+        "kind": "references"
+      },
+      {
+        "from": "TfSiteEdge:modules/edge/modules/pop/modules/probe#var.name",
+        "to": "TfSiteEdge:modules/edge/modules/pop/modules/probe#output.name",
+        "kind": "references"
+      },
+      {
+        "from": "TfSiteEdge:modules/edge/modules/pop/modules/probe#var.window",
+        "to": "TfSiteEdge:modules/edge/modules/pop/modules/probe#output.window",
+        "kind": "references"
+      },
+      {
+        "from": "TfSiteEdge:modules/edge/modules/pop#local.probe_name",
+        "to": "TfSiteEdge:modules/edge/modules/pop/modules/probe#var.name",
+        "kind": "passes-to"
+      },
+      {
+        "from": "TfSiteEdge:modules/edge/modules/pop#output.id",
+        "to": "TfSiteEdge:modules/edge#output.pop_ids",
+        "kind": "references"
+      },
+      {
+        "from": "TfSiteEdge:modules/edge/modules/pop#var.name",
+        "to": "TfSiteEdge:modules/edge/modules/pop#local.probe_name",
+        "kind": "references"
+      },
+      {
+        "from": "TfSiteEdge:modules/edge/modules/pop#var.probe_window",
+        "to": "TfSiteEdge:modules/edge/modules/pop/modules/probe#var.window",
+        "kind": "passes-to"
+      },
+      {
+        "from": "TfSiteEdge:modules/edge/modules/pop#var.region",
+        "to": "TfSiteEdge:modules/edge/modules/pop#output.region",
+        "kind": "references"
+      },
+      {
+        "from": "TfSiteEdge:modules/edge#local.pop_prefix",
+        "to": "TfSiteEdge:modules/edge/modules/pop#var.name",
+        "kind": "passes-to"
+      },
+      {
+        "from": "TfSiteEdge:modules/edge#output.endpoint",
+        "to": "TfSiteEdge:.#output.edge_endpoint",
+        "kind": "references"
+      },
+      {
+        "from": "TfSiteEdge:modules/edge#output.pop_ids",
+        "to": "TfSiteEdge:.#output.pop_ids",
+        "kind": "references"
+      },
+      {
+        "from": "TfSiteEdge:modules/edge#var.name",
+        "to": "TfSiteEdge:modules/edge#local.pop_prefix",
+        "kind": "references"
+      },
+      {
+        "from": "TfSiteEdge:modules/edge#var.name",
+        "to": "TfSiteEdge:modules/edge#output.endpoint",
+        "kind": "references"
+      },
+      {
+        "from": "TfSiteEdge:modules/edge#var.pop_count",
+        "to": "TfSiteEdge:modules/edge#output.plan_summary",
+        "kind": "references"
+      },
+      {
+        "from": "TfSiteEdge:modules/edge#var.probe_window",
+        "to": "TfSiteEdge:modules/edge/modules/pop#var.probe_window",
+        "kind": "passes-to"
+      },
+      {
+        "from": "TfSiteEdge:modules/edge#var.region",
+        "to": "TfSiteEdge:modules/edge/modules/pop#var.region",
+        "kind": "passes-to"
+      },
+      {
+        "from": "TfSiteEdge:modules/edge#var.region",
+        "to": "TfSiteEdge:modules/edge#output.plan_summary",
+        "kind": "references"
+      },
+      {
+        "from": "TfSiteEdge:modules/edge#var.terminate_tls",
+        "to": "TfSiteEdge:modules/edge#output.endpoint",
+        "kind": "references"
+      },
+      {
+        "from": "TfSiteOps:.",
+        "to": "TfSiteCore:modules/policy",
+        "kind": "sources",
+        "resolved": true
+      },
+      {
+        "from": "TfSiteOps:.",
+        "to": "TfSiteEdge:.",
+        "kind": "sources",
+        "resolved": true
+      },
+      {
+        "from": "TfSiteOps:.",
+        "to": "TfSiteOps:../site-archive/modules/vault",
+        "kind": "sources",
+        "resolved": false,
+        "reason": "source '../site-archive/modules/vault' resolves above the root of repository TfSiteOps and names no directory in any scanned repository"
+      },
+      {
+        "from": "TfSiteOps:.",
+        "to": "TfSiteOps:modules/collector",
+        "kind": "sources",
+        "resolved": true
+      },
+      {
+        "from": "TfSiteOps:.",
+        "to": "TfSiteOps:modules/reporter",
+        "kind": "sources",
+        "resolved": true
+      },
+      {
+        "from": "TfSiteOps:.#local.edge_pop_ids",
+        "to": "TfSiteOps:modules/collector#var.pop_ids",
+        "kind": "passes-to"
+      },
+      {
+        "from": "TfSiteOps:.#local.ops_name",
+        "to": "TfSiteOps:modules/collector#var.name",
+        "kind": "passes-to"
+      },
+      {
+        "from": "TfSiteOps:.#local.ops_name",
+        "to": "TfSiteOps:modules/reporter#var.name",
+        "kind": "passes-to"
+      },
+      {
+        "from": "TfSiteOps:.#var.region",
+        "to": "TfSiteCore:modules/policy#var.region",
+        "kind": "passes-to"
+      },
+      {
+        "from": "TfSiteOps:.#var.region",
+        "to": "TfSiteEdge:.#var.region",
+        "kind": "passes-to"
+      },
+      {
+        "from": "TfSiteOps:.#var.report_format",
+        "to": "TfSiteOps:modules/reporter#var.format",
+        "kind": "passes-to"
+      },
+      {
+        "from": "TfSiteOps:.#var.retention_days",
+        "to": "TfSiteOps:modules/collector#var.retention_days",
+        "kind": "passes-to"
+      },
+      {
+        "from": "TfSiteOps:.#var.site_name",
+        "to": "TfSiteCore:modules/policy#var.steward",
+        "kind": "passes-to"
+      },
+      {
+        "from": "TfSiteOps:.#var.site_name",
+        "to": "TfSiteEdge:.#var.site_name",
+        "kind": "passes-to"
+      },
+      {
+        "from": "TfSiteOps:.#var.site_name",
+        "to": "TfSiteOps:.#local.ops_name",
+        "kind": "references"
+      },
+      {
+        "from": "TfSiteOps:modules/collector",
+        "to": "TfSiteOps:modules/common",
+        "kind": "sources",
+        "resolved": true
+      },
+      {
+        "from": "TfSiteOps:modules/collector#local.collector_name",
+        "to": "TfSiteOps:modules/common#var.name",
+        "kind": "passes-to"
+      },
+      {
+        "from": "TfSiteOps:modules/collector#output.collected_ids",
+        "to": "TfSiteOps:.#output.collected_ids",
+        "kind": "references"
+      },
+      {
+        "from": "TfSiteOps:modules/collector#var.name",
+        "to": "TfSiteOps:modules/collector#local.collector_name",
+        "kind": "references"
+      },
+      {
+        "from": "TfSiteOps:modules/collector#var.pop_ids",
+        "to": "TfSiteOps:modules/collector#output.collected_ids",
+        "kind": "references"
+      },
+      {
+        "from": "TfSiteOps:modules/collector#var.retention_days",
+        "to": "TfSiteOps:modules/collector#output.retention_days",
+        "kind": "references"
+      },
+      {
+        "from": "TfSiteOps:modules/common#local.tag",
+        "to": "TfSiteOps:modules/common#output.tag",
+        "kind": "references"
+      },
+      {
+        "from": "TfSiteOps:modules/common#output.tag",
+        "to": "TfSiteOps:modules/collector#output.tag",
+        "kind": "references"
+      },
+      {
+        "from": "TfSiteOps:modules/common#output.tag",
+        "to": "TfSiteOps:modules/reporter#output.report",
+        "kind": "references"
+      },
+      {
+        "from": "TfSiteOps:modules/common#var.layer",
+        "to": "TfSiteOps:modules/common#local.tag",
+        "kind": "references"
+      },
+      {
+        "from": "TfSiteOps:modules/common#var.name",
+        "to": "TfSiteOps:modules/common#local.tag",
+        "kind": "references"
+      },
+      {
+        "from": "TfSiteOps:modules/reporter",
+        "to": "TfSiteOps:modules/common",
+        "kind": "sources",
+        "resolved": true
+      },
+      {
+        "from": "TfSiteOps:modules/reporter#local.reporter_name",
+        "to": "TfSiteOps:modules/common#var.name",
+        "kind": "passes-to"
+      },
+      {
+        "from": "TfSiteOps:modules/reporter#output.report",
+        "to": "TfSiteOps:.#output.report",
+        "kind": "references"
+      },
+      {
+        "from": "TfSiteOps:modules/reporter#var.format",
+        "to": "TfSiteOps:modules/reporter#output.report",
+        "kind": "references"
+      },
+      {
+        "from": "TfSiteOps:modules/reporter#var.name",
+        "to": "TfSiteOps:modules/reporter#local.reporter_name",
+        "kind": "references"
+      },
+      {
+        "from": "TfSiteOps:modules/reporter#var.name",
+        "to": "TfSiteOps:modules/reporter#output.name",
+        "kind": "references"
+      }
+    ],
+    "meta": {
+      "producer": "PSTerraformGraph",
+      "producerVersion": "0.1.0",
+      "contractVersion": "0.1.0",
+      "roots": [
+        "TfSiteCore",
+        "TfSiteEdge",
+        "TfSiteOps"
+      ]
+    }
+  }
+}

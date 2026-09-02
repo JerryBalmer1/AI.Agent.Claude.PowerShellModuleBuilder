@@ -1,0 +1,11 @@
+functional-tf (fixture 2): 6 / 7
+graph: C:\Users\jlbal\AppData\Local\Temp\p0036\score\graph.json
+nodes: 99   edges: 88
+
+  PASS   1 nested-module chain, four levels
+  PASS   2 cross-repository source, git:: with //subdirectory
+  PASS   3 cross-repository output reference
+  PASS   4 provider version pin
+  PASS   5 value chain, renamed on the last hop
+  PASS   6 unused variable, the absence case
+  FAIL   7 unresolved module sources, two shapes

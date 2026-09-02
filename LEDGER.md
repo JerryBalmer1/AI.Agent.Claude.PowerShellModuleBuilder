@@ -5,8 +5,28 @@ for counters and pins. Update it in the same commit as the work
 that changes it.
 
 ## Passes
-Last landed: **0035**. Next: **tf-003**, which now has nothing left
-blocking it — see Runs and backlog 6.
+Last landed: **0036**. Next: the operator's. The generalisation claim
+now has a number and a stated bound; the two things that would move it
+are a plugin-off control on the Terraform domain or a third domain the
+`tf-*` skills say nothing about.
+
+0036 **ran tf-003**, the first genuinely blind measurement in this
+project: plugin v1.1.0 readable, fixture 2 and its oracle unread until
+the built module was pushed, PSTerraformGraph's existing code unread in
+both phases. **battery 7/7; 184 differences → 0 in one iteration of
+three; functional-tf 6/7 first shot → 7/7 final; node and edge counts
+99/99 and 88/88 at first shot and never moved.** All 184 first-shot
+differences were four naming conventions and none was structural. The
+run record states, and the README rewrite must carry, that this is
+**not yet a generalisation result**: v1.1.0's three `tf-*` skills were
+written from tf-001 and tf-002 and cite their findings by count, so the
+fixture was unseen but the mechanism catalogue was not — exactly the
+contamination tf-002 predicted when it left those skills unwritten.
+
+0036 also closed the instrument gap it walked into: **fixture 2 had no
+case scorer** (backlog 29), so `functional-tf: N / 7` had nothing to
+come from. One was written and falsified, but it lives under `plans/`
+because 0036 may not touch `evals/` — see backlog 36.
 
 0035 is a harness-only pass and released nothing; `git diff
 v1.1.0..main -- skills/ commands/ .claude-plugin/` is empty and its
@@ -59,8 +79,37 @@ AzDO-module (runs/NNN-*): **ladder COMPLETE at 004–006** (passes
 0026-0028), **control COMPLETE at 007** (pass 0032). All four show
 three complete score lines. The next run series is the operator's
 decision — nothing is scheduled.
-Terraform (runs/tf-NNN-*): last tf-002, next tf-003 — **UNBLOCKED by
-pass 0034, and it targets FIXTURE 2.** Pass 0033 scanned fixture 1 for
+Terraform (runs/tf-NNN-*): **tf-003 COMPLETE (pass 0036).** Nothing
+scheduled after it.
+
+**tf-003 — the blind generalisation measurement**
+(`runs/tf-003-generalisation`, target branch
+`run-tf-003-generalisation`, first shot `d788f7c`, final `d76d16b`,
+session `692109bc-018c-4288-8b36-db3e3737cc01`, plugin surface
+`v1.1.0` present and **READ**): build exit 0; module tests 96/96,
+coverage 92.39% (target 70%); battery **7/7**; comparator **184
+differences → 0**; functional-tf **6/7 first shot → 7/7 final**; one
+iteration of three used; phase 1 **31 minutes**, parallelism 1.
+Nodes 99/99 and edges 88/88 **at first shot**, never moved — all 184
+first-shot differences were four naming conventions (`label` 94,
+`varType`-vs-`type` 70, `resolved` 12, unresolved-node id 8) and none
+was structural. Case 7 is the only first-shot FAIL and it failed on
+the id convention alone; the run record states the alternative reading
+that would score it 7/7 blind rather than choosing the flattering one
+silently.
+
+**The bound travels with the number.** v1.1.0 contains three `tf-*`
+skills written from tf-001 and tf-002 that cite those runs' mechanisms
+and counts. The fixture was unseen; the mechanism catalogue was not.
+What tf-003 establishes is that a plugin carrying a domain's recorded
+findings stops those findings recurring on a fresh fixture in that
+domain. It does **not** establish generalisation, and the drafted
+README sentence in the run record says so.
+
+The historical note below is kept because it is what the run was
+scored against.
+
+Fixture 2, the target — **as set up by pass 0034:** Pass 0033 scanned fixture 1 for
 the vector in hazard 13 and it is not clean: it names its own cases by
 number, states the wrong answer to several, and one README points at
 `evals/tf/fixture/cases.md` by path. Fixture 1 is frozen (decision
@@ -96,10 +145,14 @@ entry recommended (`ActualNodeCount -eq ExpectedNodeCount` beside
 that reads clean on a graph with one node duplicated and one missing.
 See *Resolved by pass 0035*.
 
-**The other is still open.** A fixture-2 counterpart to
-`Test-TfFixtureCase.ps1` does not exist (**backlog 29**), so tf-003
-can report a difference count against fixture 2 but not a case score.
-Close it or accept it, in writing, before the run reports a number.
+**The other was closed by the run itself.** A fixture-2 counterpart to
+`Test-TfFixtureCase.ps1` did not exist (**backlog 29**), so pass 0036
+wrote `plans/0036-tf-003/Test-Tf003Case.ps1` — same shape as fixture
+1's, the oracle's literal ids, falsified seven ways, one mutation per
+case, plus a control run of the oracle against itself. **Promoting it
+into `evals/` is backlog 36**, and until then a fixture-2 run has to
+carry its own scorer, which is exactly the kind of thing that goes
+stale.
 
 **007 — baseline off, iterated** (`runs/007-baseline-iterated`,
 target `run-007-baseline-iterated`, final `95ca28d`, first shot
@@ -245,6 +298,23 @@ carries that same tree, because a tree object is a function of the
 bytes and names and nothing else. The two agreeing is what says the
 thing on disk and the thing a run starts from are the same thing.
 
+**What tf-003 actually used (pass 0036).** Both pins re-derived by
+`git ls-tree` at the start of the run and checked against the two lines
+above **after the gate lifted**, `LEDGER.md` being forbidden reading in
+phase 1. Both matched. The pass prompt's copy of the brief pin arrived
+**unsubstituted** — literally `<BRIEF-BLOB-FROM-0035>` — so the derived
+value is the one that was used; a prompt is not a pin.
+
+  tf-003 target, first shot: d788f7c7ecb1aa471eea01de6878d253df4c4ae4
+  tf-003 target, final:      d76d16bb5083f422ccc05671e21cefde3c1a004e
+  fixture-2 oracle tree:     f470ed8561c69e3d04b4560f3e56f49d4a672f81
+
+Both target SHAs are on `run-tf-003-generalisation` in PSTerraformGraph,
+an orphan branch sharing no history with that repository's `main`, which
+stayed at `1dd4913` with tags `v0.1.0` and `v0.2.0` untouched. The
+oracle tree is recorded because phase 1 established the oracle's
+**identity** by `ls-tree` without ever opening it.
+
 The seed COMMIT is `81ba3e97adc0fcf048da631828d1cbbb6e202c17` and is
 reproducible, unlike the AzDO seed's — see item 16, which is why
 `Reset-TfTarget.ps1` pins **both** git stamps rather than passing
@@ -276,16 +346,10 @@ v1.1.0 published.
 3. Fixture restore drill (Sync-Fixture restore direction)
 4. Per-skill ablation runs (suspects first)
 5. Mirror assertion + dependency-wave ordering (post-ladder)
-6. **tf-003 — the blind Terraform run. UNBLOCKED, and top of the
-   backlog.** Pass 0033's scan said fixture 1 names its own cases by
-   number and one README points at the oracle by path, so a run
-   against it measures parsing, not generalisation. Option (c) was
-   taken: **decision 0014, and pass 0034 built fixture 2.** The
-   decision is made and the instrument exists. What remains is the
-   run itself, against fixture 2, with the plugin pinned at v1.1.0 —
-   the full precondition list is in **Runs** above. It stays top of
-   the backlog because it is still the only generalisation claim the
-   project has queued, and now nothing is in its way.
+6. **~~tf-003 — the blind Terraform run.~~ DONE by pass 0036.** See
+   *Runs* above for the one-line result and `runs/tf-003-generalisation/`
+   for the record. It did not settle the generalisation claim; it
+   produced a number and named what still contaminates it.
 7. Portability / non-graph functional layer (on trigger only)
 
 ### Added by pass 0025
@@ -834,6 +898,64 @@ controls and corpus figures) was **not** touched and stays open.
     firing. If a third kit is ever written, scan it with both rule sets
     and record the difference. **Recorded, not taken.**
 
+### Added by pass 0036
+
+36. **The README's generalisation section needs rewriting, and the
+    sentence is already drafted.** `README.md` §"The cross-language
+    measurement" still says tf-003 is *blocked* and that no
+    generalisation claim exists. It has now run. The replacement
+    sentence is written verbatim at the end of
+    `runs/tf-003-generalisation/README.md` and claims what the run
+    supports and no more. **This is a separate pass; 0036 did not touch
+    the README.** The same pass should promote
+    `plans/0036-tf-003/Test-Tf003Case.ps1` into `evals/tf/` — as
+    `Test-Tf2FixtureCase.ps1` or by giving the existing script a
+    `-Fixture` parameter — carrying its seven-mutation falsification
+    and its oracle-against-itself control with it. A scorer living in a
+    plan directory is one the next run will not find. **Closes the
+    remaining half of backlog 29.**
+37. **The plugin's two commands are written for the AzDO ladder's
+    shape and do not fit a `tf` run.** `commands/build.md` step 1 says
+    to read `evals/conformance/Conformance.Tests.ps1` and
+    `evals/functional/BRIEF.md`; `commands/test.md` runs
+    `evals/conformance/Invoke-Conformance.ps1` and reports a
+    conformance score. For tf-003 the brief is `evals/tf/BRIEF.md` and
+    there is **no conformance suite in the measurement at all**, so
+    both commands were silent while every skill they delegate to
+    carried over intact. Either generalise the two commands to take
+    the eval suite as an input, or state in them that they are the
+    AzDO ladder's entry points. Touching `commands/` moves the plugin
+    surface and needs a version decision. **Recorded, not taken.**
+38. **Skill-line candidate, and it is a defect in a published
+    example.** `powershell-module-build`'s `Resolve-BuildDependency`
+    ends `Write-Build Green "..."` then `$resolved`. **InvokeBuild's
+    `Write-Build` writes to the OUTPUT stream** — colour is all it adds
+    — so the function returns a two-element array and the caller's log
+    line silently vanishes from the build output. Assigning that to a
+    path fails three tasks later with `Cannot find drive '  PSGraph…'`
+    and nothing points at the resolver. Hit in this pass. The fix is
+    one line: return an object and let the caller print. **Recorded;
+    the skill is pinned at v1.1.0 and was not edited.**
+39. **Skill-line candidate: a Pester gate that reads a null result
+    cannot fail.** `Invoke-Pester -Configuration` returns nothing
+    without `$cfg.Run.PassThru = $true`. The coverage gate then rounds
+    `$null` to 0 and compares it against a `$null` target — false — so
+    it passes on every run, and the `PreTag` guard fails on every run
+    for the mirror reason. It printed `Line coverage: 0% (target %)`
+    for one build; the exit code said nothing.
+    `powershell-module-build` gives the gate's shape and the assertion
+    that grades it, and neither catches this. **Recorded, not taken.**
+40. **`cases.md` for fixture 2 overstates case 6.** It calls the unused
+    variable *"the only node in the fixture with neither"* an incoming
+    nor an outgoing edge. Read literally that is false of the oracle:
+    three `repository` nodes and six `provider` nodes have neither
+    either, because they take part in containment rather than value
+    flow. Scoped to `variable`/`local`/`output` the claim holds
+    exactly. Caught by scoring **the oracle against itself**, which
+    came back 6/7 before the scorer was corrected. `cases.md` is
+    fixture-2 case knowledge and 0036 may not touch `evals/`; the
+    wording wants one clause. **Recorded, not taken.**
+
 ### Numbering, reconciled by pass 0030
 
 Pass 0031 recorded a 17→19 drift and asked that numbers never move. This is
@@ -856,11 +978,20 @@ re-derive it:
   in that pass, after `verify.ps1`'s own falsification produced a probe
   that did not fire for the reason it was written to prove. Pass 0030
   consumes none: everything it touched was already numbered.
-- **33, 34 and 35 were consumed by pass 0035**; **36 is the next free
-  number.** All three were found by the pass's own work going wrong
-  rather than by review: a reproducibility claim that was true only
-  within one second, a line-ending rule that existed and was not
-  applied, and a control that cannot get stronger.
+- **33, 34 and 35 were consumed by pass 0035.** All three were found by
+  the pass's own work going wrong rather than by review: a
+  reproducibility claim that was true only within one second, a
+  line-ending rule that existed and was not applied, and a control that
+  cannot get stronger.
+- **36 to 40 were consumed by pass 0036**; **41 is the next free
+  number.** 36 closes the remaining half of 29 and queues the README
+  rewrite the run's own record drafts. 38, 39 and 40 continue the
+  pattern above — each was found by this pass's work going wrong, and
+  two of them are defects in things the pass was following rather than
+  in what it wrote: a published skill example whose return value is
+  polluted by its own log line, and a gate shape the skill states that
+  passes on a null result. 40 was caught by scoring the oracle against
+  itself, which is the control that exists for exactly that.
 
 Numbers are consumed, never reused and never renumbered — including the ones
 belonging to resolved items, which stay where they are so that a citation
