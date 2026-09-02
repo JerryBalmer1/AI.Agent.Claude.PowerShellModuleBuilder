@@ -345,17 +345,71 @@ frozen for the duration" costs in practice, and it is cheaper than the
 alternative: a later run hard-stopping for a reason that is not about the
 instrument.
 
+### 7b. The generalisation run, and the claim it does not license
+
+A ladder measures **reliability at fixed inputs**. It says nothing about
+whether the thing works anywhere else, and that is a different question with a
+different run behind it: plugin on, a **second domain**, and the fixture from
+stage 3b — one the plugin's authors had not seen.
+
+This project's is [tf-003](../../runs/tf-003-generalisation/), and it is worth
+copying mostly for the shape of its conclusion. The numbers were good: 6 / 7 at
+first shot with node and edge counts exact, 7 / 7 after one of three permitted
+iterations, all 184 first-shot differences four naming conventions and not one
+structural error.
+
+**And it still does not license the generalisation claim.** The reason is the
+part worth internalising before you schedule one:
+
+> The skills the run was measuring had been written from the *first* fixture's
+> findings, and cite them by mechanism and by count. So the fixture was unseen
+> and **the mechanism catalogue was not.**
+
+Stage 3b unblocks the measurement — a fixture written afterwards is not the
+skills' answer key — but only for the *fixture*. It does nothing about the
+*domain*. A plugin that carries "here are the four constructs that defeat a
+regex in this language" will clear those four constructs on any fixture in that
+language, and a run that only shows that has measured recall, not generality.
+
+So state the claim at the size the run supports:
+
+- what it licenses: **a plugin carrying a domain's recorded findings stops
+  those findings recurring on an unseen fixture in that domain**;
+- what it does not: domain-independent generalisation;
+- what would: a **third domain the skills say nothing about**, or a
+  **plugin-off control** on this one — which is stage 5 again, on the new
+  domain, and is the cheaper of the two.
+
+**Schedule the control with the run, not after it.** A plugin-off arm costs one
+contaminated-forever session identifier and a couple of hours; deciding you
+want one after the plugin-on numbers are in means deciding it while looking at
+a result you would like to keep. This project got that ordering wrong and
+recorded the control as an operator decision instead — which is honest, and is
+also why its generalisation claim still has an "or" in it.
+
+**The other half of a generalisation run is the scorer.** A second fixture
+needs a second case scorer, and the first one will be hard-coded to the first
+fixture throughout. Write it before the run, in the instrument directory —
+this project wrote it *during* the run and into a plan directory, where the
+next run would not have found it, and needed a later pass to promote it. Score
+your oracle against itself with it before you score anything else;
+[chapter 3](03-test-first-or-nothing.md#e-grade-the-grader-before-the-graded)
+has what that control caught here.
+
 ## 8. Packaging
 
 Packaging is distribution, and there is nothing worth distributing until you
 know what the thing does. Nothing at this stage moves a score; done early, it
 is work you redo when the measurement changes what ships.
 
-Read this stage as a plan and not as evidence: it has **not** landed here.
-[LEDGER.md](../../LEDGER.md) says so in its first section — last landed 0029,
-next 0030, packaging with a marketplace file and a cold-install proof. When a
-chapter of this manual has nothing measured behind it, it says so, and this
-is one of those places.
+This stage **has** landed here since: pass 0030 released `v1.0.0` with a
+committed marketplace file, under
+[decision 0013](../../decisions/0013-harness-release-tagging.md), and later
+passes released `v1.0.1`, `v1.1.0` and `v1.1.1`. The one half still missing is
+the **cold-install proof** — nobody has yet installed this on a machine that
+has never cloned the repository, and [LEDGER.md](../../LEDGER.md) carries that
+as an open item rather than as done. When a stage of this manual has nothing
+measured behind it, it says so; this is now a stage with most of one.
 
 ## 9. The README, last, written from the journal
 
@@ -395,6 +449,10 @@ written before the runs it summarises.
   you what the cases are; and a skill written from the first fixture's
   findings is that fixture's answer key, so the fixture it is scored against
   has to be one written afterwards.
+- **3b before 7b, and 7b licenses less than it looks like.** A generalisation
+  run needs the mute fixture; but the plugin under test may still carry the
+  *domain's* answers even when it has never seen that fixture, so schedule the
+  plugin-off control alongside it or accept a smaller claim.
 - 7 before 8 and 9: packaging and prose describe a result you do not have
   until the runs are done.
 

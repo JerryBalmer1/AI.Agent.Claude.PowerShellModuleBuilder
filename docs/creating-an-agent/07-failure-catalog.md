@@ -877,6 +877,31 @@ than merely check it. *Rule:* the comparator carries an explicit absence-case
 rules table for that one reason.
 ([journal 0014](../../journal/0014-seed-and-comparator.md))
 
+**The oracle failed its own case, and the case document was the thing that was
+wrong.** *Happened:* fixture 2's case 6 — the absence case — was described as
+*"the only node in the fixture with neither"* an incoming nor an outgoing edge.
+Read literally that is false of the oracle: **ten** nodes have neither, because
+three repository nodes and six provider nodes take part in containment rather
+than in value flow. The claim was true only of nodes that carry a value, and the
+scope had never been written down. *Caught by:* **scoring the oracle against
+itself.** The first time that control was run it returned 6 / 7 — the answer key
+failing its own paper. No producer and no review found it, and nothing else
+would have: every producer scored against the case was scored by a rule the
+document did not state. *Rule:* the prose loses. The oracle and the fixture are
+frozen, so what changed was the sentence, and the nine nodes read out of the
+oracle are the evidence it was wrong. Two conditions on that kind of repair,
+both now enforced: the rewritten discriminator must be **stricter or equally
+strict** — a correction that makes a case easier to pass is indistinguishable
+from abandoning it, so the strictness gets a falsification row of its own — and
+the superseded wording is struck through rather than deleted, because a
+corrected sentence whose old form is gone stops explaining what was wrong with
+it. Note the direction of the error: uncorrected, the run would have reported
+`5 / 7 → 6 / 7` instead of `6 / 7 → 7 / 7`. **Too modest is the direction nobody
+audits.**
+([LEDGER backlog 40](../../LEDGER.md),
+[the control](../../plans/0036-tf-003/cases-oracle-control.txt),
+[the correction and its falsification](../../plans/0037-consolidation/case-scorer.txt))
+
 **A platform that refused nothing.** *Happened:* the fixture includes two
 pipeline definitions built to be broken. Azure DevOps accepted both.
 Template expansion happens at queue time, and nothing in this project is
@@ -1227,6 +1252,25 @@ is itself the entry.
 ([hazard 12](../../evals/HARNESS.md),
 [run 007 findings C-2](../../runs/007-baseline-iterated/findings.md),
 [run 006 record](../../runs/006-plugin-on/README.md))
+
+**A pin that arrived as its own placeholder.** *Happened:* the tf-003 prompt
+carried the instrument pin the run was supposed to check itself against, and it
+arrived **unsubstituted** — literally `<BRIEF-BLOB-FROM-0035>`. A template that
+was never filled in. *Caught by:* the run trying to use it. This is the easy
+case of the failure: it could not be mistaken for a value. *Rule:* **derive and
+then verify, rather than trusting or stopping.** The pass computed both pins
+itself with `git ls-tree`, proceeded on the derived values, and checked them
+against the LEDGER's recorded ones **after** the blind gate lifted — the LEDGER
+being forbidden reading during phase 1 — where both matched. The general form is
+worth the entry even though the defect was obvious: **a prompt is not a pin.** A
+pin that a run reads out of its instructions has been asserted; a pin the run
+re-derives from the repository has been measured, and the prompt's copy is then
+a cross-check rather than a source. Which means the *dangerous* version of this
+defect is not the empty placeholder — it is a substituted value that is simply
+stale, which looks exactly like a good pin and which only re-derivation
+catches.
+([pass 0036 §2](../../plans/0036-tf-003/plan.md),
+[run record deviation 1](../../runs/tf-003-generalisation/README.md))
 
 ---
 

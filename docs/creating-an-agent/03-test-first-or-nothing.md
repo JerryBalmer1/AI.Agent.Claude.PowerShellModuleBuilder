@@ -401,6 +401,58 @@ The rule this lands on is METHOD.md's, stated there in bold:
 
 ---
 
+## (e) Grade the grader before the graded
+
+Everything above is about a gate that cannot fail. This is the neighbouring
+mistake: a **grader that is wrong**, going green on everything it is pointed
+at, including the answer key.
+
+The control is one line and it costs nothing: **score the oracle against
+itself.** A hand-written oracle is the definition of a perfect answer, so a
+scorer that does not return a perfect score on it is wrong about something —
+and you want to find out which of the two before a producer's number depends on
+it.
+
+Run for the first time here
+([pass 0036](../../plans/0036-tf-003/cases-oracle-control.txt)), that control
+came back **6 / 7**. The oracle failed its own case 6.
+
+The case document said the unused variable was *"the only node in the fixture
+with neither"* an incoming nor an outgoing edge. Read literally that is false of
+the oracle: **ten** nodes have neither — the variable, three repository nodes
+and six provider nodes — because those nine take part in containment rather than
+in value flow. The claim was true only of nodes that carry a value, and nobody
+had written that down.
+
+Three things about how it had to be resolved:
+
+- **The prose was wrong, not the fixture.** The oracle is frozen and the fixture
+  is frozen; a defect found in either is a finding, not an edit. What changed
+  was the sentence, and the nine nodes read out of the oracle are the evidence
+  it was wrong. It is worth being explicit about which artifact loses an
+  argument like this *before* you are in one.
+- **The correction had to be stricter, and was checked.** A rewritten
+  discriminator that happens to be easier to satisfy is indistinguishable from
+  quietly dropping the case. The replacement pins the whole edgeless set by id,
+  and a
+  [falsification row](../../plans/0037-consolidation/case-scorer.txt)
+  demonstrates a graph the old form calls clean at 7 / 7 which the new one
+  reddens. "Stricter" is a claim; it gets a row like any other.
+- **Skipping it would have shipped a wrong number in the flattering direction —
+  downward.** Without the control the run reports `5 / 7 → 6 / 7` instead of
+  `6 / 7 → 7 / 7`. A too-modest score is the one nobody audits, because nobody
+  suspects a result that makes them look worse. Polarity, again: an error that
+  moves against your interest is still an error, and it survives longer.
+
+The generalisable form:
+
+> **A grader that has only ever been pointed at candidates has not been graded.**
+> Point it at the answer key. If it does not score the answer key perfectly, the
+> defect is in the grader or in the document that describes the answer key —
+> never in the candidate you were about to score.
+
+---
+
 ## The operational rule
 
 METHOD.md turns all of the above into one thing you can actually do, for

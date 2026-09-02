@@ -30,7 +30,7 @@ proves only that the agent is self-consistent.
 Everything below is an attempt to buy an oracle the agent cannot have
 written, and then to prove that the oracle can actually disagree.
 
-## The six layers, and the one thing each one caught
+## The seven layers, and the one thing each one caught
 
 | Layer | The question it answers | The artifact | The instance where it earned its keep |
 |---|---|---|---|
@@ -40,6 +40,7 @@ written, and then to prove that the oracle can actually disagree.
 | Ordered runner | Of fifty red lines, which one is the cause? | [`Invoke-OrderedTests.ps1`](../../skills/powershell-module-test/scripts/Invoke-OrderedTests.ps1) | One unclosed brace: one line naming the file and column, against eighteen lines naming three innocent files. |
 | Mutation testing | Can the comparator disagree with anything? | [`Invoke-TfOracleFalsification.ps1`](../../evals/tf/Invoke-TfOracleFalsification.ps1), [`Invoke-TfDuplicateIdFalsification.ps1`](../../evals/tf/Invoke-TfDuplicateIdFalsification.ps1) | Seven mutations, seven distinct mechanisms, control at zero — plus mutation 8, which is two-directional and has its own driver. |
 | Sanitization | Does the fixture tell a builder its own answers? | [`Test-FixtureSanitization.ps1`](../../evals/tf/Test-FixtureSanitization.ps1) | Clean on fixture 2 and **94 findings on fixture 1**, which is what makes the clean verdict mean something. |
+| Case scoring | Which of the **named cases** does this graph get right? | [`Test-TfFixtureCase.ps1`](../../evals/tf/Test-TfFixtureCase.ps1), [`fixture2/Test-TfFixture2Case.ps1`](../../evals/tf/fixture2/Test-TfFixture2Case.ps1) | The fixture-2 scorer, pointed at **the oracle itself**, came back 6 / 7 — the answer key failing its own paper. |
 
 ---
 
@@ -492,7 +493,7 @@ memory.
 [`Test-FixtureSanitization.ps1`](../../evals/tf/Test-FixtureSanitization.ps1)
 is pass 0033's hand-reading promoted to a script: 38 patterns in four
 categories, run over every file and over the commit messages the publisher
-pushes with. It is a sixth thing this stack does, and it belongs on this page
+pushes with. It is a further thing this stack does, and it belongs on this page
 because of *how it was falsified* rather than because of what it checks:
 
 - `-FailCheck` plants a case-naming comment in a scratch copy and requires the
@@ -514,6 +515,59 @@ that changed does not inherit the previous falsification:
 and 88 edges. Fixture 1's falsification re-runs byte-identical against the
 copy committed at v1.0.0, which is what says the parameterization added a
 fixture rather than weakening a check.
+
+### The case layer, and the scorer that had to be graded first
+
+Everything above this line is the **oracle layer**: it grades the comparator, by
+breaking the oracle and requiring the break to be named. That answers *"do this
+graph and the right answer differ, and how?"* It does not answer *"which of the
+seven named cases does this graph get right?"*, and those are different
+questions — a graph can match the oracle exactly and the cases still be worth
+stating separately, and a case can pass while other differences remain.
+
+Fixture 1 has had a case scorer since tf-001. **Fixture 2 shipped without one,**
+so `functional-tf: N / 7` had nothing to compute it from, and the run that
+needed the number had to write the scorer itself — into a plan directory, where
+the next run would not have found it. Pass 0037 promoted it:
+
+| | |
+|---|---|
+| [`fixture2/Test-TfFixture2Case.ps1`](../../evals/tf/fixture2/Test-TfFixture2Case.ps1) | the seven cases, each by its own assertions over the graph, using the oracle's **literal ids** |
+| [`fixture2/Invoke-TfFixture2CaseFalsification.ps1`](../../evals/tf/fixture2/Invoke-TfFixture2CaseFalsification.ps1) | what makes the seven trustworthy, promoted alongside it |
+
+Fixture 1's scorer was **left alone** rather than given a `-Fixture` switch: it
+is the instrument tf-001 and tf-002 were scored with, and the two fixtures'
+cases differ in substance, not only in ids.
+
+The case falsification is four claims, and each is a different one:
+
+1. **Control — the oracle scored against itself must be 7 / 7.** It was not,
+   the first time it was run, and the defect was in `cases.md`'s prose rather
+   than in any producer. [Chapter 3](../creating-an-agent/03-test-first-or-nothing.md#e-grade-the-grader-before-the-graded)
+   has the whole story; the short form is **grade the grader before the
+   graded**, and skipping it here would have published a number that was wrong
+   in the modest direction.
+2. **Seven mutations, one per case, each reddening its own case and no other.**
+   A mutation that reddens two has not shown that either case is checked — it
+   has shown they are entangled.
+3. **The duplicate-id refusal.** The scorer keys every node by id, so a
+   duplicate overwrites its own entry and a defective graph scores clean —
+   [the same blindness](#mutation-8-and-the-hazard-that-hid-from-all-seven) the
+   comparator carried for four passes, in a second instrument. Here the
+   required outcome is not a failed case but a **throw**: an unscoreable graph
+   is not a graph with a low score.
+4. **That the corrected case 6 is stricter than the form it replaced** —
+   demonstrated by a graph the old form calls clean at 7 / 7 which the new one
+   reddens, not asserted.
+
+**Fixture 2's suite is therefore two layers, and its pinned count moved 8 → 18**
+(oracle 8, case 10) in [`Invoke-TfSuite.ps1`](../../evals/tf/Invoke-TfSuite.ps1).
+Fixture 1 stays pinned at 15. A gained check reads as a failure until the pin
+moves, which is the point of pinning; the move is stated in the runner, in the
+report it prints and in the LEDGER, because **a pin that follows whatever ran is
+not a pin.** Both new checks were broken on purpose and seen red before the 18
+was trusted:
+[`case-layer-falsification.txt`](../../plans/0037-consolidation/case-layer-falsification.txt).
 
 **One asymmetry between the two, and why it is not one.** Fixture 1 has four
 AzDO pipeline definitions and fixture 2 has none, which looks like an
