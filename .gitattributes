@@ -26,3 +26,13 @@
 # means CRLF on any Windows clone. Measured with `git check-attr text eol`:
 # README.md resolved to eol=lf and the other three to eol unspecified.
 evals/functional/seed/** text eol=lf
+
+# The Terraform seed is the same shape of hazard and gets the same rule.
+# Reset-TfTarget.ps1 copies it byte-for-byte into a run directory and the
+# resulting TREE SHA is pinned in LEDGER.md, so a checkout that translated
+# LICENSE to CRLF would produce a different tree and the pin would fail for a
+# reason that has nothing to do with the seed. Measured with
+# `git ls-files --eol` before adding this: README.md resolved to eol=lf,
+# .gitattributes and .gitignore to eol=lf by the dotfile rules above, and
+# LICENSE to `text=auto` with no eol - i.e. CRLF on any Windows clone.
+evals/tf/seed/** text eol=lf

@@ -1,0 +1,75 @@
+==============================================================================
+FALSIFYING Reset-TfTarget.ps1 - THE DESTINATION GUARD
+Generated 2026-09-02T17:41:31Z
+Allowed root: C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/scratch/runs
+==============================================================================
+
+This script deletes and recreates a directory. The one accident it exists to
+prevent is a mistyped destination taking out the real deliverable repository,
+and a guard nobody has fired at is a comment with an if-statement around it.
+
+BOTH HALVES ARE CHECKED. A guard that refused everything would pass a
+refusal-only probe while making the script useless, and that is the failure
+mode a path guard actually has. So: every destination below must be refused,
+AND a legitimate one must be accepted.
+
+------------------------------------------------------------------------------
+MUST REFUSE
+
+  the deliverable repository, relatively
+    destination : ../PSTerraformGraph
+    REFUSED: outside scratch
+
+  the deliverable repository, absolutely
+    destination : C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\PSTerraformGraph
+    REFUSED: outside scratch
+
+  traversal out of an allowed prefix
+    destination : scratch/runs/../../PSTerraformGraph
+    REFUSED: outside scratch
+
+  a sibling of scratch/runs with a like name
+    destination : scratch/runs-not-really/x
+    REFUSED: outside scratch
+    and nothing was created there
+
+  the harness root itself
+    destination : .
+    REFUSED: outside scratch
+
+  a fixture source tree
+    destination : evals/tf/fixture2/repos
+    REFUSED: outside scratch
+
+------------------------------------------------------------------------------
+MUST ACCEPT - the control. Without this, refusing everything would score
+perfectly above.
+
+  destination : scratch/runs/0035-reset-falsification
+  ACCEPTED, and the seed was materialised
+  files copied: 4
+  commit      : 81ba3e97adc0fcf048da631828d1cbbb6e202c17
+  tree        : 040ab2503aa7ccd5d67500d2e1d9983818807d86
+  tracked     :
+                .gitattributes
+                .gitignore
+                LICENSE
+                README.md
+
+------------------------------------------------------------------------------
+REPRODUCIBLE - the same seed reset twice.
+
+  tree   : 040ab2503aa7ccd5d67500d2e1d9983818807d86 / 040ab2503aa7ccd5d67500d2e1d9983818807d86
+  commit : 81ba3e97adc0fcf048da631828d1cbbb6e202c17 / 81ba3e97adc0fcf048da631828d1cbbb6e202c17
+  stamps : 2026-01-01T00:00:00+00:00|2026-01-01T00:00:00+00:00 / 2026-01-01T00:00:00+00:00|2026-01-01T00:00:00+00:00
+  TREE STABLE
+  COMMIT STABLE
+  BOTH STAMPS PINNED at 2026-01-01T00:00:00+00:00 - author AND committer
+
+The accepted destination has been removed: scratch/runs/0035-reset-falsification
+
+SEED TREE: 040ab2503aa7ccd5d67500d2e1d9983818807d86
+
+==============================================================================
+GUARD FALSIFIED - it refuses what it must and accepts what it must.
+==============================================================================

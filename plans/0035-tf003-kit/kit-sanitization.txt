@@ -1,0 +1,107 @@
+==============================================================================
+SANITIZATION SCAN
+Generated 2026-09-02T17:39:54Z
+Rule set: Kit
+Target:   C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/evals/tf/BRIEF.md
+Target:   C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/evals/tf/seed
+==============================================================================
+
+THE KIT RULE SET. The subject is a BRIEF and a SEED - what a customer hands
+over - and not a repository that has to look innocent. So it is free to say
+graph, producer, contract and unresolved: that is the job being asked for,
+and a brief that could not name its own deliverable would not be a brief.
+
+WHAT IT MAY NOT DO: name a case, state how many of anything there is, name a
+mechanism, state what the answer looks like, or point into the harness.
+Category C - counts, shapes and expectations - exists only in this rule set,
+and it is the half that catches a brief leaking without ever saying "case".
+
+NEITHER RULE SET CONTAINS THE OTHER. Kit drops the graph-vocabulary category
+and the unresolved pattern; it adds category C and two category A patterns.
+On counts and stated expectations it is STRICTER than the fixture set.
+
+ALLOWLIST, stated rather than silent:
+  presence         allowed only inside "point(s) of presence".
+
+------------------------------------------------------------------------------
+RULES: 37 patterns in four categories.
+  A. points at the harness or the answer sheet - 11 pattern(s)
+  B. names a case or its answer - 11 pattern(s)
+  C. states a count, a shape or an expectation - 7 pattern(s)
+  D. measurement vocabulary - 8 pattern(s)
+
+------------------------------------------------------------------------------
+SCANNED: 5 file(s) across 2 target(s):
+         BRIEF.md
+         .gitattributes
+         .gitignore
+         LICENSE
+         README.md
+         plus 0 commit message(s).
+
+------------------------------------------------------------------------------
+FINDINGS: none.
+
+------------------------------------------------------------------------------
+FALSIFICATION - a scan that has only ever agreed with a clean fixture is
+indistinguishable from a scan that cannot disagree. One banned comment is
+planted in a SCRATCH COPY; the fixture itself is never written to.
+
+PLANTED into the copy at BRIEF.md:1
+  # Case 6, the absence case: a graph that invents a reference for this is wrong.
+
+CAUGHT: 2 finding(s) on the planted line, across these rules:
+  [\babsence\b]  B. names a case or its answer
+  [\bcases?\b]  B. names a case or its answer
+FALSIFICATION PASSED - the scanner can fail.
+
+The scratch copy has been removed. What was scanned is unchanged on disk.
+
+==============================================================================
+TF003 KIT SANITIZATION: clean
+TF003 KIT FALSIFICATION: the scanner was shown to fail
+==============================================================================
+
+==============================================================================
+THE DISCRIMINATING CONTROL
+==============================================================================
+
+A scanner that has only ever said "clean" is indistinguishable from a scanner
+that cannot say anything else. -FailCheck above plants one banned line and
+requires the catch, which proves the scanner REACTS. That is the weak control.
+
+This is the strong one: the SAME kit rule set, pointed at a REAL kit that was
+written years of passes ago without any of these rules in mind -
+evals/functional/BRIEF.md and evals/functional/seed/, the Azure DevOps kit.
+That brief names its cases by number, quotes the answer file by path, and
+states what the output must equal. If the kit rule set called it clean, the
+verdict above would mean nothing.
+
+It reports 41 finding(s) against the AzDO kit, and none against the tf kit.
+The scanner is discriminating between two real kits, not between a planted line
+and nothing.
+
+The AzDO kit is NOT being condemned by this. It was written for a run whose
+design accepted that bound, it is frozen as the referent runs 004-006 were
+measured against, and nothing here changes it. It is the control precisely
+because it is real.
+
+==============================================================================
+SANITIZATION SCAN
+Generated 2026-09-02T17:39:55Z
+Rule set: Kit
+Target:   C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/evals/functional/BRIEF.md
+Target:   C:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/AI.Agent.Claude.PowerShellModuleBuilder/evals/functional/seed
+==============================================================================
+
+THE KIT RULE SET. The subject is a BRIEF and a SEED - what a customer hands
+over - and not a repository that has to look innocent. So it is free to say
+graph, producer, contract and unresolved: that is the job being asked for,
+and a brief that could not name its own deliverable would not be a brief.
+  ... full control output re-derivable with:
+      ./Test-FixtureSanitization.ps1 -RuleSet Kit -Path @('../functional/BRIEF.md','../functional/seed') -Label 'AZDO KIT CONTROL'
+
+==============================================================================
+TF003 KIT: clean, scanner falsified.  AZDO KIT CONTROL: 41 finding(s).
+exit codes: kit 0, control 1
+==============================================================================
