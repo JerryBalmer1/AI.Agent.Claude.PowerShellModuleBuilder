@@ -1,0 +1,113 @@
+=== PublishLocal, pass 0031 ===
+
+--- (1) Invoke-Build PublishLocal ---
+$ Invoke-Build PublishLocal
+  Build PublishLocal C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\.build.ps1
+  Task /PublishLocal
+  Repository: C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder
+  Staging to: C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\scratch\local-marketplace
+  Staged 14 skills and 2 commands.
+  Validation passed: both JSON files parse, the source path resolves, skills and commands are present.
+  claude CLI: not on PATH. Skipped the CLI schema check - the JSON checks above are what ran, and they are weaker.
+  
+  Paste these two inside Claude Code (not in this shell):
+  
+    /plugin marketplace add C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\scratch\local-marketplace
+    /plugin install psmodule@psmodule-local
+  
+  To remove it again:
+  
+    /plugin uninstall psmodule@psmodule-local
+    /plugin marketplace remove psmodule-local
+  
+  Nothing was pushed. Nothing outside scratch/ was written.
+  Done /PublishLocal 00:00:01.4880879
+  Build succeeded. 1 tasks, 0 errors, 0 warnings 00:00:01.6806234
+  exit: 0
+
+--- (2) What was staged ---
+  20 files
+  skills   : 14
+  commands : 2
+
+  scratch/local-marketplace/
+  |- .claude-plugin/marketplace.json      (generated)
+  \- psmodule/
+     |- .claude-plugin/plugin.json        (copied)
+     |- skills/      14 directories       (copied)
+     \- commands/    2 .md files          (copied)
+
+  marketplace.json:
+    {
+      "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
+      "name": "psmodule-local",
+      "owner": {
+        "name": "Jerry Balmer"
+      },
+      "plugins": [
+        {
+          "name": "psmodule",
+          "source": "./psmodule",
+          "description": "Builds, tests, and releases PowerShell modules to a fixed set of conventions enforced by a conformance suite.",
+          "version": "0.1.0"
+        }
+      ]
+    }
+    
+
+--- (3) Byte comparison: staged copies vs the repository's originals ---
+  .claude-plugin/plugin.json         66BE6D1C0DFB9ABE  MATCH
+  skills/                            16 files compared
+  commands/                          2 files compared
+  mismatches: 0
+
+--- (4) Idempotence: run it again, compare the whole tree ---
+  concatenated file hashes identical across two runs: True
+
+=== FALSIFICATION ===
+
+The validator is one function with two entry points: the staging path calls
+it, and -ValidateOnly calls it without restaging. So a corrupted staged file
+is graded by exactly the code that reported green a moment ago.
+
+--- Row 1 (break): corrupt one byte of the staged marketplace.json ---
+  byte[0] before : 0x7B  '{'
+  byte[0] after  : 0x21  '!'
+  sha256 before  : 4C548A1EA343D8AC1EE00654238CA2F90954E550C4133AD8EE204B94CD702B6C
+  sha256 after   : 29939FF3C996DB73D95FC0C2C478102948E67CE56554073E61F2ED2513F19E33
+  BREAK LANDED   : True   (HARNESS.md hazard 4: a break that
+                   changed nothing produces a green that proves nothing)
+
+  $ pwsh -NoProfile -File tools/publish/Publish-Local.ps1 -ValidateOnly
+    Validating the staged tree at C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\scratch\local-marketplace (no copy, no repair).
+    
+    VALIDATION FAILED:
+      - does not parse as JSON: C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\scratch\local-marketplace\.claude-plugin\marketplace.json -- Conversion from JSON failed with error: Unexpected character encountered while parsing value: !. Path '', line 0, position 0.
+    exit: 1
+  EXPECTED RED   : CONFIRMED
+
+--- Row 2 (control): a change the validator must NOT notice ---
+  Restage clean, then add a harmless extra key. Still valid JSON, source
+  still resolves. A validator that goes red here is refusing change rather
+  than checking validity - METHOD.md's scope control.
+  BREAK LANDED   : True
+    Validating the staged tree at C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\scratch\local-marketplace (no copy, no repair).
+    Validation passed.
+    exit: 0
+  EXPECTED GREEN : CONFIRMED - it checks validity, not sameness
+
+--- Restore ---
+    Repository: C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder
+    Staging to: C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\scratch\local-marketplace
+    Staged 14 skills and 2 commands.
+    Validation passed: both JSON files parse, the source path resolves, skills and commands are present.
+    re-validate exit: 0
+  keys back to the generated shape: $schema, name, owner, plugins
+
+--- Safety rail: the stage root must be under scratch/ ---
+    exit: 1
+    43 |      throw "REFUSED: stage root '$normStage' is not under the scratch  …
+
+  skills/ untouched: True
+
+Nothing outside scratch/ was written at any point in this transcript.

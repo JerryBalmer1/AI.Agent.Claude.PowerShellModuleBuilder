@@ -1,0 +1,140 @@
+=== PublishReal guard, pass 0031 ===
+
+--- (1) via InvokeBuild ---
+$ Invoke-Build PublishReal
+Build PublishReal C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\.build.ps1
+Task /PublishReal
+GUARD: refused.
+
+  Looked for : C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\.claude-plugin\marketplace.json
+  Found      : nothing.
+
+Why this is a refusal and not an error:
+
+  A Claude Code marketplace is discovered by a marketplace.json
+  committed at the repository root. This repository has plugin.json
+  and no marketplace.json, so there is nothing for anyone to add.
+  Generating one here would publish a file that no pass has
+  falsified and that no cold install has ever been proved against.
+
+What pass 0030 adds, and what makes this go green:
+
+  1. .claude-plugin/marketplace.json, committed, with the owner and
+     the plugin entry pointing at this repository.
+  2. A re-version of the psmodule manifest away from 0.1.0
+     (LEDGER.md, Versions: v1.0.0 is reserved for "passed the ladder").
+  3. A cold-install proof: install from the published marketplace on a
+     machine that has never seen this repository, and record it.
+
+Until then, use the local path:  Invoke-Build PublishLocal
+See docs/creating-an-agent/09-try-before-you-trust.md.
+ERROR: Publish-Real.ps1 exited 1.
+At C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\.build.ps1:28 char:32
++ …    if ($LASTEXITCODE -ne 0) { throw "$Script exited $LASTEXITCODE." }
++                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+At C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\.build.ps1:40 char:1
++ task PublishReal {
++ ~~~~~~~~~~~~~~~~~~
+Build FAILED. 1 tasks, 1 errors, 0 warnings 00:00:01.2870943
+Exception: C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\.build.ps1:28
+Line |
+  28 |  …    if ($LASTEXITCODE -ne 0) { throw "$Script exited $LASTEXITCODE." }
+     |                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     | Publish-Real.ps1 exited 1.
+
+--- (2) direct, so the exit code is the script's own ---
+$ pwsh -NoProfile -File tools/publish/Publish-Real.ps1
+GUARD: refused.
+
+  Looked for : C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\.claude-plugin\marketplace.json
+  Found      : nothing.
+
+Why this is a refusal and not an error:
+
+  A Claude Code marketplace is discovered by a marketplace.json
+  committed at the repository root. This repository has plugin.json
+  and no marketplace.json, so there is nothing for anyone to add.
+  Generating one here would publish a file that no pass has
+  falsified and that no cold install has ever been proved against.
+
+What pass 0030 adds, and what makes this go green:
+
+  1. .claude-plugin/marketplace.json, committed, with the owner and
+     the plugin entry pointing at this repository.
+  2. A re-version of the psmodule manifest away from 0.1.0
+     (LEDGER.md, Versions: v1.0.0 is reserved for "passed the ladder").
+  3. A cold-install proof: install from the published marketplace on a
+     machine that has never seen this repository, and record it.
+
+Until then, use the local path:  Invoke-Build PublishLocal
+See docs/creating-an-agent/09-try-before-you-trust.md.
+
+exit code: 1
+
+Note: an earlier version of .build.ps1 called this script with &  in-process.
+It printed this same refusal in full and InvokeBuild reported 'Build succeeded,
+0 errors'. The message was right and the exit code was wrong. Fixed by invoking
+in a child process and throwing on non-zero.
+
+--- (3) FALSIFICATION: can the guard go the other way? ---
+A guard that has only ever refused is indistinguishable from one that always
+refuses (METHOD.md: an assertion about a declaration is not an assertion about
+the thing declared). Flip it in a CLONE - never in the working repository,
+which must not grow a .claude-plugin/marketplace.json before pass 0030.
+
+  git clone <repo> scratch/guard-falsification   (HEAD = b1b02fb)
+  script present in clone: True
+
+before flip (clone has no marketplace.json):
+  GUARD: refused.
+  
+    Looked for : C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\scratch\guard-falsification\.claude-plugin\marketplace.json
+    Found      : nothing.
+  
+  ... (full refusal as in section 1)
+  exit: 1
+
+drop a dummy marketplace.json into the CLONE only:
+
+after flip:
+  GUARD: passed. A committed marketplace.json is present.
+  
+    marketplace : dummy-marketplace
+    plugin      : psmodule 0.1.0
+    repository  : https://github.com/JerryBalmer1/AI.Agent.Claude.PowerShellModuleBuilder
+  
+  This script still publishes nothing. Publishing is the operator's verb,
+  run from the operator's own shell, on purpose. The checklist:
+  
+    1. Confirm the tree is clean and the pass is green.
+         git status --porcelain          # expect no output
+  
+    2. Confirm the version in plugin.json is the one you mean to ship.
+         current: 0.1.0
+  
+    3. Commit and push to the default branch, by fast-forward only.
+         git push origin main
+  
+    4. Tag the release and push the tag.
+         git tag -a v0.1.0 -m 'psmodule v0.1.0'
+         git push origin v0.1.0
+  
+    5. Anyone installing then pastes these inside Claude Code:
+         /plugin marketplace add JerryBalmer1/AI.Agent.Claude.PowerShellModuleBuilder
+         /plugin install psmodule@dummy-marketplace
+  
+    6. Prove it cold: install on a machine that has never cloned this
+       repository, run /psmodule:build on a scratch module, and record
+       the transcript. An install nobody has done from outside is a claim.
+  
+  No push was made by this script.
+  exit: 0
+
+GUARD IS FALSIFIABLE: refuses (exit 1) without the file, prints the operator's
+checklist (exit 0) with it, and publishes nothing on either path.
+
+working repository untouched:
+  Test-Path .claude-plugin/marketplace.json -> False
+  git status --porcelain .claude-plugin -> ''
+
+  clone removed

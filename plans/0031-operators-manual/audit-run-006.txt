@@ -1,0 +1,296 @@
+=== A worked audit of run 006 ===
+
+Audited: 2026-09-01
+Auditor: pass 0031, from the harness working tree.
+
+The run record claims a target SHA, a conformance score and a functional score.
+This transcript re-derives each one. The rule it follows is that a number is
+believed when a command produces it here, not when a document states it.
+
+--------------------------------------------------------------------------
+STEP 1. Does the branch the run claims actually exist, at the SHA claimed?
+--------------------------------------------------------------------------
+
+Read the claim from the record's metadata block - this is the only thing
+read out of the record, and everything below re-derives rather than trusts.
+
+  claims  target-sha                 70669167ea5f59a47efb282002052f9e926a34bf
+  claims  seed-sha                   cb05cda4c4c52391f371f6b2abae4dd814464948
+  claims  conformance                33 / 33 (cases-defined)
+  claims  cases-run                  57
+  claims  functional (first-shot)    1 / 12
+  claims  functional (final)         12 / 12
+
+$ git ls-remote https://github.com/JerryBalmer1/PSAzureDevOpsGraph.git refs/heads/run-006-plugin-on
+  70669167ea5f59a47efb282002052f9e926a34bf	refs/heads/run-006-plugin-on
+
+  remote tip : 70669167ea5f59a47efb282002052f9e926a34bf
+  claimed    : 70669167ea5f59a47efb282002052f9e926a34bf
+  VERDICT    : AGREE
+
+--------------------------------------------------------------------------
+STEP 2. Clone at that SHA. Not the branch name - the commit.
+--------------------------------------------------------------------------
+
+A branch name is a moving target; the run's claim is about a commit. Clone
+the branch, then detach onto the SHA and confirm HEAD is where it should be.
+
+$ git -c core.longpaths=true clone -q --branch run-006-plugin-on <url> scratch/audit-006
+
+$ git -C scratch/audit-006 rev-parse HEAD
+  70669167ea5f59a47efb282002052f9e926a34bf
+
+  VERDICT    : AGREE - the clone is at the claimed commit
+
+--------------------------------------------------------------------------
+STEP 3. Ancestry. Is the run branch an ancestor of the target's main?
+--------------------------------------------------------------------------
+
+Decision 0008's amendment says measurement branches are deliberately NOT
+on main's line, so this is expected to be FALSE. Checking it is how you
+tell a deliberate orphan from an accidental one - and never believing a
+'fast-forwarded' claim without merge-base --is-ancestor is the general rule.
+
+$ git -C scratch/audit-006 fetch -q origin main
+
+  git merge-base --is-ancestor <run-006 sha> origin/main
+  exit: 1  (is NOT an ancestor)
+  VERDICT    : AGREE with decision 0008 - a measurement line, not a deliverable
+
+--------------------------------------------------------------------------
+STEP 4. Build it from nothing, then re-run the conformance suite myself.
+--------------------------------------------------------------------------
+
+Not 'read the committed result.json'. Run the scorer, in this clone, now.
+
+$ ./build.ps1 (in the clone)
+  
+  Running tests from 8 files.
+  Starting code coverage.
+  [+] C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\scratch\audit-006\tests\Module.Quality.Tests.ps1 1.99s (19 tests)
+  [+] C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\scratch\audit-006\tests\Integration\Fixture.Integration.Tests.ps1 29.86s (18 tests)
+  [+] C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\scratch\audit-006\tests\Private\GraphInternals.Tests.ps1 482ms (18 tests)
+  [+] C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\scratch\audit-006\tests\Public\Credential.Tests.ps1 297ms (7 tests)
+  [+] C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\scratch\audit-006\tests\Public\Export-AzDoPipelineDependencyGraph.Tests.ps1 282ms (8 tests)
+  [+] C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\scratch\audit-006\tests\Public\Get-AzDoPipelineReference.Tests.ps1 346ms (13 tests)
+  [+] C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\scratch\audit-006\tests\Public\Resolve-AzDoPipelineReference.Tests.ps1 203ms (12 tests)
+  Tests completed in 33.66s
+  Tests Passed: 95, Failed: 0, Skipped: 0, Inconclusive: 0, NotRun: 10
+  Processing code coverage result.
+  Covered 89.81% / 70%. 736 analyzed Commands in 1 File.
+    powershell-yaml: 0.4.12 at C:\Users\jlbal\OneDrive\Documents\PowerShell\Modules\powershell-yaml\0.4.12\powershell-yaml.psd1
+  Done /./Build/Resolve 00:00:00.1086728
+  Task /./Build
+    copied culture directory en-US/
+  Built 12 private + 7 public into output/PSAzureDevOpsGraph/.
+  Done /./Build 00:00:00.2738826
+  Done /./Test/Build
+  Task /./Test
+  Line coverage: 89.81% (target 70%)
+  Done /./Test 00:00:37.5038196
+  Done /. 00:00:43.0027479
+  Build succeeded. 6 tasks, 0 errors, 0 warnings 00:00:43.1644002
+
+  build exit: 0
+
+$ Invoke-Conformance.ps1 -Path scratch/audit-006 -Tag @(Universal,Repository,HouseStyle,RequiresBuild)
+  Pester v6.1.0
+  
+  Running tests from 1 files.
+  Filter 'Tag' set to ('Universal', 'Repository', 'HouseStyle', 'RequiresBuild').
+  Filters selected 57 tests to run.
+  
+  Running tests from 'C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Conformance.Tests.ps1'
+  Describing Manifest
+    [+] exists, and its base name matches its directory 104ms
+    [+] parses as PowerShell data 7ms
+    [+] declares a RootModule 7ms
+    [+] declares a ModuleVersion that parses as a version 26ms
+    [+] declares a GUID that parses as a GUID 10ms
+    [+] exports functions by explicit name, never by wildcard 10ms
+    [+] exports no cmdlets, variables, or aliases implicitly 14ms
+    [+] exports no cmdlets, variables, or aliases implicitly 5ms
+    [+] exports no cmdlets, variables, or aliases implicitly 4ms
+  
+  Describing Public surface
+    [+] defines every function the manifest exports somewhere in source 14ms
+    [+] gives Export-AzDoPipelineDependencyGraph comment-based help with a synopsis 67ms
+    [+] gives Get-AzDoPipeline comment-based help with a synopsis 14ms
+    [+] gives Get-AzDoPipelineDependencyGraph comment-based help with a synopsis 49ms
+    [+] gives Get-AzDoPipelineReference comment-based help with a synopsis 12ms
+    [+] gives Get-AzDoPipelineYaml comment-based help with a synopsis 22ms
+    [+] gives Get-AzDoRepository comment-based help with a synopsis 15ms
+    [+] gives Resolve-AzDoPipelineReference comment-based help with a synopsis 53ms
+  
+  Describing Repository shape
+    [+] has a build entrypoint at the repository root 7ms
+    [+] has analyzer settings at the repository root 5ms
+    [+] has a tests directory 12ms
+    [+] exercises the exported command Export-AzDoPipelineDependencyGraph somewhere in tests 58ms
+    [+] exercises the exported command Get-AzDoPipeline somewhere in tests 39ms
+    [+] exercises the exported command Get-AzDoPipelineDependencyGraph somewhere in tests 38ms
+    [+] exercises the exported command Get-AzDoPipelineReference somewhere in tests 55ms
+    [+] exercises the exported command Get-AzDoPipelineYaml somewhere in tests 45ms
+    [+] exercises the exported command Get-AzDoRepository somewhere in tests 44ms
+    [+] exercises the exported command Resolve-AzDoPipelineReference somewhere in tests 73ms
+  
+  Describing House style: source layout
+    [+] places source under src/PSAzureDevOpsGraph/ 8ms
+    [+] keeps Public/ flat 9ms
+    [+] defines exactly one function in Export-AzDoPipelineDependencyGraph.ps1, named for the file 47ms
+    [+] defines exactly one function in Get-AzDoPipeline.ps1, named for the file 9ms
+    [+] defines exactly one function in Get-AzDoPipelineDependencyGraph.ps1, named for the file 10ms
+    [+] defines exactly one function in Get-AzDoPipelineReference.ps1, named for the file 10ms
+    [+] defines exactly one function in Get-AzDoPipelineYaml.ps1, named for the file 11ms
+    [+] defines exactly one function in Get-AzDoRepository.ps1, named for the file 14ms
+    [+] defines exactly one function in Resolve-AzDoPipelineReference.ps1, named for the file 29ms
+    [+] agrees three ways: Public filenames, manifest exports, and their count 12ms
+    [+] declares the PowerShell editions it claims to support 9ms
+    [+] pins build dependencies only in Requirements.psd1 21ms
+  
+  Describing House style: build file
+    [+] has a build file named PSAzureDevOpsGraph.build.ps1 7ms
+    [+] declares the task Clean 38ms
+    [+] declares the task Lint 16ms
+    [+] declares the task Build 15ms
+    [+] declares the task Test 17ms
+    [+] declares the task PreTag 13ms
+    [+] makes the default task Clean, Lint, Build, Test 32ms
+    [+] excludes PreTag-tagged tests from the Test task 39ms
+    [+] throws rather than exits when tests fail 33ms
+    [+] disables Pester v5 assertion syntax 22ms
+    [+] measures coverage against the built psm1, not the source tree 27ms
+    [+] throws on coverage below target rather than only reporting it 47ms
+  
+  Describing House style: generated module
+    [+] produced output/PSAzureDevOpsGraph/PSAzureDevOpsGraph.psm1 8ms
+    [+] marks the generated file as generated 8ms
+    [+] sets $script:ModuleRoot 49ms
+    [+] exports exactly the manifest surface 55ms
+    [+] includes functions from Private subfolders 46ms
+    [+] copies culture directories so Get-Help finds about_ topics 11ms
+  Tests completed in 2.63s
+  Tests Passed: 57, Failed: 0, Skipped: 0, Inconclusive: 0, NotRun: 0
+  
+  Conformance: 57/57 (100%) across 33 assertions  ->  C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder/scratch/audit-006-conformance.json
+  cases-defined: 33  (HouseStyle=14, Repository=4, RequiresBuild=6, Universal=9)   cases-run: 57
+  
+  Target             : C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\scratc
+                       h\audit-006
+  Tags               : {Universal, Repository, HouseStyle, RequiresBuild}
+  RunAt              : 2026-09-01T18:00:24.3295983-07:00
+  Total              : 57
+  Passed             : 57
+  Failed             : 0
+  Skipped            : 0
+  NotRun             : 0
+  CasesRun           : 57
+  CasesDefined       : 33
+  CasesDefinedPerTag : @{HouseStyle=14; Repository=4; RequiresBuild=6; Universal=9}
+  ScorePct           : 100
+  Assertions         : {@{Name=House style: build file.declares the task <_>; Ran=5; Passed=5; Failed=0}, @{Name=House 
+                       style: build file.disables Pester v5 assertion syntax; Ran=1; Passed=1; Failed=0}, @{Name=House 
+                       style: build file.excludes PreTag-tagged tests from the Test task; Ran=1; Passed=1; Failed=0}, 
+                       @{Name=House style: build file.has a build file named <ModuleName>.build.ps1; Ran=1; Passed=1; 
+                       Failed=0}…}
+  Failures           : {}
+  
+
+  Now compare MY result file against the run's COMMITTED result file.
+  Both are files. Neither is the run's prose.
+
+  CasesDefined                       33              33
+  CasesRun                           57              57
+  Passed                             57              57
+  Failed                              0               0
+  Skipped                             0               0
+  Total                              57              57
+
+  And against the PROSE claim in the README:
+    README says conformance : 33 / 33 (cases-defined)
+    README says cases-run   : 57
+    my result file says     : 57/57 tests, CasesDefined 33, CasesRun 57, ScorePct 100
+
+  A note on that line, because I got it wrong the first time. My first pass at
+  this audit printed a field called 'CasesPassed' and it came out BLANK, because
+  the result file has no such field. It has Passed, Failed, CasesRun and
+  CasesDefined. A blank where a number belongs is exactly the shape this
+  repository keeps recording: a check that did not run, reported as though it
+  had. The fix is to read the schema, not to squint at the gap. The fields are:
+    Target, Tags, RunAt, Total, Passed, Failed, Skipped, NotRun, CasesRun, CasesDefined, CasesDefinedPerTag, ScorePct, Assertions, Failures
+
+--------------------------------------------------------------------------
+STEP 5. Re-score the functional claim against the oracle, myself.
+--------------------------------------------------------------------------
+
+The run committed its produced graph.json. Score it again with the
+comparator in this working tree and see whether 12/12 and 0 differences
+come back out.
+
+$ Compare-Graph.ps1 -CandidatePath runs/006-plugin-on/graph.json
+  Compare-Graph
+    expected  : C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\functional\fixture\expected-graph.json
+    candidate : C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder/runs/006-plugin-on/graph.json
+  
+    The graphs agree. 0 differences.
+  
+    report    : C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder/scratch/audit-006-compare.json
+
+                              mine (today)    run 006 file
+  agree                       True            True
+  differenceCount             0               0
+  cases (the FAILED ones)     []              []
+
+  README prose said: functional (final) = 12 / 12
+
+  READ THAT LAST ROW CAREFULLY - it is the second place this audit nearly
+  reported a finding that was not one. There is no '12' anywhere in the report.
+  I went looking for a CasesPassed field, found 'cases: []', and my first
+  instinct was that the 12/12 was unverifiable from the artifact.
+
+  It is not. Reading evals/functional/Compare-Graph.ps1 settles it: the
+  report's 'cases' array is the variable the comparator calls affectedCases -
+  the list of declared cases that a difference touched. An EMPTY array means no
+  case was affected, which is what 12 of 12 passing looks like in this format.
+  The score is recorded as an absence, and 'agree: true, differenceCount: 0' is
+  the same claim said twice.
+
+  Two rules come out of that, and they are why this step is in the manual.
+  First: when an artifact does not contain the number you expected, read the
+  code that WRITES the artifact before concluding the number is missing.
+  Second: an audit that had stopped at 'cases is empty, so the claim is
+  unsupported' would have manufactured a finding out of its own ignorance of
+  the format - which is worse than not auditing, because it looks like rigour.
+
+--------------------------------------------------------------------------
+STEP 6. The instrument pin the run asserted.
+--------------------------------------------------------------------------
+
+Run 006 asserts the plugin was unchanged from the ladder's pinned SHA.
+That is checkable here and now, and it is the claim that decides whether
+runs 004-006 measured the same instrument at all.
+
+$ git diff --stat f25d05d..HEAD -- skills/ commands/ .claude-plugin/
+  (empty output = the plugin proper is byte-identical to the pin)
+
+$ git diff --stat f25d05d..HEAD -- evals/
+   evals/HARNESS.md | 69 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+   1 file changed, 69 insertions(+)
+
+  NOT empty, and that is the finding: pass 0029 landed +69 lines in
+  evals/HARNESS.md. LEDGER.md records it and prescribes the three-path
+  form above. A run written against the four-path form hard-stops for a
+  reason that is not about the instrument.
+
+--------------------------------------------------------------------------
+What this audit did NOT establish
+--------------------------------------------------------------------------
+
+  - That run 006's session was blind. Freshness is unprovable from outside
+    the session; the session-identifier only shows separateness.
+  - That the first-shot number is independent. Run 006's own record says it
+    is weakened, because its prompt named the earlier runs' mechanisms.
+  - That Phase 1 took 34 minutes. No artifact carries a clock.
+
+An audit that reported those as verified would be worth less than one that
+says which claims it could not reach.
