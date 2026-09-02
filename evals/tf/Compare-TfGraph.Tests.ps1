@@ -36,9 +36,19 @@ Describe 'Oracle against itself is the control' {
     It 'states what it compared, not just that it matched' {
         # A comparator that says "match" without saying how much it looked at
         # passes an empty document against an empty document.
+        #
+        # These two numbers are HARD-CODED on purpose, and they are the frozen
+        # fixture's counts per decision 0012 ("The oracle, re-authored"): node
+        # count unchanged at 78, edges 57 -> 59 after the case-3 amendment.
+        # Deriving them from the oracle file would make this assertion follow
+        # the fixture wherever it went and quietly agree with it - which is the
+        # one thing decision 0011's freeze exists to prevent. Written down, they
+        # are a tripwire: if the fixture drifts without a decision authorising
+        # it, this line goes red. 57 was this test's pre-amendment number and
+        # was left stale when the oracle was re-authored.
         $result = & $script:Compare -Expected $script:Oracle -Actual $script:Oracle
         $result.ExpectedNodeCount | Should-Be 78
-        $result.ExpectedEdgeCount | Should-Be 57
+        $result.ExpectedEdgeCount | Should-Be 59
     }
 }
 

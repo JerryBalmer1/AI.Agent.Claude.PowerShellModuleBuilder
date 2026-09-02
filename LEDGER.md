@@ -234,6 +234,26 @@ wrongly later.
     one clause of its evidence is not. Correcting the protocol document
     is a deliberate act and was left to a pass that owns it.
 
+### Numbering, reconciled by pass 0030
+
+Pass 0031 recorded a 17→19 drift and asked that numbers never move. This is
+the sequence as it actually stands, so the next pass does not have to
+re-derive it:
+
+- **1–12** exist as numbered entries.
+- **13 does not exist and never did.** No entry was ever written under that
+  number. It is cited once — in *Resolved by pass 0029*, as "Items 12 / 13 /
+  14" — because its intended wording was absorbed into item 12 before either
+  was written down, and it landed in `evals/HARNESS.md` as hazard 10. The gap
+  is left open on purpose. Closing it would move 14 and every number above it.
+- **14–22** exist as numbered entries.
+- **23 is the next free number.** Pass 0030 consumes none: everything it
+  touched was already numbered.
+
+Numbers are consumed, never reused and never renumbered — including the ones
+belonging to resolved items, which stay where they are so that a citation
+written against them keeps resolving.
+
 **Precondition note for any pass written against the four-path pin.**
 Pass 0031's prompt asserted that
 `git diff f25d05d..HEAD -- skills/ commands/ .claude-plugin/ evals/` is
