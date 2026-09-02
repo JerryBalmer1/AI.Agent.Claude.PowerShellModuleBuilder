@@ -66,10 +66,18 @@ function Ok   { param($m) Write-Host "  [ok]   $m" -ForegroundColor Green }
 function Bad  { param($id, $m) Write-Host "  [FAIL] $m" -ForegroundColor Red; $script:failures.Add("${id}: $m") }
 function Note { param($m) Write-Host "  [note] $m" -ForegroundColor DarkGray; $script:notes.Add($m) }
 function Skip { param($id, $m) Write-Host "  [skip] $m" -ForegroundColor Yellow; $script:skipped.Add("${id}: $m") }
+# A probe's verdict is the change THIS check made to the failure list, never
+# the list's total. A total is contaminated by every earlier check that failed
+# for an unrelated reason, and reads as a probe firing when it did not.
+$script:mark = 0
+function Mark { $script:mark = $script:failures.Count }
 function Fired {
-    param($id, $desc, [bool]$went)
+    param($id, $desc)
+    $went = $script:failures.Count -gt $script:mark
     if ($went) { Write-Host "  [fires] $desc" -ForegroundColor Green }
     else { Write-Host "  [DOES NOT FIRE] $desc" -ForegroundColor Red; $script:probes.Add("${id}: $desc") }
+    # Discard the deliberate failures so the run's own summary stays honest.
+    while ($script:failures.Count -gt $script:mark) { $script:failures.RemoveAt($script:failures.Count - 1) }
 }
 
 # Short root on purpose. The session scratchpad path is long enough that
@@ -121,7 +129,10 @@ try {
 # Check 1 - the rescore, re-derived from fresh clones of both final SHAs
 # ===========================================================================
 Write-Host 'Check 1 - rescore reproduced under the corrected procedure'
-if ($SkipRescore) {
+if ($FailCheck) {
+    Skip 1 'no probe: check 1 re-derives against the network and cannot be broken in the clone. Its own falsification is check 2.'
+}
+elseif ($SkipRescore) {
     Skip 1 'rescore skipped by -SkipRescore (checks 1 and 2 are the only ones that build the target)'
 }
 else {
@@ -164,7 +175,10 @@ else {
 # the procedure, and every number in check 1 is worthless.
 # ===========================================================================
 Write-Host 'Check 2 - falsification triple for the scoring repair'
-if ($SkipRescore) {
+if ($FailCheck) {
+    Skip 2 'no probe: check 2 IS the falsification, and its own control row (an unbuilt clone must still fail) is the probe.'
+}
+elseif ($SkipRescore) {
     Skip 2 'falsification triple skipped by -SkipRescore'
 }
 else {
@@ -227,6 +241,7 @@ else {
 Write-Host 'Check 3 - README claims resolve to artifacts'
 $r = Get-Content $readme -Raw
 if ($FailCheck) {
+    Mark
     $broken = $r -replace '\*\*32 / 33\*\*', '**99 / 33**'
     if ($broken -eq $r) { throw 'probe changed nothing - the corrected 007 figure was not found in README' }
     Set-Content -LiteralPath $readme -Value $broken -NoNewline
@@ -264,10 +279,9 @@ if ($section -match 'nearly flat') { Bad 3 'the superseded "nearly flat" framing
 else { Ok 'the superseded "nearly flat" framing is gone' }
 
 if ($FailCheck) {
+    Fired 3 'a wrong corrected figure in README is caught against rescore.txt'
     git -C $clone checkout -q -- README.md
     $r = Get-Content $readme -Raw
-    Fired 3 'a wrong corrected figure in README is caught against rescore.txt' ($failures.Count -gt 0)
-    $failures.Clear()
 }
 
 # ===========================================================================
@@ -282,6 +296,26 @@ if ($FailCheck) {
 # ===========================================================================
 Write-Host 'Check 4 - installed surface unchanged between the tags'
 git -C $clone fetch -q --tags origin 2>&1 | Out-Null
+if ($FailCheck) {
+    # Probe: commit a change to skills/ AND to the conformance suite, then move
+    # the LOCAL v1.0.1 tag onto it. Checks 4 and 8 both read that tag range, so
+    # this one probe falsifies the two strongest claims of the pass - "no skill
+    # changed" and "no assertion weakened". Done after the fetch, so the fetch
+    # cannot quietly put the tag back.
+    Mark
+    $skillFile = @(Get-ChildItem "$clone/skills" -Recurse -Filter *.md -File | Select-Object -First 1)[0]
+    $suiteFile = "$clone/evals/conformance/Conformance.Tests.ps1"
+    $skillBefore = (Get-FileHash -LiteralPath $skillFile.FullName).Hash
+    $suiteBefore = (Get-FileHash -LiteralPath $suiteFile).Hash
+    Add-Content -LiteralPath $skillFile.FullName -Value "`n<!-- verify probe -->"
+    Add-Content -LiteralPath $suiteFile -Value "`n# verify probe"
+    if ((Get-FileHash -LiteralPath $skillFile.FullName).Hash -eq $skillBefore -or
+        (Get-FileHash -LiteralPath $suiteFile).Hash -eq $suiteBefore) {
+        throw 'probe changed nothing - skills/ or the suite file did not move'
+    }
+    git -C $clone -c user.name=v -c user.email=v@local commit -q -am 'verify probe'
+    git -C $clone tag -f -a $Tag -m 'probe' HEAD 2>&1 | Out-Null
+}
 $tagsPresent = (git -C $clone tag -l $PrevTag) -and (git -C $clone tag -l $Tag)
 if (-not $tagsPresent) {
     Bad 4 "one or both of $PrevTag / $Tag is not present in the clone after fetching tags"
@@ -307,11 +341,20 @@ else {
                "$($added.Count) added -- $($plugin -join ' | ')")
     }
 }
+if ($FailCheck) { Fired 4 'a change to skills/ inside the tag range is caught' }
 
 # ===========================================================================
 # Check 5 - the manifest, the tag, and the remote agree
 # ===========================================================================
 Write-Host 'Check 5 - manifest, tag and remote agree'
+if ($FailCheck) {
+    Mark
+    $pf = "$clone/.claude-plugin/plugin.json"
+    $before = Get-Content $pf -Raw
+    $broken = $before -replace '"version": "1\.0\.1"', '"version": "9.9.9"'
+    if ($broken -eq $before) { throw 'probe changed nothing - plugin.json version not found' }
+    Set-Content -LiteralPath $pf -Value $broken -NoNewline
+}
 $manifestVersion = (Get-Content "$clone/.claude-plugin/plugin.json" -Raw | ConvertFrom-Json).version
 if ($manifestVersion -eq $Version) { Ok "plugin.json version is $Version" }
 else { Bad 5 "plugin.json version is '$manifestVersion', expected '$Version'" }
@@ -328,6 +371,10 @@ else { Bad 5 "$Tag is not on the remote" }
 $changelog = Get-Content "$clone/CHANGELOG.md" -Raw
 if ($changelog -match '(?m)^## 1\.0\.1') { Ok 'CHANGELOG carries a 1.0.1 section' }
 else { Bad 5 'CHANGELOG has no 1.0.1 section' }
+if ($FailCheck) {
+    Fired 5 'a manifest version that disagrees with the tag is caught'
+    git -C $clone checkout -q -- .claude-plugin/plugin.json
+}
 
 # ===========================================================================
 # Check 6 - link check across README and every chapter this pass touched
@@ -346,6 +393,7 @@ $touched = @(
     'runs/007-baseline-iterated/README.md'
 )
 if ($FailCheck) {
+    Mark
     $f = "$clone/README.md"
     $before = Get-Content $f -Raw
     $broken = $before -replace '\(LEDGER\.md\)', '(LEDGER-does-not-exist.md)'
@@ -368,15 +416,29 @@ foreach ($rel in $touched) {
 if ($dead.Count -eq 0) { Ok "no dead relative links across $($touched.Count) touched documents" }
 else { foreach ($d in $dead) { Bad 6 "dead link: $d" } }
 if ($FailCheck) {
+    Fired 6 'a dead relative link is caught'
     git -C $clone checkout -q -- README.md
-    Fired 6 'a dead relative link is caught' ($failures.Count -gt 0)
-    $failures.Clear()
 }
 
 # ===========================================================================
 # Check 7 - the disclosures landed where they were promised
 # ===========================================================================
 Write-Host 'Check 7 - hazards and blindness caveats'
+if ($FailCheck) {
+    Mark
+    # The heading must actually GO. The first version of this probe renamed it
+    # to '## Blindness caveats REMOVED BY PROBE', which still matches
+    # /(?m)^## Blindness caveats/ - the file changed, the guard was satisfied,
+    # and the probe reported DOES NOT FIRE against a check that was working.
+    # That is hazard 4 one level in: a break that lands without breaking the
+    # thing under test. The guard now asserts the check's own pattern is gone.
+    $rf = "$clone/runs/005-plugin-on/README.md"
+    $before = Get-Content $rf -Raw
+    $broken = $before -replace '(?m)^## Blindness caveats.*$', '## Section removed by probe'
+    if ($broken -eq $before) { throw 'probe changed nothing - no ## Blindness caveats heading in runs/005' }
+    if ($broken -match '(?m)^## Blindness caveats') { throw "probe changed the file but the check's own pattern still matches" }
+    Set-Content -LiteralPath $rf -Value $broken -NoNewline
+}
 $h = Get-Content $harness -Raw
 foreach ($p in @('prompt-borne oracle content', 'case-annotated comments')) {
     if ($h -match [regex]::Escape($p)) { Ok "HARNESS.md carries the hazard '$p'" }
@@ -397,6 +459,10 @@ else { Bad 7 'the TF fixture scan states no verdict' }
 $fixtureDiff = @(git -C $clone diff --name-only "$PrevTag..$Tag" -- evals/tf/fixture/)
 if ($fixtureDiff.Count -eq 0) { Ok 'the Terraform fixture is untouched between the tags' }
 else { Bad 7 "the Terraform fixture changed: $($fixtureDiff -join ', ')" }
+if ($FailCheck) {
+    Fired 7 'a run record missing its Blindness caveats section is caught'
+    git -C $clone checkout -q -- runs/005-plugin-on/README.md
+}
 
 # ===========================================================================
 # Check 8 - no conformance assertion was weakened
@@ -411,6 +477,7 @@ if ($tagsPresent) {
     else { Bad 8 'Conformance.Tests.ps1 changed - a procedure repair must not touch the assertions' }
 }
 else { Skip 8 'tags not present; suite comparison not run' }
+if ($FailCheck) { Fired 8 'an edited conformance assertion inside the tag range is caught' }
 
 # ===========================================================================
 # Check 9 - the acceptance suite, run from the clone

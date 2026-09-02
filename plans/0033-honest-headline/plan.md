@@ -251,7 +251,33 @@ Tag `v1.0.1`, annotated, message as specified. Branch and tag pushed.
 Checks 1 and 2 clone and build the target module twice and take a few minutes;
 `-SkipRescore` skips them and **reports the skip**.
 
-Results are recorded in [`verify.txt`](verify.txt).
+**Checks: 9 of 9 agree, exit 0.** **Probes: 6 fire, 2 checks declare no probe
+and say why, exit 0.** Full transcript: [`verify.txt`](verify.txt).
+
+The probes cover checks 3, 4, 5, 6, 7 and 8. Checks 4 and 8 share one probe -
+a commit that edits `skills/` *and* `Conformance.Tests.ps1`, with the local
+`v1.0.1` tag force-moved onto it - because those two checks carry the pass's
+two strongest claims (no skill changed, no assertion weakened) and a claim
+that strong should not rest on a check nobody has broken. Checks 1 and 2 are
+reported as having no probe, with the reason, rather than being quietly
+absent: check 2 *is* a falsification, and its control row is its own probe.
+
+**One probe did not fire on its first attempt, and the probe was at fault.**
+It renamed `## Blindness caveats` to `## Blindness caveats REMOVED BY PROBE`,
+which still matches `(?m)^## Blindness caveats` - so the file changed, the
+did-this-change-anything guard was satisfied, and a check that was working
+correctly was reported as DOES NOT FIRE. That is hazard 4 one level in: a
+break that lands without breaking the thing under test. The probe now removes
+the heading and asserts the check's own pattern is gone before the check
+re-runs. Recorded here because a probe that reports a false DOES NOT FIRE is
+the mirror image of the one that reports a false green, and the second is the
+only one this project had written down.
+
+A second defect in the first draft of `verify.ps1`, fixed before the recorded
+run: `Fired` compared the failure list's **total** against zero, so a probe
+would have reported "fires" on a failure some earlier check had produced for
+an unrelated reason. It now measures the delta this check contributed, and
+discards the deliberate failures so the summary stays honest.
 
 ## 10. Deviations
 
@@ -319,6 +345,12 @@ Results are recorded in [`verify.txt`](verify.txt).
 7. **The "eleven hazards" count appears in four live documents and was
    corrected in all four.** Journal entries that say "eleven" are history and
    were left alone.
+
+8. **`verify.ps1`'s first draft had two probe defects**, both found by running
+   `-FailCheck` rather than by reading it, both fixed before the recorded run,
+   and both written up in §9. They are named here as well because the pass
+   protocol asks for anything followed that seems mistaken, and "the verify
+   script was believed before it was falsified" would have been exactly that.
 
 ## 11. Cost
 

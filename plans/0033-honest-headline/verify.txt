@@ -1,0 +1,129 @@
+VERIFY TRANSCRIPT — pass 0033
+Both invocations, as run, against the pushed commit.
+Noise from the seven target builds is elided; every [ok], [fires],
+[skip] and [FAIL] line is verbatim, and both exit codes are the real ones.
+
+===============================================================
+1. ./plans/0033-honest-headline/verify.ps1        EXIT 0
+===============================================================
+Pass 0033 verification
+  repository : C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder
+  commit     : 1a947a4bcdec0e32ea2151540fb7e53a1bce378a
+  clone      : C:\Users\jlbal\AppData\Local\Temp\v0033-b235f6\h
+  mode       : checks
+Check 1 - rescore reproduced under the corrected procedure
+  [ok]   007-final at 95ca28d re-derives 32/33 (cases 54/55), built
+  [ok]   006-final at 7066916 re-derives 33/33 (cases 57/57), built
+  [ok]   rescore.txt states the ladder mechanism as explained
+Check 2 - falsification triple for the scoring repair
+  [ok]   control: unbuilt clone still fails 4 generated-module assertions, 28/33 as originally reported
+  [ok]   sabotage: build exits 1 and the 4 generated-module assertions go red
+  [ok]   gate: a red build refuses to become a conformance number
+  [ok]   positive: built conforming clone passes 33/33, zero failed assertions
+Check 3 - README claims resolve to artifacts
+  [ok]   README /\*\*32 / 33\*\*/ resolves to rescore.txt
+  [ok]   README /19 / 33/ resolves to runs/007 record
+  [ok]   README /28 / 33/ resolves to runs/007 record
+  [ok]   README /\*\*6 / 12\*\*/ resolves to runs/007 record
+  [ok]   README /\*\*14\*\*/ resolves to runs/007 record
+  [ok]   README /181 min/ resolves to runs/007 record
+  [ok]   README /\*\*33 / 33\*\*/ resolves to runs/006 record
+  [ok]   the with/without section carries 'buys shape, not correctness'
+  [ok]   the with/without section carries 'single control'
+  [ok]   the with/without section carries 'control's first shot was the closest'
+  [ok]   the superseded "nearly flat" framing is gone
+Check 4 - installed surface unchanged between the tags
+  [ok]   skills/ and commands/ are byte-identical between v1.0.0 and v1.0.1
+  [ok]   .claude-plugin/ changes are exactly three version lines, all 1.0.0 -> 1.0.1
+Check 5 - manifest, tag and remote agree
+  [ok]   plugin.json version is 1.0.1
+  [ok]   marketplace entry version is 1.0.1
+  [ok]   v1.0.1 is on the remote
+  [ok]   CHANGELOG carries a 1.0.1 section
+Check 6 - relative links resolve
+  [ok]   no dead relative links across 16 touched documents
+Check 7 - hazards and blindness caveats
+  [ok]   HARNESS.md carries the hazard 'prompt-borne oracle content'
+  [ok]   HARNESS.md carries the hazard 'case-annotated comments'
+  [ok]   runs/003-baseline-off carries ## Blindness caveats
+  [ok]   runs/004-plugin-on carries ## Blindness caveats
+  [ok]   runs/005-plugin-on carries ## Blindness caveats
+  [ok]   runs/006-plugin-on carries ## Blindness caveats
+  [ok]   runs/007-baseline-iterated carries ## Blindness caveats
+  [ok]   the TF fixture scan states a verdict: findings listed
+  [ok]   the Terraform fixture is untouched between the tags
+Check 8 - the conformance suite is unchanged
+  [ok]   Conformance.Tests.ps1 is byte-identical to the previous tag
+Check 9 - acceptance suite
+  [ok]   acceptance 10/10 green
+All checks agree.
+
+===============================================================
+2. ./plans/0033-honest-headline/verify.ps1 -FailCheck   EXIT 0
+===============================================================
+Pass 0033 verification
+  repository : C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder
+  commit     : 1a947a4bcdec0e32ea2151540fb7e53a1bce378a
+  clone      : C:\Users\jlbal\AppData\Local\Temp\v0033-66f07c\h
+  mode       : FailCheck (falsification probes)
+Check 1 - rescore reproduced under the corrected procedure
+  [skip] no probe: check 1 re-derives against the network and cannot be broken in the clone. Its own falsification is check 2.
+Check 2 - falsification triple for the scoring repair
+  [skip] no probe: check 2 IS the falsification, and its own control row (an unbuilt clone must still fail) is the probe.
+Check 3 - README claims resolve to artifacts
+  [FAIL] README with/without section does not state /\*\*32 / 33\*\*/
+  [ok]   README /19 / 33/ resolves to runs/007 record
+  [ok]   README /28 / 33/ resolves to runs/007 record
+  [ok]   README /\*\*6 / 12\*\*/ resolves to runs/007 record
+  [ok]   README /\*\*14\*\*/ resolves to runs/007 record
+  [ok]   README /181 min/ resolves to runs/007 record
+  [ok]   README /\*\*33 / 33\*\*/ resolves to runs/006 record
+  [ok]   the with/without section carries 'buys shape, not correctness'
+  [ok]   the with/without section carries 'single control'
+  [ok]   the with/without section carries 'control's first shot was the closest'
+  [ok]   the superseded "nearly flat" framing is gone
+  [fires] a wrong corrected figure in README is caught against rescore.txt
+Check 4 - installed surface unchanged between the tags
+  [FAIL] skills/ or commands/ changed between the tags: skills/azdo-graph-assembly/SKILL.md
+  [ok]   .claude-plugin/ changes are exactly three version lines, all 1.0.0 -> 1.0.1
+  [fires] a change to skills/ inside the tag range is caught
+Check 5 - manifest, tag and remote agree
+  [FAIL] plugin.json version is '9.9.9', expected '1.0.1'
+  [ok]   marketplace entry version is 1.0.1
+  [ok]   v1.0.1 is on the remote
+  [ok]   CHANGELOG carries a 1.0.1 section
+  [fires] a manifest version that disagrees with the tag is caught
+Check 6 - relative links resolve
+  [FAIL] dead link: README.md -> LEDGER-does-not-exist.md
+  [FAIL] dead link: README.md -> LEDGER-does-not-exist.md
+  [fires] a dead relative link is caught
+Check 7 - hazards and blindness caveats
+  [ok]   HARNESS.md carries the hazard 'prompt-borne oracle content'
+  [ok]   HARNESS.md carries the hazard 'case-annotated comments'
+  [ok]   runs/003-baseline-off carries ## Blindness caveats
+  [ok]   runs/004-plugin-on carries ## Blindness caveats
+  [FAIL] runs/005-plugin-on has no ## Blindness caveats section
+  [ok]   runs/006-plugin-on carries ## Blindness caveats
+  [ok]   runs/007-baseline-iterated carries ## Blindness caveats
+  [ok]   the TF fixture scan states a verdict: findings listed
+  [ok]   the Terraform fixture is untouched between the tags
+  [fires] a run record missing its Blindness caveats section is caught
+Check 8 - the conformance suite is unchanged
+  [FAIL] Conformance.Tests.ps1 changed - a procedure repair must not touch the assertions
+  [fires] an edited conformance assertion inside the tag range is caught
+Check 9 - acceptance suite
+  [ok]   acceptance 10/10 green
+All probes fired.
+
+===============================================================
+Note on the check-7 probe
+===============================================================
+It did not fire on its first attempt, and the probe was at fault, not
+the check. It renamed the heading to '## Blindness caveats REMOVED BY
+PROBE', which still matches /(?m)^## Blindness caveats/ — so the file
+changed, the did-this-change-anything guard was satisfied, and a working
+check was reported as DOES NOT FIRE. That is hazard 4 one level in: a
+break that lands without breaking the thing under test. The probe now
+deletes the heading and asserts the check's own pattern is gone before
+the check is re-run. The first, failing transcript line was:
+  [DOES NOT FIRE] a run record missing its Blindness caveats section is caught
