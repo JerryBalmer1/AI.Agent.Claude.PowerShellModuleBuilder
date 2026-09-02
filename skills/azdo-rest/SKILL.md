@@ -118,6 +118,45 @@ function Invoke-AzDoRestMethod {
 Use `Invoke-WebRequest`, not `Invoke-RestMethod`, when you need the token —
 `Invoke-RestMethod` discards the headers.
 
+## Read a response property that may not be there, or lose the object
+
+**A REST response object omits properties it has nothing to say about. It does
+not set them to `$null`.** Under `Set-StrictMode -Version Latest`, reading an
+absent property throws — and in a pipeline that throws *per object*, so the ones
+that have the property come back and the ones that do not simply are not there.
+
+```powershell
+# WRONG. A repository with no commits has no defaultBranch property AT ALL.
+Get-AzDoRepository | ForEach-Object { $_.defaultBranch }
+```
+
+```powershell
+# RIGHT.
+$branch = $null
+if ($repo.PSObject.Properties['defaultBranch']) { $branch = $repo.defaultBranch }
+```
+
+This cost run 007 an entire repository. Five existed, four came back, there was
+a `PropertyNotFoundException` on the console and **no gap in the output** — the
+result was a shorter list that looked like a complete list. It was caught by
+counting, on the first live query, and by nothing else.
+
+**Mock the failure by omitting the property, not by setting it to `$null`.** An
+object with `defaultBranch = $null` does not reproduce this and a regression test
+built on one passes against the broken code. The test that catches it uses a
+mock whose third repository object does not have the property.
+
+Apply the same guard to every optional field Azure DevOps returns —
+`process.yamlFilename`, `repository.id` on a definition, `defaultBranch`,
+`project.name`. The rule generalises past this API: **under StrictMode, "might
+be absent" and "might be null" are different tests, and only the first one is
+safe on a REST payload.**
+
+There is a bitter joke in it worth remembering. A tool that walks repositories to
+find what depends on what dropped one silently — *a thing that is missing looked
+identical to a thing that is fine*, which is the exact failure the tool exists to
+prevent, one level up.
+
 ## Errors worth handling by hand
 
 - **404 on an item fetch** means the file is not in that repository. For a

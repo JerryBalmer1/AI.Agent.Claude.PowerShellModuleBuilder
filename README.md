@@ -35,15 +35,15 @@ useless exactly when you need it.
 
 Then paste these three inside **Claude Code**, not in a shell:
 
-    /plugin marketplace add JerryBalmer1/AI.Agent.Claude.PowerShellModuleBuilder@v1.0.1
+    /plugin marketplace add JerryBalmer1/AI.Agent.Claude.PowerShellModuleBuilder@v1.1.0
     /plugin install psmodule@psmodule-builder
     /psmodule:build
 
 The first adds this repository as a plugin marketplace, **pinned to the
-`v1.0.1` tag**. The pin is deliberate and is
+`v1.1.0` tag**. The pin is deliberate and is
 [decision 0013](decisions/0013-harness-release-tagging.md): `main` moves as work
 lands, and pinning means none of that reaches you until a release is tagged.
-Drop the `@v1.0.1` and you are tracking whatever `main` happens to be, which is
+Drop the `@v1.1.0` and you are tracking whatever `main` happens to be, which is
 not a release and is not what these measurements are about.
 
 The second installs the plugin from that marketplace. The third is the plugin
@@ -224,7 +224,7 @@ part, or whether the dependency computation was never hard for this model. One
 control, contaminated by its own prompt, against three runs of one instrument on
 one fixture, is not enough to separate those, and this table does not pretend
 otherwise. The next measurement worth taking is
-[per-skill ablation](LEDGER.md) — which of the fourteen skills carries the
+[per-skill ablation](LEDGER.md) — which of the fourteen skills the ladder measured carries the
 19 → 33 — not another run of the same shape.
 
 ---
@@ -440,15 +440,17 @@ out.**
 ---
 
 <!-- TEMPLATE:replace — a plugin needs a table of what it contains and what
-     each part is for. These fourteen names, their prefixes and the two
+     each part is for. These seventeen names, their prefixes and the two
      findings noted against them are this project's. -->
 
 ## The skills
 
 Named by scope, per [decision 0007](decisions/0007-skill-taxonomy-and-naming.md):
 `powershell-module-<role>` for anything generic to building a PowerShell module,
-`azdo-<role>` for what is specific to the Azure DevOps target. Dots are not legal
-in skill names, which rules out the `powershell.module.x` form.
+`azdo-<role>` for what is specific to the Azure DevOps target, and — added at
+v1.1.0 — `tf-<role>` for what is specific to reading Terraform configuration.
+Dots are not legal in skill names, which rules out the `powershell.module.x`
+form.
 
 `producer-contract` fits neither prefix, and that is a gap in the taxonomy rather
 than a naming slip: it is about emitting against a contract another repository
@@ -468,8 +470,20 @@ owns. Recorded for the operator to settle if a second cross-cutting skill appear
 | `azdo-rest` | The Azure DevOps REST API, read-only. `$env:AZDO_PAT` and nothing else, ever. |
 | `azdo-pipeline-yaml-refs` | Extracting and resolving pipeline YAML references, parsing separated from resolution. |
 | `azdo-graph-assembly` | Turning references into a graph — identity by what a node is, never where a traversal reached it. **Carries F-2.** |
+| `tf-hcl-parse` | Reading `.tf` as blocks rather than with a whole-file regex; `required_providers` in both its spellings; keeping an expression's raw text. |
+| `tf-module-resolve` | What a module `source` points at: the leading-dot guard, the `//` past the scheme, and the unresolvable target as a flagged node. |
+| `tf-graph-assembly` | Ids that carry their repository, containment from the directory tree rather than the calls, and one fact as one edge. |
 | `producer-contract` | Emitting against a schema another repository owns: absent versus false, the consumer's battery, never renaming what the contract names. |
 | `task-tree-reporting` | Response formatting during multi-skill work. |
+
+The three `tf-*` skills were **deliberately withheld** from v1.0.x. They carry
+what run tf-001 learned about the Terraform fixture it was scored against, and
+writing them while that fixture was still the only Terraform instrument would
+have measured the plugin's memory of tf-001 rather than its generality
+([backlog 9](LEDGER.md)). They ship now because
+[decision 0014](decisions/0014-second-unannotated-fixture.md) built a second
+Terraform fixture that none of them was written against — a configuration
+nothing in this repository had seen when these lines were drafted.
 
 ---
 
@@ -525,7 +539,7 @@ plugin's memory of tf-001 rather than its generality — which are in
 
 | Path | What |
 |---|---|
-| `skills/` | The plugin's fourteen skills |
+| `skills/` | The plugin's seventeen skills |
 | `commands/` | `/build` and `/test` |
 | `evals/conformance/` | The shape oracle: `Conformance.Tests.ps1`, its runner, the falsification record |
 | `evals/functional/` | The behaviour oracle: `BRIEF.md`, `fixture/`, the comparator, the seed |
@@ -587,7 +601,7 @@ plugin's memory of tf-001 rather than its generality — which are in
 - The functional oracle covers **one** 15-pipeline fixture, and it contains a
   known contradiction (F-2) that no implementation following the stated rule can
   satisfy.
-- Per-skill ablation — which of the fourteen skills carries the 19 → 33 — is
+- Per-skill ablation — which of the fourteen skills the ladder measured carries the 19 → 33 — is
   **unmeasured**, and is the next question worth a run.
 - **The Terraform fixture annotates its own cases too**, by name and by case
   number, and one of its READMEs points at the oracle document by path. It is

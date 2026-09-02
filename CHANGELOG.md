@@ -9,6 +9,71 @@ Versions follow [semantic versioning](https://semver.org/) as described in
 [Versioning](README.md#versioning) — MAJOR when something you rely on breaks,
 MINOR when capability is added, PATCH for corrections.
 
+## 1.1.0 — 2026-09-02
+
+**Three new skills, for Terraform.** The plugin now carries seventeen skills
+instead of fourteen. **Your commands are unchanged** — `/psmodule:build` and
+`/psmodule:test` do exactly what they did in 1.0.1, and nothing that worked
+before behaves differently. This is additive; upgrade whenever suits you.
+
+### What is new
+
+If you are building a PowerShell module that reads Terraform configuration, the
+agent now has three skills it did not have:
+
+- **`tf-hcl-parse`** — reading `.tf` files as blocks rather than with a regex
+  over the whole file, and the four constructs that defeat one (a brace inside a
+  string, a `#` inside a string, a heredoc, a block comment). Also:
+  `required_providers` is legal both as a block *and* as an attribute, and a
+  reader that handles one finds **no providers at all** in a file written the
+  other way, with no error.
+- **`tf-module-resolve`** — what a module `source` actually points at. A
+  registry address `namespace/name/provider` and a relative path
+  `./modules/child` are the same shape to a naive pattern, and the guard is the
+  leading `./` or `../` and nothing else. Also: the `//` that separates a
+  repository from a subdirectory has to be searched for *past* the scheme's own
+  `//`, and a `git::` source with no `//` names the repository's **root**
+  module.
+- **`tf-graph-assembly`** — ids that carry their repository so two producers'
+  output can be merged, containment taken from the directory tree rather than
+  from the module calls (**a module's parent is not its caller**), and
+  deduplicating a value that a single expression happens to mention twice.
+
+Every line in all three is grounded in a specific failure from a recorded run,
+not in what Terraform tooling might plausibly need.
+
+### Two hardening lines in skills you already have
+
+- **`azdo-rest`** now says that a REST response *omits* properties it has
+  nothing to say about rather than setting them to `$null`, so under
+  `Set-StrictMode -Version Latest` reading one throws — per object, in a
+  pipeline, which quietly returns a shorter list that looks like a complete one.
+  It cost a real run an entire repository. The regression test has to mock the
+  failure by **omitting** the property; an object with the property set to
+  `$null` does not reproduce it.
+- **`powershell-module-scaffold`** now says that a command taking a `-Path` must
+  test `IsPathRooted` before `Join-Path`, and must resolve against
+  `(Get-Location).ProviderPath` rather than the process working directory, which
+  PowerShell does not keep in step with `Set-Location`.
+
+### What this release does not claim
+
+**The three Terraform skills are unmeasured.** Every number in this
+repository's [with/without table](README.md#with-the-plugin-and-without-it)
+comes from the Azure DevOps line; no run has yet scored a Terraform build with
+these skills readable against one without. They were withheld from 1.0.x on
+purpose, because the only Terraform fixture that existed was the one their
+lessons came from, and scoring them against it would have measured memory rather
+than generality. A second Terraform fixture now exists that none of them was
+written against
+([decision 0014](decisions/0014-second-unannotated-fixture.md)), which is what
+makes the measurement possible — but it has not been taken.
+
+So: three skills that encode hard-won, specific knowledge, and no evidence yet
+about how much they help. If that distinction matters to you, it is the same
+one [Status, honestly](README.md#status-honestly) makes about everything else
+here.
+
 ## 1.0.1 — 2026-09-02
 
 **Nothing you install changes.** `skills/` and `commands/` are byte-identical to

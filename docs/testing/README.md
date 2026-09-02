@@ -30,7 +30,7 @@ proves only that the agent is self-consistent.
 Everything below is an attempt to buy an oracle the agent cannot have
 written, and then to prove that the oracle can actually disagree.
 
-## The five layers, and the one thing each one caught
+## The six layers, and the one thing each one caught
 
 | Layer | The question it answers | The artifact | The instance where it earned its keep |
 |---|---|---|---|
@@ -39,6 +39,7 @@ written, and then to prove that the oracle can actually disagree.
 | Falsification | Can an assertion fail at all, and only for its own reason? | [`FALSIFICATION.md`](../../evals/conformance/baseline/FALSIFICATION.md) | The coverage assertion was inert from the day it was written and passed every green run for free. |
 | Ordered runner | Of fifty red lines, which one is the cause? | [`Invoke-OrderedTests.ps1`](../../skills/powershell-module-test/scripts/Invoke-OrderedTests.ps1) | One unclosed brace: one line naming the file and column, against eighteen lines naming three innocent files. |
 | Mutation testing | Can the comparator disagree with anything? | [`Invoke-TfOracleFalsification.ps1`](../../evals/tf/Invoke-TfOracleFalsification.ps1) | Seven mutations, seven distinct mechanisms, control at zero. |
+| Sanitization | Does the fixture tell a builder its own answers? | [`Test-FixtureSanitization.ps1`](../../evals/tf/Test-FixtureSanitization.ps1) | Clean on fixture 2 and **94 findings on fixture 1**, which is what makes the clean verdict mean something. |
 
 ---
 
@@ -377,13 +378,15 @@ closed.
 [README](../../README.md) states the limit and this page does not go past
 it: **the oracle was visible for both tf-001 and tf-002, so this is a
 statement about one fixture and not a generalisation claim; tf-003 is the
-blind measurement and is not yet scheduled.** It is now **blocked** as well:
-pass 0033 scanned the Terraform fixture for the vector hazard 13 describes
-and found it names its own cases by number, states what the wrong answer to
-several of them looks like, and — in one README — points at the oracle
-document by path. The fixture is frozen, so nothing was changed and the
-operator has a decision to make before a blind run against it means
+blind measurement and has not been run.** It was also **blocked** for a
+while: pass 0033 scanned the Terraform fixture for the vector hazard 13
+describes and found it names its own cases by number, states what the wrong
+answer to several of them looks like, and — in one README — points at the
+oracle document by path. The fixture is frozen, so nothing was changed and
+the operator had a decision to make before a blind run against it meant
 anything. [The scan](../../plans/0033-honest-headline/tf-fixture-comments.txt).
+**That decision was taken and the block is lifted** — see *A second
+Terraform fixture* below.
 tf-002 also iterated zero
 times, which — as [journal 0025](../../journal/0025-findings-batch.md) puts
 it — means a run that scores 0 tests *less* than a run that scores 31. What
@@ -397,7 +400,62 @@ running the comparator against it returns 59 — but
 line 41 still asserts `$result.ExpectedEdgeCount | Should-Be 57`. That
 assertion is red as committed: a check that drifted from the artifact it
 checks, which is the same species of defect as everything else on this
-page, found the same way.
+page, found the same way. *(Fixed in pass 0030; the paragraph is left
+standing because it is how the defect was found, and the fix is the boring
+half.)*
+
+### A second Terraform fixture, and a gate on what a fixture may say
+
+Pass 0034 took the decision the scan left open
+([0014](../../decisions/0014-second-unannotated-fixture.md)) and built a
+second Terraform fixture — `TfSiteCore`, `TfSiteEdge`, `TfSiteOps`, at
+[`evals/tf/fixture2/`](../../evals/tf/fixture2/cases.md) — written mute from
+the start.
+
+**Which of the two answers which question:**
+
+| | Fixture 1 (`evals/tf/fixture/`) | Fixture 2 (`evals/tf/fixture2/`) |
+|---|---|---|
+| Repositories | TfFixtureShared / Network / App | TfSiteCore / Edge / Ops |
+| Annotated? | **Yes**, and stays that way | **No**, by design rule |
+| What it is for | the deliverable-line example, and what tf-001 and tf-002 were scored against | **measurement** — tf-003 and after |
+| Oracle | 78 nodes, 59 edges | **99 nodes, 88 edges** |
+| Frozen by | decision 0011, amended once by 0012 | decision 0014 |
+
+The two exercise the **same seven mechanism classes** on deliberately
+different surfaces: four module levels instead of three, a diamond in which a
+module's parent is neither of its two callers, two unresolved sources of two
+different shapes instead of one, a cross-repository output reference landing
+in an output as well as a local, a different provider mix and different pins.
+A second fixture that is the first with the nouns changed would measure
+memory.
+
+**The sanitization gate.**
+[`Test-FixtureSanitization.ps1`](../../evals/tf/Test-FixtureSanitization.ps1)
+is pass 0033's hand-reading promoted to a script: 38 patterns in four
+categories, run over every file and over the commit messages the publisher
+pushes with. It is a sixth thing this stack does, and it belongs on this page
+because of *how it was falsified* rather than because of what it checks:
+
+- `-FailCheck` plants a case-naming comment in a scratch copy and requires the
+  catch. That is the weak control — it proves the scanner reacts to something.
+- Pointed at **fixture 1**, it reports **94 findings**: the `cases.md`
+  pointer, the *"Case 3"* comment, the absence case's stated wrong answer, the
+  numbered links. Pointed at **fixture 2**, it reports **clean**. That is the
+  strong control, because it discriminates between two real fixtures rather
+  than between a planted line and nothing.
+
+Both reports are committed:
+[`sanitization.txt`](../../plans/0034-fixture2/sanitization.txt) and
+[`sanitization-fixture1-control.txt`](../../plans/0034-fixture2/sanitization-fixture1-control.txt).
+
+**The comparator was re-falsified against the new oracle,** because an oracle
+that changed does not inherit the previous falsification:
+[`mutations2.txt`](../../plans/0034-fixture2/mutations2.txt) records
+`DETECTED: 7 / 7`, seven distinct mechanisms, control at zero over 99 nodes
+and 88 edges. Fixture 1's falsification re-runs byte-identical against the
+copy committed at v1.0.0, which is what says the parameterization added a
+fixture rather than weakening a check.
 
 ---
 
@@ -626,10 +684,19 @@ What those three suites are each for:
   agrees with the person who wrote it.
 
 The Terraform comparator's falsification runs on its own, and writes
-nothing but its report:
+nothing but its report. It takes a fixture, and defaults to the first:
 
 ```powershell
 ./evals/tf/Invoke-TfOracleFalsification.ps1
+./evals/tf/Invoke-TfOracleFalsification.ps1 -Fixture fixture2
+```
+
+The sanitization gate is the same shape — a report, an exit code, and a
+`-FailCheck` that proves it can fail before you believe a clean verdict:
+
+```powershell
+./evals/tf/Test-FixtureSanitization.ps1 -Fixture fixture2 -FailCheck
+./evals/tf/Test-FixtureSanitization.ps1 -Fixture fixture1   # exits 1, and should
 ```
 
 ---
@@ -663,7 +730,7 @@ lines to weigh.
   on five exported commands. `Repository` and `HouseStyle` have been
   validated against one repository, and no target has yet been a repository
   built by this plugin.
-- **Per-skill ablation is unmeasured.** Which of the fourteen skills
+- **Per-skill ablation is unmeasured.** Which of the fourteen skills the ladder measured
   carries the 19 → 33 is not known, and is the next question worth a run.
 - **The baseline is one run and it was not allowed to iterate.** A second
   plugin-off run, permitted the same three iterations, is the missing

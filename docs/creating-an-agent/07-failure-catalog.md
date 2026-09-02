@@ -1117,7 +1117,7 @@ counting the prompt's own lists against each other. *Rule:* the test was
 corrected minimally with the regex untouched, and the correction itself
 falsified against a non-existent tag. Thirteen were built, and the verify
 script asserts the roster holds *exactly* those thirteen so that a leftover
-directory fails as loudly as a missing one; the roster is fourteen today.
+directory fails as loudly as a missing one; the roster is seventeen today.
 The sharpest detail is in the journal: the reference repository's own test
 file carries a comment beginning *"THREE patterns, and no `--tags`"*
 explaining exactly this, and the pass had read that file earlier in the same

@@ -172,6 +172,42 @@ recorded as untested.
 Write tests that call the command, even when the call is inside
 `{ ... } | Should -Throw`.
 
+## A command that takes a `-Path` must handle an absolute one
+
+```powershell
+# WRONG. Produces C:\here\C:\there when $Path is already rooted.
+$full = Join-Path (Get-Location) $Path
+```
+
+```powershell
+# RIGHT.
+$full = [System.IO.Path]::IsPathRooted($Path) ? $Path : (Join-Path (Get-Location).ProviderPath $Path)
+```
+
+Two defects in one line, and both are worth stating separately.
+
+**`Join-Path` does not check whether its second argument is already rooted.** It
+concatenates, and the result is a path that cannot exist, so the failure surfaces
+later as a file-not-found somewhere unrelated to the command that built it.
+
+**`(Get-Location)` and the process working directory are different things.**
+PowerShell's `Set-Location` moves the former and does not move the latter, so
+anything that resolves a relative path through .NET — `[System.IO.Path]`,
+`File.WriteAllText`, most things a module reaches for — is working from a
+directory the user cannot see and did not choose. Use
+`(Get-Location).ProviderPath`, which is the filesystem path of the location
+PowerShell believes it is at.
+
+This shipped in a run's `Export-*` command and **never fired**, because every
+call in the run passed a relative path. The first absolute path came from
+`$TestDrive` in the test suite written two iterations later.
+
+That is the argument for the mocked end-to-end tests in the section above, made
+concretely: they were written to satisfy a conformance assertion about exercising
+every exported command, and they found a real defect in the one command the
+happy path could not reach. **A command whose only caller is you is a command
+whose parameters have only ever been given the values you had in mind.**
+
 ## Related
 
 - `powershell-module-build` — the `build.ps1` and `<Name>.build.ps1` this layout expects.

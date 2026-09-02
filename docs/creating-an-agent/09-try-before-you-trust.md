@@ -99,7 +99,7 @@ PowerShell and do not involve Claude at all.
      command in exactly this position, and a paragraph saying where the URL
      came from. The URL, the repository name and the manifest path are this
      project's; the shape is not. Everything from here to the end of
-     "Step 4" names psmodule, its two commands and its fourteen skills. -->
+     "Step 4" names psmodule, its two commands and its seventeen skills. -->
 
 ```powershell
 git clone https://github.com/JerryBalmer1/AI.Agent.Claude.PowerShellModuleBuilder
@@ -286,9 +286,12 @@ copy. Section 3 of the transcript records the comparison:
   mismatches: 0
 ```
 
-Sixteen files across fourteen skill directories: fourteen `SKILL.md` files
-plus a plan template and one helper script. You can re-derive the row
-yourself after staging:
+**That transcript was captured at v1.0.1**, when `skills/` held sixteen files
+across fourteen directories: fourteen `SKILL.md` files plus a plan template and
+one helper script. v1.1.0 adds three `tf-*` skills, so the same run today
+compares **nineteen files across seventeen directories**. The transcript is left
+as it was captured rather than edited to match, because a transcript nobody ran
+is not evidence of anything. You can re-derive the row yourself after staging:
 
 ```powershell
 $src = (Resolve-Path ./skills).Path

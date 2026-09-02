@@ -208,10 +208,50 @@ the fixture mute. Pass 0033 scanned this project's second fixture, the
 Terraform one, for the same vector and found it worse: it names cases by
 number and one of its READMEs points at the oracle by path
 ([the scan](../../plans/0033-honest-headline/tf-fixture-comments.txt)). That
-fixture is frozen too, so a blind run against it is now blocked on a
-decision rather than merely unscheduled. **The cost of a chatty fixture is
-paid at the moment you want a blind measurement, which is long after the
-moment it is cheap to fix.**
+fixture is frozen too, so a blind run against it was blocked on a decision
+rather than merely unscheduled. **The cost of a chatty fixture is paid at the
+moment you want a blind measurement, which is long after the moment it is
+cheap to fix.**
+
+### How that ended, so the advice has a price attached
+
+The decision was taken in pass 0034
+([0014](../../decisions/0014-second-unannotated-fixture.md)), and the shape of
+it is the part worth carrying away.
+
+Three options existed and each cost something real. *Disclose and run* was
+free and would have spent the project's one generalisation measurement on a
+fixture that labels its own cases. *Strip the annotations and re-freeze* cost
+the referent — two runs would keep their scores while the thing those scores
+were about changed underneath them. *Build a second fixture* cost a fixture:
+three repositories, a hand-authored oracle, a case list, a scanner and a
+falsification. **That is the one that was paid**, and it is the honest price
+of a chatty fixture discovered late. Nobody would have paid it up front; up
+front, it was a comment.
+
+Two things changed in how the next fixture gets written.
+
+**Sanitization became a design rule instead of a cleanup.** No comment,
+string, identifier, README line **or commit message** may name a case, name
+the oracle, describe presence or absence as a case, use the word *graph*, or
+point into the harness. Commit messages are in scope because a repository
+whose files say nothing and whose first commit says *"fixture for scoring"*
+has leaked the same thing one `git log` later — a channel that reads exactly
+like the commit-subject hazard two sections above, arriving through a
+different door.
+
+**The rule got a gate.** `evals/tf/Test-FixtureSanitization.ps1` is pass
+0033's hand-reading promoted to something anyone can re-run, and it was
+falsified twice before it was trusted: it plants a banned comment in a
+scratch copy and requires the catch, and — the stronger control — it reports
+**clean on the new fixture and 94 findings on the old one**, which are the
+same annotations 0033 found by hand. A scanner that only ever says *clean* is
+indistinguishable from a scanner that cannot say anything else.
+
+The old fixture was not touched. It stays annotated, its two runs keep their
+referent, and its bound stays disclosed. **A bound you have disclosed and a
+bound you have removed are different states, and only one of them costs a
+fixture.**
 
 ## Hazard 10 — the half with no visible failure mode
 

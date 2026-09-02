@@ -440,7 +440,7 @@ See: [method/METHOD.md](../../method/METHOD.md), the grader section.
 ## Running a measured run
 
 **ablation.** Removing one component to find out how much of the measured
-effect it carried. The plugin's fourteen skills have not been ablated, so
+effect it carried. The fourteen skills the ladder measured have not been ablated, so
 which of them carries the shape improvement is unknown, and it is recorded
 as unmeasured rather than attributed.
 See: [LEDGER.md](../../LEDGER.md), backlog item 18.
@@ -521,7 +521,7 @@ the three paths that name the plugin proper.
 See: [LEDGER.md](../../LEDGER.md), the Pins section.
 
 **plugin.** The Claude Code plugin distilled from what the harness measured:
-a manifest, fourteen skills and two commands. It is deliberately *not* the
+a manifest, seventeen skills and two commands. It is deliberately *not* the
 interesting artifact in this repository — the measurement is.
 See: [.claude-plugin/](../../.claude-plugin/), [skills/](../../skills/),
 [commands/](../../commands/), and [README.md](../../README.md).

@@ -5,9 +5,18 @@ for counters and pins. Update it in the same commit as the work
 that changes it.
 
 ## Passes
-Last landed: 0033. Next: the operator's decision — nothing is
-scheduled. 0033 is a docs/method patch: it rewrote the with/without
-claim against run 007, repaired the conformance scoring procedure,
+Last landed: **0034**. Next: **tf-003**, which is now unblocked — see
+Runs and backlog 6. 0034 is a constructive pass: it took decision
+0014, built a **second Terraform fixture** (`TfSiteCore`,
+`TfSiteEdge`, `TfSiteOps`) written without case annotations, promoted
+pass 0033's hand-scan to `evals/tf/Test-FixtureSanitization.ps1` as a
+standing gate, wrote the three `tf-<role>` skills backlog 9 had
+withheld, landed the two run-007 hardening lines, and released
+**v1.1.0**. It is the first release since v1.0.0 to change `skills/`;
+`commands/` is byte-identical to v1.0.1.
+
+0033 was a docs/method patch: it rewrote the with/without claim
+against run 007, repaired the conformance scoring procedure,
 disclosed two blindness bounds, and released **v1.0.1**. It changed
 nothing under `skills/` or `commands/`. 0030 ran after 0031 because 0031 was taken out of order
 deliberately (the manual and the local publish path do not depend on
@@ -30,14 +39,33 @@ AzDO-module (runs/NNN-*): **ladder COMPLETE at 004–006** (passes
 0026-0028), **control COMPLETE at 007** (pass 0032). All four show
 three complete score lines. The next run series is the operator's
 decision — nothing is scheduled.
-Terraform (runs/tf-NNN-*): last tf-002, next tf-003 — **BLOCKED, not
-merely unscheduled.** Pass 0033 scanned the Terraform fixture for the
-vector in hazard 13 and it is not clean: it names its own cases by
+Terraform (runs/tf-NNN-*): last tf-002, next tf-003 — **UNBLOCKED by
+pass 0034, and it targets FIXTURE 2.** Pass 0033 scanned fixture 1 for
+the vector in hazard 13 and it is not clean: it names its own cases by
 number, states the wrong answer to several, and one README points at
-`evals/tf/fixture/cases.md` by path. The fixture is frozen (decision
-0011) so nothing was amended. tf-003 is not a blind measurement until
-the operator answers the question in
-`plans/0033-honest-headline/tf-fixture-comments.txt`.
+`evals/tf/fixture/cases.md` by path. Fixture 1 is frozen (decision
+0011) and stays annotated; its bound is disclosed, not repaired.
+Decision 0014 built fixture 2 unannotated for exactly this
+measurement.
+
+**What tf-003 must now use:**
+- oracle `evals/tf/fixture2/expected-graph.json` — 99 nodes, 88 edges;
+- cases `evals/tf/fixture2/cases.md` — **oracle content, disqualifying
+  to read before a blind build**, same as fixture 1's;
+- repositories `TfSiteCore`, `TfSiteEdge`, `TfSiteOps` in
+  `ClaudeTestingTerraform`, at the Pins SHAs below;
+- comparator `Compare-TfGraph.ps1` unchanged; the mutator, the
+  falsification driver, the publisher and the read-back take
+  `-Fixture fixture2`;
+- plugin surface pinned at **v1.1.0**, which is the first release
+  carrying the three `tf-*` skills. Pinning v1.0.1 measures a plugin
+  with no Terraform skills in it and is a different question.
+- **`evals/tf/Test-FixtureSanitization.ps1 -Fixture fixture2` must be
+  clean at the run's preconditions.** It is the gate that says the
+  instrument is still mute.
+
+A fixture-2 counterpart to `Test-TfFixtureCase.ps1` does not exist —
+backlog 29.
 
 **007 — baseline off, iterated** (`runs/007-baseline-iterated`,
 target `run-007-baseline-iterated`, final `95ca28d`, first shot
@@ -64,13 +92,22 @@ PSAzureDevOpsGraph: v0.2.0 (next touching plan: v0.3.0)
 PSGraphRender: v0.13.0
 PSGraphRenderToHtml: v0.1.0 (next: v0.2.0)
 PSTerraformGraph: v0.2.0
-psmodule manifest: **1.0.1**, released and tagged `v1.0.1` by
-pass 0033 under decision 0013. The tag names `1a947a4`, one commit
+psmodule manifest: **1.1.0**, released and tagged `v1.1.0` by
+pass 0034 under decision 0013. **MINOR, and the first release since
+v1.0.0 to change `skills/`:** three new `tf-<role>` skills, plus two
+hardening lines added to `azdo-rest` and
+`powershell-module-scaffold`. `commands/` is byte-identical to
+`v1.0.1` and `git diff v1.0.1..v1.1.0 -- commands/` is empty. The
+seventeen-skill count is now stated in `README.md`, `SECURITY.md` and
+chapters 07/08/09; the *fourteen* that remain in ablation sentences
+are deliberate and refer to the roster the ladder measured.
+Previously **1.0.1**, released and tagged `v1.0.1` by
+pass 0033 under decision 0013. That tag names `1a947a4`, one commit
 behind the pass tip: `verify.ps1`'s falsification transcripts could
 only land after the falsification ran. The tag is a complete release
 and the later commit is plan artifacts only. Same divergence pass
 0030 recorded; a pushed tag is not moved — a docs/method patch with `skills/`
-and `commands/` byte-identical to `v1.0.0`. Previously **1.0.0**,
+and `commands/` byte-identical to `v1.0.0`. Before that, **1.0.0**,
 tagged `v1.0.0` by pass 0030. The reservation is spent: v1.0.0 was
 "passed the ladder" and the ladder is closed. Next release version
 is decided by what changes — MAJOR breaks a consumer's existing
@@ -121,10 +158,25 @@ re-verify the oracle and BRIEF blobs separately as runs 004-006
 already do. This is a precondition edit, not a new pin: the plugin
 SHA above is unchanged and still names the instrument that produced
 all three ladder runs.
-TF fixture SHAs (decision-0012 re-freeze):
+TF fixture 1 SHAs (decision-0012 re-freeze):
   TfFixtureShared   0af6ee33854bedb4147d0b13cc6db1311687775b  (unchanged)
   TfFixtureNetwork  24f27be92e583b6dfc9208bca42f8ec0baf5004b  (unchanged)
   TfFixtureApp      44ea9338ff35aef328bfa8d51835fc32bea590dd  (amended)
+Re-verified untouched by pass 0034, along with "zero builds in the
+project" and "the only pipeline definitions are fixture 1's four".
+
+**TF fixture 2 SHAs (decision-0014 freeze, pass 0034).** Read back
+byte-identical, 46 files across three repositories
+(`plans/0034-fixture2/readback2.txt`):
+  TfSiteCore        a228e78c247d2d4367303f303c4363d9906e06f2
+  TfSiteEdge        1ae66c2712f799a69304cb4364e91e4d10d694c4
+  TfSiteOps         fe27a34f7585b86b6fdbf12b609e17d4cb0f4b83
+Frozen on decision 0011's terms: changes require a new decision. A
+defect found in it is a finding, not an edit. **No pipeline
+definitions were created for these three**, deliberately — the YAML
+files exist in the repositories and carry `trigger: none` / `pr:
+none`, and nothing was ever queued. See backlog 31 if a future run
+wants definition parity with fixture 1.
 
 ## Backlog (priority order; operator reorders)
 1. Runs 004-006 + 0029 final README
@@ -132,16 +184,16 @@ TF fixture SHAs (decision-0012 re-freeze):
 3. Fixture restore drill (Sync-Fixture restore direction)
 4. Per-skill ablation runs (suspects first)
 5. Mirror assertion + dependency-wave ordering (post-ladder)
-6. **tf-003 — OPERATOR DECISION FIRST, then the run.** Was "blind
-   Phase 1"; pass 0033's scan says the fixture names its own cases by
+6. **tf-003 — the blind Terraform run. UNBLOCKED, and top of the
+   backlog.** Pass 0033's scan said fixture 1 names its own cases by
    number and one README points at the oracle by path, so a run
-   against it as it stands measures parsing, not generalisation. The
-   fixture is frozen (0011). Three options, none taken, all costed in
-   `plans/0033-honest-headline/tf-fixture-comments.txt`: (a) run it
-   and disclose the bound, (b) a new decision to strip the
-   annotations and re-falsify, (c) a second unannotated fixture —
-   which also answers item 9. Top of the backlog because it blocks
-   the only generalisation claim the project has queued.
+   against it measures parsing, not generalisation. Option (c) was
+   taken: **decision 0014, and pass 0034 built fixture 2.** The
+   decision is made and the instrument exists. What remains is the
+   run itself, against fixture 2, with the plugin pinned at v1.1.0 —
+   the full precondition list is in **Runs** above. It stays top of
+   the backlog because it is still the only generalisation claim the
+   project has queued, and now nothing is in its way.
 7. Portability / non-graph functional layer (on trigger only)
 
 ### Added by pass 0025
@@ -152,8 +204,12 @@ TF fixture SHAs (decision-0012 re-freeze):
    tagged and pushed; fixing it would have meant rewriting a pushed tag
    or landing on `main` past the tag it follows, so it was recorded
    instead. Belongs to the next pass that opens that repository.
-9. **The three `tf-<role>` skills tf-001 proposed were deliberately not
-   written.** They would carry this fixture's specific answers, and
+9. **~~The three `tf-<role>` skills tf-001 proposed were deliberately
+   not written.~~ CLOSED by pass 0034 — see *Resolved by pass 0034*.**
+   The original entry stands below, unedited, because a closed item
+   whose text is rewritten stops explaining why it was open.
+
+   They would carry this fixture's specific answers, and
    tf-003 is meant to be the blind measurement against that same
    fixture. Writing them first measures the plugin's memory of tf-001
    rather than its generality. An operator decision, recorded not
@@ -464,6 +520,90 @@ controls and corpus figures) was **not** touched and stays open.
     time, or state the three-line rule wherever the one-line rule is
     currently written.
 
+### Resolved by pass 0034
+
+- Item **9** (the three `tf-<role>` skills deliberately not written):
+  **CLOSED.** All three are written and released at v1.1.0 —
+  `tf-hcl-parse`, `tf-module-resolve`, `tf-graph-assembly`. The
+  objection that closed them was that they carry fixture 1's answers
+  and tf-003 would be scored against fixture 1. **Decision 0014
+  removed the premise rather than the objection:** tf-003 now targets
+  fixture 2, which was authored in pass 0034, after tf-001 and tf-002
+  had run and after their findings were written down. Nothing that
+  produced those findings has seen it.
+
+  Every line in the three cites a recorded failure —
+  `runs/tf-001-first-build/findings.md` B-1/B-2/B-3 and D-1,
+  `runs/tf-002-convention-and-case3/findings.md` D. Nothing
+  speculative, and no fixture-specific ids appear in any of them.
+
+  **The three are unmeasured, and the CHANGELOG says so in those
+  words.** No run has yet scored a Terraform build with them readable
+  against one without. tf-003 is that run.
+- Item **6** (tf-003, operator decision first): the **decision half is
+  done**; the item stays open for the run. Restated above.
+- Item **26** (StrictMode absent-property read): **CLOSED.** Landed in
+  `skills/azdo-rest/SKILL.md` as *"Read a response property that may
+  not be there, or lose the object"*, including the half that matters —
+  the regression test must mock the failure by **omitting** the
+  property, because an object setting it to `$null` does not reproduce
+  it.
+- Item **27** (`Join-Path` on an already-rooted path): **CLOSED.**
+  Landed in `skills/powershell-module-scaffold/SKILL.md` as *"A command
+  that takes a `-Path` must handle an absolute one"*, with both halves:
+  the `IsPathRooted` test, and resolving against
+  `(Get-Location).ProviderPath` rather than the process working
+  directory.
+- Item **28** (three version strings, not one): **honoured, not
+  closed.** All three were bumped together and `Publish-Local.ps1`
+  validated the pair it enforces. The item stays open because the
+  underlying defect — the validator ignores
+  `marketplace.json.metadata.version` — is unchanged; this pass
+  followed the rule rather than fixing the tooling.
+- Item **19** (doc maintenance as a standing obligation):
+  **honoured, and it stays open.** Chapters 02 (a new stage 3b, the
+  second fixture, and its dependency line), 04 (how the chatty-fixture
+  story ended and what it cost), 07/08/09 (the skill count, and
+  chapter 09's transcript left as captured with its date stated), and
+  `docs/testing/README.md` (a sixth layer, the fixture comparison
+  table, and the sanitization gate) were updated in the same pass as
+  the behaviour they describe.
+
+### Added by pass 0034
+
+29. **There is no fixture-2 counterpart to
+    `evals/tf/Test-TfFixtureCase.ps1`.** That script scores a produced
+    graph case by case against fixture 1 and is fixture-1 specific
+    throughout. Pass 0034's prompt named only `Compare-TfGraph.ps1`
+    and `Mutate-TfGraph.ps1` for wiring, so it was left alone rather
+    than half-generalised. **tf-003 needs one**, and it needs the same
+    control tf-002 gave the original: score it against a graph known to
+    be wrong in one case and confirm it fails exactly there. Recorded,
+    not taken.
+30. **Skill-line candidate: a function that comma-wraps its array
+    output, called inside `@(...)`, silently returns one element.**
+    Found in this pass, in `Test-FixtureSanitization.ps1`. The idiom
+    `, @($items | Sort-Object …)` exists to stop a single-item result
+    unrolling; combined with a caller that writes `@(Get-Thing …)` it
+    produces a one-element array **holding an array**. `.Count` reads 1,
+    which looks like one finding, and the first property access throws
+    *"The property 'X' cannot be found on this object"* — an error that
+    points at the consumer and not at the producer. Pick one of the two
+    conventions per function and say which in the function's comment.
+    Candidate line for a PowerShell authoring skill. **Recorded, not
+    taken.**
+31. **Fixture 2 has pipeline YAML files but no AzDO pipeline
+    definitions.** Fixture 1 has four definitions, created by pass 0023
+    and never queued; fixture 2 has four YAML files in its repositories
+    and zero definitions, because pass 0034's plan asked for repository
+    creation and a push and nothing else. A producer that reads
+    pipelines from the **REST API** rather than from repository files
+    therefore sees fixture 1 and not fixture 2, which is an asymmetry
+    between the two instruments. Decide before tf-003 whether the run
+    reads pipelines from files or from the API; if from the API, the
+    four definitions have to be created first, and creating them is a
+    change to a frozen fixture and therefore a new decision.
+
 ### Numbering, reconciled by pass 0030
 
 Pass 0031 recorded a 17→19 drift and asked that numbers never move. This is
@@ -479,7 +619,9 @@ re-derive it:
 - **14–22** exist as numbered entries.
 - **23, 24 and 25 were consumed by pass 0032**, and all three were
   **resolved by pass 0033**.
-- **26, 27 and 28 were consumed by pass 0033**; **29 is the next free
+- **26, 27 and 28 were consumed by pass 0033**; 26 and 27 were
+  **resolved by pass 0034** and 28 remains open.
+- **29, 30 and 31 were consumed by pass 0034**; **32 is the next free
   number.** Pass 0030 consumes none: everything it
   touched was already numbered.
 

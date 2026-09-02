@@ -1,6 +1,6 @@
 # Security
 
-`psmodule` is a Claude Code plugin: fourteen skills and two commands, all of
+`psmodule` is a Claude Code plugin: seventeen skills and two commands, all of
 them Markdown. It contains no compiled code, no installer, no service and no
 network client of its own. What follows is about the code it *teaches an agent
 to write*, and about the one credential that code handles.

@@ -148,6 +148,47 @@ which added an *absence* case, a claim about what must **not** appear —
 [0014 the seed and the comparator](../../plans/0014-seed-and-comparator/plan.md)
 ([journal](../../journal/0014-seed-and-comparator.md)).
 
+### 3b. A second fixture, once the first one has taught you something
+
+**This stage was not in the plan, and this project paid to learn that it
+should have been.**
+
+The third property, which took thirty-three passes to state: **the fixture
+must not answer its own questions.** Both of this project's fixtures were
+written with comments naming each case, stating what it catches, and — in one
+file — pointing at the oracle document by path. That commentary is useful to a
+maintainer and fatal to a measurement, because reading the fixture is the
+task, so whatever the fixture says is inside the blind phase permanently.
+[Chapter 4](04-fresh-sessions-and-contamination.md#the-fixture-when-the-fixture-is-chatty)
+has the mechanism; this is the scheduling consequence.
+
+A first fixture is where you work out what the cases even are, and you will
+annotate it, because at that point the annotations are the only record of your
+own reasoning. So plan for a **second** one, built later, from the first one's
+findings, and written mute:
+
+- the same mechanism classes, a **different surface for every one of them** —
+  different topology, vocabulary, dependency shape, pins. A second fixture
+  that is the first one with the nouns changed measures memory;
+- **case knowledge lives in the oracle document and nowhere else.** If writing
+  a fixture file seems to require explaining a case, the explanation goes in
+  the oracle;
+- a **scanner** enforcing that, falsified before it is trusted — not only by
+  planting a banned comment, but by pointing it at the annotated first fixture
+  and requiring it to find the real annotations there;
+- the first fixture **stays frozen and stays annotated.** It is what the
+  earlier runs were scored against and it remains the example a reader learns
+  the cases from. You are adding an instrument, not replacing one.
+
+It also unblocks something. Skills distilled from a first fixture's findings
+cannot honestly be measured against that same fixture — they are its answer
+key. Against a fixture written afterwards, which nothing that produced those
+findings has seen, they can be. This project deliberately withheld three
+skills for that reason and released them in the same pass that built the
+second fixture
+([decision 0014](../../decisions/0014-second-unannotated-fixture.md),
+[pass 0034](../../plans/0034-fixture2/plan.md)).
+
 ## 4. Seed and reset, so a run starts from a known state
 
 A run that starts in a directory somebody has been working in measures the
@@ -349,6 +390,11 @@ written before the runs it summarises.
 - **6 before 7:** the ladder measures a fixed instrument, so the last skill
   change lands before the first rung and nothing changes until the last rung
   is recorded.
+- **3 before 3b, and 3b before any skill distilled from 3's findings can be
+  measured.** A second fixture can only be written once the first has taught
+  you what the cases are; and a skill written from the first fixture's
+  findings is that fixture's answer key, so the fixture it is scored against
+  has to be one written afterwards.
 - 7 before 8 and 9: packaging and prose describe a result you do not have
   until the runs are done.
 
