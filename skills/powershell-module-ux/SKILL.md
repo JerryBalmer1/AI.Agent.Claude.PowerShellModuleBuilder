@@ -1,6 +1,6 @@
 ---
 name: powershell-module-ux
-description: Argument completion for a PowerShell module — deciding when a parameter earns a completer at all, choosing between ValidateSet, [ArgumentCompleter] and a class implementing IArgumentCompleter, the session-cache pattern that makes a slow enumeration feel instant, and the Pester test every completer must ship with. Use when adding a completer, when tab-completion is slow enough to be noticed, or when a parameter's valid values come from somewhere expensive.
+description: Argument completion for a PowerShell module — deciding when a parameter earns a completer at all, choosing between ValidateSet, [ArgumentCompleter] and a class implementing IArgumentCompleter, the session-cache pattern that makes a slow enumeration feel instant, the Pester test every completer must ship with, and the error standard — every terminal error states the fix or names the doc, in one line, before any detail. Use when adding a completer, when tab-completion is slow enough to be noticed, when a parameter's valid values come from somewhere expensive, or when writing the message a user sees when something fails.
 ---
 
 # Argument completion
@@ -285,6 +285,66 @@ Clear the cache, mock the source to return something different, and assert the
 completion changed. A cache whose refresh is inert is the same defect class as
 an assertion that cannot go red.
 
+## The error standard: state the fix, or name the doc, first
+
+Completion is what a user meets before reading any help. **An error message is
+what they meet before reading anything at all**, and they are already blocked
+when they meet it. Both are this skill's subject for the same reason: nothing
+grades either one, and nothing breaks when either is wrong.
+
+**Every terminal error states the fix, or names the document that has it, in
+one line, before any detail.**
+
+Write for the person who will paste your message into a search box. Yours
+should answer before the search does. That is not a stylistic aspiration; it is
+what determines whether the next thing that happens is a fix or a tab.
+
+```powershell
+# No. Each of these describes a condition and leaves the reader to find a fix.
+throw "Invalid configuration."
+throw "Cannot bind argument to parameter 'Path' because it is null."
+throw "Operation failed: the specified item was not found in the collection."
+
+# Yes. The fix is the first thing; the diagnosis follows it.
+throw "Set `$env:AZDO_PAT to a personal access token with Code (read), then re-run. It is unset, and every command in this module authenticates with it."
+throw "Run 'Install-Module Pester -MinimumVersion 6.0' and re-run. Pester 6 is required, $found is installed, and the ordered runner uses Should-Be, which 5.x does not have."
+throw "'$Path' has two manifests under src/: '$first' and '$second'. Pass -ModuleName to say which one to grade. Grading the wrong one silently is the failure this refuses to commit."
+```
+
+Three rules, and the third is the one people skip:
+
+1. **The fix precedes the diagnosis.** Not after it, not in a `.NOTES` block,
+   not in the documentation the message links to. First.
+2. **Name the thing, with its value.** `'$Path'` and not "the path"; both
+   manifests and not "multiple manifests". A reader who has to work out which
+   of their inputs you mean has been handed a second problem.
+3. **When there is no one-line fix, name the document that has it** — a path in
+   the repository or an `about_` topic, never "see the documentation". An error
+   that says a fix exists somewhere is an error that has told the reader they
+   are on their own.
+
+**The worked example is `Test-Prerequisites.ps1`** in this repository's
+`tools/publish/`. It checks five prerequisites and reports each missing one
+with the exact line that installs it. Two details in it are the whole standard:
+
+- It says **in so many words** which of the five can be knowingly ignored, and
+  why — so `1 of 5 missing` is a decision the reader makes rather than a
+  mystery they have to resolve.
+- It runs under **Windows PowerShell 5.1 on purpose.** A prerequisite checker
+  that will not start on the wrong PowerShell is useless exactly when it is
+  needed, and "upgrade PowerShell, then run the thing that tells you to upgrade
+  PowerShell" is the error standard failing in its purest form.
+
+**For a completer specifically**: a completer never throws. It returns nothing.
+So when the expensive enumeration behind one fails, the failure belongs on the
+*command's* error path, not swallowed in the completer and not surfaced as an
+empty list — an empty completion list is indistinguishable from "there are no
+valid values", which is a different and much more confusing statement.
+
+This is the module-facing half of the report contract that governs this
+project's own passes: `docs/ux/UX-003-report-contract.md`, where the same rule
+is why a hard stop leads with what to do and puts the forensics underneath.
+
 ## Sources
 
 The technique catalogue here is distilled from Tobias Weltner's
@@ -320,3 +380,5 @@ credential.
 - `powershell-module-test` — the narrowing case as a substitution control.
 - `powershell-module-build` — psm1 emitter ordering, which is what makes a
   class-based completer resolve in a fresh session.
+- `powershell-module-docs` — an error that names a document needs the document
+  to exist, and `about_` topics are where a fix too long for one line lives.
