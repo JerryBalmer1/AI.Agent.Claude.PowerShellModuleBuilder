@@ -1,0 +1,22 @@
+=== BREAK: drop 'reach' from the validator (a drift of exactly one member) ===
+141:        [ValidateScript(
+142-            { $_ -in @('structure', 'dependents', 'blastRadius', 'dependencies') },
+Done /Build 00:00:00.1484655
+Build succeeded. 3 tasks, 0 errors, 0 warnings 00:00:00.2886794
+  [-] accepts every member of the renderer schema set, and carries it through 125ms
+  [-] is exactly the set PSGraphRender's cytoscape settings schema declares 146ms
+   Expected [Object[]] @('structure', 'dependents', 'blastRadius', 'dependencies', 'reach') to be present in [Object[]] @('structure', 'dependents', 'blastRadius', 'dependencies', 'REFUSED: reach') in any order, but some values were not.
+  [+] refuses a value the renderer never accepted, naming both sides 76ms
+  [+] offers the same set to tab completion as it accepts 16ms
+  [+] defaults to structure, which is the renderer's default too 4ms
+Tests Passed: 3, Failed: 2, Skipped: 0, Inconclusive: 0, NotRun: 11
+
+=== RESTORE ===
+Done /Build 00:00:00.1561341
+Build succeeded. 3 tasks, 0 errors, 0 warnings 00:00:00.3104479
+  [+] accepts every member of the renderer schema set, and carries it through 87ms
+  [+] is exactly the set PSGraphRender's cytoscape settings schema declares 31ms
+  [+] refuses a value the renderer never accepted, naming both sides 50ms
+  [+] offers the same set to tab completion as it accepts 15ms
+  [+] defaults to structure, which is the renderer's default too 4ms
+Tests Passed: 5, Failed: 0, Skipped: 0, Inconclusive: 0, NotRun: 11

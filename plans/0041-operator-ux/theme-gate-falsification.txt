@@ -1,0 +1,37 @@
+=== RED: writer reverted to the scalars-only version ===
+Build succeeded. 3 tasks, 0 errors, 0 warnings 00:00:00.2894379
+  [-] renders with a nested theme value, which v0.1.1 could not do at all 307ms
+   RuntimeException: Cannot write setting 'EdgeResolutionStyle': this writer handles scalars only and was given [Hashtable].
+  [+] refuses a theme key the backend never declared, still 172ms
+  [-] refuses a value it cannot write, naming the key path rather than the type alone 145ms
+   Expected an exception, with message like '*KindColor.Enum*' to be thrown, but the message was 'Cannot write setting 'KindColor': this writer handles scalars only and was given [Hashtable].'.
+  [-] round-trips maps, lists and scalars through Import-PowerShellDataFile 9ms
+   RuntimeException: Cannot write setting 'Empty': this writer handles scalars only and was given [Hashtable].
+Tests Passed: 1, Failed: 3, Skipped: 0, Inconclusive: 0, NotRun: 10
+
+=== RESTORE ===
+Build succeeded. 3 tasks, 0 errors, 0 warnings 00:00:00.3172229
+  [+] renders with a nested theme value, which v0.1.1 could not do at all 1.09s
+  [+] refuses a theme key the backend never declared, still 137ms
+  [+] refuses a value it cannot write, naming the key path rather than the type alone 36ms
+  [+] round-trips maps, lists and scalars through Import-PowerShellDataFile 53ms
+Tests Passed: 4, Failed: 0, Skipped: 0, Inconclusive: 0, NotRun: 10
+=== RED: v0.1.2's writer (no key quoting, .Keys not .PSBase.Keys) ===
+Build succeeded. 3 tasks, 0 errors, 0 warnings 00:00:00.4096384
+  [+] renders with a nested theme value, which v0.1.1 could not do at all 1.2s
+  [+] refuses a theme key the backend never declared, still 197ms
+  [+] refuses a value it cannot write, naming the key path rather than the type alone 64ms
+  [-] colours a classification whose name is not a bare identifier 987ms
+   Expected [int] 0, because a theme file that will not parse is reported as a warning and then ignored, which is the quietest failure available, but got [int] 1.
+  [-] round-trips maps, lists and scalars through Import-PowerShellDataFile 107ms
+   Expected [string] 'a value with an ' apostrophe', but got [null] $null.
+Tests Passed: 3, Failed: 2, Skipped: 0, Inconclusive: 0, NotRun: 10
+
+=== RESTORE v0.1.3 ===
+Build succeeded. 3 tasks, 0 errors, 0 warnings 00:00:00.3186560
+  [+] renders with a nested theme value, which v0.1.1 could not do at all 1.61s
+  [+] refuses a theme key the backend never declared, still 138ms
+  [+] refuses a value it cannot write, naming the key path rather than the type alone 36ms
+  [+] colours a classification whose name is not a bare identifier 663ms
+  [+] round-trips maps, lists and scalars through Import-PowerShellDataFile 59ms
+Tests Passed: 5, Failed: 0, Skipped: 0, Inconclusive: 0, NotRun: 10

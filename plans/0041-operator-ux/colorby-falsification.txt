@@ -1,0 +1,33 @@
+COLORBY FALSIFICATION - LEDGER 50
+  PSGraphRenderToHtml v0.1.0  C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\PSGraphRenderToHtml\output\PSGraphRenderToHtml\PSGraphRenderToHtml.psm1
+  PSGraphRender       v0.13.0  C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\PSGraphRender\output\PSGraphRender\PSGraphRender.psm1
+  graph               C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\PSGraphRenderToHtml\docs\samples\sample-graph.json
+  baseline ref        origin/main
+
+1. PREVIOUSLY DROPPED - blastRadius: refused by v0.1.0, drawn by the renderer
+   bound, and rendered 616393 characters
+   renderer warnings: 0
+   the setting reaches the document: 'blastRadius' occurs 3 times in it
+
+2. REFUSED, NAMING BOTH SIDES - scope and type, the values v0.1.0 accepted
+   scope: refused before any render happened
+      Cannot validate argument on parameter 'ColorBy'. -ColorBy 'scope' is not a value the renderer accepts. PSGraphRenderToHtml accepts exactly what PSGraphRender's cytoscape settings schema accepts, and that set is: structure, dependents, blastRadius, dependencies, reach. Up to v0.1.0 this module also accepted 'scope' and 'type'; PSGraphRender never did, so passing either produced a warning from the renderer and a silent fall back to 'structure'. To colour by a layer, name a colour per classification in -Theme's KindColor map, which is the channel the renderer actually reads.
+   type: refused before any render happened
+      Cannot validate argument on parameter 'ColorBy'. -ColorBy 'type' is not a value the renderer accepts. PSGraphRenderToHtml accepts exactly what PSGraphRender's cytoscape settings schema accepts, and that set is: structure, dependents, blastRadius, dependencies, reach. Up to v0.1.0 this module also accepted 'scope' and 'type'; PSGraphRender never did, so passing either produced a warning from the renderer and a silent fall back to 'structure'. To colour by a layer, name a colour per classification in -Theme's KindColor map, which is the channel the renderer actually reads.
+
+   and forced past the validator, which is what v0.1.0 did every time:
+WARNING: Setting 'ColorBy': 'scope' is not one of: structure, dependents, blastRadius, dependencies, reach. Using structure.
+   scope: renderer warnings 1
+      Setting 'ColorBy': 'scope' is not one of: structure, dependents, blastRadius, dependencies, reach. Using structure.
+WARNING: Setting 'ColorBy': 'type' is not one of: structure, dependents, blastRadius, dependencies, reach. Using structure.
+   type: renderer warnings 1
+      Setting 'ColorBy': 'type' is not one of: structure, dependents, blastRadius, dependencies, reach. Using structure.
+
+3. CONTROL UNCHANGED - structure, against the PRE-FIX module
+   post-fix: 616391 characters, 0 warnings
+   baseline module: v0.1.0 from origin/main
+   pre-fix:  616391 characters, 0 warnings
+   identical apart from the generatedAt stamp
+   pre-fix refused blastRadius, which is the drop this pass removed
+
+FALSIFICATION: 3 of 3 - the dropped value now reaches the renderer unwarned, the values it never accepted refuse naming both sides, and the control is byte-identical to pre-fix

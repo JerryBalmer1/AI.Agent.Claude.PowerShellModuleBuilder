@@ -1,0 +1,22 @@
+=== CONTROL ===
+MERMAID AND JSON AGREE: same ids, same labels, same layer membership, same edges, same five layer colours, same colour class per node
+
+=== BREAK 1: one hex digit drifts in a hand-copied classDef ===
+MERMAID AND JSON DISAGREE:
+  COLOUR differs for layer 'plugin': mermaid '#F2C14F', json '#F2C14E'
+
+=== BREAK 2: right subgraph, wrong colour class ===
+MERMAID AND JSON DISAGREE:
+  COLOUR CLASS differs for 'you': mermaid class says layer 'module', json says 'user'
+
+=== BREAK 3: a node in no colour class at all ===
+MERMAID AND JSON DISAGREE:
+  mermaid node 'module-yours' is in no colour class, so it draws in the default fill and states no layer by colour
+
+=== BREAK 4: a palette layer with no classDef ===
+MERMAID AND JSON DISAGREE:
+  mermaid declares classDef 'layerNobody' and meta.layerPalette has no 'nobody'
+  meta.layerPalette names layer 'user' and the mermaid declares no classDef 'layerUser'
+
+=== RESTORED CONTROL ===
+MERMAID AND JSON AGREE: same ids, same labels, same layer membership, same edges, same five layer colours, same colour class per node

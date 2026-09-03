@@ -1,0 +1,12 @@
+FENCE RENDER CHECK - markdown-it-py, commonmark preset
+  fenced blocks parsed: 7
+    lang='powershell' lines=1    first='pwsh -NoProfile -File ./tools/publish/Test-Prerequisites.p'
+    lang='text'       lines=3    first='/plugin marketplace add JerryBalmer1/AI.Agent.Claude.Power'
+    lang='text'       lines=2    first='/plugin uninstall psmodule@psmodule-builder'
+    lang='mermaid'    lines=118  first='%% The same graph as docs/diagram/flow-graph.json, mirrore'
+    lang='powershell' lines=16   first='# 1. Wipe the target back to the four-file seed. This is t'
+    lang='powershell' lines=3    first='Invoke-Pester ./evals/functional/Fixture.Tests.ps1     # 3'
+    lang='powershell' lines=16   first='# 1. What you are running, exactly.'
+  tagged opening fences in the source: 7
+  bare ``` lines in the source: 0
+  every tagged opener produced exactly one fenced block: OK

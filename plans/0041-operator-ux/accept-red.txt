@@ -1,0 +1,46 @@
+ACCEPTANCE TEST - RED FIRST, pass 0041
+Command:
+    pwsh -NoProfile -Command "$cfg = New-PesterConfiguration
+                              $cfg.Run.Path = 'plans/0041-operator-ux/accept.Tests.ps1'
+                              $cfg.Run.PassThru = $true
+                              $cfg.Output.Verbosity = 'Detailed'
+                              Invoke-Pester -Configuration $cfg"
+
+FILTERED, and here is exactly what was removed. Verbosity 'Detailed' echoes the
+SUBJECT of every failed -Match into the failure message, and eight of the twelve
+cases match against whole documents - README.md, PLAN-PROTOCOL.md, decision
+0013. The raw transcript was 3,968 lines, of which about 3,900 were those three
+files pasted back six times over. Kept below: every case line, every failure
+reason, and the tally. Nothing that distinguishes one failure from another was
+removed, and the command above re-derives the whole of it.
+
+Running tests from 1 files.
+Running tests from 'C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\plans\0041-operator-ux\accept.Tests.ps1'
+Describing Pass 0041 delivered
+  [-] README front door + badges + hero 181ms
+   Expected regular expression 'How to read this repository.s signals' to match '# AI.Agent.Claude.PowerShellModuleBuilder
+  [-] no untagged code fences remain in the README 103ms
+   Expected 0, but got 3.
+  [-] the Mermaid is layer-colored with a legend line 17ms
+   Expected regular expression 'classDef' to match '# AI.Agent.Claude.PowerShellModuleBuilder
+  [-] skills table rows hyperlink their SKILL.md 19ms
+   Expected regular expression '\[.?powershell-module-ux.?\]\(skills/powershell-module-ux' to match '# AI.Agent.Claude.PowerShellModuleBuilder
+  [-] link map has descriptions and a layer link 17ms
+   Expected regular expression 'What it does' to match '# AI.Agent.Claude.PowerShellModuleBuilder
+  [-] the legend exists once, canonical, in the kit 21ms
+   Expected regular expression 'SAME SESSION' to match '# The prompts kit
+  [-] UX records exist with the required shape 148ms
+   Expected the actual value to be greater than or equal to 6, but got 0.
+  [-] kit prompts carry routing + tripwire; template carries trust 19ms
+   Expected regular expression '(NEW SESSION|SAME SESSION)' to match '# first-module.md - message one
+  [-] PLAN-PROTOCOL carries the three sections 25ms
+   Expected regular expression 'YOUR NEXT ACTION' to match '# Plan protocol
+  [-] decision 0013 amendment settles LEDGER 49 33ms
+   Expected regular expression 'decision 0009 governs' to match '# 0013 - The harness gains release tags
+  [-] ToHtml ColorBy fixed and tagged 687ms
+   Expected a value, but got $null or empty.
+  [-] no dead links in touched files 24ms
+   Expected regular expression 'DEAD LINKS: 0' to match $null, but it did not match.
+Tests completed in 2.18s
+Tests Passed: 0, Failed: 12, Skipped: 0, Inconclusive: 0, NotRun: 0
+RED-FIRST: Passed=0 Failed=12 Total=12

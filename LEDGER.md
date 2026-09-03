@@ -333,7 +333,11 @@ makes it the control for the repair. `plans/0033-honest-headline/rescore.txt`.
 PSAzureDevOpsGraph: **v0.3.0** (docs-only minor, pass 0038, decision 0006;
 module code byte-identical to v0.2.0. Next touching plan: v0.4.0)
 PSGraphRender: v0.13.0
-PSGraphRenderToHtml: v0.1.0 (next: v0.2.0)
+PSGraphRenderToHtml: **v0.1.3** (three patches in pass 0041: v0.1.1 aligns
+`-ColorBy` to the renderer's declared set and closes LEDGER 50; v0.1.2 and
+v0.1.3 each fix a defect found by trying to use the previous fix — LEDGER 54
+and 55. Read from `git ls-remote --tags`, not from prose. The harness consumes
+v0.1.3: `tools/diagram/Build-Diagram.ps1`'s $ToHtmlTag default. Next: v0.2.0)
 PSTerraformGraph: v0.2.0
 psmodule manifest: **1.2.0**, released and tagged `v1.2.0` by pass 0039
 under decision 0013. **MINOR, and the installed surface grows:** two new
@@ -717,6 +721,17 @@ wrongly later.
     edges, so a pass that moves one and not the other fails a check
     rather than shipping a diagram that quietly disagrees with the
     repository.
+
+    **Added by 0041: a pass that changes what README.md SHOWS keeps the
+    presentation standard**, which is `docs/ux/UX-006`: every code fence
+    language-tagged, the badge row intact, the hero regenerated when the
+    diagram moves, the five layer colours identical in all three
+    renderings, every summary linking what it summarises, and no execute
+    affordance anywhere. Presentation is the only part of this repository
+    nothing else measures, which is exactly why it needs a standing owner
+    rather than a pass that happened to care. 0041's `verify.ps1` re-runs
+    all six from a fresh clone, and its `Compare-Mermaid.ps1` extends
+    0040's to the colours.
 20. **`evals/tf/Compare-TfGraph.Tests.ps1` is RED as committed on
     `main`.** Line 41 asserts `$result.ExpectedEdgeCount | Should-Be 57`.
     The oracle amended under decision 0012 holds **59** edges and the
@@ -1499,6 +1514,117 @@ controls and corpus figures) was **not** touched and stays open.
     node count stayed at 39 and only the layer moved, so a check written
     to the count alone would have passed a diagram claiming the wrong
     thing about what rests on what.
+
+### Resolved by pass 0041
+
+- Item **49** (two decision records disagree about who may move harness
+  `main`): **settled by the operator, in decision 0013.** An amendment
+  appended to that record says decision 0009 governs `main` and 0013
+  governs releases, that 0013's earlier enumeration omitted 0009 and is
+  superseded, and that where they appear to conflict 0009 wins on `main`
+  and 0013 wins on tags. The superseded bullet is left standing with a
+  forward pointer rather than rewritten: a record edited to look as
+  though it never disagreed stops explaining why the disagreement was
+  worth a LEDGER item.
+- Item **50** (an option validated against a list the consuming module
+  does not have): **fixed in the ecosystem, not worked around.**
+  PSGraphRenderToHtml **v0.1.1** aligns `-ColorBy` to the set
+  PSGraphRender's cytoscape settings schema actually declares, and
+  refuses anything else with a message naming both repositories and both
+  sets. The entry asked for the durable form of the fix — *"a
+  cross-module `ValidateSet` needs a test that runs every member of it
+  through the real consumer"* — and got it: `Options.Tests.ps1` now reads
+  `TemplateSets/cytoscape/Config/settings.schema.psd1` out of the
+  resolved renderer and asserts that every value it declares is accepted
+  here. Falsified by dropping one member and watching the test name it:
+  `REFUSED: reach`. The harness consumes v0.1.1 onward, so the fix is a
+  thing that happened rather than a thing that was written.
+
+### Added by pass 0041
+
+54. **A parameter nobody can use has no wrong behaviour to report.**
+    RESOLVED in the ecosystem as PSGraphRenderToHtml **v0.1.2**, and
+    numbered because it is the same shape as 50 and was found by fixing
+    50.
+
+    v0.1.1's `-ColorBy` help says, in terms, to colour by layer through
+    `-Theme`'s `KindColor` map. That advice could not be followed:
+    **every** `-Theme` value threw, scalar ones included, on a key the
+    caller had never mentioned. `New-TemplateSetOverlay` merges the
+    caller's keys over the backend's `theme.psd1` and writes the WHOLE
+    merged file back; `Write-PowerShellDataFile` handled scalars only;
+    and PSGraphRender's `theme.psd1` declares three maps. So the first
+    pass over a file the caller had barely touched threw on
+    `EdgeResolutionStyle`.
+
+    **The reason nothing had noticed is the finding.** `-Theme` was
+    declared, documented, carried into the options object, and covered by
+    a test that checked it *reached* the options object. Nothing had ever
+    rendered with one. A parameter with no behaviour has no wrong
+    behaviour, and no amount of testing at the surface finds that — only
+    driving it end to end does, which is what a consumer following the
+    advice an hour after it shipped amounts to.
+
+55. **A silent fallback is worse than a failure, and the renderer's
+    warning stream is where this one lived.** RESOLVED as
+    PSGraphRenderToHtml **v0.1.3** plus a consumer-side guard in
+    `tools/diagram/Build-Diagram.ps1`.
+
+    The first real theme was a `KindColor` map keyed by this repository's
+    own node types, two of which are `cross-cutting` and
+    `powershell-module`. Written bare into a `.psd1`, `cross-cutting`
+    parses as `cross` minus `cutting`, so the file failed to parse **as a
+    whole**. PSGraphRender warned, fell back to its built-in theme, and
+    drew a perfectly good page in which every node was the fallback grey.
+
+    **The page rendered. It looked deliberate. None of the five layer
+    colours were in it, and nothing about the artifact said so** — the
+    build printed `WROTE` and handed back a document nobody could tell
+    was wrong. `Build-Diagram.ps1` now captures the render's warnings and
+    throws on any of them, and that guard is the only reason the
+    committed diagram is not grey.
+
+    A second defect sat beside it: the writer walked `$map.Keys`, and
+    PowerShell resolves a member name against a hashtable's ENTRIES
+    before its properties, so a map with a key called `Keys` answers with
+    that entry's value. `Keys`, `Values` and `Count` are all plausible
+    node types. **The identical trap bit this pass's own new ColorBy test
+    three hours earlier, from the other direction** — `$entry.Values`
+    returning every field of a schema entry instead of the enum it
+    declares. Twice in one afternoon in opposite directions is what makes
+    it worth a number: use `.PSBase.Keys` on anything a producer keys.
+
+56. **The error standard in `powershell-module-ux` is written and
+    unreleased.** STANDING — a rider on the next harness release.
+
+    The skill now carries the rule that every terminal error states the
+    fix or names the doc, in one line, before any detail, with
+    `Test-Prerequisites.ps1` as the worked example and `docs/ux/UX-003`
+    as the record. Pass 0041 shipped no harness tag, so **no installed
+    plugin has it**: a consumer at `v1.2.0` gets the skill without this
+    section, and its frontmatter `description` without the clause that
+    would make the skill fire on an error-message question. The next
+    release pass folds it in, and until then the gap is written here
+    rather than implied by a version number that did not move.
+
+57. **`docs/ux/` is a registry with six records and no enforcement that
+    a new convention gets one.** STANDING.
+
+    `PLAN-PROTOCOL.md` now says every operator-experience convention has
+    a numbered record written before the convention ships, and
+    `docs/ux/README.md` says a convention without a problem statement is
+    decoration and does not land. **Neither is checked.** 0041's
+    acceptance test asserts that the six existing records carry the four
+    headings and that the index matches the files on disk; nothing
+    asserts that a convention introduced by pass 0042 acquired a record
+    at all, because nothing can enumerate "conventions" mechanically.
+
+    Recorded rather than solved, with the honest bound stated: this is a
+    rule held by the people following it, which is the category of rule
+    this project is otherwise trying to get out of. The cheapest partial
+    check is a per-pass question in the plan protocol rather than an
+    assertion, and it was not added because a question nobody answers is
+    the same rule with more ceremony.
 
 ### Numbering, reconciled by pass 0030
 

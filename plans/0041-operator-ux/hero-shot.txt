@@ -1,0 +1,8 @@
+[
+  {
+    "id": "flow",
+    "png": "c:\\__Code\\__AI.Agent.Claude.PowerShellModuleBuilder\\AI.Agent.Claude.PowerShellModuleBuilder\\docs\\media\\flow.png",
+    "bytes": 466625,
+    "errors": []
+  }
+]
