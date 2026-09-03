@@ -349,9 +349,15 @@ the line the fence convention was missing; chapter 11 marks both its blocks;
 `docs/testing/` gains the diagram/palette pointer and marks its own blocks 🔵.
 Item 19 gains the presentation standard as standing scope.
 
-Link check: [`linkcheck.txt`](linkcheck.txt) — **`DEAD LINKS: 0`** over 524
+Link check: [`linkcheck.txt`](linkcheck.txt) — **`DEAD LINKS: 0`** over **540**
 links across 26 touched documents, plus all 39 `doc` attributes in the graph
 and all 39 link-map rows.
+
+The count was written as 524 by the interrupted session and is corrected here
+to the number the committed run actually printed. The recovery added links to
+this file — section 2b and the rewritten section 8 — so 524 was right when it
+was written and wrong by the time it was committed. The figure now comes from
+the artifact rather than from the prose, which is the only way it stays true.
 
 ## 6. Acceptance test — green
 
@@ -364,8 +370,16 @@ and all 39 link-map rows.
 ## 8. Verify script
 
 [`verify.ps1`](verify.ps1), and it re-derives the six named spot-checks from a
-**fresh clone of the remote**, not from the working tree. Output:
-[`verify-run.txt`](verify-run.txt).
+**fresh clone of the remote**, not from the working tree. Its output is
+recorded in `verify-run.txt`, added by this pass's closing commit.
+
+That file is named here rather than linked, and the reason is a constraint in
+the check itself: `verify.ps1` clones `--branch main`, so it can only run once
+`main` carries this pass. A link to its output from a document the link check
+reads would therefore be dead for exactly as long as the pass is unlanded, and
+the acceptance case that reads `linkcheck.txt` would be red for the same
+window — a gate blocking the landing that is its own precondition. Pass 0040
+avoided this by inlining; this pass names the file instead.
 
 ## 9. Deviations
 
@@ -455,6 +469,122 @@ and all 39 link-map rows.
     problem the convention answers; none of them claims a measured improvement,
     because none was measured. UX-004 says so in terms — pass 0041 is the first
     pass to print heartbeats and that is stated as first use, not as an effect.
+
+11. **The session doing this pass ended before its step 8, and nothing was
+    committed.** The whole pass — 40 staged entries and 2 untracked — sat in
+    the index on a branch whose tip was `b02a501`, identical to `main` and to
+    `origin/main`. A recovery session committed it in seven groups, pushed the
+    first immediately, and ran the gates. The porcelain listing as found is in
+    section 2b, verbatim, because it is the only evidence of a tree nobody can
+    now re-see. Nothing was re-authored: the content committed is the content
+    inherited, apart from the corrections numbered below, each of which says
+    what it changed and why.
+
+12. **The precondition that catches this was checkable two ways, and the two
+    disagreed.** Pass 0042's preconditions asked for "pass 0041 landed", made
+    checkable as "`prompts/README.md` legend present". Read from the working
+    tree the legend is there, at line 14. Read from the landed commit it is
+    not:
+
+        grep -n legend prompts/README.md                  ->  14:## The legend
+        git show HEAD:prompts/README.md | grep -i legend  ->  no output
+
+    **The proxy read the tree; the condition was about what landed.** This is
+    the shortest instance of *never trust the report; read the remotes* that
+    this repository has produced — the report and the remote were one `git
+    show HEAD:` apart, and the cheaper reading was the wrong one. It is
+    recorded as a deviation rather than a curiosity because a precondition
+    that can be satisfied by an uncommitted tree is not a precondition about
+    landing, and the next pass to write one should say `git show HEAD:` or
+    `git ls-remote` in the check itself.
+
+13. **PSGraphRenderToHtml ran ahead and was reconciled against its remote, not
+    against the staged prose.** The sibling half of this pass landed
+    independently and the interruption did not touch it: `main` at `f5687f0`,
+    tags `v0.1.0` through `v0.1.3`, the last peeling to that tip. Every
+    harness statement about its version was re-read from `git ls-remote`.
+    Three already said `v0.1.3` and stand unchanged — `Build-Diagram.ps1`'s
+    `$ToHtmlTag` default, the pinned-tags paragraph in `docs/diagram/README.md`
+    and the journal. The `LEDGER.md` *Versions* roster said `v0.1.0`, was
+    inherited unchanged from `HEAD` rather than introduced by this pass
+    (`git diff --cached HEAD -- LEDGER.md` shows no change to that line), and
+    is corrected to `v0.1.3` with its reason. `verify.ps1`'s check 3 keeps
+    `v0.1.1` and its `v0.1.0` baseline deliberately: it is a claim about the
+    commit that fixed LEDGER 50, and re-pointing it at the newest tag would
+    compare the change against itself and pass unconditionally — deviation 7's
+    finding applied to its own successor. **The tag the consumer cites is
+    `v0.1.3`.**
+
+14. **Four evidence files this plan links did not exist, and the acceptance
+    test found it rather than a reader.** The first run against the committed
+    tree was 11/12; the failure was *no dead links in touched files*, because
+    `linkcheck.txt` was absent and `Get-Content` threw. Run cold, the link
+    check reported `DEAD LINKS: 4` — `linkcheck.txt`, `accept-green.txt`,
+    `transcript.txt`, `verify-run.txt`, every one of them an artifact the
+    interrupted session never wrote.
+
+    **The fourth could not simply be written, and the reason is a real
+    circularity in this pass's own instruments.** `verify.ps1` clones
+    `--branch main`, so it cannot run until the pass has landed; a link to its
+    output therefore stays dead for exactly as long as the pass is unlanded,
+    which keeps the acceptance case red, which blocks the landing that is the
+    link's precondition. **A gate whose precondition is its own outcome is not
+    a gate.** Section 8 now names `verify-run.txt` rather than linking it, and
+    says so in place. Pass 0040 did not hit this because it inlined its
+    acceptance and transcript into the plan instead of linking files; this
+    pass changed that shape and inherited the consequence unexamined.
+
+15. **The link count in section 5 was 524 and is now 540.** Every value was
+    true when it was written: the recovery added section 2b and rewrote
+    section 8, and those additions are inside a file the link check reads.
+    The figure is now taken from `linkcheck.txt` rather than restated in prose,
+    which is the same rule this pass applied to the ToHtml version and for the
+    same reason. The "26 touched documents" alongside it was checked and is
+    right.
+
+    The number moved once more after that, from 539 to 540, when deviation 16
+    was written — that deviation cites LEDGER 58, and the citation is itself a
+    link in a checked file. It is the same lesson twice: **a document that
+    counts things about itself changes the count by being written**, and the
+    only stable home for such a number is the artifact that produced it.
+
+16. **Writing deviation 12 made the link checker check three fewer links, and
+    nothing said so.** `Test-Links.ps1` strips fenced blocks before scanning,
+    with a `(?s)`-flagged `[regex]::Replace` whose pattern is a run of three
+    backticks, `.*?`, and another run of three. That pattern is
+    unanchored and non-greedy, so it pairs runs of three backticks
+    **positionally**, with no idea which of them open a fence, which close one,
+    and which are inline code spans that merely contain backticks. Deviation 1
+    of this plan is prose *about* fences and contains several of the latter.
+
+    Adding one ordinary fenced block to section 9 therefore re-paired every
+    backtick run after it, and the stripped region moved: `links resolved` fell
+    from **539 to 536** while `DEAD LINKS` stayed at `0`. Replacing that one
+    block with an indented one restored 539. The three links were not reported
+    as dead, or as skipped, or at all — **they stopped being checked.**
+
+    **This is the failure mode the checker exists to prevent, occurring inside
+    the checker.** A dead link reads exactly like a live one; a link that is
+    silently not examined reads exactly like one that passed. The count is the
+    only channel that carries the difference, and nothing compares it against
+    anything — which is why a drop of three went unremarked until it was
+    noticed by eye.
+
+    **Not fixed here.** `Test-Links.ps1` is a frozen plan artifact under
+    decision 0004, and this pass is being recovered rather than extended. The
+    deviation is that the text of the plan was shaped around the instrument —
+    deviation 12's example is indented rather than fenced, purely so the count
+    stays comparable. **That is the wrong way round, and it is recorded as such
+    rather than presented as a style choice.** It is [LEDGER item
+    58](../../LEDGER.md) for the pass that repairs it.
+
+    **This record had to be written around the defect it records.** An
+    earlier draft of this deviation quoted the pattern literally, which put
+    two more runs of three backticks into this file and moved the count again
+    — 539 to 537, `DEAD LINKS` still `0`. The description of the bug
+    reproduced the bug. That is not a joke at the checker's expense; it is the
+    measure of how easy the failure is to cause, since the one document most
+    likely to discuss fences is the one recording that fences break it.
 
 ## 10. Cost
 

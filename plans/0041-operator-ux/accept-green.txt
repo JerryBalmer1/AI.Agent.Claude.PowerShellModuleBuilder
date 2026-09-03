@@ -1,0 +1,33 @@
+ACCEPTANCE TEST - GREEN, after every task
+command: Invoke-Pester -Path plans/0041-operator-ux/accept.Tests.ps1
+run by:  the recovery session, against the committed tree
+
+CONTAINERS FAILED: 0
+[Passed] README front door + badges + hero
+[Passed] no untagged code fences remain in the README
+[Passed] the Mermaid is layer-colored with a legend line
+[Passed] skills table rows hyperlink their SKILL.md
+[Passed] link map has descriptions and a layer link
+[Passed] the legend exists once, canonical, in the kit
+[Passed] UX records exist with the required shape
+[Passed] kit prompts carry routing + tripwire; template carries trust
+[Passed] PLAN-PROTOCOL carries the three sections
+[Passed] decision 0013 amendment settles LEDGER 49
+[Passed] ToHtml ColorBy fixed and tagged
+[Passed] no dead links in touched files
+
+GREEN: Passed=12 Failed=0 Total=12
+
+THE RED THIS PASSED FROM, and it was not the red the pass opened with.
+The first run of this test against the committed tree was 11/12. The failure
+was 'no dead links in touched files', and its cause was that
+plans/0041-operator-ux/linkcheck.txt did not exist - Get-Content threw and the
+assertion matched against $null. The link check was then run cold and reported
+DEAD LINKS: 4, every one of them an evidence file the interrupted session
+never wrote: linkcheck.txt, accept-green.txt, transcript.txt, verify-run.txt.
+
+Three of those were written. The fourth could not be, and the reason is in
+plan.md section 8: verify.ps1 clones --branch main, so verify-run.txt cannot
+exist until the pass has landed, and a link to it would keep this very case
+red for as long as the pass was unlanded - a gate blocking the landing that is
+its own precondition. Section 8 names the file instead of linking it.

@@ -1626,6 +1626,46 @@ controls and corpus figures) was **not** touched and stays open.
     assertion, and it was not added because a question nobody answers is
     the same rule with more ceremony.
 
+### Added by the recovery of pass 0041
+
+58. **A checker that silently checks less is worse than one that fails,
+    and the link checker is one.** STANDING.
+
+    `plans/0041-operator-ux/Test-Links.ps1` strips fenced code blocks
+    before scanning, using `[regex]::Replace($text, '(?s)` + three
+    backticks + `.*?` + three backticks + `', '')`. The pattern is
+    unanchored and non-greedy, so it pairs runs of three backticks by
+    position, with no notion of which open a fence, which close one, and
+    which are inline code spans containing backticks — of which
+    `plans/0041-operator-ux/plan.md` has several, because its deviation 1
+    is prose about fences.
+
+    **Observed, not theorised.** Appending one ordinary fenced block to
+    that plan moved the stripped region and took `links resolved` from
+    **539 to 536**. `DEAD LINKS` stayed `0` throughout. Three links
+    stopped being examined and nothing reported it: not as dead, not as
+    skipped, not at all. Removing the block restored 539.
+
+    This is the checker reproducing, internally, the exact failure it was
+    written to catch — *a dead link reads exactly like a working one*, and
+    a link that is never examined reads exactly like one that passed. The
+    only channel carrying the difference is the total, and nothing
+    compares that total to anything.
+
+    **The durable form of the fix is not a better regex.** It is that the
+    count becomes an assertion rather than a number in a log: the checker
+    should state how many links it expected to examine and go red when it
+    examines fewer, so that a stripping bug is a failure rather than a
+    quieter success. Line-anchoring the fence pattern is the cheap half
+    and would have caught this instance; the assertion is what makes the
+    next instance report itself.
+
+    Not fixed in 0041: `Test-Links.ps1` is a frozen plan artifact under
+    decision 0004, and the pass was being recovered rather than extended.
+    The recovery worked around it by indenting an example instead of
+    fencing it, and that workaround is recorded as deviation 16 of that
+    plan rather than left to look like a formatting preference.
+
 ### Numbering, reconciled by pass 0030
 
 Pass 0031 recorded a 17→19 drift and asked that numbers never move. This is

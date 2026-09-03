@@ -1,0 +1,35 @@
+LINK CHECK - pass 0041
+root: C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder
+
+README.md                                                  ok
+PLAN-PROTOCOL.md                                           ok
+SECURITY.md                                                ok
+LEDGER.md                                                  ok
+decisions/0013-harness-release-tagging.md                  ok
+docs/diagram/README.md                                     ok
+docs/ux/README.md                                          ok
+docs/ux/UX-001-routing-signals.md                          ok
+docs/ux/UX-002-ends-with-tripwire.md                       ok
+docs/ux/UX-003-report-contract.md                          ok
+docs/ux/UX-004-heartbeats.md                               ok
+docs/ux/UX-005-local-handoff.md                            ok
+docs/ux/UX-006-presentation-standard.md                    ok
+docs/creating-an-agent/01-the-two-claudes.md               ok
+docs/creating-an-agent/06-the-pass-protocol.md             ok
+docs/creating-an-agent/11-your-first-module.md             ok
+docs/testing/README.md                                     ok
+prompts/README.md                                          ok
+prompts/project-context-template.md                        ok
+prompts/first-module.md                                    ok
+prompts/new-feature.md                                     ok
+prompts/release.md                                         ok
+prompts/troubleshoot.md                                    ok
+skills/powershell-module-ux/SKILL.md                       ok
+plans/0041-operator-ux/plan.md                             ok
+journal/0041-operator-ux.md                                ok
+
+docs/diagram/flow-graph.json (doc attributes)              ok, 39 nodes
+README.md link map (coverage)                              ok, 39 rows for 39 nodes
+
+links resolved: 540
+DEAD LINKS: 0

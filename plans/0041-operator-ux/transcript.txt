@@ -1,0 +1,98 @@
+COMMAND TRANSCRIPT - pass 0041
+Every command that changed state, and every command whose output produced a
+number in this plan. Exploratory reads excluded.
+
+TWO SESSIONS. The session that did the work of this pass ended before its
+step 8, and its transcript did not survive it. What is recorded below for that
+session is only what its committed artifacts prove it ran - the build, the
+shot, the falsifications and the acceptance runs, each of which left a file in
+this directory. The exact invocations are recovered from those files' own
+headers where they state one, and are marked [from artifact] where they are
+read back rather than witnessed. Everything under RECOVERY SESSION was
+witnessed directly.
+
+--------------------------------------------------------------------------
+WORKING SESSION - state-changing commands, evidenced by committed artifacts
+--------------------------------------------------------------------------
+
+# Branch, per preconditions.
+git checkout -b pass-0041-operator-ux          # harness, from b02a501
+git checkout -b pass-0041-colorby-fix          # PSGraphRenderToHtml
+
+# Acceptance, red first.               [from artifact] accept-red.txt
+Invoke-Pester -Path plans/0041-operator-ux/accept.Tests.ps1
+
+# The diagram, rebuilt through the pinned siblings.
+#                                      [from artifact] diagram-build.txt
+pwsh -File tools/diagram/Build-Diagram.ps1
+pwsh -File tools/diagram/Build-Diagram.ps1 -Check
+
+# The hero shot.                       [from artifact] hero-shot.txt
+node ../PSGraphRender/tools/shoot.cjs        # against the committed flow.html
+
+# Falsifications, each leaving its own record.
+#   [from artifact] colorby-falsification.txt, colorby-gate-falsification.txt,
+#                   theme-gate-falsification.txt, fence-render.txt,
+#                   mermaid-colour-falsification.txt
+pwsh -File plans/0041-operator-ux/Invoke-ColorByFalsification.ps1
+pwsh -File plans/0041-operator-ux/Compare-Mermaid.ps1
+
+# PSGraphRenderToHtml: three releases, all landed and tagged on its remote
+# before the interruption, and unaffected by it.
+git tag -a v0.1.1 ; git tag -a v0.1.2 ; git tag -a v0.1.3 ; git push --tags
+
+# --- SESSION ENDED HERE. Nothing in the harness was committed. ---
+
+--------------------------------------------------------------------------
+RECOVERY SESSION - witnessed directly
+--------------------------------------------------------------------------
+
+# What the recovery found: the branch at b02a501, identical to main and to
+# origin/main, with the whole pass staged in the index.
+git rev-parse pass-0041-operator-ux main origin/main   # three identical SHAs
+git log --oneline main..pass-0041-operator-ux | wc -l  # 0
+git status --porcelain                                 # 42 entries, recorded
+                                                       # verbatim in section 2b
+
+# The tree-vs-landed proxy, both readings.
+grep -n legend prompts/README.md              # present, line 14
+git show HEAD:prompts/README.md | grep -i legend       # no output
+
+# PSGraphRenderToHtml's real version, read from the remote rather than prose.
+git -C ../PSGraphRenderToHtml ls-remote --tags origin
+#   v0.1.0 74131284  v0.1.1 861bbf62  v0.1.2 d6f13f95  v0.1.3 7eddb2ab
+git -C ../PSGraphRenderToHtml rev-parse --short main    # f5687f0 = v0.1.3
+git diff --cached HEAD -- LEDGER.md | grep 'PSGraphRenderToHtml: v0'
+#   no output: the stale roster line was inherited from HEAD, not introduced
+
+# Committed in seven groups; the first pushed immediately.
+git reset
+git add tools/diagram/Build-Diagram.ps1 docs/diagram docs/media && git commit
+git push -u origin pass-0041-operator-ux                # push-early
+git add README.md && git commit
+git add docs/ux && git commit
+git add prompts && git commit
+git add skills/powershell-module-ux/SKILL.md && git commit
+git add PLAN-PROTOCOL.md decisions docs/creating-an-agent docs/testing && git commit
+git add LEDGER.md journal plans/0041-operator-ux && git commit
+
+# Acceptance, run on the committed tree: 11 passed, 1 failed.
+Invoke-Pester -Path plans/0041-operator-ux/accept.Tests.ps1
+
+# The link check, cold. Four dead, all of them evidence files the interrupted
+# session never wrote.
+pwsh -File plans/0041-operator-ux/Test-Links.ps1
+#   540 links resolved; DEAD: linkcheck.txt, accept-green.txt,
+#   transcript.txt, verify-run.txt
+
+# The four written, section 8 de-linked for the reason it states, and the
+# check re-run to zero.
+pwsh -File plans/0041-operator-ux/Test-Links.ps1        # -> linkcheck.txt
+Invoke-Pester -Path plans/0041-operator-ux/accept.Tests.ps1  # -> accept-green.txt
+
+# Landing, ancestry checked first per decision 0009.
+git push origin pass-0041-operator-ux
+git checkout main && git merge --ff-only pass-0041-operator-ux && git push
+
+# Verify, from a fresh clone of the landed main.
+pwsh -File plans/0041-operator-ux/verify.ps1            # -> verify-run.txt
