@@ -405,6 +405,49 @@ coverage number at all.** That is correct — for a red build nobody wants one �
 but a reader comparing builds will notice coverage is absent for failed ones and
 should know it is structural, not an omission.
 
+## `psmodule.settings.psd1` — optional, enumerated, and refusing
+
+A target may carry one file at its root that both the build and the conformance
+suite honour:
+
+```powershell
+# psmodule.settings.psd1
+@{
+    CoverageThreshold      = 75       # the Test task's throw threshold
+    ModuleProfile          = 'script' # 'script' | 'hybrid' (placeholder)
+    CompletionCacheDefault = $false   # generated completers cache by default
+}
+```
+
+**Three keys, and only three.** The list is the contract, not a schema to grow
+casually. **An unknown key is a refusal that names it** — not a warning, not
+ignored. `CoverageThresold = 90` otherwise grades at 75 while the file on disk
+says 90, and nothing in the output disagrees with the file. A near-miss *value*
+is refused on the same terms: `'90'` as a string is not coerced, because a
+reader that coerces has decided what the user meant.
+
+**Precedence: explicit parameter > file > built-in default.**
+
+**The defaults are the measured configuration.** Every score this plugin
+publishes was taken with no settings file present and these exact values. That
+is why a target shipping no file needs no thought: it is graded the way every
+recorded run was graded.
+
+### Which claim each switch invalidates when flipped
+
+This table is the reason the settings file is worth having at all. A knob whose
+consequence is not written down gets turned to make a build green.
+
+| Setting | Flipping it invalidates |
+|---|---|
+| `CoverageThreshold` | **Every published conformance score.** The recorded runs were taken at 75. A target graded at another value is not on the same scale and may not be compared with them — the same rule as `cases-defined`, applied to a threshold instead of a denominator. |
+| `ModuleProfile` | **Every claim this plugin makes.** All of them were measured against `script` modules. `hybrid` is *reserved and not implemented*: nothing has been built or graded under it, and setting it asserts a capability that does not exist. |
+| `CompletionCacheDefault` | **Nothing measured** — no scored run has used a completer. It changes generated code, so a module built with it on and one built with it off are different artifacts and a score is about one of them. |
+
+Lower the coverage threshold if a module genuinely warrants it — and say so in
+the release notes, because you have moved the number the score is about, not
+just the build's patience.
+
 ## Known trap
 
 `Run.Throw = $true` makes Pester throw, which InvokeBuild turns into a failed

@@ -150,12 +150,19 @@ $score = [int]$summary.CasesDefined - $failedAssertions.Count
 $buildNote = if ($SkipBuild) { 'SKIPPED (control)' } else { "exit $buildExit" }
 
 Write-Host ''
+$settingNote = if ($summary.Settings.IsMeasuredConfiguration) { 'defaults (the measured configuration)' }
+              else { (@($summary.Settings.Values.PSObject.Properties) | ForEach-Object {
+                      '{0}={1} ({2})' -f $_.Name, $_.Value, $summary.Settings.Source.($_.Name) }) -join ', ' }
 Write-Host ("SCORE  $score / $($summary.CasesDefined) (cases-defined)   " +
     "cases-run $($summary.Passed)/$($summary.CasesRun)   build $buildNote")
+Write-Host ("       settings: $settingNote")
 foreach ($a in $failedAssertions) { Write-Host "  FAILED  $($a.Name)" }
 
 [pscustomobject]@{
     Ref              = $actual
+    # Carried through from the conformance summary rather than re-resolved, so a
+    # run record and the result.json beside it cannot state different settings.
+    Settings         = $summary.Settings
     WorkDir          = $WorkDir
     Built            = -not $SkipBuild
     BuildExitCode    = $buildExit

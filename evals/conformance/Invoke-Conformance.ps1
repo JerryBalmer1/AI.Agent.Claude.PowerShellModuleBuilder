@@ -46,6 +46,10 @@ param(
 
     [string] $ModuleName,
 
+    # Explicit settings, highest precedence. Passed straight to
+    # Get-PSModuleSetting.ps1, which owns the known-key list and the refusal.
+    [hashtable] $Setting = @{},
+
     [switch] $PassExitCode
 )
 
@@ -56,6 +60,24 @@ $target = (Resolve-Path -LiteralPath $Path).Path
 if (-not $ResultPath) {
     $ResultPath = Join-Path (Get-Location) 'conformance-result.json'
 }
+
+# ---------------------------------------------------------------------------
+# Settings, resolved FIRST so that an unknown key refuses before any grading
+# happens. A refusal after a run has completed is a refusal the operator reads
+# after they have already read a score.
+#
+# The values are echoed into result.json below with the provenance of each,
+# because a score whose configuration is not recorded beside it cannot be
+# compared with another score - and the whole point of cases-defined was that
+# comparison needs the denominator stated. A threshold is the same kind of fact.
+# ---------------------------------------------------------------------------
+$settings = & (Join-Path $PSScriptRoot 'Get-PSModuleSetting.ps1') -Path $target -Override $Setting
+if ($settings.FileFound) {
+    Write-Host "Settings: $($settings.FilePath)"
+}
+Write-Host ('Settings: ' + ((@($settings.Values.PSObject.Properties) | ForEach-Object {
+    '{0}={1} ({2})' -f $_.Name, $_.Value, $settings.Source.($_.Name)
+}) -join ', '))
 
 # ---------------------------------------------------------------------------
 # -ModuleName default, for a target the suite's own rules cannot resolve.
@@ -348,6 +370,11 @@ $summary = [pscustomobject]@{
     # every key is a string, and the result file is the artifact the harness
     # reads.
     CasesDefinedPerTag = [pscustomobject]$definedPerTag
+    # The configuration this score was taken under, with the provenance of every
+    # value. IsMeasuredConfiguration is true when every one came from a built-in
+    # default - which is the configuration every published number in this
+    # repository was taken under.
+    Settings           = $settings
     # Denominator is what actually executed. TotalCount includes tests filtered
     # out by -Tag (NotRun), so dividing by Total - Skipped charged the score for
     # assertions the caller deliberately did not select: a Universal,HouseStyle

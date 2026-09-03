@@ -1,0 +1,50 @@
+SETTINGS FALSIFICATION - pass 0039
+Reader:  evals/conformance/Get-PSModuleSetting.ps1  (owns the known-key list,
+         the precedence rule and the refusal, in one place, because two
+         readers that must agree on what a setting means will drift)
+Callers: Invoke-Conformance.ps1 (echoes into result.json), Score-Clone.ps1
+         (carries it through into the run record rather than re-resolving)
+Runner:  plans/0039-ux-help-batch/settings-falsify.ps1
+Target:  the help fixture at C:/w39/fx
+
+PRECEDENCE: explicit parameter > psmodule.settings.psd1 > built-in default.
+
+THE DEFAULTS ARE THE MEASURED CONFIGURATION. CoverageThreshold 75 is Pester's
+own default, is what the reference's build file sets, and is what every score
+this repository publishes was taken under. Row 1 is the row that says so:
+a target shipping no settings file is graded exactly as every recorded run
+was. Changing a default is therefore a change to what the published numbers
+mean, and is a release-note item rather than a tidy-up.
+
+--- ROW 1 CONTROL: no settings file, defaults ARE the measured configuration ---
+ABSENT FILE: defaults  CoverageThreshold=75 source=default IsMeasuredConfiguration=True
+
+--- ROW 2 BREAK: an unknown key must be refused, naming it ---
+UNKNOWN KEY: refused  -> UNKNOWN KEY: refused. 'CoverageThresold' in 'C:\w39\fx\psmodule.settings.psd1' is not a setting this plugin has. Known keys: CoverageThreshold, ModuleProfile, CompletionCacheDefault. A misspelled key silently ignored means the grader ran with settings the file says it did not have, so this is a stop rather than a warning.
+
+--- ROW 3 BREAK: a known key must be HONOURED, and its provenance recorded ---
+KNOWN KEY: honoured   CoverageThreshold=90 source=file IsMeasuredConfiguration=False
+
+--- ROW 4 CONTROL: a NEAR-MISS value on a known key is refused, not coerced ---
+INVALID VALUE: refused -> INVALID VALUE: refused. 'CoverageThreshold' in 'C:\w39\fx\psmodule.settings.psd1' is '90'; expected an integer from 0 to 100.
+
+--- ROW 5 BREAK: precedence, an explicit parameter beats the file ---
+PARAM > FILE: CoverageThreshold=60 source=parameter
+
+--- ROW 6 CONTROL: an unknown key passed as a PARAMETER is refused on the same terms ---
+UNKNOWN KEY: refused  -> UNKNOWN KEY: refused. 'Nonsense' was passed as an override and is not a setting this plugin has. Known keys: CoverageThreshold, ModuleProfile, CompletionCacheDefault.
+
+SUMMARY
+  BREAKS: 3 / 3 fired    (rows 2, 3, 5)
+  CONTROLS: 3 / 3 held   (rows 1, 4, 6)
+
+Row 4 is the control that matters and is the one a hand-rolled settings
+reader omits. '90' as a STRING is a near miss on a known key - the key is
+spelled correctly and the value looks right - and PowerShell would coerce it
+to 90 without complaint. A reader that coerces has decided what the user
+meant. Refusing names the key and the expected shape instead.
+
+Row 6 applies the same rule to the caller. A typo in a script that invokes
+the grader is not more acceptable than a typo in a user's file, and a reader
+that validates one input and trusts the other has a hole in exactly the
+place its own tests do not look.
