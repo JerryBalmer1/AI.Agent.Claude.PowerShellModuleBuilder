@@ -14,6 +14,16 @@
 *.md   text eol=lf
 *.ps1  text eol=lf
 
+# docs/diagram/flow.html is GENERATED, committed, and re-rendered by
+# tools/diagram/Build-Diagram.ps1 -Check, which compares a fresh render
+# against the committed one. The renderer writes LF; `* text=auto` gave the
+# checkout CRLF; the two then differ on every line while the line COUNT stays
+# identical, which reads as a content change and is not one. Third instance of
+# the hazard this file already documents twice - found by verify.ps1 comparing
+# from a fresh clone rather than from the working tree, which is the whole
+# reason it clones.
+*.html text eol=lf
+
 # Git's own dotfiles match no extension rule above and would fall to
 # `* text=auto`, meaning CRLF on a Windows checkout.
 .gitattributes text eol=lf
