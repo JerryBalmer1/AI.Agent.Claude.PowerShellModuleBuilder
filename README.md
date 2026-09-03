@@ -1,5 +1,22 @@
 # AI.Agent.Claude.PowerShellModuleBuilder
 
+[![release](https://img.shields.io/github/v/tag/JerryBalmer1/AI.Agent.Claude.PowerShellModuleBuilder?sort=semver&label=release&color=1f6feb&style=flat)](https://github.com/JerryBalmer1/AI.Agent.Claude.PowerShellModuleBuilder/tags)
+[![licence MIT](https://img.shields.io/badge/licence-MIT-1f6feb?style=flat)](LICENSE)
+[![PowerShell 7.2+](https://img.shields.io/badge/PowerShell-%E2%89%A5%207.2-5391FE?style=flat)](https://learn.microsoft.com/powershell/)
+[![conformance cases-defined 41](https://img.shields.io/badge/conformance-cases--defined%2041-2F8F6B?style=flat)](docs/testing/README.md)
+
+[![The flow diagram: five layers, coloured by layer, read from the bottom up](docs/media/flow.png)](docs/diagram/flow.html)
+
+<sup>**[`docs/diagram/flow.html`](docs/diagram/flow.html)**, opened in a browser
+and photographed. Five layers, bottom to top, and nothing above exists until
+the thing below it does. The layer colours and the wheel-zoom sensitivity are
+**this repository eating its own dog food**: they are set through
+PSGraphRenderToHtml's options surface, from one palette declared in
+[`flow-graph.json`](docs/diagram/flow-graph.json), and the picture is taken by
+PSGraphRender's own `tools/shoot.cjs`. Every producer this project ships tells
+somebody else to work that way.
+[What the diagram is, and the palette](docs/diagram/README.md).</sup>
+
 A test-first harness that makes an AI coding agent's output **measurable**, and
 the Claude Code plugin distilled from what the harness measured.
 
@@ -12,10 +29,68 @@ The claim this repository exists to test is that the second measurably improves
 the first's scores. **That claim has now been measured, four times, and the
 answer is partly yes and partly no.** Both halves are below.
 
+## How to read this repository's signals
+
+Everything here that asks you to *do* something is marked, and the marks are a
+system rather than decoration. Four of them are worth knowing before you read
+anything else.
+
+**Three circles say where a block of text goes.** Every prompt in
+[`prompts/`](prompts/README.md) leads with one, and the word always rides the
+circle so the colour is never carrying it alone:
+
+| | | |
+|---|---|---|
+| 🔴 | **NEW SESSION** | `/clear` first, then paste it as message one. Nothing before it. |
+| 🟢 | **SAME SESSION** | paste into the session already waiting. Do **not** `/clear`. |
+| 🔵 | **NOT A PROMPT** | for you, the human. It is pasted nowhere. |
+
+**A block without a circle is asked about, never guessed at.** Guessing costs a
+`/clear` at best and a contaminated measurement at worst.
+
+**`ENDS WITH:` is a tripwire.** A prompt states its own last line up front, so
+you can see a truncated paste *before* you run it rather than three commands
+later. Four deliveries were silently cut short before this existed
+([UX-002](docs/ux/UX-002-ends-with-tripwire.md)).
+
+**`## YOUR NEXT ACTION` is where a report stops talking.** Every pass report
+ends with one plainly-stated action, or `none: hand this report to the
+director.` A hard stop leads with `⛔ STOPPED — <why> — YOU NEED TO: <what>`
+and puts the forensics underneath, so the thing you must do is never below the
+evidence for why ([UX-003](docs/ux/UX-003-report-contract.md)).
+
+**`LOCAL STATE` is the definition of done.** A pass ends by putting every
+repository in the workspace back on `main`, clean, and printing a table saying
+so. "Done" means **your editor already shows the result** — zero commands to
+run first. A pass that ends without that table is not done, however finished the
+prose above it reads ([UX-005](docs/ux/UX-005-local-handoff.md)).
+
+**Squares mean layer.** 🟪 🟩 🟨 🟦 🟥 are the five layers of
+[the diagram](#the-flow) — method, instruments, plugin, module, user — and the
+[prompts kit](prompts/README.md#the-legend) narrows the same channel to the
+three layers a *prompt* can belong to. The word beside the square says which
+system, and 🟨 plugin is the same plugin in both.
+
+The full legend is [in the kit](prompts/README.md#the-legend), stated once. Why
+each convention exists, and what it cost to find out, is
+[`docs/ux/`](docs/ux/README.md) — where a convention with no problem statement
+is decoration and does not land.
+
+---
+
 <!-- TEMPLATE:replace — keep the shape of this section: prerequisites first,
      then the three commands, then how to remove it again. Swap the owner/repo
      slug, the marketplace name, the plugin name and the tag for your own. A
      new project's install section is the same shape with different nouns. -->
+
+<!-- FENCE CONVENTION. Every code block in this file opens with ```<language>
+     and closes with four backticks. The long closer is deliberate and it is
+     load-bearing: CommonMark lets a closing fence be longer than its opener,
+     and it means the only bare ``` line this file could ever contain is an
+     UNTAGGED OPENER. plans/0041-operator-ux/accept.Tests.ps1 counts them and
+     requires zero, so an untagged block cannot be added without turning a
+     test red. A block whose language nobody declared is a block GitHub will
+     not colour and a reader has to guess at. -->
 
 ## Install
 
@@ -23,7 +98,9 @@ answer is partly yes and partly no.** Both halves are below.
 with the exact line that fixes it. Run it in your own shell, not inside Claude
 Code:
 
-    pwsh -NoProfile -File ./tools/publish/Test-Prerequisites.ps1
+```powershell
+pwsh -NoProfile -File ./tools/publish/Test-Prerequisites.ps1
+````
 
 It checks five things: PowerShell 7.2 or later, Pester, InvokeBuild, git, and
 `$env:AZDO_PAT`. All five count as missing if absent, and the PAT line says in
@@ -35,9 +112,11 @@ useless exactly when you need it.
 
 Then paste these three inside **Claude Code**, not in a shell:
 
-    /plugin marketplace add JerryBalmer1/AI.Agent.Claude.PowerShellModuleBuilder@v1.2.0
-    /plugin install psmodule@psmodule-builder
-    /psmodule:build
+```text
+/plugin marketplace add JerryBalmer1/AI.Agent.Claude.PowerShellModuleBuilder@v1.2.0
+/plugin install psmodule@psmodule-builder
+/psmodule:build
+````
 
 The first adds this repository as a plugin marketplace, **pinned to the
 `v1.2.0` tag**. The pin is deliberate and is
@@ -50,10 +129,23 @@ The second installs the plugin from that marketplace. The third is the plugin
 doing something — run it in a PowerShell module repository and it builds to the
 conventions the [skills](#the-skills) describe.
 
+**There is no install script, and there never will be.** Nothing in this
+repository asks you to pipe a URL into a shell — no `irm | iex`, no
+`curl | bash`, no one-click button anywhere. Every install step above is a
+command you can read before you run it, from a tree you can read before you
+clone it, at a tag that cannot change under you. That is not caution about
+this project's own scripts; it is that an install route nobody can audit is
+indistinguishable from one nobody should trust, and a repository about
+measuring what an agent actually did has no business shipping one.
+[SECURITY.md](SECURITY.md) states the same thing as a standing rule, and the
+release pass checks it.
+
 **To remove it again:**
 
-    /plugin uninstall psmodule@psmodule-builder
-    /plugin marketplace remove psmodule-builder
+```text
+/plugin uninstall psmodule@psmodule-builder
+/plugin marketplace remove psmodule-builder
+````
 
 **Prefer to try it without touching anything public?**
 [Chapter 9](docs/creating-an-agent/09-try-before-you-trust.md) stages the same
@@ -89,6 +181,14 @@ any of it is worth the weight. Read it from the bottom.
 The stages in the middle — `new → plan → build → test → tidy → release` — are
 the path a module actually takes, and each names the skills it invokes **in
 order**, saying where the order is real and where it is not.
+
+**Legend — layer colors.** 🟪 method · 🟩 instruments · 🟨 plugin · 🟦 module ·
+🟥 user. The same five are in [`flow.html`](docs/diagram/flow.html) and in the
+[link map](#the-link-map) below, declared once in
+[`flow-graph.json`](docs/diagram/flow-graph.json) and
+[compared](plans/0041-operator-ux/Compare-Mermaid.ps1) rather than trusted. The
+layer's **word** is on every subgraph title, because five hues at one lightness
+are one colourblind reader away from carrying nothing.
 
 ```mermaid
 %% The same graph as docs/diagram/flow-graph.json, mirrored here by hand.
@@ -209,7 +309,37 @@ flowchart BT
   conformance --> module-reference
 
   module-yours --> you
-```
+
+  %% ---- layer colours -------------------------------------------------
+  %% The five hexes below are NOT chosen here. They are
+  %% flow-graph.json meta.layerPalette, restated, and verify.ps1 parses
+  %% both and compares them - because a colour copied by hand into a
+  %% second file is a second source of truth that drifts silently.
+  %% Light fills with near-black text so they read in both of GitHub's
+  %% themes; the layer's WORD is on the subgraph title, because five
+  %% hues at one lightness carry nothing on their own.
+  classDef layerMethod fill:#A99BF2,stroke:#6E5FC7,stroke-width:1px,color:#0b0f14;
+  classDef layerInstruments fill:#79D9A8,stroke:#3FA173,stroke-width:1px,color:#0b0f14;
+  classDef layerPlugin fill:#F2C14E,stroke:#B78A12,stroke-width:1px,color:#0b0f14;
+  classDef layerModule fill:#7FC4F2,stroke:#3F8CBF,stroke-width:1px,color:#0b0f14;
+  classDef layerUser fill:#F2A0BE,stroke:#C05F84,stroke-width:1px,color:#0b0f14;
+
+  class method,plan-protocol,decisions layerMethod;
+  class conformance,functional,tf-fixture-1,tf-fixture-2,comparators layerInstruments;
+  class plugin,cmd-build,cmd-test,stage-new,stage-plan,stage-build,stage-test layerPlugin;
+  class stage-tidy,stage-release,skill-plan,skill-architect,skill-scaffold layerPlugin;
+  class skill-build,skill-docs,skill-ux,skill-analyzer,skill-test,skill-tidy layerPlugin;
+  class skill-deploy,skill-release,skill-azdo-rest,skill-azdo-yaml,skill-azdo-graph layerPlugin;
+  class skill-tf-parse,skill-tf-resolve,skill-tf-graph,skill-producer-contract layerPlugin;
+  class skill-task-tree layerPlugin;
+  class module-yours,module-reference layerModule;
+  class you layerUser;
+````
+
+Pan/zoom controls appear on the diagram's corner; for full control —
+adjustable zoom, layer colors, the works —
+[open `flow.html`](docs/diagram/flow.html) from a clone.
+[Why one can be tuned and the other cannot](docs/diagram/README.md).
 
 **Two nodes have no edges, and that is the finding rather than a drawing
 error.** `producer-contract` and `task-tree-reporting` connect downward to
@@ -230,50 +360,58 @@ the navigation.**
 
 ### The link map
 
-One row per node, and the artifact behind it. If a claim in the diagram looks
-wrong, this is how you get to the thing that settles it.
+One row per node, the artifact behind it, and one line on what it does. If a
+claim in the diagram looks wrong, this is how you get to the thing that settles
+it. **Every row is generated from
+[`flow-graph.json`](docs/diagram/flow-graph.json)** — the layer, the
+description and the path are the node's own `scope`, `what` and `doc`
+attributes, so a row cannot describe something the diagram does not.
 
-| Node | Layer | The artifact behind it |
-|---|---|---|
-| METHOD.md | method | [method/METHOD.md](method/METHOD.md) |
-| PLAN-PROTOCOL.md | method | [PLAN-PROTOCOL.md](PLAN-PROTOCOL.md) |
-| decisions/ | method | [decisions/](decisions/) |
-| conformance suite | instruments | [evals/conformance/](evals/conformance/) |
-| functional oracle | instruments | [evals/functional/](evals/functional/) |
-| TF fixture 1 | instruments | [evals/tf/fixture/](evals/tf/fixture/) |
-| TF fixture 2 | instruments | [evals/tf/fixture2/](evals/tf/fixture2/) |
-| the comparators | instruments | [evals/functional/Compare-Graph.ps1](evals/functional/Compare-Graph.ps1) |
-| psmodule v1.2.0 | plugin | [.claude-plugin/plugin.json](.claude-plugin/plugin.json) |
-| /psmodule:build | plugin | [commands/build.md](commands/build.md) |
-| /psmodule:test | plugin | [commands/test.md](commands/test.md) |
-| new | plugin | [prompts/first-module.md](prompts/first-module.md) |
-| plan | plugin | [skills/powershell-module-plan/SKILL.md](skills/powershell-module-plan/SKILL.md) |
-| build | plugin | [commands/build.md](commands/build.md) |
-| test | plugin | [commands/test.md](commands/test.md) |
-| tidy | plugin | [skills/powershell-module-tidy/SKILL.md](skills/powershell-module-tidy/SKILL.md) |
-| release | plugin | [prompts/release.md](prompts/release.md) |
-| powershell-module-plan | plugin | [skills/powershell-module-plan/SKILL.md](skills/powershell-module-plan/SKILL.md) |
-| powershell-module-architect | plugin | [skills/powershell-module-architect/SKILL.md](skills/powershell-module-architect/SKILL.md) |
-| powershell-module-scaffold | plugin | [skills/powershell-module-scaffold/SKILL.md](skills/powershell-module-scaffold/SKILL.md) |
-| powershell-module-build | plugin | [skills/powershell-module-build/SKILL.md](skills/powershell-module-build/SKILL.md) |
-| powershell-module-docs | plugin | [skills/powershell-module-docs/SKILL.md](skills/powershell-module-docs/SKILL.md) |
-| powershell-module-ux | plugin | [skills/powershell-module-ux/SKILL.md](skills/powershell-module-ux/SKILL.md) |
-| powershell-module-analyzer | plugin | [skills/powershell-module-analyzer/SKILL.md](skills/powershell-module-analyzer/SKILL.md) |
-| powershell-module-test | plugin | [skills/powershell-module-test/SKILL.md](skills/powershell-module-test/SKILL.md) |
-| powershell-module-tidy | plugin | [skills/powershell-module-tidy/SKILL.md](skills/powershell-module-tidy/SKILL.md) |
-| powershell-module-deploy | plugin | [skills/powershell-module-deploy/SKILL.md](skills/powershell-module-deploy/SKILL.md) |
-| powershell-module-release | plugin | [skills/powershell-module-release/SKILL.md](skills/powershell-module-release/SKILL.md) |
-| azdo-rest | plugin | [skills/azdo-rest/SKILL.md](skills/azdo-rest/SKILL.md) |
-| azdo-pipeline-yaml-refs | plugin | [skills/azdo-pipeline-yaml-refs/SKILL.md](skills/azdo-pipeline-yaml-refs/SKILL.md) |
-| azdo-graph-assembly | plugin | [skills/azdo-graph-assembly/SKILL.md](skills/azdo-graph-assembly/SKILL.md) |
-| tf-hcl-parse | plugin | [skills/tf-hcl-parse/SKILL.md](skills/tf-hcl-parse/SKILL.md) |
-| tf-module-resolve | plugin | [skills/tf-module-resolve/SKILL.md](skills/tf-module-resolve/SKILL.md) |
-| tf-graph-assembly | plugin | [skills/tf-graph-assembly/SKILL.md](skills/tf-graph-assembly/SKILL.md) |
-| producer-contract | plugin | [skills/producer-contract/SKILL.md](skills/producer-contract/SKILL.md) |
-| task-tree-reporting | plugin | [skills/task-tree-reporting/SKILL.md](skills/task-tree-reporting/SKILL.md) |
-| your module | module | [docs/creating-an-agent/11-your-first-module.md](docs/creating-an-agent/11-your-first-module.md) |
-| PSAzureDevOpsGraph | module | [runs/006-plugin-on/README.md](runs/006-plugin-on/README.md) |
-| you | user | [prompts/README.md](prompts/README.md) |
+The Layer cell links to [the palette](docs/diagram/README.md#the-layer-palette),
+and its square is the same colour the node is drawn in. The word rides the
+square: the square is the second channel, never the only one.
+
+| Node | Layer | What it does | The artifact behind it |
+|---|---|---|---|
+| METHOD.md | [🟪 method](docs/diagram/README.md#the-layer-palette) | The method, with every rule marked PORTABLE, TUNE or DOMAIN | [method/METHOD.md](method/METHOD.md) |
+| PLAN-PROTOCOL.md | [🟪 method](docs/diagram/README.md#the-layer-palette) | The pass format: sync, preconditions, red-first, per-task evidence, deviations, verify script, local handoff | [PLAN-PROTOCOL.md](PLAN-PROTOCOL.md) |
+| decisions/ | [🟪 method](docs/diagram/README.md#the-layer-palette) | Fifteen append-only records, each settling one thing that kept being re-argued | [decisions/](decisions/) |
+| conformance suite | [🟩 instruments](docs/diagram/README.md#the-layer-palette) | The shape oracle — 41 cases across Universal, Repository, HouseStyle and RequiresBuild | [evals/conformance/](evals/conformance/) |
+| functional oracle | [🟩 instruments](docs/diagram/README.md#the-layer-palette) | A hand-written 49-node, 51-edge expected graph, a brief, a fixture and a seed | [evals/functional/](evals/functional/) |
+| TF fixture 1 | [🟩 instruments](docs/diagram/README.md#the-layer-palette) | Three frozen repositories and a case list, frozen by decision 0011 and re-frozen by 0012 | [evals/tf/fixture/](evals/tf/fixture/) |
+| TF fixture 2 | [🟩 instruments](docs/diagram/README.md#the-layer-palette) | Three more repositories, written mute — no case annotations anywhere in them | [evals/tf/fixture2/](evals/tf/fixture2/) |
+| the comparators | [🟩 instruments](docs/diagram/README.md#the-layer-palette) | Compare-Graph.ps1 for Azure DevOps and evals/tf/Compare-TfGraph.ps1 for Terraform | [evals/functional/Compare-Graph.ps1](evals/functional/Compare-Graph.ps1) |
+| psmodule v1.2.0 | [🟨 plugin](docs/diagram/README.md#the-layer-palette) | Nineteen skills and two commands, distilled from what the instruments measured | [.claude-plugin/plugin.json](.claude-plugin/plugin.json) |
+| /psmodule:build | [🟨 plugin](docs/diagram/README.md#the-layer-palette) | Builds or extends a module to the house conventions | [commands/build.md](commands/build.md) |
+| /psmodule:test | [🟨 plugin](docs/diagram/README.md#the-layer-palette) | The module's own build and the conformance suite, reported as two numbers | [commands/test.md](commands/test.md) |
+| new | [🟨 plugin](docs/diagram/README.md#the-layer-palette) | Nothing has been decided yet, and that is the point | [prompts/first-module.md](prompts/first-module.md) |
+| plan | [🟨 plugin](docs/diagram/README.md#the-layer-palette) | Six questions, then docs/PLAN.md in your repository with a definition of done | [skills/powershell-module-plan/SKILL.md](skills/powershell-module-plan/SKILL.md) |
+| build | [🟨 plugin](docs/diagram/README.md#the-layer-palette) | Command surface, tree, manifest, build script, help, completers, analysis | [commands/build.md](commands/build.md) |
+| test | [🟨 plugin](docs/diagram/README.md#the-layer-palette) | Manifest parses, files parse, module imports, unit, integration | [commands/test.md](commands/test.md) |
+| tidy | [🟨 plugin](docs/diagram/README.md#the-layer-palette) | Naming, surface-versus-docs parity both ways, dead files, docs/PLAN.md currency | [skills/powershell-module-tidy/SKILL.md](skills/powershell-module-tidy/SKILL.md) |
+| release | [🟨 plugin](docs/diagram/README.md#the-layer-palette) | Semver against the module surface, changelog, worklog, staging and output layout | [prompts/release.md](prompts/release.md) |
+| powershell-module-plan | [🟨 plugin](docs/diagram/README.md#the-layer-palette) | A fixed six-question intake, a shorter delta set, and a plan file written into the target | [skills/powershell-module-plan/SKILL.md](skills/powershell-module-plan/SKILL.md) |
+| powershell-module-architect | [🟨 plugin](docs/diagram/README.md#the-layer-palette) | Verb-noun, one command one question, when to split, Public versus Private | [skills/powershell-module-architect/SKILL.md](skills/powershell-module-architect/SKILL.md) |
+| powershell-module-scaffold | [🟨 plugin](docs/diagram/README.md#the-layer-palette) | The exact tree the suite grades, plus the committed dev loader | [skills/powershell-module-scaffold/SKILL.md](skills/powershell-module-scaffold/SKILL.md) |
+| powershell-module-build | [🟨 plugin](docs/diagram/README.md#the-layer-palette) | InvokeBuild tasks, ParseError in the analyzer severities, the coverage gate, exit-code discipline | [skills/powershell-module-build/SKILL.md](skills/powershell-module-build/SKILL.md) |
+| powershell-module-docs | [🟨 plugin](docs/diagram/README.md#the-layer-palette) | Comment-based help, the house .EXAMPLE standard, about_ topics, the culture directory | [skills/powershell-module-docs/SKILL.md](skills/powershell-module-docs/SKILL.md) |
+| powershell-module-ux | [🟨 plugin](docs/diagram/README.md#the-layer-palette) | When a parameter earns a completer, and which of the three mechanisms it earns | [skills/powershell-module-ux/SKILL.md](skills/powershell-module-ux/SKILL.md) |
+| powershell-module-analyzer | [🟨 plugin](docs/diagram/README.md#the-layer-palette) | AST-driven analysis that never runs the code it reads | [skills/powershell-module-analyzer/SKILL.md](skills/powershell-module-analyzer/SKILL.md) |
+| powershell-module-test | [🟨 plugin](docs/diagram/README.md#the-layer-palette) | The Pester 6 rules that bite, the five-layer runner, and zero cases is not a pass | [skills/powershell-module-test/SKILL.md](skills/powershell-module-test/SKILL.md) |
+| powershell-module-tidy | [🟨 plugin](docs/diagram/README.md#the-layer-palette) | The pre-release sweep, and a refusal to bless a release with an open Bucket-A item | [skills/powershell-module-tidy/SKILL.md](skills/powershell-module-tidy/SKILL.md) |
+| powershell-module-deploy | [🟨 plugin](docs/diagram/README.md#the-layer-palette) | Staging and output layout, and why Publish-Module is the operator's alone | [skills/powershell-module-deploy/SKILL.md](skills/powershell-module-deploy/SKILL.md) |
+| powershell-module-release | [🟨 plugin](docs/diagram/README.md#the-layer-palette) | Semver against a module surface, changelog and worklog conventions | [skills/powershell-module-release/SKILL.md](skills/powershell-module-release/SKILL.md) |
+| azdo-rest | [🟨 plugin](docs/diagram/README.md#the-layer-palette) | The Azure DevOps REST API, read-only | [skills/azdo-rest/SKILL.md](skills/azdo-rest/SKILL.md) |
+| azdo-pipeline-yaml-refs | [🟨 plugin](docs/diagram/README.md#the-layer-palette) | Extracting and resolving references, with parsing separated from resolution | [skills/azdo-pipeline-yaml-refs/SKILL.md](skills/azdo-pipeline-yaml-refs/SKILL.md) |
+| azdo-graph-assembly | [🟨 plugin](docs/diagram/README.md#the-layer-palette) | Identity by what a node is, never by where a traversal reached it | [skills/azdo-graph-assembly/SKILL.md](skills/azdo-graph-assembly/SKILL.md) |
+| tf-hcl-parse | [🟨 plugin](docs/diagram/README.md#the-layer-palette) | Blocks rather than a whole-file regex, required_providers in both spellings, the raw expression text kept | [skills/tf-hcl-parse/SKILL.md](skills/tf-hcl-parse/SKILL.md) |
+| tf-module-resolve | [🟨 plugin](docs/diagram/README.md#the-layer-palette) | The leading-dot guard, the double slash past the scheme, the unresolvable target as a flagged node | [skills/tf-module-resolve/SKILL.md](skills/tf-module-resolve/SKILL.md) |
+| tf-graph-assembly | [🟨 plugin](docs/diagram/README.md#the-layer-palette) | Ids that carry their repository, containment from the directory tree rather than the calls, one fact as one edge | [skills/tf-graph-assembly/SKILL.md](skills/tf-graph-assembly/SKILL.md) |
+| producer-contract | [🟨 plugin](docs/diagram/README.md#the-layer-palette) | Absent versus false, the consumer's battery, never renaming what the contract names | [skills/producer-contract/SKILL.md](skills/producer-contract/SKILL.md) |
+| task-tree-reporting | [🟨 plugin](docs/diagram/README.md#the-layer-palette) | Response formatting during multi-skill work | [skills/task-tree-reporting/SKILL.md](skills/task-tree-reporting/SKILL.md) |
+| your module | [🟦 module](docs/diagram/README.md#the-layer-palette) | What the flow produces: a conforming PowerShell module in your own repository | [docs/creating-an-agent/11-your-first-module.md](docs/creating-an-agent/11-your-first-module.md) |
+| PSAzureDevOpsGraph | [🟦 module](docs/diagram/README.md#the-layer-palette) | A read-only Azure DevOps pipeline dependency grapher, built and scored five times | [runs/006-plugin-on/README.md](runs/006-plugin-on/README.md) |
+| you | [🟥 user](docs/diagram/README.md#the-layer-palette) | The person the whole stack is pointed at. You enter at the `new` stage, with prompts/first-module.md. | [prompts/README.md](prompts/README.md) |
 
 ### Which rendering is authoritative
 
@@ -333,6 +471,10 @@ again, before anything public is involved.
      guesses. Delete the four sections; do not adapt them. -->
 
 ## With the plugin and without it
+
+**What each instrument is, and what it catches that the others do not:
+[docs/testing/](docs/testing/README.md).** Every number below was produced by
+one of them, and every cell links the run record it came from.
 
 Five blind runs against the same seed, the same brief, the same fixture and the
 same oracle. Three with the plugin readable, and two with it unread — the second
@@ -429,8 +571,9 @@ enough to leave in a footnote nobody reads, so they are here:
 
 ### Where the plugin actually moved the number
 
-The functional score is dominated by one omitted property, so it hides the
-result. The difference *breakdown* does not. All three plugin-on runs produced
+**The full derivation is in [docs/testing/](docs/testing/README.md), and every
+cell traces to a run record.** The functional score is dominated by one omitted
+property, so it hides the result. The difference *breakdown* does not. All three plugin-on runs produced
 **exactly the same 26 differences by the same four mechanisms**, so one column
 covers them; run 007 is the control with the same budget.
 
@@ -539,7 +682,12 @@ is now one script: [`Score-Clone.ps1`](evals/conformance/Score-Clone.ps1).
 
 ## The recurring findings
 
-Ten findings were recorded across runs 004 and 005. **Eight of the ten recurred
+**Every row links its full text; the run records are
+[004](runs/004-plugin-on/findings.md),
+[005](runs/005-plugin-on/findings.md) and
+[006](runs/006-plugin-on/findings.md), and a summary that does not link the
+finding it summarises is prose.** Ten findings were recorded across runs 004
+and 005. **Eight of the ten recurred
 in run 006**, in a session that had not read either record. The two that did not
 are the two that were never about the instrument. Full text:
 [004](runs/004-plugin-on/findings.md),
@@ -601,7 +749,7 @@ reproduce a run end to end.
 ./evals/functional/Compare-Graph.ps1 `
     -CandidatePath scratch/runs/007-my-run/artifacts/graph.json `
     -ReportPath scratch/runs/007-my-run/compare-report.json
-```
+````
 
 The fixture and the oracle also check each other, in both directions:
 
@@ -609,7 +757,7 @@ The fixture and the oracle also check each other, in both directions:
 Invoke-Pester ./evals/functional/Fixture.Tests.ps1     # 352 cases
 Invoke-Pester ./evals/functional/ReadBack.Tests.ps1    #  76 cases, needs AZDO_PAT
 Invoke-Pester ./evals/functional/Compare.Tests.ps1     #  28 cases
-```
+````
 
 `-ModuleName` is optional. When the repository root is a run directory the runner
 derives it from `src/<Name>/<Name>.psd1`; two manifests under `src/` is
@@ -709,27 +857,33 @@ form.
 than a naming slip: it is about emitting against a contract another repository
 owns. Recorded for the operator to settle if a second cross-cutting skill appears.
 
+**Every name below opens its `SKILL.md`.** Middle-click to open one in a new
+tab and keep your place — that is your browser doing it, not this page. GitHub
+strips `target` attributes from rendered Markdown, so no link here can open a
+tab on its own, and saying so is better than a row of links that quietly do not
+behave the way the sentence above them promised.
+
 | Skill | Role |
 |---|---|
-| `powershell-module-plan` | Intake and planning; a definition-of-done that names how the work will be tested before the work starts. |
-| `powershell-module-architect` | Command-surface design — verb-noun, one command one question, when to split, `Public/` versus `Private/`. |
-| `powershell-module-scaffold` | The layout the conformance suite grades: manifest, `Public/` flat, `Private/` nested, explicit exports, the committed dev loader. |
-| `powershell-module-build` | `build.ps1` and `<Name>.build.ps1` — InvokeBuild tasks, `ParseError` in the analyzer severity list, the coverage gate, exit-code discipline. **Carries F-1.** |
-| `powershell-module-test` | The Pester suite and the ordered five-layer runner that stops at the first failing layer. |
-| `powershell-module-analyzer` | AST-driven analysis that never runs the code it reads. |
-| `powershell-module-docs` | Comment-based help for public **and** private functions, the house `.EXAMPLE` standard, `about_` topics and the culture directory the build must copy. |
-| `powershell-module-ux` | Argument completion — when a parameter earns a completer, `ValidateSet` versus `[ArgumentCompleter]` versus `IArgumentCompleter`, the session cache and its guardrails. Added at v1.2.0. |
-| `powershell-module-tidy` | The pre-release sweep — naming, surface/docs parity both ways, dead files, `docs/PLAN.md` currency, and a refusal to bless with an open Bucket-A item. Added at v1.2.0. |
-| `powershell-module-deploy` | Staging and output layout; why `Publish-Module` is the operator's alone. |
-| `powershell-module-release` | Semver against a module surface, changelog and worklog conventions. |
-| `azdo-rest` | The Azure DevOps REST API, read-only. `$env:AZDO_PAT` and nothing else, ever. |
-| `azdo-pipeline-yaml-refs` | Extracting and resolving pipeline YAML references, parsing separated from resolution. |
-| `azdo-graph-assembly` | Turning references into a graph — identity by what a node is, never where a traversal reached it. **Carries F-2.** |
-| `tf-hcl-parse` | Reading `.tf` as blocks rather than with a whole-file regex; `required_providers` in both its spellings; keeping an expression's raw text. |
-| `tf-module-resolve` | What a module `source` points at: the leading-dot guard, the `//` past the scheme, and the unresolvable target as a flagged node. |
-| `tf-graph-assembly` | Ids that carry their repository, containment from the directory tree rather than the calls, and one fact as one edge. |
-| `producer-contract` | Emitting against a schema another repository owns: absent versus false, the consumer's battery, never renaming what the contract names. |
-| `task-tree-reporting` | Response formatting during multi-skill work. |
+| [`powershell-module-plan`](skills/powershell-module-plan/SKILL.md) | Intake and planning; a definition-of-done that names how the work will be tested before the work starts. |
+| [`powershell-module-architect`](skills/powershell-module-architect/SKILL.md) | Command-surface design — verb-noun, one command one question, when to split, `Public/` versus `Private/`. |
+| [`powershell-module-scaffold`](skills/powershell-module-scaffold/SKILL.md) | The layout the conformance suite grades: manifest, `Public/` flat, `Private/` nested, explicit exports, the committed dev loader. |
+| [`powershell-module-build`](skills/powershell-module-build/SKILL.md) | `build.ps1` and `<Name>.build.ps1` — InvokeBuild tasks, `ParseError` in the analyzer severity list, the coverage gate, exit-code discipline. **Carries F-1.** |
+| [`powershell-module-test`](skills/powershell-module-test/SKILL.md) | The Pester suite and the ordered five-layer runner that stops at the first failing layer. |
+| [`powershell-module-analyzer`](skills/powershell-module-analyzer/SKILL.md) | AST-driven analysis that never runs the code it reads. |
+| [`powershell-module-docs`](skills/powershell-module-docs/SKILL.md) | Comment-based help for public **and** private functions, the house `.EXAMPLE` standard, `about_` topics and the culture directory the build must copy. |
+| [`powershell-module-ux`](skills/powershell-module-ux/SKILL.md) | Argument completion — when a parameter earns a completer, `ValidateSet` versus `[ArgumentCompleter]` versus `IArgumentCompleter`, the session cache and its guardrails. Added at v1.2.0. |
+| [`powershell-module-tidy`](skills/powershell-module-tidy/SKILL.md) | The pre-release sweep — naming, surface/docs parity both ways, dead files, `docs/PLAN.md` currency, and a refusal to bless with an open Bucket-A item. Added at v1.2.0. |
+| [`powershell-module-deploy`](skills/powershell-module-deploy/SKILL.md) | Staging and output layout; why `Publish-Module` is the operator's alone. |
+| [`powershell-module-release`](skills/powershell-module-release/SKILL.md) | Semver against a module surface, changelog and worklog conventions. |
+| [`azdo-rest`](skills/azdo-rest/SKILL.md) | The Azure DevOps REST API, read-only. `$env:AZDO_PAT` and nothing else, ever. |
+| [`azdo-pipeline-yaml-refs`](skills/azdo-pipeline-yaml-refs/SKILL.md) | Extracting and resolving pipeline YAML references, parsing separated from resolution. |
+| [`azdo-graph-assembly`](skills/azdo-graph-assembly/SKILL.md) | Turning references into a graph — identity by what a node is, never where a traversal reached it. **Carries F-2.** |
+| [`tf-hcl-parse`](skills/tf-hcl-parse/SKILL.md) | Reading `.tf` as blocks rather than with a whole-file regex; `required_providers` in both its spellings; keeping an expression's raw text. |
+| [`tf-module-resolve`](skills/tf-module-resolve/SKILL.md) | What a module `source` points at: the leading-dot guard, the `//` past the scheme, and the unresolvable target as a flagged node. |
+| [`tf-graph-assembly`](skills/tf-graph-assembly/SKILL.md) | Ids that carry their repository, containment from the directory tree rather than the calls, and one fact as one edge. |
+| [`producer-contract`](skills/producer-contract/SKILL.md) | Emitting against a schema another repository owns: absent versus false, the consumer's battery, never renaming what the contract names. |
+| [`task-tree-reporting`](skills/task-tree-reporting/SKILL.md) | Response formatting during multi-skill work. |
 
 The three `tf-*` skills were **deliberately withheld** from v1.0.x. They carry
 what run tf-001 learned about the Terraform fixture it was scored against, and
@@ -859,16 +1013,22 @@ the scorer that first produced them. They did not move
 
 | Path | What |
 |---|---|
-| `skills/` | The plugin's nineteen skills |
-| `commands/` | `/build` and `/test` |
-| `evals/conformance/` | The shape oracle: `Conformance.Tests.ps1`, its runner, the falsification record |
-| `evals/functional/` | The behaviour oracle: `BRIEF.md`, `fixture/`, the comparator, the seed |
-| `evals/HARNESS.md` | What a run consists of, and the thirteen hazards |
-| `runs/` | One directory per scored run, with its artifacts and transcripts |
-| `plans/` | One per pass: evidence per task, deviations, a verify script that re-derives the scores |
-| `journal/` | Append-only, six fields per pass |
-| `decisions/` | Append-only decision records |
-| `method/` | The method, including its known limits |
+| [`skills/`](skills/) | The plugin's nineteen skills, one `SKILL.md` each |
+| [`commands/`](commands/) | [`/build`](commands/build.md) and [`/test`](commands/test.md) |
+| [`prompts/`](prompts/README.md) | The paste-able kit: five documents, and the signal legend |
+| [`docs/creating-an-agent/`](docs/creating-an-agent/00-start-here.md) | Twelve chapters on the method, each worked against a real pass |
+| [`docs/ux/`](docs/ux/README.md) | One numbered record per operator-experience convention: problem, why, evidence |
+| [`docs/diagram/`](docs/diagram/README.md) | The flow graph's source, its interactive rendering, and the layer palette |
+| [`docs/testing/`](docs/testing/README.md) | What each layer of the stack catches that the others do not |
+| [`evals/conformance/`](evals/conformance/) | The shape oracle: `Conformance.Tests.ps1`, its runner, the falsification record |
+| [`evals/functional/`](evals/functional/) | The behaviour oracle: `BRIEF.md`, `fixture/`, the comparator, the seed |
+| [`evals/HARNESS.md`](evals/HARNESS.md) | What a run consists of, and the thirteen hazards |
+| [`runs/`](runs/) | One directory per scored run, with its artifacts and transcripts |
+| [`plans/`](plans/README.md) | One per pass: evidence per task, deviations, a verify script that re-derives the scores |
+| [`journal/`](journal/) | Append-only, six fields per pass |
+| [`decisions/`](decisions/) | Append-only decision records |
+| [`method/`](method/METHOD.md) | The method, including its known limits |
+| [`tools/`](tools/) | The prerequisite checker, the local publisher, and the diagram build |
 
 ---
 
@@ -995,22 +1155,24 @@ check any claim made in this repository, including the maintainer's. Run them
 and paste the output — a report with them is actionable, a report without them
 usually turns into three round-trips before anything can start:
 
-    # 1. What you are running, exactly.
-    pwsh -NoProfile -Command '$PSVersionTable.PSVersion.ToString()'
-    pwsh -NoProfile -File ./tools/publish/Test-Prerequisites.ps1
+```powershell
+# 1. What you are running, exactly.
+pwsh -NoProfile -Command '$PSVersionTable.PSVersion.ToString()'
+pwsh -NoProfile -File ./tools/publish/Test-Prerequisites.ps1
 
-    # 2. Which version of the plugin, and whether it is the tagged one.
-    #    Run inside Claude Code:
-    #      /plugin
-    #    and report the version shown against psmodule.
+# 2. Which version of the plugin, and whether it is the tagged one.
+#    Run inside Claude Code:
+#      /plugin
+#    and report the version shown against psmodule.
 
-    # 3. If you cloned the repository, where its HEAD actually is.
-    git -C <your-clone> rev-parse HEAD
-    git -C <your-clone> describe --tags --always
-    git -C <your-clone> status --porcelain
+# 3. If you cloned the repository, where its HEAD actually is.
+git -C <your-clone> rev-parse HEAD
+git -C <your-clone> describe --tags --always
+git -C <your-clone> status --porcelain
 
-    # 4. The failure itself, re-run rather than remembered.
-    #    Paste the command you ran and its complete output, not a summary.
+# 4. The failure itself, re-run rather than remembered.
+#    Paste the command you ran and its complete output, not a summary.
+````
 
 Then say **what you expected and what happened**, in that order, and separately.
 The most common unactionable report is one that states a conclusion — "the build
