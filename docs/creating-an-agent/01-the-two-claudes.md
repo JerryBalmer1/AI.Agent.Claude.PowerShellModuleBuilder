@@ -343,6 +343,21 @@ section it is obliged to fill in.
 
 ---
 
+## Why the director stays human-paced
+
+Nothing in this system runs itself, on purpose. Every cycle passes through a
+checkpoint that can say stop — the operator reads a report, a decision gets
+made, the next prompt is written against what actually happened rather than
+what was planned. The stops are the system: the runs this project trusts
+most are the ones where the executor refused to proceed. This repository
+once inherited a resident self-managing workflow (PSGraphRender's thread
+ledger) and pass 0021 stripped it, because two processes governing one
+commit is worse than one process with a human at the helm. If you automate
+the loop, you are building a different, riskier system — design its
+guardrails first, and falsify them.
+
+---
+
 Next: chapter [02](./02-order-of-operations.md), on what has to exist
 before what — or chapter [05](./05-calling-bullshit-verification.md) if you
 want the audit step first.

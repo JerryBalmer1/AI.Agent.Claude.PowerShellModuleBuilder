@@ -191,6 +191,20 @@ build-dependent assertions, a sabotaged build must fail them, and a built
 conforming clone must pass; if the first row goes green, the "repair" quietly
 weakened the assertions instead of correcting the procedure.
 
+**PORTABLE. A NEW assertion whose reference target is already red is falsified
+on a purpose-built known-good, and the target is measured separately.** The
+protocol says break the reference; that instruction has no meaning when the case
+a break would turn red is red before the break. Falsifying only against the red
+target proves nothing about the green path, and repairing the target so that a
+break has something to break rewrites history to fit the grader. So the
+assertion's capability is proven on a fixture built to satisfy it — break goes
+red there, control stays green there, polarity rules unchanged — and the
+reference's real behaviour is then measured and Bucket-sorted as its own claim,
+with the boundary said out loud: it predates the rule. Two claims, two
+artifacts, and neither substitutes for the other. Recorded as
+[decision 0015](../decisions/0015-falsifying-against-a-red-target.md), from the
+eight help assertions of pass 0039 that first hit it.
+
 ## Evidence discipline
 
 **PORTABLE.** Distinguish observed from inferred. Anything claimed from a

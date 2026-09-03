@@ -103,6 +103,33 @@ puts it one mistake away from being in the pass commit, and the pass commit
 is the record of what the pass did. That record is worth more than the
 convenience of not making a second commit.
 
+## Sync and handoff
+
+The two acts that bracket a pass. Both are about the state a pass finds the
+repositories in and the state it leaves them in, and neither belongs to any
+one task.
+
+### Sync — the first act of every pass
+
+Before preconditions are recorded, every workspace repository is fetched and
+its `main` fast-forwarded, so the pass branches from what is actually there
+rather than from what was there last session.
+
+After fast-forwarding, report any `pass-*` branch whose tip is
+not an ancestor of its repository's `main` — a stranded branch
+surfaces at the next pass's preconditions, not releases later.
+
+### Local handoff — the last act of every pass
+
+After remote pushes and main fast-forwards, the agent returns the operator's
+workspace to inspectable truth: for every workspace repository — checkout
+`main`, `git pull --ff-only`, `git fetch --tags --prune`, `git status` clean
+— then print a LOCAL STATE table (repo | branch | HEAD | clean) as the final
+output of the pass. "Done" means the operator's editor shows the result with
+zero commands: inspect what you expect, with nothing to figure out first. A
+diverged branch or dirty tree is reported, never resolved. A pass that ends
+without the LOCAL STATE table is not done.
+
 ## plan.md structure
 
 ### 1. Prompt
