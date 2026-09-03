@@ -139,7 +139,7 @@ try {
         Add-Result -Name 'SPOT-CHECK 1 - diagram re-rendered, stable, battery green' -Ok ($code -eq 0 -and $tagged -and $battery -and $stable) -Detail (
             "exit=$code tagsVerified=$tagged batteryGreen=$battery stable=$stable`n" +
             "nondeterminism named: meta.generatedAt is stamped with UtcNow, so -Check normalises that field and compares everything else`n" +
-            ($text.Trim() -split "`r?`n" | Select-Object -Last 4 | Out-String).Trim())
+            ($text.Trim() -split "`r?`n" | Where-Object { $_ -match 'versions verified|Test-ProducerGraph|BATTERY|CHECK|first difference|committed:|fresh:' } | Out-String).Trim())
     }
 
     # ---------------------------------------------------------------------

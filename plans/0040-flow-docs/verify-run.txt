@@ -1,8 +1,8 @@
 VERIFY 0040 - the flow made visible
 source:     C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder
-clone:      C:\Users\jlbal\AppData\Local\Temp\verify-0040-a5567a461f51449bacd10e2fb4945201
+clone:      C:\Users\jlbal\AppData\Local\Temp\verify-0040-f1341502756743ed9152a90b41a0dbff
 
-cloned HEAD: 8404c35d8e408805ca352d342753fffa68175700
+cloned HEAD: 5376e97d81f76ae6c3137357966a044f50600ece
 
 [PASS] acceptance test, green, all 11 cases run
        containers failed=0 passed=11 failed=0

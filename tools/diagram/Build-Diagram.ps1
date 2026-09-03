@@ -27,11 +27,18 @@
     property, visible in the details panel, and identical on every machine.
     README.md's link map is what makes those paths clickable.
 
-    NOT REPRODUCIBLE BYTE FOR BYTE, and the reason is named rather than
-    worked around: ConvertTo-GraphRenderViewModel stamps meta.generatedAt with
-    [DateTime]::UtcNow. Two renders of the same graph differ on that line and
-    nowhere else. -Check re-renders and diffs everything except that stamp,
-    which is the honest form of "content-stable".
+    NOT REPRODUCIBLE BYTE FOR BYTE, and there is exactly one reason, named
+    rather than worked around: ConvertTo-GraphRenderViewModel stamps
+    meta.generatedAt with [DateTime]::UtcNow. Two renders of the same graph
+    differ on that line and nowhere else. -Check re-renders and diffs
+    everything except that stamp, which is the honest form of
+    "content-stable".
+
+    There WAS a second reason and it is now removed rather than normalised
+    away: the document is written here as bytes with LF endings and exactly
+    one trailing newline, instead of through Set-Content, which appends the
+    platform's newline and made a Windows render differ from a Linux one - and
+    from git's own normalised copy - by a single byte at the end of the file.
 .PARAMETER RepoRoot
     The harness repository root. Defaults to two levels above this script.
 .PARAMETER ToHtmlRepo
@@ -49,8 +56,8 @@
     render on a machine with no Pester; the battery is the check that makes the
     contract claim mean anything, so skipping it is stated in the output.
 .PARAMETER Check
-    Render to a temporary file and compare against the committed document
-    instead of overwriting it. Exit 1 on any difference outside the timestamp.
+    Render, and compare against the committed document instead of writing over
+    it. Exit 1 on any difference outside the timestamp.
 .EXAMPLE
     $params = @{
         RepoRoot = 'C:/src/AI.Agent.Claude.PowerShellModuleBuilder'
@@ -265,19 +272,31 @@ try {
     $options = New-GraphRenderOptions -Backend cytoscape -Layout foundation `
         -Title 'AI.Agent.Claude.PowerShellModuleBuilder - the flow'
 
-    $target = if ($Check) { Join-Path $work 'flow.html' } else { $OutputPath }
-    $rendered = Export-ProducerGraphHtml -Path $graphPath -Options $options -OutputPath $target
+    # NO -OutputPath, deliberately. Export-ProducerGraphHtml writes with
+    # Set-Content, which appends the PLATFORM's newline - so the file gained a
+    # trailing CRLF on Windows while every other line ended LF, and git stored
+    # it normalised. A fresh render and the committed file then differed by one
+    # byte, with identical line counts and no differing line, which is the
+    # least diagnosable form the difference could have taken. Taking the
+    # document as a string and writing the bytes here makes the artifact
+    # identical on any platform, and does it without touching the pinned
+    # module.
+    $document = Export-ProducerGraphHtml -Path $graphPath -Options $options
+    $document = ($document -replace "`r`n", "`n").TrimEnd("`n") + "`n"
 
     if (-not $Check) {
-        "WROTE: $rendered"
+        $parent = Split-Path -Parent $OutputPath
+        if ($parent -and -not (Test-Path -LiteralPath $parent)) { $null = New-Item -ItemType Directory -Path $parent -Force }
+        [IO.File]::WriteAllText($OutputPath, $document, [Text.UTF8Encoding]::new($false))
+        "WROTE: $((Resolve-Path -LiteralPath $OutputPath).Path)"
         return
     }
 
     if (-not (Test-Path -LiteralPath $OutputPath)) {
         throw "-Check has nothing to compare against: '$OutputPath' does not exist."
     }
-    $fresh = (Get-Content -LiteralPath $rendered -Raw) -replace $VolatilePattern, '"generatedAt":"<stamp>"'
-    $committed = (Get-Content -LiteralPath $OutputPath -Raw) -replace $VolatilePattern, '"generatedAt":"<stamp>"'
+    $fresh = $document -replace $VolatilePattern, '"generatedAt":"<stamp>"'
+    $committed = ((Get-Content -LiteralPath $OutputPath -Raw) -replace "`r`n", "`n") -replace $VolatilePattern, '"generatedAt":"<stamp>"'
     if ($fresh -eq $committed) {
         'CHECK: flow.html is byte-identical to a fresh render, apart from the generatedAt stamp'
         return
