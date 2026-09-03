@@ -1,5 +1,10 @@
 # METHOD — building agents that can be graded
 
+The why-layer under this file is [method/PHILOSOPHY.md](PHILOSOPHY.md) — five
+laws mapped to the artifacts that embody them. It explains this method; it
+never overrides it, and a law is cited in a prompt only when it decides
+something.
+
 A reusable method. Each rule is marked:
 
 - **PORTABLE** — survives a domain change unedited. Copy as-is.

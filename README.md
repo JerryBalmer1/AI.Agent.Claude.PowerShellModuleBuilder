@@ -453,6 +453,10 @@ so you can do the same thing on your own domain. Start at
 — twelve chapters, each one worked against a real pass, run or decision in this
 repository, including the mistakes.
 
+**Why any of this, before how.** [Five laws, each mapped to the artifact that
+embodies it](method/PHILOSOPHY.md) — the goal the method serves, and the
+adjacent rabbit holes it declines by name.
+
 **Deciding whether this much testing is worth it?**
 [docs/testing/](docs/testing/README.md) explains what each layer of the stack
 catches that the others do not, with the artifact behind every claim.
