@@ -7,10 +7,29 @@ description: Document a PowerShell module — comment-based help standards grade
 
 ## Comment-based help
 
-**Every exported function needs comment-based help with a `.SYNOPSIS`.** This is
-graded. Two placements count — inside the function body, or in a block
-immediately above the definition — and nothing may sit between the comment and
-the `function` keyword but whitespace.
+**Every function gets full comment-based help — public *and* private.** The
+house standard, all of it graded by `evals/conformance/Help.Tests.ps1`:
+
+- `.SYNOPSIS`, one line.
+- `.DESCRIPTION`, always, even when it feels redundant. The private helper you
+  will not recognise in eight months is exactly the one nobody wrote it for.
+- **A `.PARAMETER` entry for every declared parameter.** Every one, including
+  the obvious ones.
+- **At least as many `.EXAMPLE` blocks as the function has parameter sets, and
+  each named set's signature appears in one of them.** A function with three
+  parameter sets and one example has documented a third of itself. This is the
+  rule that catches the case where a set was added and the help was not.
+- `HelpMessage` on every mandatory parameter. It is what PowerShell prints when
+  it prompts for the missing value, and without it the prompt is the bare
+  parameter name — the least helpful moment in the whole module to say nothing.
+
+Private is not an exemption. The one thing that changes for a private function
+is the audience: the examples are for the next maintainer rather than the next
+user, and they should show the call as it is actually made inside the module.
+
+Two placements count — inside the function body, or in a block immediately
+above the definition — and nothing may sit between the comment and the
+`function` keyword but whitespace.
 
 ```powershell
 function Get-AzDoPipeline {
@@ -50,6 +69,63 @@ What each section is for, and the mistake each one prevents:
 **Document the credential rule in the help, not only in the README.** A user
 reads `Get-Help` at the moment they hit the error.
 
+## The house `.EXAMPLE` standard
+
+**The design goal is copy-paste-and-edit.** A reader lands on `Get-Help`,
+copies the example whole into a new script, changes the values at the top, and
+runs it. Every element of the standard exists to serve that one motion, and it
+is the operator's convention rather than a general PowerShell one.
+
+Four parts, in this order:
+
+1. **Parameters assigned at the top, with aligned `=`.** The alignment is
+   deliberate and is not cosmetic: it is what lets a reader see the parameters
+   and their values at a glance, as one column, and spot the one they have to
+   change.
+2. **Splat through a `$params` hashtable.** Not a long line of `-Name value`
+   pairs. A splatted call adds and removes a parameter by adding and removing a
+   line, which is what a reader editing the example is about to do.
+3. **A `try`/`catch` with a real error message.** Not `catch { }`, not
+   `catch { throw }` — the message a user would actually want, naming what was
+   being attempted.
+4. **The result assigned and displayed.** The example ends holding something,
+   because the reader's next line is going to use it.
+
+```powershell
+.EXAMPLE
+    $ServerName   = "SomeServerName"
+    $DatabaseName = "SomeDatabaseName"
+    $Migrate      = $true
+    $Force        = $true
+
+    $serverMigrationResult = try {
+
+        $params = @{
+            ServerName   = $ServerName
+            DatabaseName = $DatabaseName
+            Migrate      = $Migrate
+            Force        = $Force
+        }
+
+        Invoke-PSFunction @params
+
+    }
+    catch {
+        Write-Error "An error occurred during the server migration: $_"
+        $false
+    }
+
+    $serverMigrationResult
+```
+
+Keep the spaces around `=`. They are the alignment, and an autoformatter that
+collapses them has removed the point of the block.
+
+**One of these per parameter set**, per the standard above, and the set's own
+parameters are the ones assigned at the top. That is what makes "examples ≥
+parameter sets" a real check rather than a counting exercise: two examples that
+call the same set differently do not satisfy it.
+
 ## Examples must be real
 
 **An example that has never been run is a claim, and several will be wrong.**
@@ -73,6 +149,48 @@ nobody reading has — say so on the line rather than letting it look runnable:
 **An example is a test that nobody runs.** If one matters enough, make it one
 that somebody does: the fixture-backed cases in `tests/` are the examples that
 cannot rot.
+
+## Classes and enums: say plainly that help does not work
+
+**PowerShell classes and enums do not support comment-based help. There is no
+version of this that works, and no keyword that fixes it.** A complete
+`.SYNOPSIS`/`.DESCRIPTION` block written above a `class` produces exactly
+nothing:
+
+```
+matches for 'ZzUniqueThing': 0
+typed lookup threw: HelpNotFoundException
+```
+
+That block is not help. It looks like help, it is indexed by nothing, and
+`Get-Help` on the type name returns zero matches while `Get-Help ([Type])`
+throws. Writing one and assuming a user can find it is the failure this section
+exists to prevent — and it is a real failure, because the block is *visually
+indistinguishable* from the working kind twenty lines away in the same file.
+
+So the house standard says the checkable thing rather than the impossible one:
+
+1. **A doc comment block immediately precedes every class and enum**, in the
+   same shape as function help — synopsis line, then what a reader cannot infer
+   from the property list. It is for the person reading the source, which is
+   the only person who will ever see it, and that is worth stating in the
+   review rather than discovering later.
+2. **Every public class and enum is covered in `about_<Module>`**, which is the
+   only place a *user* can find it. A module with public types and no `about_`
+   topic has undocumented types no matter how good the source comments are.
+
+Both are graded. The conformance suite cannot check that a class is documented
+in the sense `Get-Help` means, because that sense does not exist — so it checks
+the two things that do exist and are equivalent for the reader: the block is
+there, and the topic ships. **Assert the checkable equivalent, and say in the
+open that it is an equivalent rather than the thing itself.** A rule that
+quietly asserts something weaker than it claims is how a gate stops meaning
+anything.
+
+Enums get the same treatment and are the more commonly skipped of the two,
+usually because each value "explains itself". The value name says what it is
+called and never says when to choose it, which is the only thing a reader
+needs.
 
 ## `about_` topics and the culture directory
 

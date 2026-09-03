@@ -93,6 +93,51 @@ parameter. Assigning to it re-runs the parameter's validation attributes, so
 `$name = $null` against a `[ValidateNotNullOrEmpty()]` parameter throws at that
 assignment. Name locals distinctly: `$usingName`, `$nestedName`.
 
+## Every output type gets an enumerator
+
+**For every type the module emits publicly, there is a `Get-<Noun>` that takes
+no arguments and returns all of them.** Singular noun, returns many — that is
+PowerShell's own convention (`Get-Process`, `Get-Service`, `Get-ChildItem`) and
+not a typo waiting to be fixed.
+
+This is the API-wrapper pattern, and it is the difference between a module a
+user can explore and one they have to already understand. The first question
+anyone asks a new module is *what is in here*, and a surface that can only
+answer *tell me about the one you already know the id of* cannot answer it. A
+user who cannot enumerate cannot discover, and a user who cannot discover reads
+the source or gives up.
+
+The rule is mechanical, and that is deliberate — it is checkable:
+
+- Public output type `<Module>.Pipeline` → `Get-AzDoPipeline` with every
+  parameter optional.
+- Public output type `<Module>.Repository` → `Get-AzDoRepository`, same.
+- Filtering parameters are additive on the same command. `-Name` narrows the
+  enumeration; it does not become a second command.
+
+**Argument-less means argument-less.** A `Get-<Noun>` whose `-Organisation` is
+mandatory is not an enumerator, it is a query with a required scope. If the
+scope genuinely cannot be discovered — and often it cannot, because the
+accounts API needs a token scope the module does not ask for — say so in the
+help, and say what the user substitutes. What is not acceptable is a surface
+where no command answers "what exists".
+
+### The exception, and it is a named mechanism rather than a judgment call
+
+**Singleton and configuration types do not get an enumerator.** There is one
+of them, so "all of them" is not a question anyone has.
+
+| Type | Command | Why no enumerator |
+|---|---|---|
+| module configuration | `Get-<Prefix>Configuration` | one per session |
+| connection / context | `Get-<Prefix>Context` | one at a time, by construction |
+| a computed whole, e.g. a graph | `Get-<Prefix>DependencyGraph` | it is the aggregate; enumerating it is what its nodes are for |
+
+Declare the exception where the type is declared, in one line, naming which of
+the three it is. An undeclared missing enumerator is an oversight; a declared
+one is a design decision, and the only difference visible later is whether
+someone wrote the line.
+
 ## Pipeline support
 
 Accept from the pipeline where the command's subject is something another command
@@ -126,6 +171,8 @@ sorts by full path so ordering is stable across subfolders.
 ## Before you write the file
 
 - [ ] Approved verb, singular noun, module prefix
+- [ ] Its output type has a no-argument `Get-<Noun>`, or the singleton /
+      configuration exception is declared in one line where the type is
 - [ ] One sentence describes what it returns, with no "and"
 - [ ] Parsing separated from resolution where the inputs differ
 - [ ] Parameter sets match the module's other commands

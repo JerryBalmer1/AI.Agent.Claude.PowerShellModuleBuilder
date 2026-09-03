@@ -91,6 +91,49 @@ A plan whose definition of done cannot be written is a plan whose work cannot be
 graded. That is a finding, and it goes back to the operator before any code is
 written — not after.
 
+## The master plan — `docs/PLAN.md`
+
+**Every module carries `docs/PLAN.md`, it is written in plain language, and it
+is always current.** It is not a plan file — those are numbered, frozen, and
+about one piece of work. This is the one document that says where the module
+stands *now*, and there is exactly one of it.
+
+Five things, in this order, and nothing else:
+
+1. **What this module is.** One paragraph. No jargon that is not defined on the
+   same page.
+2. **Why it exists.** The problem someone had. Not the feature list.
+3. **Where it stands.** What works, what does not, what is measured and what is
+   merely written. The honest version, including the unflattering parts.
+4. **What is next**, and roughly in what order.
+5. **Where the detailed records live** — the numbered plans, the changelog, the
+   worklog, the test suite. Links, so this page never has to repeat them.
+
+**Write it for a reader who will never open the machinery.** Someone came back
+after three months, or inherited the repository, or is deciding whether to
+depend on it. They will not read `docs/plans/0007-*.md`, they should not have
+to, and if the only way to know where a module stands is to read seven plan
+files in order then nobody knows where it stands.
+
+That reader is the whole specification. It rules out the two ways this document
+usually fails: a changelog with the dates removed, and a summary written for
+someone who already knows.
+
+**When it is updated:**
+
+- Whenever a plan file is added — the "what is next" section just changed.
+- Whenever a release is cut — the "where it stands" section just changed.
+
+Those are the two, and both are mechanical. Neither is "when it feels stale",
+because it never feels stale to the person who wrote it.
+
+**`powershell-module-tidy` verifies it, and a stale plan blocks a release.**
+Stale is defined mechanically — the newest commit touching `src/` is newer than
+the newest commit touching `docs/PLAN.md` — so the check cannot be argued with,
+only satisfied. The response to a false positive is a one-line edit saying the
+work landed, which takes ten seconds and is exactly the behaviour the rule
+exists to produce.
+
 ## Generating the plan file
 
 Fill `templates/module-plan.md` and save it **into the target repository**:
@@ -114,6 +157,7 @@ up next. Commit it with the work.
 - [ ] Definition of done names the oracle, the cases, and the command
 - [ ] The acceptance test exists and has been **run red**
 - [ ] The plan file is committed
+- [ ] `docs/PLAN.md` exists and its "what is next" names this work
 
 ## Related
 
@@ -121,4 +165,5 @@ up next. Commit it with the work.
 - `powershell-module-analyzer` — question 3, when the answer is a tool you do
   not know.
 - `powershell-module-test` — building the oracle the definition of done names.
+- `powershell-module-tidy` — verifies `docs/PLAN.md` is current before a release.
 - `task-tree-reporting` — how to report progress once the plan has tasks.

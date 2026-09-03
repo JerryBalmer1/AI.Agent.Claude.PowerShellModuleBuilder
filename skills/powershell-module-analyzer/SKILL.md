@@ -137,6 +137,74 @@ and `Test-Path $env:SQLPACKAGE_PATH`
 holding it. The build resolves it in that order and throws naming both.
 ```
 
+## The class candidate
+
+An analysis that only lists what is there is worth less than one that notices a
+shape. There is exactly one shape worth surfacing automatically, and it is
+this: **the same key set, emitted as a `PSCustomObject` from three or more
+sites.**
+
+Detect it structurally. Walk every `ConvertToExpressionAst` whose type is
+`pscustomobject`, and every `HashtableAst` that is cast to one, take the
+literal key names, sort them, and join. Three sites with an identical joined
+key set is the trigger. A key added at runtime is not in the AST and cannot be
+counted — say so in the report rather than pretending the set is complete.
+
+```powershell
+$literal = $ast.FindAll({
+        $args[0] -is [System.Management.Automation.Language.ConvertExpressionAst] -and
+        $args[0].Type.TypeName.Name -in 'pscustomobject', 'PSCustomObject'
+    }, $true)
+
+$shape = ($literal.Child.KeyValuePairs.Item1.Value | Sort-Object) -join ','
+```
+
+**Surface it as a candidate with the tradeoffs attached, and never apply it.**
+This is judgment, and the analyzer's job is to put the decision in front of a
+human who has context it does not. A report that says "convert these to a
+class" is wrong as often as it is right; a report that says "these three sites
+emit the same nine fields, and here is what a class would cost" is useful
+either way.
+
+The four costs, which are the ones that actually bite and none of which are
+obvious from the class syntax:
+
+- **Reload behaviour.** A PowerShell class is baked into the session at parse
+  time. `Import-Module -Force` does **not** replace an already-loaded class
+  definition, so an edit to a class is invisible until a new process starts.
+  That is the single largest day-to-day cost, it lands on whoever is developing
+  the module, and it is why a module full of classes is slower to work on than
+  one that is not.
+- **`using module`.** A consumer who wants the type — to construct one, or to
+  type a parameter with it — needs `using module <Name>` rather than
+  `Import-Module`, and `using` statements must be the first thing in a file.
+  That is a real constraint on the caller, imposed by your internal choice.
+- **Serialization.** A class instance round-trips through the pipeline,
+  `Export-Clixml`, or a remoting boundary as a **deserialized** object with the
+  methods gone. A `PSCustomObject` with a `PSTypeName` survives the same trip
+  as the same thing it was. If the records cross a process boundary, that
+  difference is the whole decision.
+- **Mocking.** Pester mocks commands, not constructors. A function returning a
+  `PSCustomObject` is trivially faked in a test; a function returning
+  `[MyRecord]::new(...)` drags the real type into every test that touches it.
+
+**The counterexample belongs in the report, because it is the case that stops
+this rule being applied mechanically.** `PSGraphRenderToHtml` repeats a record
+shape and defines **no class at all** — `class` appears nowhere in its source.
+The shape lives in `contract/producer-graph.schema.json`, versioned 0.1.0, and
+that file rather than any type is "the authority" its README names. The reason
+is that the shape crosses a boundary between two modules written at different
+times: a schema's job is to be stable, versioned, serializable and checkable by
+a producer that never loads the consumer, and a class makes all four harder
+rather than easier. Repeated shape is evidence of a schema at least as often as
+it is evidence of a missing class, and the analyzer cannot tell which from the
+AST.
+
+So the finding reads: *this key set appears at N sites; a class would buy
+construction validation and IntelliSense, and cost reload, `using module`,
+serialization fidelity and mockability; if this shape crosses a module
+boundary, it is a schema and the answer is no.*
+
 ## Reporting an analysis
 
 - **Distinguish observed from inferred.** Anything claimed from one target is a
