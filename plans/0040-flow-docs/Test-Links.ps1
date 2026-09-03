@@ -70,6 +70,8 @@ $Touched = @(
     'prompts/new-feature.md'
     'prompts/release.md'
     'prompts/troubleshoot.md'
+    'plans/0040-flow-docs/plan.md'
+    'journal/0040-flow-docs.md'
 )
 
 function ConvertTo-Anchor {

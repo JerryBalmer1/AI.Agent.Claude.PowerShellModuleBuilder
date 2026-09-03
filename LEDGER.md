@@ -5,13 +5,49 @@ for counters and pins. Update it in the same commit as the work
 that changes it.
 
 ## Passes
-Last landed: **0039**. Next: the operator's; **pass 0040 is queued for
-the diagram / prompts / flow documents**. The generalisation claim
+Last landed: **0040**. Next: the operator's. 0040 was the queued
+diagram / prompts / flow-documents pass; it released nothing, touched
+no assertion, and left `cases-defined` at 41. The generalisation claim
 still has the number and the bound 0037 gave it; the two things that
 would move it are unchanged — a plugin-off control on the Terraform
 domain (backlog 42) or a third domain the `tf-*` skills say nothing
 about. 0039 did not touch that claim, and said so in the tag message
 rather than letting a release imply otherwise.
+
+### 0040 — the flow made visible
+
+Documents, one decision, and no release. **Nothing under `skills/`,
+`commands/`, `.claude-plugin/` or `evals/` changed** — asserted, not
+claimed: `git diff v1.2.0..HEAD -- skills/ commands/ .claude-plugin/` is
+empty and is spot-check 5 of the pass's own `verify.ps1`.
+**`cases-defined` stands at 41.**
+
+What landed: `docs/diagram/flow-graph.json`, a hand-authored producer
+graph of 39 nodes and 49 edges in five layers, rendered to
+`docs/diagram/flow.html` by `tools/diagram/Build-Diagram.ps1` through
+PSGraphRenderToHtml `v0.1.0` and PSGraphRender `v0.13.0` — consumed at
+their tags via `git archive`, read-only, and version-checked after
+import. The same graph is mirrored by hand as Mermaid in README's *The
+flow*, with a 39-row link map underneath it. `prompts/` is a six-file kit
+for a stranger building their own module. Chapter 11 walks the flow end
+to end. `docs/design/hybrid-modules.md` enumerates what a binary/hybrid
+target would break, against the real instruments, and stops before
+designing anything. Decision 0015 settles item 48.
+
+**The pass's own checks, all green from a fresh clone**: acceptance
+11/11, the diagram re-rendered byte-identical apart from its timestamp
+with the producer battery at 7/7, the LEDGER-47 probe re-fired, 245 links
+resolved with zero dead and 39 link-map rows for 39 nodes, and the
+Mermaid mirror agreeing with the JSON on ids, labels, layers and edges -
+with that comparison itself broken four ways and red for each.
+
+**GitHub Mermaid `click`: tested, and not relied on.** The diagram
+renders client-side in a cross-origin frame on
+`viewscreen.githubusercontent.com` fed by postMessage, so a relative
+click target cannot resolve to this repository at all, and whether an
+absolute one becomes a working link could not be observed from a
+terminal. No `click` directive ships; the link map is the navigation.
+`plans/0040-flow-docs/mermaid-click.txt` has the commands.
 
 ### 0039 — the first time cases-defined moved
 
@@ -672,6 +708,15 @@ wrongly later.
     behavior the manual or docs/testing describes updates those chapters
     in the same pass; 0029/0030 outcomes fold into chapters 02/05/07/09
     and docs/testing when they land.
+
+    **Added by 0040: a pass that changes the flow re-runs
+    `tools/diagram/Build-Diagram.ps1` and re-mirrors the Mermaid block in
+    README's *The flow*, in the same commit.** The two renderings come
+    from one source and neither updates itself. `verify.ps1`'s
+    spot-check 4 compares them on ids, labels, layer membership and
+    edges, so a pass that moves one and not the other fails a check
+    rather than shipping a diagram that quietly disagrees with the
+    repository.
 20. **`evals/tf/Compare-TfGraph.Tests.ps1` is RED as committed on
     `main`.** Line 41 asserts `$result.ExpectedEdgeCount | Should-Be 57`.
     The oracle amended under decision 0012 holds **59** edges and the
@@ -1231,7 +1276,10 @@ controls and corpus figures) was **not** touched and stays open.
     of from a re-read of every sibling.
 
 44. **A pass can push a branch, not move the main, and nothing notices.**
-    STANDING, and it is the same gap one level down. 0038 found
+    **CLOSED by 0040**: PLAN-PROTOCOL's new *Sync* step reports any
+    `pass-*` branch whose tip is not an ancestor of its repository's
+    `main`, at the start of every pass, where a stranded branch is cheap
+    rather than releases later. It is the same gap one level down. 0038 found
     `PSGraphRenderToHtml` and `PSGraphRender` each holding a
     pass-0024 commit pushed to `origin/pass-0024-consumer-ref` and never
     merged; both mains had been a commit behind ever since, and one of
@@ -1301,7 +1349,12 @@ controls and corpus figures) was **not** touched and stays open.
 
 47. **A pass that writes both a convention and its assertion must RUN
     them against each other, not review them against each other.**
-    STANDING.
+    STANDING as an instruction; **the 0039 instance is CLOSED by 0040**,
+    which built a minimal module to the house splat standard and ran the
+    set-coverage assertion against it rather than reading the two side by
+    side — `SPLAT EXAMPLE: passes as shipped`,
+    `plans/0040-flow-docs/splat-coverage.txt`, re-fired by that pass's
+    `verify.ps1`.
 
     0039 wrote the house `.EXAMPLE` standard, which mandates splatting,
     and a set-coverage assertion that looked for the `-Name` dash form.
@@ -1318,8 +1371,12 @@ controls and corpus figures) was **not** touched and stays open.
     a review of the two documents proves less.
 
 48. **The falsification protocol has no rule for a NEW assertion whose
-    target is already red.** STANDING, and 0039 worked around it rather
-    than settling it.
+    target is already red.** **CLOSED by 0040** as
+    `decisions/0015-falsifying-against-a-red-target.md`: two claims, two
+    artifacts — capability on a purpose-built known-good, the target's
+    real behaviour measured and Bucket-sorted separately — with the rule
+    folded into METHOD's falsification section. 0039 worked around it
+    rather than settling it, and settling it was the operator's.
 
     The protocol says break the reference. For the eight help
     assertions that was impossible: the reference predates them and fails
@@ -1335,6 +1392,113 @@ controls and corpus figures) was **not** touched and stays open.
     What is NOT settled is whether that is the general rule for a new
     assertion, or a one-off. It is the operator's to decide, and it wants
     a decision entry rather than a precedent buried in one pass's record.
+
+### Added by pass 0040
+
+49. **Two decision records disagree about who may move the harness
+    `main`.** STANDING, and it is the operator's to settle.
+
+    Decision 0009 says in terms that "at the end of every pass whose
+    acceptance test is green, the agent fast-forwards `main` — on the
+    harness to the pass tip". Decision 0013's *What is unchanged* section
+    says "**Harness `main` remains operator-only.** This decision permits
+    tags. It does not permit the agent to move `main`" — and justifies it
+    by enumerating "Decision 0008's fast-forward permission is for
+    PSAzureDevOpsGraph and decision 0010's for the three ecosystem
+    repos".
+
+    **That enumeration omits 0009, which is the decision that grants the
+    harness permission.** So 0013 argues from a list that does not
+    contain the counter-example, and the two records now say opposite
+    things about the same act. Practice has followed 0009 — the Pins
+    section records the harness main fast-forwarded at pass 0035's close,
+    per 0009 — and pass 0040's prompt directed the same. 0040 followed
+    0009 and is flagging the contradiction rather than picking a winner:
+    whichever is right, one of the two records needs a line, and a pass
+    should not have to re-derive this from two documents that disagree.
+
+50. **An option can be validated against a list the module that consumes
+    it does not have.** RESOLVED here by not passing the option; the
+    defect is in the ecosystem and is not this repository's to fix.
+
+    `PSGraphRenderToHtml` v0.1.0 validates `-ColorBy` against
+    `{ structure, scope, type }`. `PSGraphRender` v0.13.0's cytoscape
+    settings schema accepts `{ structure, dependents, blastRadius,
+    dependencies, reach }`. **The two sets share exactly one member.**
+    Passing `type` — which this pass wanted, so that colour carried the
+    skill families while position carried the layer — is accepted by the
+    validator, warned about by the renderer, and silently downgraded to
+    `structure`.
+
+    The shape is worth the number: a `ValidateSet` is a promise about
+    what the CALLEE will accept, and here the callee is a different
+    repository at a different version. ToHtml's own docstring says its
+    layout names and interaction defaults were READ from PSGraphRender
+    v0.13.0 rather than guessed. `ColorBy` either was not, or the two
+    drifted afterwards, and nothing in either repository would notice. A
+    cross-module `ValidateSet` needs a test that runs every member of it
+    through the real consumer.
+
+51. **A generated artifact that anything COMPARES needs a line-ending
+    rule and a byte-exact writer, and this pass needed both.** RESOLVED,
+    and numbered because it arrived twice in one afternoon in two
+    different disguises.
+
+    `docs/diagram/flow.html` is generated, committed, and re-rendered by
+    `Build-Diagram.ps1 -Check`. First: `.gitattributes` documents this
+    exact hazard twice already — for the fixture read back byte-for-byte,
+    and for the two seeds whose tree SHAs are pinned above — and its
+    extension list covered `yml`, `json`, `md` and `ps1` but not `html`,
+    so a Windows checkout translated the file to CRLF while the renderer
+    wrote LF. Second, after that was fixed: `Set-Content` appends the
+    PLATFORM's newline, so the fresh render still differed from the
+    committed copy by **one byte at the end of the file**.
+
+    **Both had the same symptom, and it is the least diagnosable one
+    available**: identical line counts, no differing line, and a reporter
+    that printed "DIFFERS" with nothing to point at. The fix for the
+    second was to write the bytes rather than normalise the comparison -
+    a comparison taught to ignore a difference stops being able to see
+    that class of difference again.
+
+    **Neither was visible from the working tree.** `-Check` passed there
+    throughout. They surfaced only because `verify.ps1` clones the
+    repository rather than reading it, which is the property that makes a
+    verification worth running.
+
+52. **A supplied verbatim insertion broke the acceptance test written to
+    check for it, by wrapping.** RESOLVED in the pass; numbered because
+    it is hazard 8 arriving inside the fix for a different gap.
+
+    Pass 0040's prompt supplied a paragraph for PLAN-PROTOCOL's sync step
+    and an assertion matching `not an ancestor of.*main` against the raw
+    file. As given, the paragraph wrapped between "not an" and
+    "ancestor", and `.` does not cross a newline in .NET regex, so the
+    verbatim text would have failed the check written for it. The
+    paragraph was rewrapped and the deviation recorded.
+
+    Hazard 8 is *an absence check on prose defeated by a line break*, and
+    it has now recurred inside the falsification of its own fix (0035)
+    and inside a supplied insertion (0040). **A prose assertion that
+    spans more than about six words is a line-break bug waiting for a
+    re-wrap**, and the durable answer is to match on a short phrase that
+    cannot wrap, or to normalise whitespace before matching.
+
+53. **A second rendering of one source is a claim, and needs a check that
+    has been broken.** RESOLVED in the pass.
+
+    README's Mermaid block is a hand-written mirror of
+    `flow-graph.json`. It agreed with the source on the first run, which
+    establishes nothing: `Compare-Mermaid.ps1` had never been red.
+    Breaking it four ways — a deleted node, a node moved between layers,
+    a reversed edge, a retyped label — with the control green is what
+    makes the agreement evidence.
+
+    **The layer break is the one that pays for the rule.** The prompt
+    asked for node count and layer membership; through that break the
+    node count stayed at 39 and only the layer moved, so a check written
+    to the count alone would have passed a diagram claiming the wrong
+    thing about what rests on what.
 
 ### Numbering, reconciled by pass 0030
 
@@ -1371,8 +1535,18 @@ re-derive it:
   numbered separately rather than edited into 37 so that a citation
   against 37 keeps resolving. 42 is written as an operator decision with
   its cost attached, including the cost that is not time.
-- **45, 46, 47 and 48 were consumed by pass 0039**; **49 is the next
-  free number.** 45 and 46 were RESOLVED in the same pass and are
+- **49, 50, 51, 52 and 53 were consumed by pass 0040**; **54 is the next
+  free number.** 49 is the only one that is not this pass's own work
+  going wrong: it is two decision records found to disagree, and it is
+  STANDING because a pass may not settle a decision. 50 is a defect in a
+  sibling repository, recorded here because this repository is the one
+  that found it and the one whose diagram it degraded. 51, 52 and 53
+  continue the pattern 0035, 0036 and 0039 recorded — each was found by
+  this pass's own work going wrong, and 51 was invisible from the working
+  tree until `verify.ps1` cloned.
+
+- **45, 46, 47 and 48 were consumed by pass 0039**; 49 was the next free
+  number until 0040 took it. 45 and 46 were RESOLVED in the same pass and are
   numbered anyway, because both are shapes rather than incidents: a
   container that did not run, and an assertion scoped by the wrong
   noun. 47 and 48 are STANDING — 47 is an instruction for any pass

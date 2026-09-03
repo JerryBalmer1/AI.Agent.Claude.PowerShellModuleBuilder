@@ -15,6 +15,8 @@ prompts/first-module.md                                    ok
 prompts/new-feature.md                                     ok
 prompts/release.md                                         ok
 prompts/troubleshoot.md                                    ok
+plans/0040-flow-docs/plan.md                               ok
+journal/0040-flow-docs.md                                  ok
 
 docs/diagram/flow-graph.json (doc attributes)              ok, 39 nodes
 README.md link map (coverage)                              ok, 39 rows for 39 nodes
