@@ -1,0 +1,49 @@
+LEDGER 47 - the state of it, probed rather than read
+====================================================
+
+SPLAT EXAMPLE: passes as shipped
+
+WHAT 47 SAYS.  A pass that writes both a convention and its assertion must RUN
+them against each other, not review them against each other.  Pass 0039 wrote
+the house .EXAMPLE standard, which mandates splatting, alongside a set-coverage
+assertion that looked for the `-Name` dash form.  A conforming example names its
+parameters as hashtable keys and never writes `-Name` at all, so the assertion
+was unsatisfiable by exactly the examples it rewards.
+
+WHAT WAS PROBED, AND WHEN.  Before this pass's branch existed, at its
+preconditions, because the answer decides whether task 2 is a repair or
+evidence.  A minimal module was built to the CONVENTION - one function, two
+named parameter sets (ByName / ByPath), both examples written to the four parts
+of the house standard, and the dash form of a parameter appearing nowhere in the
+file - and Help.Tests.ps1's set-coverage assertion was then run against it.
+
+  plans/0040-flow-docs/New-SplatProbeFixture.ps1   builds the fixture
+  plans/0040-flow-docs/Invoke-SplatProbe.ps1       runs the check against it
+  plans/0040-flow-docs/splat-probe.txt             the transcript
+
+THE READING.
+
+  DASH FORM IN FIXTURE: 0 occurrence(s)
+  CONTAINERS FAILED: 0
+  [Passed] shows every named parameter set of Get-ProbeThing in an example
+  PASSED=1 FAILED=0 SELECTED=1
+
+Three claims, and the order matters.  Zero dash forms says the assertion cannot
+have passed on a syntax the standard forbids.  Zero failed containers is item 45
+- an assertion that never loaded is invisible, and its absence looks like a
+normal score.  One case SELECTED is the zero-cases rule: nothing to run is not
+a pass.  Only then does the green mean anything.
+
+THE CONCLUSION.  47 was REPAIRED IN 0039, in the same pass that found it.  The
+assertion at evals/conformance/Help.Tests.ps1 matches two syntaxes -
+
+    $example -notmatch "-$_\b" -and $example -notmatch "(?m)^\s*$_\s*="
+
+- and its comment says so: "found by falsifying this assertion before it shipped
+rather than after".  Task 2 of this pass is therefore EVIDENCE-ONLY.  Nothing in
+evals/ was changed by pass 0040, and cases-defined stands at 41.
+
+WHY THIS FILE EXISTS ANYWAY.  Reading that comment is exactly what item 47
+forbids as proof.  The comment is the claim; this probe is the evidence.  The
+two agree, which is the outcome worth recording precisely because it is the
+outcome nobody would have checked.

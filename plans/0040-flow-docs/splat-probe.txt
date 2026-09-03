@@ -1,0 +1,18 @@
+probe fixture at C:\Users\jlbal\AppData\Local\Temp\splat-probe-ca112777343a4a889a20b40eef6db2ac
+PROBE: LEDGER 47 - the house splat standard against the set-coverage assertion
+fixture:   C:\Users\jlbal\AppData\Local\Temp\splat-probe-ca112777343a4a889a20b40eef6db2ac\src\PSSplatProbe\Public\Get-ProbeThing.ps1
+assertion: evals/conformance/Help.Tests.ps1, 'shows every named parameter set of <_.Name> in an example'
+
+DASH FORM IN FIXTURE: 0 occurrence(s)
+
+CONTAINERS FAILED: 0
+[NotRun] gives <_.Name> comment-based help with a synopsis
+[NotRun] gives <_.Name> a help description
+[NotRun] gives <_.Name> at least one example
+[NotRun] gives <_.Name> at least as many examples as parameter sets
+[Passed] shows every named parameter set of Get-ProbeThing in an example
+[NotRun] gives every parameter of <_.Name> a .PARAMETER entry
+[NotRun] ships about_<ModuleName> when the module defines types
+PASSED=1 FAILED=0 SELECTED=1
+
+SPLAT EXAMPLE: passes as shipped

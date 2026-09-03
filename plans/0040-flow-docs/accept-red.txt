@@ -1,0 +1,39 @@
+Get-Content: C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\plans\0040-flow-docs\accept.Tests.ps1:7
+Line |
+   7 |          (Get-Content "$RepoRoot/plans/0040-flow-docs/splat-coverage.t .
+     |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     | Cannot find path
+     | 'C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\plans\0040-flow-docs\splat-coverage.txt' because it does not exist.
+Get-Content: C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\plans\0040-flow-docs\accept.Tests.ps1:33
+Line |
+  33 |          (Get-Content "$RepoRoot/plans/0040-flow-docs/linkcheck.txt" - .
+     |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     | Cannot find path
+     | 'C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\plans\0040-flow-docs\linkcheck.txt' because it does not exist.
+ACCEPTANCE TEST - RED FIRST, before any task work
+command: Invoke-Pester -Path plans/0040-flow-docs/accept.Tests.ps1
+
+[Failed] decision 0015 exists
+      Expected $true, but got $false.
+[Failed] LEDGER 47 resolved with evidence
+      Expected regular expression 'SPLAT EXAMPLE: (passes as shipped|repaired and falsified)' to match $null, but it did not match.
+[Failed] the diagram exists in both renderings
+      Expected regular expression '```mermaid' to match '# AI.Agent.Claude.PowerShellModuleBuilder
+[Failed] the diagram link map exists
+      Expected regular expression 'link map' to match '# AI.Agent.Claude.PowerShellModuleBuilder
+[Failed] the prompts kit exists in one directory
+      Expected $true, but got $false.
+[Failed] chapter 11 exists and README points at the flow
+      Expected $true, but got $false.
+[Failed] the hybrid design note exists
+      Expected $true, but got $false.
+[Failed] chapter 01 carries the human-paced paragraph
+      Expected regular expression 'human-paced' to match '# The two Claudes
+[Failed] the stranded-branch check joined the sync step
+      Expected regular expression 'not an ancestor of.*main' to match '# Plan protocol
+[Failed] no dead links in anything this pass touched
+      Expected regular expression 'DEAD LINKS: 0' to match $null, but it did not match.
+[Failed] the local handoff rule exists where it binds
+      Expected regular expression '(?m)^### Local handoff' to match '# Plan protocol
+
+RED-FIRST: Passed=0 Failed=11 Total=11
