@@ -1,0 +1,88 @@
+REFERENCE RESCORE UNDER THE NEW SUITE - pass 0039
+
+The control for item 4. It answers one question: do the new assertions measure
+something real, without rewriting history to make an old commit look better than
+it was?
+
+TARGET      run 006's final commit, 70669167ea5f59a47efb282002052f9e926a34bf,
+            on PSAzureDevOpsGraph. Fresh clone from the GitHub remote, BUILT
+            with its own default build (exit 0), then scored - the Score-Clone
+            procedure, not three steps by hand.
+COMMAND     ./Score-Clone.ps1 -Source https://github.com/JerryBalmer1/PSAzureDevOpsGraph.git \
+                              -Ref 70669167ea5f59a47efb282002052f9e926a34bf \
+                              -WorkDir C:/w39/r6 -ResultPath C:/w39/r6-result.json
+SETTINGS    defaults (the measured configuration) - no psmodule.settings.psd1
+            present, every value from a built-in default, IsMeasuredConfiguration
+            true. Recorded in the result JSON beside the score.
+
+RUN-006 CLONE (built): 38 / 41, 3 new-rule failures Bucket B declared
+
+  cases-run 128/154, build exit 0, 40 assertions produced cases.
+  Under the pre-change suite the same commit scores 33 / 33.
+
+WHAT MOVED, AND WHAT DID NOT.
+
+Nothing about this commit changed. The suite grew by eight assertions, and the
+denominator grew with it - 33 -> 41. The commit passes five of the eight new
+assertions outright and fails three. That is the whole of the difference, and it
+is why the two figures are on separate scales and are not compared: see
+denominator-v2.txt and the v1.2.0 series boundary.
+
+THE THREE FAILURES, SORTED. All Bucket B. None fixed, none weakened.
+
+  B-H1  House style: help.gives <_.Name> at least one example
+        12 of 19 cases red - and the twelve are EXACTLY the twelve private
+        functions, with no public one among them:
+          ConvertTo-AzDoGraphDot     ConvertTo-AzDoGraphHtml
+          Find-AzDoGraphCycle        Resolve-AzDoRelativePath
+          Get-AzDoAuthHeader         Get-AzDoItemContent
+          Get-AzDoRepositoryFile     Invoke-AzDoRestMethod
+          ConvertFrom-AzDoYamlText   ConvertTo-AzDoReference
+          Read-AzDoResourceReference Read-AzDoYamlReference
+        The split is the finding. The commit was built with a docs skill that
+        required help on the exported surface and said nothing about private
+        functions, and the module did exactly that - every public function has
+        an example and no private one does. The rule that private functions are
+        not exempt is new in this pass.
+
+  B-H2  House style: help.gives <_.Name> at least as many examples as parameter
+        sets
+        13 of 19 cases red: the same twelve private functions, which have zero
+        examples and therefore fail a floor of one, plus Get-AzDoPipelineYaml,
+        which is public, declares two named sets (ByDefinition, ByPath) and
+        carries one example.
+
+  B-H3  House style: help.shows every named parameter set of <_.Name> in an
+        example
+        1 of 2 cases red: Get-AzDoPipelineYaml again. Its single example shows
+        ByPath; nothing demonstrates ByDefinition. This is the same defect as
+        B-H2 seen from the other side, and both are reported rather than
+        collapsed, because "too few examples" and "the wrong sets shown" need
+        different fixes.
+
+WHY THIS IS BUCKET B AND NOT BUCKET A.
+
+Bucket A is a defect in the grader. Bucket B is a real property of the target.
+Every one of these is a real property: the functions genuinely have no examples,
+and the parameter set genuinely is not demonstrated. A reader of that module is
+worse off for it. The assertions are behaving correctly.
+
+The reason the failures are DECLARED rather than fixed is the boundary, not
+charity: the commit predates the rule, and editing a scored commit to satisfy an
+assertion written after it would destroy the only thing the commit is good for -
+being a fixed point that earlier numbers were taken against. The rule from
+METHOD applies in both directions here: never weaken an assertion because a
+target fails it, and never rewrite a target because an assertion is new.
+
+WHAT THE CONTROL ESTABLISHES.
+
+  1. The new assertions FIRE on a real module, not only on a fixture built to
+     be broken. 26 cases red across three assertions.
+  2. They do not fire indiscriminately. Five of the eight new assertions pass
+     clean on this commit - synopsis, description, .PARAMETER per parameter,
+     the type doc block, and the about_ topic - including on all twelve private
+     functions, which pass synopsis, description and .PARAMETER.
+  3. The failures are attributable to a single dated cause and split along an
+     exact line (public versus private, one two-set function). An assertion that
+     produced a scatter of unrelated failures would be evidence it was measuring
+     something other than what it claims.

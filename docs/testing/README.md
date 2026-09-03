@@ -644,6 +644,69 @@ has no `CasesDefined` field at all, because it predates the change. Its
 19 / 33 in the root README's table was **re-derived** by re-scoring its
 pushed branch with today's suite, and the table says so.
 
+### The v1.2.0 series boundary
+
+**cases-defined moved from 33 to 41 at `v1.2.0`, and scores either side of that
+tag are separate series that are not compared.**
+
+The eight are the help block in
+[`evals/conformance/Help.Tests.ps1`](../../evals/conformance/Help.Tests.ps1),
+all tagged `HouseStyle`, taking that tag from 14 to 22. `Universal` 9,
+`Repository` 4 and `RequiresBuild` 6 are unchanged. No existing assertion was
+weakened, renamed or removed — the pass only adds.
+
+A score of 33 / 33 and a score of 38 / 41 are therefore not two measurements of
+the same thing, and no arithmetic relates them. Every figure taken before the
+tag belongs to the 33-case series; every figure after it belongs to the 41-case
+series. Both series stand: the boundary is not a reset, and the ladder's
+recorded numbers are neither restated nor re-derived. A boundary used to retire
+inconvenient earlier figures would be worse than no boundary at all.
+
+The derivation itself did change in one way worth knowing about. The runner used
+to inventory one named file; it now inventories **every `*.Tests.ps1` in the
+directory** and runs that same list. Naming one file would have let a second
+container run its assertions while being absent from `cases-defined` — the
+numerator growing while the denominator held still, which reads as an
+improvement and is a bookkeeping error. The full derivation, and the figure
+re-derived across three differently shaped targets (cases-run 477, 154 and 60;
+cases-defined 41 in all three), is in
+[`plans/0039-ux-help-batch/denominator-v2.txt`](../../plans/0039-ux-help-batch/denominator-v2.txt).
+
+### An optional settings file, and why its defaults are the measured ones
+
+A target may carry `psmodule.settings.psd1` at its root. Three enumerated keys —
+`CoverageThreshold`, `ModuleProfile`, `CompletionCacheDefault` — resolved
+explicit parameter > file > built-in default by
+[`Get-PSModuleSetting.ps1`](../../evals/conformance/Get-PSModuleSetting.ps1), and
+**an unknown key is a refusal that names it** rather than a warning. A
+misspelled key silently ignored means the grader ran with settings the file on
+disk says it did not have, and nothing in the output would disagree with the
+file.
+
+**The defaults are the measured configuration.** Every score published here was
+taken with no settings file present and those exact values, so a target shipping
+no file is graded the way every recorded run was graded. The values and the
+provenance of each are echoed into `result.json` and carried into the run record
+by `Score-Clone.ps1` — because a score whose configuration is not recorded
+beside it cannot be compared with another score, which is the same argument
+`cases-defined` already won about the denominator. Falsification: three breaks,
+three controls, in
+[`plans/0039-ux-help-batch/settings-falsification.txt`](../../plans/0039-ux-help-batch/settings-falsification.txt).
+
+### A fourth thing: a container that did not run
+
+`CasesDefined` is parsed from the suite's source and does not know whether a file
+loaded. When `Help.Tests.ps1` lost its discovery to a member access on an empty
+array, every one of its assertions vanished from the run, `CasesRun` shrank with
+them, and the score printed as entirely normal. Pester said `Container failed: 1`
+in its own output and nothing downstream read it.
+
+The runner now hard-stops on a container-level `ErrorRecord` and writes no
+`result.json`. **Not run is not a pass**, one level up from zero cases — and the
+guard keys on the ErrorRecord rather than on the container's `Result`, because a
+container holding a merely failing test also reports `Failed`, and turning every
+red run into a crash is the opposite of what this runner promises.
+
 ### A third thing the denominator does not protect you from
 
 `CasesDefined` holds the denominator still. It says nothing about whether the

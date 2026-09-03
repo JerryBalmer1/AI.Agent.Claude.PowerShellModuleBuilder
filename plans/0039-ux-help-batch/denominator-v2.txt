@@ -1,0 +1,71 @@
+DENOMINATOR v2 - pass 0039
+
+cases-defined (pre):  33
+cases-defined (post): 41
+
+PER-TAG SPLIT
+
+  Tag             pre   post   delta
+  HouseStyle       14     22      +8
+  Universal         9      9       0
+  RequiresBuild     6      6       0
+  Repository        4      4       0
+  ----------------------------------
+  TOTAL            33     41      +8
+
+All eight are the new help block in evals/conformance/Help.Tests.ps1, and all
+eight are HouseStyle. No existing assertion was weakened, renamed or removed;
+`git diff` over Conformance.Tests.ps1 for this pass is empty. This pass only
+adds.
+
+HOW THE FIGURE IS DERIVED
+
+Read from the suite's own SOURCE by AST, per selected tag, without consulting
+the target: no file of the target is read, no -ForEach is expanded, nothing is
+discovered. That is the whole property, and it is why the number cannot move
+with the shape of what is being graded.
+
+What changed in the derivation is its INPUT SET. Invoke-Conformance.ps1 used to
+inventory one named file. It now inventories every *.Tests.ps1 in the directory
+and runs the same list. Naming one file would have let a second container run
+its assertions while being absent from cases-defined - the numerator would grow
+while the denominator held still, which reads as an improvement and is a
+bookkeeping error.
+
+RE-DERIVED ACROSS THREE DIFFERENTLY SHAPED TARGETS
+
+  Target                                   cases-run   cases-defined
+  PSModuleGraph (the reference)                  477              41
+  PSAzureDevOpsGraph @ 7066916, built            154              41
+  PSHelpFixture (three functions, two types)      60              41
+
+cases-run varies by a factor of eight across these three; cases-defined does
+not move. That is the same demonstration the pre-change figure had at 33 with
+cases-run 57 / 55 / 41, repeated after the change.
+
+series boundary: v1.2.0 - conformance scores before and after this tag are separate series and are not compared
+
+WHAT THAT MEANS IN PRACTICE
+
+A score of 33/33 and a score of 38/41 are not two measurements of the same
+thing. The suite between them is not the same suite, so the percentages are not
+comparable and neither is the count. Every published figure in this repository
+taken before v1.2.0 belongs to the 33-case series; every figure taken after it
+belongs to the 41-case series.
+
+The rule that follows, and it is the one to apply rather than the arithmetic: a
+change in cases-defined between two runs means THE SUITE CHANGED, which silently
+rescales every score on either side of it and has to be said out loud. It is
+said out loud here, and in the CHANGELOG, and in the README's score tables.
+
+The direction of the risk is worth stating because it is counter-intuitive: an
+assertion that silently stops producing cases makes a score go UP. Growing the
+denominator is the safe direction; it is the shrinking one nobody notices.
+
+WHAT THIS BOUNDARY DOES NOT LICENSE
+
+It is not a reset. The ladder's numbers stand exactly as recorded, on their own
+series, and nothing about them is restated or re-derived. The v1.1.1 tag message
+and the README's "With the plugin and without it" table remain true of the
+33-case series and are labelled as such. A boundary that were used to retire
+inconvenient earlier figures would be worse than no boundary at all.

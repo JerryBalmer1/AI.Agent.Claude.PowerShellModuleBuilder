@@ -131,6 +131,19 @@ two scores are compared. Evidence for every cell: each run's `README.md`,
 `conformance-result.json`, `compare-report.json` and `diff.txt`, in the
 directories linked in the header row.
 
+> **Every figure in this table is out of 33, and the suite is now out of 41.**
+> `v1.2.0` added eight `HouseStyle` assertions — the help block — taking
+> `cases-defined` from 33 to 41. **Scores before and after that tag are separate
+> series and are not compared**, so nothing above is restated and nothing is
+> re-derived; the table stands exactly as measured, on the 33-case series. For
+> what the 41-case series looks like on a commit that predates it, run 006's
+> final scores **38 / 41** with three declared Bucket-B failures, all in the new
+> help assertions and none fixed:
+> [`refscore.txt`](plans/0039-ux-help-batch/refscore.txt). The full derivation
+> and per-tag split is
+> [`denominator-v2.txt`](plans/0039-ux-help-batch/denominator-v2.txt); no
+> existing assertion was weakened, renamed or removed.
+
 **The caveats, each with the artifact that states it.** None of them is small
 enough to leave in a footnote nobody reads, so they are here:
 
