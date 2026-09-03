@@ -1,0 +1,88 @@
+HELP ASSERTION FALSIFICATION - pass 0039
+Suite:   evals/conformance/Help.Tests.ps1   (8 assertions, all tagged HouseStyle)
+Runner:  plans/0039-ux-help-batch/help-falsify.ps1
+Target:  plans/0039-ux-help-batch/New-HelpFixture.ps1, materialised at C:/w39/fx
+
+WHY A PURPOSE-BUILT FIXTURE AND NOT THE REFERENCE.
+The protocol says break the reference. It cannot be the target here, and the
+reason is the point of item 7 rather than an evasion of it: the reference
+predates these rules and fails 219 of their cases, so a break against it is
+UNOBSERVABLE - the case it would turn red is already red. A falsification row
+needs a known-good, and for a new rule the known-good has to be built. The
+reference's standing behaviour under these assertions is recorded separately,
+as declared Bucket B, in refscore.txt.
+
+The fixture is the smallest tree that is green on all eight: two public
+functions (one with two parameter sets, one with one), a private function
+documented to the same standard, a class, an enum, and an about_ topic.
+
+THREE GUARDS, each of which has produced a false clean run in this project
+when it was absent:
+  1. every expected case name is preflighted against the cases the suite
+     actually produces - an unresolved name is a hard stop, because a renamed
+     assertion otherwise reports as "does not fire";
+  2. every perturbation asserts it changed the file - a substitution matching
+     nothing leaves the target intact and the run comes back green;
+  3. known-good is re-materialised and re-asserted before EVERY row.
+
+Collateral is recorded rather than suppressed. H6 shows 4 because deleting a
+whole help block genuinely fails synopsis, description, example and .PARAMETER
+for that function. H1/H2 are each other's collateral by construction.
+
+KNOWN-GOOD: 19 cases, 0 failing
+PREFLIGHT: 12 / 12 case names resolve
+
+
+Id  Kind    Fired Expected Named Pass Collateral Note
+--  ----    ----- -------- ----- ---- ---------- ----
+H1  BREAK    True     True  True True          1 strip one example from a two-set function
+H2  BREAK    True     True  True True          1 same strip; the failure must NAME the uncovered set
+H3  CONTROL False    False  True True          2 single-set function with one example, while the two-set function is
+                                                 broken
+H4  BREAK    True     True  True True          0 remove one .PARAMETER entry; the failure must NAME the parameter
+H5  CONTROL False    False  True True          0 SCOPE: an unattached comment block quoting help keywords, real help
+                                                 left intact
+H6  BREAK    True     True  True True          4 SUBSTITUTION: delete the real help, leave a detached block that still
+                                                 says .SYNOPSIS
+H7  BREAK    True     True  True True          0 remove the block above the class
+H8  CONTROL False    False  True True          1 SCOPE: remove the block above the ENUM instead; the class case must
+                                                 stay green
+H9  BREAK    True     True  True True          0 delete the about_ topic from a module that defines types
+H10 CONTROL False    False  True True          0 SCOPE: delete a DIFFERENT about_ topic in the same culture directory
+H11 BREAK    True     True  True True          0 strip .DESCRIPTION from a function whose synopsis and example remain
+H12 CONTROL False    False  True True          1 SCOPE: the same strip, watched on the OTHER function
+
+
+BREAKS: 7 / 7 red
+CONTROLS: 5 / 5 green
+
+WHAT THIS RUN FOUND BEFORE IT PASSED.
+
+The fixture was NOT green on its first run, and the failure was a real defect
+in a rule this pass wrote:
+
+  'shows every named parameter set of Get-FixtureThing in an example' was red
+  against an example built to this pass's OWN house .EXAMPLE standard.
+
+The set-coverage check looked for the dash form, -Name. The house standard
+mandates splatting, so a conforming example names its parameters as hashtable
+keys and never writes -Name at all. Two rules shipped in the same pass
+contradicted each other, and the assertion was unsatisfiable by exactly the
+examples it was written to reward. It now accepts either syntax.
+
+Nothing found it but the fixture. Read side by side, the two rules look
+consistent; only running one against the other does not.
+
+CONTAINER GUARD (Invoke-Conformance.ps1), falsified separately.
+A second container introduced a failure mode the runner could not see: when
+Help.Tests.ps1 lost its discovery to a member access on an empty array, EVERY
+one of its assertions vanished from the run and a score printed as though
+nothing were missing. CasesDefined still counted them, because it is parsed
+from source and does not know the file failed to load. Pester said
+"Container failed: 1" in its own output and nothing downstream read it.
+
+  CONTROL  unmodified suite      -> guard silent, score reported, 38 cases
+  BREAK    discovery made to throw -> guard fired, NO result.json written
+           "1 suite container(s) failed to run, so no score is being reported."
+
+Not run is not a pass, one level up from zero cases.

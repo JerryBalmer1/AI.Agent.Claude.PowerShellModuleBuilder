@@ -208,7 +208,25 @@ function Get-AssertionInventory {
     $inventory
 }
 
-$inventory = Get-AssertionInventory -SuitePath (Join-Path $PSScriptRoot 'Conformance.Tests.ps1')
+# Every *.Tests.ps1 in this directory is a container of the suite, and every
+# one of them is inventoried. Naming Conformance.Tests.ps1 alone is how a
+# second container would run its assertions and be absent from cases-defined -
+# the denominator would hold still while the numerator grew, which reads as an
+# improvement and is a bookkeeping error. Sorted so the figure does not depend
+# on directory enumeration order.
+$script:SuiteFiles = @(
+    Get-ChildItem -LiteralPath $PSScriptRoot -Filter *.Tests.ps1 -File |
+        Sort-Object Name
+)
+if ($SuiteFiles.Count -eq 0) { throw "No *.Tests.ps1 containers in '$PSScriptRoot'." }
+
+$inventory = [ordered]@{}
+foreach ($suiteFile in $SuiteFiles) {
+    foreach ($entry in (Get-AssertionInventory -SuitePath $suiteFile.FullName).GetEnumerator()) {
+        if (-not $inventory.Contains($entry.Key)) { $inventory[$entry.Key] = 0 }
+        $inventory[$entry.Key] += [int]$entry.Value
+    }
+}
 $definedPerTag = [ordered]@{}
 # $selectedTag, NOT $tag. PowerShell variable names are case-insensitive, so a
 # loop variable named $tag IS the $Tag parameter: iterating it rebinds the
@@ -236,7 +254,7 @@ $env:CONFORMANCE_TARGET = $target
 $env:CONFORMANCE_MODULE_NAME = $ModuleName
 
 $config = New-PesterConfiguration
-$config.Run.Path = Join-Path $PSScriptRoot 'Conformance.Tests.ps1'
+$config.Run.Path = @($SuiteFiles.FullName)
 $config.Run.PassThru = $true
 # Deliberately NOT Run.Throw. A red conformance run is data, not a build
 # failure - the harness records the score and moves on to the next run.
@@ -252,6 +270,40 @@ $config.Output.Verbosity = 'Detailed'
 $config.Run.FailOnNullOrEmptyForEach = $false
 
 $result = Invoke-Pester -Configuration $config
+
+# ---------------------------------------------------------------------------
+# A container that did not run is a MISSING MEASUREMENT, not a red run.
+#
+# A red run is data and exits 0 deliberately. A container whose discovery threw
+# is a different thing entirely: its assertions are absent from $result.Tests,
+# absent from the Assertions breakdown, and absent from CasesRun - while
+# CasesDefined still counts them, because CasesDefined is parsed from the source
+# and does not know the file failed to load. The score then divides a smaller
+# numerator by a smaller denominator and looks entirely normal.
+#
+# This is not hypothetical. Help.Tests.ps1 lost its whole container to a member
+# access on an empty array during discovery, and the run printed a score with
+# every one of its assertions silently missing. Pester said "Container failed: 1"
+# in its own output and nothing downstream read it.
+#
+# Same rule as zero cases, one level up: not run is not a pass, and the honest
+# response to a measurement that did not happen is to refuse to report one.
+# ---------------------------------------------------------------------------
+# ErrorRecord, NOT Result. A container holding a failing test also reports
+# Result = 'Failed', and treating that as a missing measurement would turn every
+# red run into a crash - which is the opposite of the contract this runner
+# states three comments above. Only a container-level ErrorRecord means the file
+# itself did not run.
+$failedContainers = @($result.Containers | Where-Object { @($_.ErrorRecord).Count -gt 0 })
+if ($failedContainers.Count -gt 0) {
+    $names = @($failedContainers | ForEach-Object {
+            $reason = ($_.ErrorRecord[0].Exception.Message -split "`n")[0]
+            "$(Split-Path -Leaf $_.Item.FullName): $reason"
+        })
+    throw ("$($failedContainers.Count) suite container(s) failed to run, so no score is being reported. " +
+        "CasesDefined counts their assertions and CasesRun cannot, which makes any percentage " +
+        "meaningless rather than merely low. Containers: $($names -join ' | ')")
+}
 
 # Per-assertion breakdown, keyed by the UNEXPANDED path so that every case of a
 # -ForEach It groups under the assertion that generated them. An assertion
