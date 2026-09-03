@@ -1,0 +1,412 @@
+Pester v6.1.0
+
+Running tests from 1 files.
+
+Running tests from 'C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\plans\0039-ux-help-batch\accept.Tests.ps1'
+Describing Pass 0039 delivered
+  [-] the two new skills exist 181ms
+   Expected $true, but got $false.
+   at Test-Path "$RepoRoot/skills/powershell-module-ux/SKILL.md"   | Should -BeTrue, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\plans\0039-ux-help-batch\accept.Tests.ps1:5
+Get-Content: C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\plans\0039-ux-help-batch\accept.Tests.ps1:8
+Line |
+   8 |  .        $s = Get-Content "$RepoRoot/skills/powershell-module-ux/SKILL. .
+     |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     | Cannot find path
+     | 'C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\skills\powershell-module-ux\SKILL.md' because it does not exist.
+  [-] ux skill cites its source and carries the cache guardrails 255ms
+   Expected regular expression 'powershell\.one' to match $null, but it did not match.
+   at $s | Should -Match 'powershell\.one', C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\plans\0039-ux-help-batch\accept.Tests.ps1:9
+  [-] analyzer gained the class-candidate rule 32ms
+   Expected regular expression 'PSCustomObject' to match '---
+   name: powershell-module-analyzer
+   description: Analyse a PowerShell module from its AST - commands invoked, native executables referenced, modules required - and when an external dependency turns up that you have no knowledge of, research it then and write docs/knowledge/<tool>.md into the target. Use when auditing a module's dependencies, when a build fails on a tool nobody documented, or before touching a module you have not read.
+   ---
+   # Module analyzer
+   ## Never run the code you are analysing
+   **No `Import-Module`, no dot-sourcing, no `Invoke-Expression`, no reflection
+   load, no `Add-Type` against the target, and no invocation of anything the target
+   defines.** Every fact comes from the AST, `Import-PowerShellDataFile`, or the
+   filesystem.
+   Importing a module executes its top level, its `ScriptsToProcess`, and any class
+   static constructors. That is arbitrary code execution, against a repository the
+   user has not read and does not trust - which is the normal case for analysis.
+   If answering a question would require importing the target, **return less
+   information instead.** An incomplete-but-honest result is correct; an accurate
+   result obtained by executing untrusted code is a security bug. Report what cannot
+   be resolved statically as unresolved, rather than resolving it dynamically.
+   Two deliberate exceptions, and only these:
+   - **`Import-PowerShellDataFile`** parses `.psd1` as restricted data and does not
+     execute it. Do not replace it with `Invoke-Expression` or with dot-sourcing.
+   - **`Get-Module -ListAvailable`** reads manifest metadata without importing. Use
+     it for path discovery only - never call `Import-Module` to "just check"
+     something.
+   ## Parsing
+   **Always `[Parser]::ParseFile`, never `[Parser]::ParseInput`.** `ParseInput`
+   leaves `$ast.Extent.File` null, so every node parsed that way loses its path, and
+   every record downstream reports a null `Path`. The whole value of an analysis is
+   that a result traces back to a file and a line number.
+   ```powershell
+   $tokens = $null; $errors = $null
+   $ast = [System.Management.Automation.Language.Parser]::ParseFile(
+       $path, [ref] $tokens, [ref] $errors)
+   ```
+   **Route every parse through one helper**, and memoise on path plus last-write
+   time: an unchanged file is parsed once no matter how many walkers ask for it,
+   while an edited file is re-parsed. This matters more than it sounds - a single
+   dependency graph can call seven getters, each walking every file in the module.
+   **Parse errors are data, not failures.** A file that does not parse is reported
+   with its errors attached; it does not abort the run. A module with one broken
+   file still yields results for the others.
+   **`.psd1` files are parsed but skipped by most walkers.** Manifest *content*
+   comes from `Import-PowerShellDataFile`, not from walking its AST.
+   **`Import-PowerShellDataFile` needs `-ErrorAction Stop`.** A `.psd1` that will
+   not parse raises a **non-terminating** error, so without it the `catch` never
+   runs and a broken manifest falls back in total silence.
+   **Reading manifest data needs a helper under `Set-StrictMode -Version Latest`**,
+   which turns a missing key into a terminating error. A plain property access
+   throws on any manifest omitting an optional key.
+   ## What to walk for
+   | Question | AST node | Watch for |
+   |---|---|---|
+   | Which commands does it invoke? | `CommandAst`  `GetCommandName()` | a name built at runtime returns `$null`; report it unresolved, do not guess |
+   | Which are external? | `CommandAst` where the name resolves to nothing in the module | this is the dependency list |
+   | Which native executables? | `CommandAst` whose name ends `.exe`/`.cmd`/`.bat`, and `&` invocations of a literal path | a path in a variable is unresolvable; report it |
+   | Which modules are required? | manifest `RequiredModules`, plus `Import-Module` / `#Requires` in the AST | the manifest and the code disagreeing is the finding |
+   | What does it export? | manifest `FunctionsToExport` vs `Public/*.ps1` basenames | this is the seam where they drift |
+   | What types does it define? | `TypeDefinitionAst` | classes and enums both |
+   | What does it `using`? | `UsingStatementAst` | assemblies are a deployment dependency |
+   **Match structurally, never by text.** Text matching produces both failure modes,
+   and both have happened: matching something unrelated, and matching a comment that
+   documents the thing. Five build-file assertions in this project's own conformance
+   suite were satisfied by a block comment quoting the code they looked for.
+   **The manifest and the code disagreeing is the result, not an error.** A module
+   that imports `powershell-yaml` at first use and declares no `RequiredModules`
+   imports fine on a machine without it and fails only when a document is parsed.
+   That is finding F-12 from run 002, and an analyzer that reconciles the two lists
+   silently would have hidden it.
+   ## When a dependency turns up that you have no knowledge of
+   The case that motivates this: the AST names `sqlpackage.exe`. You do not know its
+   flags, its exit codes, where it installs, or what its failures look like.
+   **Research it at that moment** - the vendor's documentation on the web - and
+   write what you learned into the target repository:
+   ```
+   docs/knowledge/sqlpackage.md          what it is, install locations, the flags
+                                         this module uses, exit codes, version
+                                         differences that matter here
+   docs/TROUBLESHOOTING.md               one entry per symptom: what the user sees,
+                                         the command that reveals why, the fix
+   ```
+   **Knowledge appears when a dependency appears, and never before.** Writing a
+   tooling reference for something the module does not use costs every future reader
+   who has to decide whether it is relevant. This is the same tiering rule the
+   reference implementation applies to its own instructions: a fact needed only
+   while performing a specific task lives with that task, not in the always-loaded
+   tier.
+   What a knowledge doc must contain to be worth its cost:
+   - **Where the tool actually is.** Named install paths, the environment variable
+     that overrides them, and what to do when it is on none of them.
+   - **The exact invocation this module uses**, with every argument explained. Not
+     a link to the full reference - the subset that is used here.
+   - **Exit codes and what they mean**, including the ones that are not zero and not
+     a failure.
+   - **What a failure looks like on the console**, verbatim, so a search finds it.
+   - **The version you checked, and the date.** A knowledge doc without those is a
+     claim with no expiry, and it will be wrong before anyone notices.
+   - **What you could not determine.** Distinguish observed from inferred, and say
+     which is which.
+   Then add the troubleshooting entries, per the diagnosability rule: the failure is
+   visible, there is a **named command** that reveals why, and the prerequisite is
+   either checked or its absence produces an error naming what is missing.
+   ```markdown
+   ### `sqlpackage.exe` is not recognised
+   **Symptom.** `The term 'sqlpackage.exe' is not recognized...`
+   **Reveal it.** `Get-Command sqlpackage.exe -ErrorAction SilentlyContinue`
+   and `Test-Path $env:SQLPACKAGE_PATH`
+   **Fix.** Install DacFramework, or set `$env:SQLPACKAGE_PATH` to the directory
+   holding it. The build resolves it in that order and throws naming both.
+   ```
+   ## Reporting an analysis
+   - **Distinguish observed from inferred.** Anything claimed from one target is a
+     hypothesis with an evidence count attached, not a fact.
+   - **Say what did not resolve**, by name and location. A dependency list with the
+     unresolvable entries dropped looks complete and is not.
+   - **Zero findings is a result, and so is zero cases.** An analysis that walked
+     nothing must say so rather than reporting a clean bill.
+   ## Related
+   - `powershell-module-architect` - what the surface *should* look like.
+   - `powershell-module-docs` - where the knowledge doc sits among the others.
+   - `powershell-module-build` - declaring what the analysis found.
+   ', but it did not match.
+   at Should -Match 'PSCustomObject' }, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\plans\0039-ux-help-batch\accept.Tests.ps1:13
+  [-] docs skill carries the house example standard 23ms
+   Expected regular expression 'splat' to match '---
+   name: powershell-module-docs
+   description: Document a PowerShell module - comment-based help standards graded by the conformance suite, when platyPS earns its cost, about_ topics and the culture directory the build must copy, README structure, and examples that are real rather than invented. Use when writing help, a README, or an example that has never been run.
+   ---
+   # Module documentation
+   ## Comment-based help
+   **Every exported function needs comment-based help with a `.SYNOPSIS`.** This is
+   graded. Two placements count - inside the function body, or in a block
+   immediately above the definition - and nothing may sit between the comment and
+   the `function` keyword but whitespace.
+   ```powershell
+   function Get-AzDoPipeline {
+       <#
+       .SYNOPSIS
+           The pipeline definitions registered in a project.
+       .DESCRIPTION
+           Each definition carries the repository and the path its YAML lives at.
+           The list endpoint returns a reference that does not include either, so
+           this fetches each definition by id.
+       .PARAMETER Organisation
+           The Azure DevOps organisation. Not discovered - the accounts API needs
+           a scope a Code+Build read token does not have.
+       .EXAMPLE
+           Get-AzDoPipeline -Organisation contoso -Project platform
+           Lists every definition in the project, with its YAML path.
+       .OUTPUTS
+           PSAzureDevOpsGraph.Pipeline
+       #>
+   ```
+   What each section is for, and the mistake each one prevents:
+   - **`.SYNOPSIS`** - one line, what it returns. Not what it does internally. This
+     is what `Get-Command -Syntax` users and the conformance suite both read.
+   - **`.DESCRIPTION`** - the thing a reader cannot infer from the signature. The
+     example above spends its description on *why there are two calls*, which is
+     the only surprising fact about the command.
+   - **`.PARAMETER`** - one per parameter, and say what a caller must know to
+     choose a value. "The organisation" is worthless; "not discovered, and why" is
+     the whole point.
+   - **`.EXAMPLE`** - the command, a blank line, then what it produces. Multiple
+     examples, cheapest first.
+   - **`.OUTPUTS`** - the `PSTypeName` you emit, so a reader can find the shape.
+   **Document the credential rule in the help, not only in the README.** A user
+   reads `Get-Help` at the moment they hit the error.
+   ## Examples must be real
+   **An example that has never been run is a claim, and several will be wrong.**
+   Write examples against something that exists: the test fixture, a public
+   endpoint, or a local path the module itself creates.
+   The test is mechanical - can you paste the example into a shell and have it
+   work? If it needs a value you invented (`-Organisation contoso`), say in the
+   `about_` topic what a reader substitutes, and make sure everything *else* on the
+   line is real.
+   Where an example genuinely cannot run - it needs a credential, or a tenant
+   nobody reading has - say so on the line rather than letting it look runnable:
+   ```powershell
+   .EXAMPLE
+       # Needs $env:AZDO_PAT with Code (Read) and Build (Read).
+       Get-AzDoPipelineDependencyGraph -Organisation <yours> -Project <yours>
+   ```
+   **An example is a test that nobody runs.** If one matters enough, make it one
+   that somebody does: the fixture-backed cases in `tests/` are the examples that
+   cannot rot.
+   ## `about_` topics and the culture directory
+   ```
+   src/<Name>/en-US/about_<Name>.help.txt
+   ```
+   The build **must copy culture directories** (`en-US`, `fr-FR`, anything matching
+   `^[a-z]{2}(-[A-Za-z]{2,4})?$`) into `output/<Name>/`, or `Get-Help about_<Name>`
+   finds nothing. This is the most commonly missed step in a module build, because
+   everything else works without it. Assert it: `Test-Path` the copied topic in the
+   built-module quality tests.
+   The `about_` topic carries what does not belong to any one command: the
+   credential model, the concepts and their names, the one worked end-to-end
+   sequence, and what the module deliberately will not do.
+   ## When platyPS earns its cost
+   **Not by default.** Comment-based help is already in the file being edited, and
+   the conformance suite grades it there. platyPS adds a second copy of the same
+   text in a second format that must be kept in sync, and the sync is manual.
+   Adopt it when - and only when - one of these is true:
+   - **You are publishing updatable help.** `New-ExternalHelp` plus a
+     `HelpInfoUri` in the manifest is the only supported way, and there is no
+     alternative.
+   - **The help is longer than the code.** Some commands genuinely need pages of
+     parameter interaction that would drown the function body.
+   - **Non-authors write the docs.** Markdown in a separate file is reviewable by
+     someone who will not open a `.ps1`.
+   When you do adopt it, **generate in one direction only** - source of truth is
+   the markdown, and comment-based help is generated, or the reverse - and put the
+   regeneration in the build so drift is a failed build rather than a discovery.
+   Two texts that must agree and are edited in different files will drift silently.
+   ## README structure
+   For a module repository, in this order. The order is the reading order of
+   someone deciding whether to use it.
+   1. **Name and one sentence.** What question it answers.
+   2. **The honest status.** What is measured, what is not, and against how many
+      targets. A README that reads as finished when the work is not is the most
+      expensive kind of wrong.
+   3. **Install / prerequisites.** Exact versions. Every runtime dependency,
+      including the ones declared nowhere else - a module that imports
+      `powershell-yaml` lazily and declares no `RequiredModules` must say so here
+      until it declares it properly.
+   4. **A worked example that runs**, with its real output.
+   5. **The command surface**, as a table, one line each.
+   6. **Credentials**, if any: the mechanism and the forbidden alternatives.
+   7. **Running the tests**, with the exact commands.
+   8. **Known limits**, by name. What is implemented but unexercised; what is
+      covered by one target only.
+   9. **Licence.**
+   **Never a benefit claim written mid-project.** Those are predictions and several
+   will be wrong. State capability - what is now possible that was not - and cite
+   the artifact that shows it. A number without an artifact behind it does not
+   belong in a README any more than in a plan.
+   ## Where each document lives
+   | Document | Path | Holds |
+   |---|---|---|
+   | Command help | in the `.ps1` | one command |
+   | Concepts | `src/<Name>/en-US/about_<Name>.help.txt` | what spans commands |
+   | README | `README.md` | the decision to use it |
+   | Changelog | `CHANGELOG.md` | what changed, per version |
+   | Worklog | `docs/worklog/v<version>.md` | why, per version |
+   | Troubleshooting | `docs/TROUBLESHOOTING.md` | symptom  command that reveals  fix |
+   | External tools | `docs/knowledge/<tool>.md` | written when the dependency appears |
+   | Plans | `docs/plans/NNNN-<slug>.md` | one per piece of work |
+   **A fact needed only while performing a specific task lives with that task.**
+   Everything in the always-read tier is charged to every reader forever, so it has
+   to be true and needed *before the work is known*. Moving a paragraph down a tier
+   loses nothing; deleting it has a defender. Prefer the move.
+   ## Related
+   - `powershell-module-architect` - the surface being documented.
+   - `powershell-module-analyzer` - writes `docs/knowledge/<tool>.md`.
+   - `powershell-module-release` - the changelog and worklog conventions.
+   ', but it did not match.
+   at Should -Match 'splat' }, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\plans\0039-ux-help-batch\accept.Tests.ps1:16
+  [-] plan skill owns the master plan 19ms
+   Expected regular expression 'docs/PLAN\.md' to match '---
+   name: powershell-module-plan
+   description: Intake and planning for a PowerShell module - a fixed question set for a new module, a shorter delta set for a feature on an existing one, and a plan file generated into the target at docs/plans/NNNN-<slug>.md whose definition-of-done names how the work will be tested before the work starts. Use at the start of any new module or feature, before writing code.
+   ---
+   # Module planning
+   Ask the questions, fill the template, save it into the target, then build. The
+   plan is not ceremony: every question here exists because leaving it unasked
+   forced a coin-flip later, and coin-flips are what this project measures.
+   ## New module - the fixed question set
+   Ask all six. Do not skip one because the answer seems obvious; write the obvious
+   answer down, because "obvious" is where the two of you disagree silently.
+   1. **Purpose.** What question does this module answer for a user, in one
+      sentence? If the sentence needs "and", it is two modules or one module and a
+      command that should not exist yet.
+   2. **Command surface.** What commands, with what verb and noun? What does each
+      return? Which are `Public/` and which are helpers? A table, not prose.
+   3. **External systems.** What does it talk to - a REST API, a database, a native
+      executable, the filesystem? For each: read-only or read-write, and what is
+      forbidden outright.
+   4. **Authentication.** Where does every credential come from, exactly? Name the
+      mechanism and the forbidden alternatives. "An environment variable" is not an
+      answer; `$env:AZDO_PAT`, never a parameter, never a file, never in a URL, is.
+   5. **Constraints.** Minimum PowerShell version, editions, platforms, offline
+      behaviour, performance bounds, anything the module must never do.
+   6. **Definition of done.** How will the work be tested - *before* it is written?
+      This is mandatory and it is the section the rest of the plan is for.
+   ### Ask about conventions the answers do not cover
+   The failure this catches is run 002's F-1. The specification stated the graph's
+   *structure* completely and its *field conventions* not at all. The first
+   iteration produced the oracle's exact node and edge counts and still scored
+   1/12: all sixty differences were conventions nobody had written down - which
+   optional field appears on which kind of record, whether a path is
+   repository-relative or a basename, whether a reason is a code or a sentence.
+   So, for every record the module emits, ask:
+   - Which fields are always present, and which appear only on some kinds?
+   - For each field, what exactly is the value - a code, a sentence, a path, and
+     relative to what?
+   - One worked example per kind, written out in full.
+   Where a convention genuinely is not decided, **write down that it is undecided**
+   and pick a default in the plan. Then it is a decision with a name rather than a
+   coin-flip nobody can find afterwards.
+   ## Existing module - the delta plan
+   Shorter, and the difference is that most of the context already exists.
+   1. **What changes on the public surface?** Nothing, a new parameter, a new
+      command, a changed return shape? This answer sets the semver bump before any
+      code is written.
+   2. **What existing behaviour must not change?** Name the tests that already
+      assert it. If none do, that is the first thing to write.
+   3. **What new external dependency, if any?** If there is one, the analyzer skill
+      applies: research it now and write `docs/knowledge/<tool>.md`.
+   4. **Definition of done**, same rule, same mandatory section.
+   ## The definition of done is red-first
+   **It must name how the work will be tested before the work starts**, and the
+   test must be written and *run* before the thing it tests exists.
+   A test first seen green proves nothing about whether it can fail. This is not a
+   process preference - it is the finding this whole project rests on. Five
+   assertions in the conformance suite passed every green run and were **inert**:
+   satisfied by a block comment quoting the code they looked for. They were caught
+   only by breaking the thing they claimed to check and watching them stay green.
+   So a definition-of-done section that says "tests pass" is not one. It must name:
+   - **The oracle.** What decides correct - a fixture with expected output, a
+     hand-written comparison, a schema, a specific exit code.
+   - **The cases**, by name, each stating the specific wrong answer it catches.
+   - **The command** that runs them, exactly as it will be typed.
+   - **The red-first evidence** that will be recorded: the failure output, before
+     any implementation.
+   - **What is measured but not gated**, and what is gated. Shape and behaviour are
+     scored separately and never averaged - a module can satisfy every structural
+     assertion and do nothing useful, and collapsing the two numbers into one
+     destroys both.
+   A plan whose definition of done cannot be written is a plan whose work cannot be
+   graded. That is a finding, and it goes back to the operator before any code is
+   written - not after.
+   ## Generating the plan file
+   Fill `templates/module-plan.md` and save it **into the target repository**:
+   ```
+   docs/plans/NNNN-<slug>.md
+   ```
+   `NNNN` is assigned by the operator, four digits, zero-padded, never invented by
+   the agent. `<slug>` is kebab-case and short.
+   It goes in the target, not in the harness: a session restart clears the
+   conversation and not the repository, and the plan is for whoever picks the module
+   up next. Commit it with the work.
+   ## Before you write a line of code
+   - [ ] All six questions answered, in writing, in the target
+   - [ ] Field conventions written out with one worked example per record kind
+   - [ ] Undecided conventions named as undecided, with a chosen default
+   - [ ] Definition of done names the oracle, the cases, and the command
+   - [ ] The acceptance test exists and has been **run red**
+   - [ ] The plan file is committed
+   ## Related
+   - `powershell-module-architect` - turning question 2 into a real surface.
+   - `powershell-module-analyzer` - question 3, when the answer is a tool you do
+     not know.
+   - `powershell-module-test` - building the oracle the definition of done names.
+   - `task-tree-reporting` - how to report progress once the plan has tasks.
+   ', but it did not match.
+   at Should -Match 'docs/PLAN\.md' }, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\plans\0039-ux-help-batch\accept.Tests.ps1:19
+  [-] help assertions exist with falsification evidence 18ms
+   Expected $true, but got $false.
+   at Test-Path "$RepoRoot/evals/conformance/Help.Tests.ps1" | Should -BeTrue, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\plans\0039-ux-help-batch\accept.Tests.ps1:21
+Get-Content: C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\plans\0039-ux-help-batch\accept.Tests.ps1:26
+Line |
+  26 |          (Get-Content "$RepoRoot/plans/0039-ux-help-batch/settings-fal .
+     |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     | Cannot find path
+     | 'C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\plans\0039-ux-help-batch\settings-falsification.txt' because it does not exist.
+  [-] settings file support exists and is asserted 25ms
+   Expected regular expression 'UNKNOWN KEY: refused' to match $null, but it did not match.
+   at Should -Match 'UNKNOWN KEY: refused' }, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\plans\0039-ux-help-batch\accept.Tests.ps1:27
+Get-Content: C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\plans\0039-ux-help-batch\accept.Tests.ps1:29
+Line |
+  29 |  .        $d = Get-Content "$RepoRoot/plans/0039-ux-help-batch/denominat .
+     |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     | Cannot find path
+     | 'C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\plans\0039-ux-help-batch\denominator-v2.txt' because it does not exist.
+  [-] the denominator boundary is recorded 38ms
+   Expected regular expression 'cases-defined \(pre\):\s*33' to match $null, but it did not match.
+   at $d | Should -Match 'cases-defined \(pre\):\s*33', C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\plans\0039-ux-help-batch\accept.Tests.ps1:30
+Get-Content: C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\plans\0039-ux-help-batch\accept.Tests.ps1:34
+Line |
+  34 |          (Get-Content "$RepoRoot/plans/0039-ux-help-batch/refscore.txt .
+     |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     | Cannot find path
+     | 'C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\plans\0039-ux-help-batch\refscore.txt' because it does not exist.
+  [-] reference target still scores clean on the new suite 17ms
+   Expected regular expression 'RUN-006 CLONE \(built\): \d+ / \d+ .* Bucket B declared' to match $null, but it did not match.
+   at Should -Match 'RUN-006 CLONE \(built\): \d+ / \d+ .* Bucket B declared' }, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\plans\0039-ux-help-batch\accept.Tests.ps1:35
+  [-] manifest is 1.2.0 with a CHANGELOG entry and v1.2.0 on the remote 85ms
+   Expected strings to be the same, but they were different.
+   String lengths are both 5.
+   Strings differ at index 2.
+   Expected: '1.2.0'
+   But was:  '1.1.1'
+              --^
+   at Should -Be '1.2.0', C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\plans\0039-ux-help-batch\accept.Tests.ps1:38
+Tests completed in 1.56s
+Tests Passed: 0, Failed: 10, Skipped: 0, Inconclusive: 0, NotRun: 0
