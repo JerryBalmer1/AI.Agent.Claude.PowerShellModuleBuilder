@@ -1,0 +1,23 @@
+LINK CHECK - pass 0040
+root: C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder
+
+README.md                                                  ok
+PLAN-PROTOCOL.md                                           ok
+method/METHOD.md                                           ok
+decisions/0015-falsifying-against-a-red-target.md          ok
+docs/creating-an-agent/00-start-here.md                    ok
+docs/creating-an-agent/01-the-two-claudes.md               ok
+docs/creating-an-agent/11-your-first-module.md             ok
+docs/design/hybrid-modules.md                              ok
+prompts/README.md                                          ok
+prompts/project-context-template.md                        ok
+prompts/first-module.md                                    ok
+prompts/new-feature.md                                     ok
+prompts/release.md                                         ok
+prompts/troubleshoot.md                                    ok
+
+docs/diagram/flow-graph.json (doc attributes)              ok, 39 nodes
+README.md link map (coverage)                              ok, 39 rows for 39 nodes
+
+links resolved: 245
+DEAD LINKS: 0

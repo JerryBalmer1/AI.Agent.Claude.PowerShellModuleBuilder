@@ -1,0 +1,17 @@
+ACCEPTANCE TEST - GREEN, after every task
+command: Invoke-Pester -Path plans/0040-flow-docs/accept.Tests.ps1
+
+CONTAINERS FAILED: 0
+[Passed] decision 0015 exists
+[Passed] LEDGER 47 resolved with evidence
+[Passed] the diagram exists in both renderings
+[Passed] the diagram link map exists
+[Passed] the prompts kit exists in one directory
+[Passed] chapter 11 exists and README points at the flow
+[Passed] the hybrid design note exists
+[Passed] chapter 01 carries the human-paced paragraph
+[Passed] the stranded-branch check joined the sync step
+[Passed] no dead links in anything this pass touched
+[Passed] the local handoff rule exists where it binds
+
+GREEN: Passed=11 Failed=0 Total=11

@@ -300,8 +300,13 @@ teaching material, and chapter [07](./07-failure-catalog.md) collects them.
   before anything public is involved.
 - [10 — Using as a template](./10-using-as-a-template.md). Reusing this
   repository for a domain of your own.
+- [11 — Your first module](./11-your-first-module.md). The other direction:
+  using the plugin that already exists, stage by stage, against the
+  paste-able prompts in [prompts/](../../prompts/README.md).
 
-Read 00 to 03 in order. After that, take them as you need them.
+Read 00 to 03 in order. After that, take them as you need them — except
+chapter 11, which you can read on its own if what you want is a module
+rather than a method.
 
 ---
 
