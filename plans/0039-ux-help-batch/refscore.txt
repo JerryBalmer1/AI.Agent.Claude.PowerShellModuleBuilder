@@ -15,7 +15,13 @@ SETTINGS    defaults (the measured configuration) - no psmodule.settings.psd1
             present, every value from a built-in default, IsMeasuredConfiguration
             true. Recorded in the result JSON beside the score.
 
-RUN-006 CLONE (built): 38 / 41, 3 new-rule failures Bucket B declared
+RUN-006 CLONE (built): 38 / 41 with 3 new-rule failures, all Bucket B declared
+
+  (The prompt's suggested wording for this line, "x / N, <k> new-rule failures
+  Bucket B declared", does not satisfy the prompt's own acceptance regex:
+  `\d+ / \d+ .*` requires a space after the denominator and the comma sits
+  there instead. The regex is the specification and the example was wrong;
+  the line above says the same thing and matches. Recorded in Deviations.)
 
   cases-run 128/154, build exit 0, 40 assertions produced cases.
   Under the pre-change suite the same commit scores 33 / 33.

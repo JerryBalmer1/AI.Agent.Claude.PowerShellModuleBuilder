@@ -250,7 +250,7 @@ Test-Check -Name 'Spot-check 4: the run-006 clone rescores to 38 / 41 with 3 Buc
     }
     $problems = @()
     $recorded = Get-Content -LiteralPath (Join-Path $plan 'refscore.txt') -Raw
-    if ($recorded -notmatch 'RUN-006 CLONE \(built\): 38 / 41, 3 new-rule failures Bucket B declared') {
+    if ($recorded -notmatch 'RUN-006 CLONE \(built\): 38 / 41 with 3 new-rule failures, all Bucket B declared') {
         $problems += 'refscore.txt does not carry the recorded headline'
     }
 

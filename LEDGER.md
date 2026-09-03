@@ -5,11 +5,25 @@ for counters and pins. Update it in the same commit as the work
 that changes it.
 
 ## Passes
-Last landed: **0038**. Next: the operator's. The generalisation claim
+Last landed: **0039**. Next: the operator's; **pass 0040 is queued for
+the diagram / prompts / flow documents**. The generalisation claim
 still has the number and the bound 0037 gave it; the two things that
 would move it are unchanged — a plugin-off control on the Terraform
 domain (backlog 42) or a third domain the `tf-*` skills say nothing
-about.
+about. 0039 did not touch that claim, and said so in the tag message
+rather than letting a release imply otherwise.
+
+### 0039 — the first time cases-defined moved
+
+Two new skills (nineteen now), five amended, eight new `HouseStyle`
+assertions in a second conformance container, an optional settings file,
+and `v1.2.0`. **`cases-defined` 33 → 41**, which is the first movement of
+that denominator since it was introduced, and the reason this pass has a
+series boundary rather than a comparison.
+
+31 falsification rows fired — 13 tidy, 12 help, 6 settings — plus two
+probes on a new guard. Three findings came out of the pass's own work
+going wrong rather than out of review, and all three are numbered below.
 
 0038 is a light-tier cross-repo claim sync and released **no harness
 tag**. Nothing under `skills/`, `commands/`, `.claude-plugin/` or
@@ -285,7 +299,23 @@ module code byte-identical to v0.2.0. Next touching plan: v0.4.0)
 PSGraphRender: v0.13.0
 PSGraphRenderToHtml: v0.1.0 (next: v0.2.0)
 PSTerraformGraph: v0.2.0
-psmodule manifest: **1.1.1**, released and tagged `v1.1.1` by pass 0037
+psmodule manifest: **1.2.0**, released and tagged `v1.2.0` by pass 0039
+under decision 0013. **MINOR, and the installed surface grows:** two new
+skills — `powershell-module-ux` and `powershell-module-tidy`, taking the
+plugin from seventeen to **nineteen** — plus five amended and the tidy
+skill's two `scripts/`. `git diff v1.1.1..v1.2.0 -- commands/` is empty
+and every changed line under `.claude-plugin/` is a version field, both
+asserted by that pass's `verify.ps1`, spot-check 5.
+
+The release also carries the first **series boundary**: `cases-defined`
+moved 33 → 41, so conformance scores taken before and after `v1.2.0` are
+separate series and are not compared. Nothing earlier is restated. The
+CHANGELOG, the README's own score table, `docs/testing/` and the tag
+message all say so, and all four say in the same breath what the
+boundary does **not** license — it is not a reset, and the ladder's
+numbers stand exactly as measured on the 33-case series.
+
+Previously **1.1.1**, released and tagged `v1.1.1` by pass 0037
 under decision 0013. **PATCH, and the installed surface does not move:**
 `git diff v1.1.0..v1.1.1 -- skills/ commands/` is empty and every changed
 line under `.claude-plugin/` is a version field, both asserted by that
@@ -353,6 +383,21 @@ SHA this file cannot know about itself. It read
 pass-0025-findings-batch until pass 0027; pass 0026 landed run 004
 and moved main without updating this line, which is why it is
 worth re-reading rather than trusting.
+**cases-defined: 41** (new at 0039; was 33 from pass 0025 to pass 0038).
+Per tag: `HouseStyle` 22, `Universal` 9, `RequiresBuild` 6,
+`Repository` 4. The eight added are `evals/conformance/Help.Tests.ps1`,
+all `HouseStyle`; `Conformance.Tests.ps1` is untouched and no assertion
+was weakened, renamed or removed. **Scores either side of `v1.2.0` are
+separate series and are not compared** — see
+`plans/0039-ux-help-batch/denominator-v2.txt`, re-derived across targets
+whose cases-run are 477 / 154 / 98 / 60.
+
+The derivation's INPUT SET changed with it: `Invoke-Conformance.ps1`
+inventories and runs every `*.Tests.ps1` in the directory rather than one
+named file. A second container running its assertions while absent from
+`cases-defined` would grow the numerator while the denominator held
+still, which reads as an improvement.
+
 Ladder plugin SHA: f25d05d8eb219c9b0009a85d39918214f6b3b681
 Ladder model version: claude-opus-5[1m]
 Oracle blob (AzDO): bd7b3c4f4f8ce9901c7a6a02073c0cb5ff3ec4dc
@@ -1202,6 +1247,95 @@ controls and corpus figures) was **not** touched and stays open.
     branches, or simply `git branch --no-merged main` — and it belongs
     in whatever a future pass uses to verify its own close.
 
+### Added by pass 0039
+
+45. **A suite container that fails discovery is invisible, and the score
+    it leaves behind looks normal.** RESOLVED in the same pass, and
+    numbered because the shape will recur.
+
+    `Help.Tests.ps1` lost its whole container to a member access on an
+    empty array during discovery. Every one of its assertions vanished
+    from the run. `CasesDefined` still counted them — it is parsed from
+    the suite's SOURCE and does not know a file failed to load — so the
+    numerator and the denominator shrank together and the percentage was
+    unremarkable. Pester printed `Container failed: 1` in its own output
+    and nothing downstream read it. It survived a full scoring run of the
+    reference before anyone noticed the help assertions were absent from
+    the breakdown.
+
+    **This is *not run is not a pass*, one level above the zero-cases
+    rule the suite already had.** Zero cases is an assertion that had
+    nothing to run against; this is an assertion that was never loaded,
+    and only the first was guarded.
+
+    `Invoke-Conformance.ps1` now hard-stops on a container-level
+    `ErrorRecord` and writes no `result.json`. Falsified: control silent,
+    break fires, no result file. It keys on the `ErrorRecord` and **not**
+    on the container's `Result`, because a container holding a merely
+    failing test also reports `Failed`, and turning every red run into a
+    crash is the opposite of what the runner promises three comments
+    above.
+
+46. **An assertion can be inert because it was scoped by the wrong
+    noun.** RESOLVED in the same pass; numbered because it is a third
+    entry in a catalogue that had two.
+
+    `powershell-module-tidy`'s `documented-unexported` rule derived the
+    module's command prefix from the module NAME. This plugin's own
+    convention — stated in `powershell-module-architect` — is a command
+    prefix that is *not* the module name: the reference is
+    `PSModuleGraph` and its commands are `Get-PSModule*`. Every command
+    the rule existed to catch fell outside its own pattern, and it would
+    have shipped green forever.
+
+    The catalogue of ways an assertion can be inert now reads: satisfied
+    by a comment quoting the code it looks for; comparing against `$null`
+    so the condition cannot be true; and **scoped by a plausible
+    identifier that is the wrong one**. The third is the hardest to see
+    in review, because the scoping line reads as obviously correct.
+
+    The derivation now groups the exported nouns by their first four
+    characters and takes each group's longest common prefix, which yields
+    `{PSModule, Knowledge}` for the reference. It was caught by a probe,
+    not by reading.
+
+47. **A pass that writes both a convention and its assertion must RUN
+    them against each other, not review them against each other.**
+    STANDING.
+
+    0039 wrote the house `.EXAMPLE` standard, which mandates splatting,
+    and a set-coverage assertion that looked for the `-Name` dash form.
+    A conforming example names its parameters as hashtable keys and never
+    writes `-Name` at all, so **the assertion was unsatisfiable by
+    exactly the examples it rewards**. Read side by side the two rules
+    look entirely consistent; nothing found it but building a fixture to
+    one and running the other against it.
+
+    **The instruction:** when a single pass produces a rule and the check
+    for that rule, the pass builds an artifact that satisfies the rule
+    and runs the check against it, before either is committed. A green on
+    a target that predates both proves nothing about their agreement, and
+    a review of the two documents proves less.
+
+48. **The falsification protocol has no rule for a NEW assertion whose
+    target is already red.** STANDING, and 0039 worked around it rather
+    than settling it.
+
+    The protocol says break the reference. For the eight help
+    assertions that was impossible: the reference predates them and fails
+    219 of their cases, so the case a break would turn red is already
+    red. 0039 built a purpose-made known-good fixture
+    (`plans/0039-ux-help-batch/New-HelpFixture.ps1`) and falsified
+    against that, then recorded the reference's actual standing behaviour
+    separately as declared Bucket B.
+
+    Both halves of the protocol are satisfied — by two artifacts instead
+    of one — and the reasoning is at the top of
+    `help-falsification.txt` rather than left for a reader to notice.
+    What is NOT settled is whether that is the general rule for a new
+    assertion, or a one-off. It is the operator's to decide, and it wants
+    a decision entry rather than a precedent buried in one pass's record.
+
 ### Numbering, reconciled by pass 0030
 
 Pass 0031 recorded a 17→19 drift and asked that numbers never move. This is
@@ -1237,8 +1371,20 @@ re-derive it:
   numbered separately rather than edited into 37 so that a citation
   against 37 keeps resolving. 42 is written as an operator decision with
   its cost attached, including the cost that is not time.
-- **43 and 44 were consumed by pass 0038**; **45 is the next free
-  number.** Both are STANDING instructions rather than tasks with a
+- **45, 46, 47 and 48 were consumed by pass 0039**; **49 is the next
+  free number.** 45 and 46 were RESOLVED in the same pass and are
+  numbered anyway, because both are shapes rather than incidents: a
+  container that did not run, and an assertion scoped by the wrong
+  noun. 47 and 48 are STANDING — 47 is an instruction for any pass
+  that writes a rule and its check together, and 48 is a gap in the
+  falsification protocol that 0039 worked around and did not settle,
+  so it wants a decision entry rather than a precedent buried in one
+  pass's record. All four were found by this pass's own work going
+  wrong rather than by review, which continues the pattern 0035 and
+  0036 recorded.
+
+- **43 and 44 were consumed by pass 0038**; 45 was the next free
+  number until 0039 took it. Both are STANDING instructions rather than tasks with a
   done state: 43 is that a measured result must name the sibling
   documents it stales, and 44 is that nothing checks whether a pass
   actually moved the mains its governing decisions tell it to move.

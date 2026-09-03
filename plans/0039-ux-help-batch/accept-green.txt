@@ -1,0 +1,18 @@
+Pester v6.1.0
+
+Running tests from 1 files.
+
+Running tests from 'C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\plans\0039-ux-help-batch\accept.Tests.ps1'
+Describing Pass 0039 delivered
+  [+] the two new skills exist 102ms
+  [+] ux skill cites its source and carries the cache guardrails 16ms
+  [+] analyzer gained the class-candidate rule 6ms
+  [+] docs skill carries the house example standard 5ms
+  [+] plan skill owns the master plan 6ms
+  [+] help assertions exist with falsification evidence 8ms
+  [+] settings file support exists and is asserted 6ms
+  [+] the denominator boundary is recorded 32ms
+  [+] reference target still scores clean on the new suite 5ms
+  [+] manifest is 1.2.0 with a CHANGELOG entry and v1.2.0 on the remote 650ms
+Tests completed in 1.5s
+Tests Passed: 10, Failed: 0, Skipped: 0, Inconclusive: 0, NotRun: 0
