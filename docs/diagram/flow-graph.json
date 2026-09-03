@@ -8,7 +8,15 @@
       "roots": ["AI.Agent.Claude.PowerShellModuleBuilder"],
       "authored": "By hand, pass 0040. Nothing scanned this repository to produce it; it is a claim about how the parts fit, and every node names the artifact that backs it.",
       "edgeDirection": "from depends on to, so to is drawn BELOW from. The flow therefore reads UPWARD: stage-plan depends on stage-new. PSGraphRender's foundation view flips the arrowhead onto the dependent end, so the drawn arrow points from new up to plan.",
-      "layers": "scope carries the stated layer, bottom to top: method, instruments, plugin, module, user. The rows flow.html draws are derived from the edges and need not match the stated layers row for row."
+      "layers": "scope carries the stated layer, bottom to top: method, instruments, plugin, module, user. The rows flow.html draws are derived from the edges and need not match the stated layers row for row.",
+      "layerPalette": {
+        "method": "#A99BF2",
+        "instruments": "#79D9A8",
+        "plugin": "#F2C14E",
+        "module": "#7FC4F2",
+        "user": "#F2A0BE"
+      },
+      "layerPaletteNote": "ONE declaration, five colours, three renderings. Build-Diagram.ps1 turns this into the KindColor map flow.html renders with, README.md's Mermaid classDefs restate it, and README.md's link map puts the same swatch beside each row - and verify.ps1 compares all of them against this object rather than against each other. Every colour is light on purpose: the cytoscape backend draws node labels in a hardcoded near-black, so a fill dark enough to look serious is a node nobody can read. Hue codes the layer and nothing else does; the layer's WORD is on the subgraph title, in the legend line and in the link map's Layer column, because five hues at one lightness are one colourblind reader away from carrying nothing."
     },
     "nodes": [
       { "id": "method", "label": "METHOD.md", "type": "rule", "scope": "method",

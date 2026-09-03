@@ -11,7 +11,7 @@
     README.md.
 
     THE TAGS ARE THE POINT. The two sibling repositories are consumed at
-    v0.1.0 and v0.13.0 and never from their working trees, which are ahead of
+    v0.1.3 and v0.13.0 and never from their working trees, which are ahead of
     both. A diagram rendered by whatever happened to be checked out is a
     diagram nobody can reproduce. Each tag is materialised READ-ONLY, with
     `git archive`, into a temporary directory: no worktree is added, no ref is
@@ -89,7 +89,7 @@ param(
     [string] $RepoRoot = "$PSScriptRoot/../..",
     [string] $ToHtmlRepo,
     [string] $RenderRepo,
-    [string] $ToHtmlTag = 'v0.1.0',
+    [string] $ToHtmlTag = 'v0.1.3',
     [string] $RenderTag = 'v0.13.0',
     [string] $OutputPath,
     [switch] $SkipBattery,
@@ -187,6 +187,60 @@ function Import-TagModule {
     'built from the tag'
 }
 
+function Resolve-LayerColor {
+    <#
+        The five layer colours, as the map the renderer reads.
+
+        ONE DECLARATION. flow-graph.json's meta.layerPalette names a colour per
+        LAYER; the renderer's KindColor map is keyed by CLASSIFICATION, which is
+        the payload's node `type`. This translates, and it refuses rather than
+        guesses in the two ways the translation can be wrong:
+
+        - a type that occurs under more than one scope, which would make one
+          key need two colours and turn a layer colour into an average;
+        - a scope with no palette entry, which the renderer would draw in
+          KindColorFallback grey - a silent hole in a legend that claims five.
+
+        Both are throws. A diagram whose colours mean something for thirty-seven
+        nodes and nothing for two is worse than one that never claimed to.
+    #>
+    param([Parameter(Mandatory)] [string] $GraphPath)
+
+    $graph = (Get-Content -LiteralPath $GraphPath -Raw | ConvertFrom-Json).graph
+    $palette = $graph.meta.layerPalette
+    if (-not $palette) { throw "'$GraphPath' declares no meta.layerPalette, so there are no layer colours to render with." }
+
+    $paletteKeys = @($palette.PSObject.Properties.Name)
+    $scopeOfType = @{}
+    foreach ($node in $graph.nodes) {
+        $type = [string]$node.type
+        $scope = [string]$node.scope
+        if ($scopeOfType.ContainsKey($type) -and $scopeOfType[$type] -ne $scope) {
+            throw "Node type '$type' occurs under scope '$($scopeOfType[$type])' and scope '$scope'. Colour is per classification and the layer claim needs one scope per type; either the graph is wrong or colour can no longer carry the layer."
+        }
+        $scopeOfType[$type] = $scope
+    }
+
+    $map = @{}
+    foreach ($type in ($scopeOfType.Keys | Sort-Object)) {
+        $scope = $scopeOfType[$type]
+        if ($scope -notin $paletteKeys) {
+            throw "Scope '$scope' (node type '$type') has no entry in meta.layerPalette, which names: $($paletteKeys -join ', '). An unnamed scope renders in the fallback grey and the legend would be claiming a colour nothing draws."
+        }
+        $map[$type] = [string]$palette.$scope
+    }
+
+    # The other direction: a palette entry no node uses is a legend row for an
+    # empty layer, which reads as a layer that exists and is empty.
+    $used = @($scopeOfType.Values | Sort-Object -Unique)
+    $unused = @($paletteKeys | Where-Object { $_ -notin $used })
+    if ($unused.Count) {
+        throw "meta.layerPalette names $($unused -join ', '), which no node carries. A colour for a layer with no members is a legend row for something that is not there."
+    }
+
+    $map
+}
+
 $work = Join-Path ([IO.Path]::GetTempPath()) ("flow-diagram-" + [guid]::NewGuid().ToString('n'))
 $rendered = $null
 
@@ -258,19 +312,38 @@ try {
 
     # No -EditorLinkMap: see the description.
     #
-    # No -ColorBy either, and NOT because the default was preferred. This pass
-    # asked for `type`, so that colour would carry the skill families while
-    # vertical position carried the layer. PSGraphRenderToHtml v0.1.0 validates
-    # -ColorBy against { structure, scope, type }; PSGraphRender v0.13.0's
-    # cytoscape settings schema accepts { structure, dependents, blastRadius,
-    # dependencies, reach }. The two sets share exactly one member. Passing
-    # `type` produces a WARNING from the renderer and a silent fall back to
-    # `structure`, so the option was removed rather than shipped as a request
-    # that does not arrive. The families are carried by node `type` in the
-    # payload and by the link map instead. Recorded as a finding against the
-    # ecosystem rather than worked around quietly.
+    # -ColorBy IS passed now, and the history is worth the paragraph because
+    # pass 0040 shipped this call without it. PSGraphRenderToHtml v0.1.0
+    # validated -ColorBy against { structure, scope, type } while PSGraphRender
+    # v0.13.0's cytoscape settings schema accepts { structure, dependents,
+    # blastRadius, dependencies, reach } - two sets sharing one member. Asking
+    # for `type` bound here and was warned about and downgraded there, so 0040
+    # removed the option rather than ship a request that does not arrive, and
+    # recorded it as LEDGER 50. ToHtml v0.1.1 aligns the set; this consumes
+    # that fix, which is what makes the fix a thing that happened rather than a
+    # thing that was written.
+    #
+    # And the answer 0040 actually wanted is not a ColorBy value at all. LAYER
+    # is not a channel the renderer knows: it colours by CLASSIFICATION, which
+    # is this payload's node `type`. The producer is what makes the two the
+    # same fact - every type in this graph occurs under exactly one scope, so a
+    # type -> colour map IS a layer -> colour map, and Resolve-LayerColor
+    # refuses to build one if that ever stops being true.
+    $kindColor = Resolve-LayerColor -GraphPath $graphPath
+
+    # ZoomSpeed 0.6 against the renderer's 1.25 default. Operator-reported: one
+    # wheel notch crossed most of the graph, which on a 39-node diagram means
+    # the control is unusable for the thing it exists for. Tuned here rather
+    # than in the renderer, because it is a fact about this diagram's density
+    # and not about zooming.
     $options = New-GraphRenderOptions -Backend cytoscape -Layout foundation `
+        -ColorBy structure -ZoomSpeed 0.6 -Theme @{ KindColor = $kindColor } `
         -Title 'AI.Agent.Claude.PowerShellModuleBuilder - the flow'
+
+    'layer colours, from flow-graph.json meta.layerPalette:'
+    foreach ($key in ($kindColor.Keys | Sort-Object)) { "  {0,-20} {1}" -f $key, $kindColor[$key] }
+    "ZoomSpeed: $($options.Settings.ZoomSpeed) (renderer default 1.25)"
+    "ColorBy:   $($options.Settings.ColorBy)"
 
     # NO -OutputPath, deliberately. Export-ProducerGraphHtml writes with
     # Set-Content, which appends the PLATFORM's newline - so the file gained a
@@ -281,7 +354,25 @@ try {
     # document as a string and writing the bytes here makes the artifact
     # identical on any platform, and does it without touching the pinned
     # module.
-    $document = Export-ProducerGraphHtml -Path $graphPath -Options $options
+    # A RENDERER WARNING IS A STOP HERE, and this guard is why the diagram is
+    # not currently grey. PSGraphRenderToHtml v0.1.2 wrote the theme overlay
+    # with bare keys, so `cross-cutting` parsed as a subtraction, the whole
+    # theme.psd1 failed to parse, and PSGraphRender WARNED and fell back to its
+    # built-in colours. The page rendered. It looked deliberate. Every node was
+    # the fallback grey and the five layer colours were nowhere in it.
+    #
+    # Nothing about the artifact says so, which is the point: a build that
+    # prints WROTE and hands back a document nobody can tell is wrong is worse
+    # than one that fails. The warnings are captured and any one of them ends
+    # the run.
+    $renderWarnings = @()
+    $document = Export-ProducerGraphHtml -Path $graphPath -Options $options `
+        -WarningVariable renderWarnings -WarningAction SilentlyContinue
+    if ($renderWarnings.Count) {
+        $detail = ($renderWarnings | ForEach-Object { "  $($_.Message)" }) -join "`n"
+        throw "The render raised $($renderWarnings.Count) warning(s), and a warned render is a document whose settings did not all arrive:`n$detail"
+    }
+    'render: 0 warnings'
     $document = ($document -replace "`r`n", "`n").TrimEnd("`n") + "`n"
 
     if (-not $Check) {
