@@ -1,5 +1,14 @@
 # release.md — cutting a version
 
+> **🔴 NEW SESSION** — `/clear` first, then paste the fenced block
+> below as message one.
+> [What the circles mean](README.md#the-legend).
+>
+> **ENDS WITH: the two steps that are yours, and the tag command you run
+> yourself.** If the block you hold does not end there, it is short, and the
+> steps it is short of are the ones that reach other people.
+> [UX-002](../docs/ux/UX-002-ends-with-tripwire.md).
+
 Fresh session, first message. Run it immediately before a version and not as a
 routine sweep — tidy grades the *repository* against itself, and most of what it
 finds is drift between two things that were both correct when they were written.

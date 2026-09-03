@@ -1,5 +1,14 @@
 # troubleshoot.md — symptom, artifact, command
 
+> **🔵 NOT A PROMPT** — this page is for you. Paste the page nowhere.
+> Most of the blocks in it are commands you run in **your own shell**; two are
+> marked 🟢 SAME SESSION and go into the session that is already open.
+> Every block says which. [What the circles mean](README.md#the-legend).
+>
+> **ENDS WITH: "nothing measured in this repository transfers to it."** If this
+> page stops before that line, you are missing symptoms rather than reading a
+> shorter guide. [UX-002](../docs/ux/UX-002-ends-with-tripwire.md).
+
 Three columns, and the third is the one that matters: **which command
 re-derives the answer**, so you are reading a fresh fact rather than somebody's
 account of one.
@@ -50,7 +59,10 @@ Three outcomes, and only the first is the agent's fault:
 
 - **On a pass branch, or behind `origin/main`.** The handoff was skipped. Ask
   for it; do not do it yourself, or the next pass inherits a state nobody
-  recorded.
+  recorded. 🟢 **SAME SESSION** — into the session that said it was done:
+
+      Perform the local handoff and end with the LOCAL STATE table.
+      Report a diverged branch or a dirty tree; do not resolve one.
 - **A dirty tree.** Reported, never resolved by the agent — deliberately. Look
   at what is uncommitted before anything else touches it.
 - **A diverged branch.** Also reported and never resolved. `git log --oneline
@@ -74,7 +86,56 @@ Three outcomes, and only the first is the agent's fault:
 | A skill's advice contradicts the suite | both, read side by side | run the suite. **The suite is the oracle** and the disagreement is a finding worth reporting, not a preference to resolve |
 | "It works on my machine" | which machine, exactly | `$PSVersionTable.PSVersion` and `pwsh -NoProfile -File ./tools/publish/Test-Prerequisites.ps1`, pasted whole |
 
-## 3. When the artifact does not exist
+## 3. "A block arrived and I don't know where to paste it"
+
+**The answer is to ask, and that is the whole rule.** Every prompt this project
+produces leads with a routing circle — 🔴 NEW SESSION, 🟢 SAME SESSION or
+🔵 NOT A PROMPT. A block that arrived without one is not a block whose
+routing you are supposed to infer from its contents; it is an incomplete
+delivery, and the fix is one message back to whoever sent it.
+
+**Why guessing is the expensive option.** Pasting a 🔴 into a session that
+has already been talking produces a run that works. The agent answers, the
+files change, and nothing in the transcript afterwards records that the context
+it started from was not empty. If the run was meant to be a measurement, it has
+quietly stopped being one.
+[UX-001](../docs/ux/UX-001-routing-signals.md).
+
+Send this back to whoever sent you the block. 🔵 It goes to a person, not
+into a session:
+
+    Which is this: NEW SESSION, SAME SESSION, or not a prompt at all?
+    And what is its ENDS WITH line, so I can check I have all of it?
+
+## 4. "It has been silent for a long time and I can't tell if it is stuck"
+
+**The artifact is the heartbeat line, and its absence is most of the answer.**
+A pass prints `[n/N] <task> — <estimate>` at every task boundary, so silence
+has a shape: you can see which task is running and how many are left. Between
+two heartbeats a pass may legitimately be quiet for many minutes — cloning,
+building, rendering and running a suite all produce nothing until they finish.
+
+- **Heartbeats appearing, long gap since the last one** — it is working, and
+  the last heartbeat says on what. Wait, or ask it what that task involves.
+- **No heartbeats at all** — the session is not following the protocol, which
+  is worth knowing on its own. 🟢 **SAME SESSION**:
+
+      Where are you? Print the heartbeat: [n/N] <task> - <estimate>.
+      No scores on that line.
+- **Heartbeat count exceeded the plan's task count** — the pass has grown work
+  it was not asked for. That is a scope question, not a progress question.
+
+[UX-004](../docs/ux/UX-004-heartbeats.md).
+
+**And when it says it has finished: `LOCAL STATE` is the proof of done.** Not
+the summary, not the pushed branch — the table. It is symptom 1 above, and it
+is worth restating here because the two failures feel identical from the
+outside: a session that is quiet because it is working, and a session that has
+stopped without handing back. The table is what distinguishes a finished pass
+from a stalled one.
+[UX-005](../docs/ux/UX-005-local-handoff.md).
+
+## 5. When the artifact does not exist
 
 This is the outcome worth naming separately, because it does not feel like a
 failure and it is the most useful thing you will find.
@@ -85,7 +146,7 @@ knows whether it is right. The correct response is to ask for the artifact, not
 for a better explanation, and if producing it turns out to be impossible then
 **that** is what should have been reported in the first place.
 
-## 4. What none of this can tell you
+## 6. What none of this can tell you
 
 **Whether your module is any good.** Every command above re-derives a fact about
 shape, state or process. None of them knows what your module is for. Your own

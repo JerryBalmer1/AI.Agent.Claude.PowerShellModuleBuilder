@@ -1,5 +1,13 @@
 # first-module.md — message one
 
+> **🔴 NEW SESSION** — `/clear` first, then paste the fenced block
+> below as message one. Nothing of your own before it.
+> [What the circles mean](README.md#the-legend).
+>
+> **ENDS WITH: the LOCAL STATE table.** Check the bottom of what you pasted
+> against that before you run it — text that stopped early looks exactly like
+> text that did not. [UX-002](../docs/ux/UX-002-ends-with-tripwire.md).
+
 Paste the fenced block below as the **first message of a brand-new Claude Code
 session**, in the directory that will hold your module. Nothing before it, no
 preamble of your own: see

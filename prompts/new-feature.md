@@ -1,5 +1,13 @@
 # new-feature.md — the delta
 
+> **🔴 NEW SESSION** — `/clear` first, then paste the fenced block
+> below as message one.
+> [What the circles mean](README.md#the-legend).
+>
+> **ENDS WITH: the LOCAL STATE table.** Compare that against the bottom of what
+> you actually hold, before you run it.
+> [UX-002](../docs/ux/UX-002-ends-with-tripwire.md).
+
 For a change to a module that already exists. Fresh session, first message,
 same as before.
 
