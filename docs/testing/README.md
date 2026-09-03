@@ -782,6 +782,11 @@ Needs PowerShell 7.2+, Pester 6.x, PSScriptAnalyzer, InvokeBuild. Three
 commands reproduce a run end to end. These are the root
 [README](../../README.md)'s commands verbatim, warnings included.
 
+🔵 **These go in your own shell, not into a Claude Code session.** Nothing on
+this page is a prompt. [The legend](../../prompts/README.md#the-legend) defines
+the marks; the paste-able prompts live in
+[`prompts/`](../../prompts/README.md) and each one says where it goes.
+
 ```powershell
 # 0. To score a PUSHED commit rather than a working tree, use the one command
 #    that clones, builds and scores in the same clone. The build is not
@@ -981,3 +986,13 @@ in the end, the argument this whole page has been making.
   [08-glossary](../creating-an-agent/08-glossary.md).
 - Using this repository as a starting point for your own:
   [10-using-as-a-template](../creating-an-agent/10-using-as-a-template.md).
+- **How the layers on this page fit together, as one picture**:
+  [`docs/diagram/`](../diagram/README.md) — what the flow diagram is, the five
+  layer colours and where they are declared, how to regenerate it, and why
+  GitHub's Mermaid pane cannot be tuned while `flow.html` can. The instruments
+  described here are the 🟩 **instruments** layer in that diagram, and the
+  colour is the same one in all three of its renderings because it is compared
+  by script rather than copied by eye.
+- **The conventions governing how this repository reports to you**:
+  [`docs/ux/`](../ux/README.md) — one numbered record per convention, with the
+  problem that produced it.

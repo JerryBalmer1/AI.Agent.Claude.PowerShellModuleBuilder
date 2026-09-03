@@ -242,6 +242,43 @@ is that a number without an artifact behind it does not belong in a plan,
 and that rule does not stop applying because the number is about the agent.
 If a token count is wanted it has to come from the host.
 
+## Signals, reports and records
+
+The three conventions that govern how a pass talks to the operator. Each has a
+numbered record in `docs/ux/` saying what went wrong without it.
+
+### Routing signals and the tripwire
+
+Every prompt leads with a routing circle — 🔴 NEW SESSION
+(/clear first, paste as message one, nothing before it),
+🟢 SAME SESSION (paste into the waiting session, do not
+/clear), or 🔵 NOT A PROMPT (for the human; paste
+nowhere) — and states its final line up front as
+"ENDS WITH: <line>" so a truncated delivery is visible
+before anything runs. Shape is the kind of signal, color
+is the value, and the word always rides the marker. A
+block without a routing circle is asked about, never
+guessed at.
+
+### The report contract
+
+Every pass report ends with "## YOUR NEXT ACTION" — one
+plainly-stated action for the operator, or "none: hand
+this report to the director." A hard stop leads with
+"⛔ STOPPED — <one line why> — YOU NEED TO: <one line>"
+and puts the forensics below it. During execution the
+session prints a heartbeat at every task boundary
+("[n/N] <task> — <estimate>") so silence has a shape;
+heartbeats carry no scores on measurement lines.
+
+### UX conventions have records
+
+Every operator-experience convention in this repository
+has a numbered record in docs/ux/ — problem, why, what
+it solves, evidence — written before the convention
+ships. A convention without a problem statement is
+decoration and does not land.
+
 ## Formatting
 
 Every block the operator may copy — the transcript, the verify script — is

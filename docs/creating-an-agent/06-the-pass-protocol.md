@@ -442,6 +442,104 @@ because four passes wrote down that they had been told something wrong.
 
 Ask for that behaviour explicitly, and read the section when it arrives.
 
+## The signal system, and the report contract
+
+A pass is a long-running thing driven by a person who is not watching it. Three
+conventions carry it, and each one exists because its absence cost something.
+They are stated in `PLAN-PROTOCOL.md` under *Signals, reports and records*, and
+each has a numbered record in [`docs/ux/`](../ux/README.md) saying what went
+wrong without it.
+
+### Routing: the prompt says which session it goes in
+
+Every prompt leads with one of three circles, and **the word always rides the
+circle** so colour is never the only channel:
+
+| | | |
+|---|---|---|
+| 🔴 | **NEW SESSION** | `/clear` first, paste as message one, nothing before it. |
+| 🟢 | **SAME SESSION** | paste into the session already waiting; do not `/clear`. |
+| 🔵 | **NOT A PROMPT** | for the human; pasted nowhere. |
+
+Chapter 01 has the fence convention — *the fenced block is the prompt* — and
+this is the half it was missing. "Which text" was answered; "which session" was
+not, and the second question is the expensive one. Pasting a 🔴 into a
+session that has already been talking produces a run that works, and nothing in
+the transcript afterwards records that its context was not empty. If it was a
+measured run, it has quietly stopped being one.
+
+**A block without a routing circle is asked about, never guessed at.**
+[UX-001](../ux/UX-001-routing-signals.md).
+
+### `ENDS WITH:` — the tripwire, and the four truncations behind it
+
+Every prompt states its own last line, near the top:
+
+    ENDS WITH: the LOCAL STATE table.
+
+The reader compares that against the bottom of what they actually hold, before
+running anything.
+
+**The rule is not hypothetical: four deliveries were cut short before it
+existed.** They are operator-reported rather than reconstructed from
+transcripts, and this chapter says so rather than dressing four remembered
+incidents up as four citations — which would be exactly the failure chapter 05
+is about.
+
+What the repository *can* show is that the failure generalises, because the
+same shape is recorded twice inside the machinery:
+
+- **Hazard 8** — an absence check on prose defeated by a line break, which has
+  now recurred inside the falsification of its own fix (pass 0035) and inside a
+  supplied insertion (pass 0040).
+- **[LEDGER 52](../../LEDGER.md)** — a verbatim paragraph supplied in a prompt
+  broke the acceptance test written to check for it, because it wrapped between
+  two words the regex needed adjacent.
+
+Neither of those is a truncation. Both are the same *shape*: text that looks
+complete, and a reader with no second thing to compare it against. Every other
+integrity check in this project works by comparing two artifacts. Truncation
+had no second artifact, so `ENDS WITH:` manufactures one.
+[UX-002](../ux/UX-002-ends-with-tripwire.md).
+
+### The report contract: the action, then the evidence
+
+Every pass report ends with **`## YOUR NEXT ACTION`** — one plainly-stated
+action, or `none: hand this report to the director.` The "none" case is not
+filler; it is the difference between *nothing is needed* and *nobody said*.
+
+A hard stop inverts the whole document:
+
+    ⛔ STOPPED — <one line why> — YOU NEED TO: <one line>
+
+first, with the forensics underneath. **The writer and the reader want opposite
+orders.** The writer reaches the action last, because it is the conclusion of
+the investigation and writing it first feels like asserting it without support.
+The reader wants it first, because everything above it only matters once they
+have decided to care. A pass that cannot continue has the most detail to
+report, so left alone it buries the one line that matters at the bottom of the
+longest section in the document — and a stop gets read as a status update.
+
+During execution the session prints a heartbeat at every task boundary:
+
+    [1/12] acceptance red — ~5 min
+
+so silence has a shape. Twenty quiet minutes of cloning, building and rendering
+looks exactly like a hung session; `n` of `N` is what tells them apart.
+**Heartbeats carry no scores on measurement lines** — a progress line naming a
+run's score leaks oracle knowledge into every future session that reads the
+log, which is hazard 11 arriving through a new door.
+[UX-003](../ux/UX-003-report-contract.md),
+[UX-004](../ux/UX-004-heartbeats.md).
+
+### And the rule that keeps the registry honest
+
+**A convention without a problem statement is decoration and does not land.**
+Every one of these has a numbered record in [`docs/ux/`](../ux/README.md) —
+problem, why, what it solves, evidence — written *before* the convention ships.
+Writing the problem down first is what catches the conventions that turn out to
+be preferences, and there is no cheaper filter available.
+
 ## Push early
 
 ### What the protocol says

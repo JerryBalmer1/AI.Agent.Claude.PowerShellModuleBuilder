@@ -254,6 +254,13 @@ anything the executor hands back:
 
 One fence, one copy, one action, in both directions.
 
+**And the fence now says where it goes.** Every prompt leads with a routing
+circle — 🔴 NEW SESSION, 🟢 SAME SESSION, 🔵 NOT A PROMPT — because
+"the fenced block is the prompt" answers *which text* and never answered *which
+session*, and the second question is the one that costs a measurement.
+[UX-001](../ux/UX-001-routing-signals.md), and
+[the legend](../../prompts/README.md#the-legend) for all of the marks.
+
 ### The rule the fence is enforcing
 
 The fence is a physical form of PLAN-PROTOCOL.md's "File supply" rule:

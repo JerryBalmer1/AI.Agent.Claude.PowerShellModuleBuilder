@@ -61,6 +61,12 @@ Rule 14 otherwise stands, in full:
   not permit the agent to move `main`. Decision 0008's fast-forward permission
   is for PSAzureDevOpsGraph and decision 0010's for the three ecosystem repos;
   neither extends here.
+
+  *— Superseded. See the amendment at the end of this record: this bullet
+  omitted decision 0009, which is the one that grants the permission, and 0009
+  governs `main`. The bullet is left standing rather than rewritten, because a
+  record edited to look as though it never disagreed stops explaining why the
+  disagreement was worth a LEDGER item.*
 - **No other tags on the harness.** Release tags only. Not per-pass tags, not
   per-run tags.
 
@@ -112,3 +118,15 @@ adds skills, commands or conventions. PATCH corrects documents and fixes defects
 without changing what the plugin asks a builder to do. The README's versioning
 promise states the same thing in consumer words and is the copy a consumer
 reads; this paragraph is the one a future pass reads.
+
+
+## Amendment — pass 0041, operator-decided
+
+Decision 0009 governs movement of harness `main`: the
+agent fast-forwards it after a green pass, as practiced
+since pass 0026. This decision governs releases — tags,
+versions, the installable surface — and nothing else.
+Its earlier enumeration of who may move `main` omitted
+0009 and is superseded by this paragraph. Where the two
+documents appear to conflict, 0009 wins on `main`, 0013
+wins on tags.

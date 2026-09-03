@@ -17,9 +17,10 @@ picture, with a link map to every artifact named below.
 
 Two things, and both of them are cheap to get wrong.
 
-**Check your prerequisites in a shell, not inside Claude Code.**
+**Check your prerequisites in a shell, not inside Claude Code.** 🔵 This one
+is not a prompt — it goes in your own terminal, not into a session:
 
-```
+```powershell
 pwsh -NoProfile -File ./tools/publish/Test-Prerequisites.ps1
 ```
 
@@ -29,9 +30,10 @@ module, so a missing one is a `1 of 5 missing` you can knowingly ignore rather
 than a mystery. The checker runs under Windows PowerShell 5.1 on purpose — one
 that will not start on the wrong PowerShell is useless exactly when you need it.
 
-**Install pinned, and check the pin took.**
+**Install pinned, and check the pin took.** 🟢 SAME SESSION — these are
+Claude Code's own commands and go into the session you have open:
 
-```
+```text
 /plugin marketplace add JerryBalmer1/AI.Agent.Claude.PowerShellModuleBuilder@v1.2.0
 /plugin install psmodule@psmodule-builder
 ```
@@ -41,6 +43,12 @@ from reaching you, and `/plugin` is how you confirm it: if it does not say
 `1.2.0`, the pin did not take and you are running something nobody released.
 [Chapter 09](./09-try-before-you-trust.md) does the whole thing locally first,
 if you would rather not add a marketplace yet.
+
+**Every block in this chapter and in [`prompts/`](../../prompts/README.md) says
+where it goes** — 🔴 a fresh session, 🟢 the one already open, or 🔵 your
+own shell. [The legend](../../prompts/README.md#the-legend) defines them once;
+[UX-001](../ux/UX-001-routing-signals.md) is why a block without one is asked
+about rather than guessed at.
 
 ---
 
