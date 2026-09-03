@@ -1,0 +1,14 @@
+SPOT-CHECK 3 — all mains re-read from the remotes, 2026-09-03T00:16:19Z
+
+PSAzureDevOpsGraph     fdf4a27  refs/heads/main
+PSTerraformGraph       80fc6bb  refs/heads/main
+PSGraphRender          a4c18c0  refs/heads/main
+PSGraphRenderToHtml    ac76bc4  refs/heads/main
+
+PSAzureDevOpsGraph tags:
+  f1947c2  refs/tags/v0.1.0
+  79e02fb  refs/tags/v0.1.0^{}
+  89e1438  refs/tags/v0.2.0
+  5fd814b  refs/tags/v0.2.0^{}
+  b45dfa5  refs/tags/v0.3.0
+  fdf4a27  refs/tags/v0.3.0^{}

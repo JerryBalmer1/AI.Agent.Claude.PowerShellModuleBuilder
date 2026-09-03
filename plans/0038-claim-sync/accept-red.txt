@@ -1,0 +1,8 @@
+  [-] target README carries the full measurement story 158ms
+  [-] target has a handoff and worklog 15ms
+  [-] v0.3.0 on the target remote 590ms
+  [-] TF README and HANDOFF know tf-003 9ms
+  [+] ToHtml consumer line is current 9ms
+  [-] PSGraphRender cites the current producer version 9ms
+  [-] harness LEDGER records the sync 13ms
+Tests Passed: 1, Failed: 6, Skipped: 0, Inconclusive: 0, NotRun: 0

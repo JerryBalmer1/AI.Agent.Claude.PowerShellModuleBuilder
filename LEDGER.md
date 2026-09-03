@@ -5,11 +5,67 @@ for counters and pins. Update it in the same commit as the work
 that changes it.
 
 ## Passes
-Last landed: **0037**. Next: the operator's. The generalisation claim
-now has a number and a stated bound; the two things that would move it
-are a plugin-off control on the Terraform domain or a third domain the
-`tf-*` skills say nothing about. **The first of those is now written up
-as a costed operator decision** — backlog 42 — rather than as a wish.
+Last landed: **0038**. Next: the operator's. The generalisation claim
+still has the number and the bound 0037 gave it; the two things that
+would move it are unchanged — a plugin-off control on the Terraform
+domain (backlog 42) or a third domain the `tf-*` skills say nothing
+about.
+
+0038 is a light-tier cross-repo claim sync and released **no harness
+tag**. Nothing under `skills/`, `commands/`, `.claude-plugin/` or
+`evals/` changed. What it did was carry the measurement history to the
+four sibling repositories the measurements were about, which had never
+received it.
+
+**PSAzureDevOpsGraph, tagged `v0.3.0`** (annotated, pushed, `main`
+fast-forwarded `5fd814b..fdf4a27` per decision 0008). The README's
+`Status` section — three run-002 numbers and nothing else — is replaced
+by *How this module was measured*: run 002 labelled as not a zero-skill
+baseline, the 004–006 ladder, the 007 control, the sentence the control
+forced, and the three bounds, each figure linking its run record. New
+`docs/HANDOFF.md`, which decision 0010 has required of every governed
+repository and which this repository never had. `docs/worklog/v0.3.0.md`
+states why a docs-only minor exists. **Module code is byte-identical to
+`v0.2.0`** and the worklog asserts it with the diff and its exit code.
+
+**PSTerraformGraph**, no tag (`main` fast-forwarded `1dd4913..80fc6bb`
+per decision 0010; a docs sync earns no minor on a module's semver).
+The HANDOFF said *"Nothing here has met configuration it was not built
+for"* and that the blind run *"is not yet scheduled"*. tf-003 had
+happened. Both files now separate the two measurements rather than
+blending them: tf-002 scored the shipped code on a visible oracle, and
+tf-003 scored a module **built fresh from the seed** in an orphan branch
+that never read this repository — so its 6/7 → 7/7 says nothing directly
+about `main`. The plugin bound travels with the number in both files.
+
+**PSGraphRenderToHtml and PSGraphRender**, one commit each, mains
+fast-forwarded `20877f7..ac76bc4` and `2231b4b..a4c18c0`.
+
+### The gap this pass exists to close, and it is standing
+
+**The measurement line updates a claim in the harness and leaves the
+repository the claim is about saying the old thing.** Every run from 003
+to tf-003 landed its numbers here and in `runs/`, and no run moved a
+sibling README. Five runs accumulated before PSAzureDevOpsGraph's own
+landing page mentioned any of them, and PSTerraformGraph's HANDOFF was
+asserting an unseen fixture had never been met two passes after one had.
+
+**Standing instruction: a pass that produces a measured result adds a
+LEDGER line naming which sibling READMEs and HANDOFFs its result
+stales.** Not a fix for the result's own pass to make — a measured run
+should not be editing deliverable-line documents in the same session it
+is being scored in — but the next docs pass then has a list rather than
+a memory.
+
+**Pass 0038 found the second half of the same gap by tripping over it.**
+`PSGraphRenderToHtml` and `PSGraphRender` each had a pass-0024 commit
+pushed to `origin/pass-0024-consumer-ref` and never merged: the mains
+had been sitting a commit behind since. One of them was the tf-002
+currency update this pass was about to write from scratch. 0038 branched
+from those tips rather than from `main`, so both are now on `main` and
+nothing was stranded or rewritten — every push in this pass was
+fast-forward-only. **A pass that pushes a branch and does not move the
+main is not finished, and nothing in this project was checking.**
 
 0037 is a consolidation pass and released **v1.1.1**, a PATCH: `skills/`
 and `commands/` are byte-identical to v1.1.0 and `git diff
@@ -224,7 +280,8 @@ same procedure and did not move, at either commit — which is what
 makes it the control for the repair. `plans/0033-honest-headline/rescore.txt`.
 
 ## Versions
-PSAzureDevOpsGraph: v0.2.0 (next touching plan: v0.3.0)
+PSAzureDevOpsGraph: **v0.3.0** (docs-only minor, pass 0038, decision 0006;
+module code byte-identical to v0.2.0. Next touching plan: v0.4.0)
 PSGraphRender: v0.13.0
 PSGraphRenderToHtml: v0.1.0 (next: v0.2.0)
 PSTerraformGraph: v0.2.0
@@ -1107,6 +1164,44 @@ controls and corpus figures) was **not** touched and stays open.
     keep. This project got that ordering wrong, and this line is what
     that mistake looks like written down.
 
+### Added by pass 0038
+
+43. **A measured result stales sibling documents and nothing names
+    which.** STANDING. Every run from 003 to tf-003 wrote its numbers
+    into `runs/` and the harness README, and not one of them recorded
+    which sibling `README.md` or `docs/HANDOFF.md` its result had just
+    made false. The cost was visible by 0038: PSAzureDevOpsGraph's
+    landing page still quoted run 002's three scores and nothing else
+    after five further runs, and PSTerraformGraph's HANDOFF was still
+    saying *"Nothing here has met configuration it was not built for"*
+    and that the blind run *"is not yet scheduled"* two passes after
+    tf-003 ran.
+
+    **The instruction, and it is deliberately not "fix it in the same
+    pass":** a pass that produces a measured result adds one LEDGER line
+    naming the sibling documents its numbers stale. A measured run must
+    not be editing deliverable-line documents in the session it is being
+    scored in — that is the two-lines rule, and it is worth more than
+    the convenience. The next docs pass then works from a list instead
+    of from a re-read of every sibling.
+
+44. **A pass can push a branch, not move the main, and nothing notices.**
+    STANDING, and it is the same gap one level down. 0038 found
+    `PSGraphRenderToHtml` and `PSGraphRender` each holding a
+    pass-0024 commit pushed to `origin/pass-0024-consumer-ref` and never
+    merged; both mains had been a commit behind ever since, and one of
+    those commits was the tf-002 currency line 0038 was about to write
+    from scratch. Decisions 0009 and 0010 say the agent moves the mains
+    at the end of a green pass. **Nothing checks that it happened.**
+
+    0038 branched from those tips rather than from `main`, so both
+    commits are on `main` now and every push in the pass stayed
+    fast-forward-only. That is a repair, not a check. The check that
+    would have caught it is one command per governed repository —
+    `git for-each-ref --contains` against `main` over the `pass-*`
+    branches, or simply `git branch --no-merged main` — and it belongs
+    in whatever a future pass uses to verify its own close.
+
 ### Numbering, reconciled by pass 0030
 
 Pass 0031 recorded a 17→19 drift and asked that numbers never move. This is
@@ -1134,14 +1229,21 @@ re-derive it:
   reproducibility claim that was true only within one second, a
   line-ending rule that existed and was not applied, and a control that
   cannot get stronger.
-- **41 and 42 were consumed by pass 0037**; **43 is the next free
-  number.** 0037 resolved 29, 36 and 40 and consumed no number for any
+- **41 and 42 were consumed by pass 0037**; 0037 resolved 29, 36 and 40
+  and consumed no number for any
   of its own work, because everything it did was already numbered — which
   is what a consolidation pass should look like. 41 is item 37 promoted
   to a named v1.2.0 candidate rather than a new finding, and it is
   numbered separately rather than edited into 37 so that a citation
   against 37 keeps resolving. 42 is written as an operator decision with
   its cost attached, including the cost that is not time.
+- **43 and 44 were consumed by pass 0038**; **45 is the next free
+  number.** Both are STANDING instructions rather than tasks with a
+  done state: 43 is that a measured result must name the sibling
+  documents it stales, and 44 is that nothing checks whether a pass
+  actually moved the mains its governing decisions tell it to move.
+  0038 repaired two instances of 44 and wrote no check for it, which is
+  why it is numbered rather than closed.
 - **36 to 40 were consumed by pass 0036.** 36 closes the remaining half of 29 and queues the README
   rewrite the run's own record drafts. 38, 39 and 40 continue the
   pattern above — each was found by this pass's work going wrong, and
