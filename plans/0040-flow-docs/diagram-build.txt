@@ -1,0 +1,8 @@
+PSGraphRenderToHtml v0.1.0  bb2fbacbc6c1cded4d49fc17e79bf54a82150281
+PSGraphRender       v0.13.0  964d73a4db2d13ed6a5873a53a8607a1ecc1a71a
+PSGraphRender       imported from: built from the tag
+PSGraphRenderToHtml imported from: src (no build needed)
+versions verified: PSGraphRender 0.13.0, PSGraphRenderToHtml 0.1.0
+Test-ProducerGraph: valid
+BATTERY: Passed=7 Failed=0 Total=7
+WROTE: C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\docs\diagram\flow.html

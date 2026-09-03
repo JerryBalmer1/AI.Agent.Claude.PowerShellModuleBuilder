@@ -1,0 +1,33 @@
+FALSIFICATION OF Compare-Mermaid.ps1
+
+[OK  ] control - nothing changed
+       expected green, observed green (exit 0)
+       MERMAID AND JSON AGREE: same ids, same labels, same layer membership, same edges
+
+[OK  ] a node deleted from the mirror
+       expected red, observed red (exit 1)
+       named: skill-task-tree
+       MERMAID AND JSON DISAGREE:
+         node COUNT differs: mermaid 38, json 39
+         the json has node 'skill-task-tree' and mermaid does not
+
+[OK  ] a node moved to the wrong layer
+       expected red, observed red (exit 1)
+       named: LAYER differs | module-yours
+       MERMAID AND JSON DISAGREE:
+         LAYER differs for 'module-yours': mermaid 'instruments', json 'module'
+
+[OK  ] an edge reversed
+       expected red, observed red (exit 1)
+       named: stage-plan->stage-new | stage-new->stage-plan
+       MERMAID AND JSON DISAGREE:
+         mermaid draws edge stage-new->stage-plan and the json does not
+         the json states edge stage-plan->stage-new and mermaid does not
+
+[OK  ] a label retyped
+       expected red, observed red (exit 1)
+       named: label differs | tf-fixture-2
+       MERMAID AND JSON DISAGREE:
+         label differs for 'tf-fixture-2': mermaid 'TF fixture two', json 'TF fixture 2'
+
+FALSIFICATION: all rows behaved as declared

@@ -1,0 +1,91 @@
+DOES GITHUB HONOUR `click` IN A MERMAID BLOCK?
+==============================================
+
+FINDING: NOT RELIED ON.  The click lines survive into the page, and whether
+they become working links cannot be observed from a terminal - GitHub renders
+Mermaid client-side, inside a cross-origin iframe, from a postMessage.  A
+RELATIVE click target cannot work in any case, because that iframe's origin is
+viewscreen.githubusercontent.com and not the repository.  The link map below
+the diagram is therefore the navigation, and no `click` directive ships.
+
+Tested, not assumed.  What was actually run, in order:
+
+1. THE PROBE, pushed to branch `scratch-0040-mermaid-probe` (since deleted;
+   the file is reproduced at the end of this record so anyone can re-push it).
+
+2. GitHub's REST API was NOT usable from this session.  `gh api /user` returns
+   404 with a token that pushes over https perfectly well, so the markdown
+   endpoint could not be used and the blob page was fetched anonymously
+   instead.  Recorded because "the API said so" would otherwise look like the
+   evidence, and it is not.
+
+       curl -sS -o blob.html -w "HTTP %{http_code}\n" \
+         "https://github.com/JerryBalmer1/AI.Agent.Claude.PowerShellModuleBuilder/blob/scratch-0040-mermaid-probe/MERMAID-PROBE.md"
+       HTTP 200  bytes=237362
+
+       grep -c "click a\|click b" blob.html      -> 6
+       grep -c "<svg" blob.html                  -> 33   (page chrome, not the diagram)
+       grep -o 'href="[^"]*METHOD.md[^"]*"'      -> nothing
+
+   The click lines are in the page.  No anchor to METHOD.md is, because
+   nothing has rendered the diagram yet at that point.
+
+3. HOW IT RENDERS.  The block is replaced by an enrichment container:
+
+       class="js-render-needs-enrichment render-needs-enrichment ..."
+       data-host="https://viewscreen.githubusercontent.com"
+       data-src="https://viewscreen.githubusercontent.com/markdown/mermaid?docs_host=..."
+       data-type="mermaid"
+       aria-label="mermaid rendered output container"
+
+   Fetching that data-src returns an 818-byte SHELL - a stylesheet, one
+   script, and `<template id="mermaid-view-template">`.  There is no
+   server-side render to fetch:
+
+       curl -X POST ".../markdown/mermaid" --data-urlencode "code=$SRC"
+       HTTP 404
+
+   The source arrives by postMessage from the parent page, which is why a
+   POST has nothing to answer.  A terminal cannot get the SVG out of it.
+
+4. WHAT THE RENDERER IS CONFIGURED TO DO.  Its bundle
+   (/static/assets/mermaidMarkdown-<hash>.js, 1,764,861 bytes) calls:
+
+       initialize({ startOnLoad:!1,
+                    secure:["secure","securityLevel","startOnLoad","maxTextSize"],
+                    securityLevel:"antiscript", ... })
+
+   and handles click URLs with:
+
+       function E(t,e){ const a=t.trim();
+                        if(a) return "loose"!==e.securityLevel ? sanitize(a) : a }
+       ... "formatUrl"
+
+   So under `antiscript` a click URL is not discarded - it is passed through a
+   URL sanitiser.  Links are therefore PLAUSIBLE and unproven, and callbacks
+   are out of the question.
+
+5. THE PART THAT IS SETTLED WITHOUT A BROWSER.  The diagram is drawn inside a
+   cross-origin iframe on viewscreen.githubusercontent.com, served with
+   `<meta name="referrer" content="never">`.  A relative href resolves against
+   THAT origin.  `click b href "./evals/conformance/"` cannot reach this
+   repository no matter what the security level allows, and only an absolute
+   https://github.com/... URL has any chance.
+
+THE DECISION.  Ship the link map, ship no `click` directives.  Thirty-nine
+click lines in the README for a behaviour this pass could not observe is a
+claim about GitHub that nobody here has checked, and the table underneath the
+diagram is better navigation anyway: it is readable in a plain-text diff, it
+works in every renderer, and it survives GitHub changing its mind.
+
+THE PROBE FILE, verbatim, so this is re-runnable:
+
+    # Mermaid click probe
+
+    ```mermaid
+    flowchart BT
+      a["method/METHOD.md"] --> b["conformance suite"]
+      b --> c["psmodule v1.2.0"]
+      click a "https://github.com/JerryBalmer1/AI.Agent.Claude.PowerShellModuleBuilder/blob/main/method/METHOD.md" "METHOD.md"
+      click b href "./evals/conformance/" "the suite"
+    ```

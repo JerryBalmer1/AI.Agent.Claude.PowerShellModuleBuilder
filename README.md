@@ -67,12 +67,252 @@ the control run says it buys shape rather than correctness;
 including the fact that nobody has yet installed this cold on a machine that has
 never cloned the repository.
 
+<!-- TEMPLATE:replace — the shape of this section travels and its content does
+     not. Keep the three parts: one diagram, a link map underneath it with a
+     row per node, and a sentence saying which rendering is authoritative.
+     Swap every node for your own. A diagram nobody can click through to the
+     artifact behind it is decoration. -->
+
+## The flow
+
+**New here?** [Chapter 11 — your first module](docs/creating-an-agent/11-your-first-module.md)
+walks this diagram end to end against the paste-able prompts in
+[`prompts/`](prompts/README.md), which is where to start if you want a module
+rather than a method.
+
+Five layers, and the gravity is the argument: **nothing above exists until the
+thing below it does.** The rules came first, the instruments were built and
+falsified against those rules, the plugin is what the instruments' findings
+hardened into, a module is what the plugin builds, and you are the only reason
+any of it is worth the weight. Read it from the bottom.
+
+The stages in the middle — `new → plan → build → test → tidy → release` — are
+the path a module actually takes, and each names the skills it invokes **in
+order**, saying where the order is real and where it is not.
+
+```mermaid
+%% The same graph as docs/diagram/flow-graph.json, mirrored here by hand.
+%% flowchart BT reads bottom to top, and an arrow points from what comes first
+%% to what follows it. The JSON states the same pairs the other way round -
+%% dependent to dependency - because that is the direction its renderer reads.
+%% Same edges, opposite orientation, one rule, stated in both files.
+flowchart BT
+  subgraph layer_method["1 · method and rules — everything rests on this"]
+    method["METHOD.md"]
+    plan-protocol["PLAN-PROTOCOL.md"]
+    decisions["decisions/"]
+  end
+
+  subgraph layer_instruments["2 · the instruments — built and falsified before any capability"]
+    conformance["conformance suite"]
+    functional["functional oracle"]
+    tf-fixture-1["TF fixture 1"]
+    tf-fixture-2["TF fixture 2"]
+    comparators["the comparators"]
+  end
+
+  subgraph layer_plugin["3 · the plugin — what the findings hardened into"]
+    plugin["psmodule v1.2.0"]
+    cmd-build["/psmodule:build"]
+    cmd-test["/psmodule:test"]
+    stage-new["new"]
+    stage-plan["plan"]
+    stage-build["build"]
+    stage-test["test"]
+    stage-tidy["tidy"]
+    stage-release["release"]
+    skill-plan["powershell-module-plan"]
+    skill-architect["powershell-module-architect"]
+    skill-scaffold["powershell-module-scaffold"]
+    skill-build["powershell-module-build"]
+    skill-docs["powershell-module-docs"]
+    skill-ux["powershell-module-ux"]
+    skill-analyzer["powershell-module-analyzer"]
+    skill-test["powershell-module-test"]
+    skill-tidy["powershell-module-tidy"]
+    skill-deploy["powershell-module-deploy"]
+    skill-release["powershell-module-release"]
+    skill-azdo-rest["azdo-rest"]
+    skill-azdo-yaml["azdo-pipeline-yaml-refs"]
+    skill-azdo-graph["azdo-graph-assembly"]
+    skill-tf-parse["tf-hcl-parse"]
+    skill-tf-resolve["tf-module-resolve"]
+    skill-tf-graph["tf-graph-assembly"]
+    skill-producer-contract["producer-contract"]
+    skill-task-tree["task-tree-reporting"]
+  end
+
+  subgraph layer_module["4 · what gets built"]
+    module-yours["your module"]
+    module-reference["PSAzureDevOpsGraph"]
+  end
+
+  subgraph layer_user["5 · who it is for"]
+    you["you"]
+  end
+
+  method --> conformance
+  method --> functional
+  comparators --> functional
+  decisions --> comparators
+  decisions --> tf-fixture-1
+  decisions --> tf-fixture-2
+
+  conformance --> plugin
+  functional --> plugin
+  decisions --> plugin
+  plan-protocol --> plugin
+
+  conformance --> skill-architect
+  conformance --> skill-scaffold
+  conformance --> skill-build
+  conformance --> skill-docs
+  conformance --> skill-ux
+  conformance --> skill-analyzer
+  conformance --> skill-test
+  conformance --> skill-tidy
+  conformance --> skill-deploy
+  conformance --> skill-release
+
+  functional --> skill-plan
+  functional --> skill-azdo-rest
+  functional --> skill-azdo-yaml
+  functional --> skill-azdo-graph
+
+  tf-fixture-2 --> skill-tf-parse
+  tf-fixture-2 --> skill-tf-resolve
+  tf-fixture-2 --> skill-tf-graph
+
+  stage-new -->|1| stage-plan
+  stage-plan -->|2| stage-build
+  stage-build -->|3| stage-test
+  stage-test -->|4| stage-tidy
+  stage-tidy -->|5| stage-release
+
+  skill-plan --> stage-plan
+  skill-architect --> stage-build
+  skill-scaffold --> stage-build
+  skill-build --> stage-build
+  skill-docs --> stage-build
+  skill-ux --> stage-build
+  skill-analyzer --> stage-build
+  skill-test --> stage-test
+  skill-tidy --> stage-tidy
+  skill-release --> stage-release
+  skill-deploy --> stage-release
+
+  cmd-build --> stage-build
+  cmd-test --> stage-test
+
+  stage-release --> module-yours
+  stage-build --> module-reference
+  conformance --> module-reference
+
+  module-yours --> you
+```
+
+**Two nodes have no edges, and that is the finding rather than a drawing
+error.** `producer-contract` and `task-tree-reporting` connect downward to
+nothing, because **nothing in this repository grades them** — the battery that
+grades the first lives in
+[PSGraphRenderToHtml](https://github.com/JerryBalmer1/PSGraphRenderToHtml), and
+the second is about the shape of a reply, which no oracle here reads. Every
+other skill can be traced to an instrument that measured it.
+
+**On clicking the diagram: don't.** GitHub renders Mermaid client-side inside a
+cross-origin frame on `viewscreen.githubusercontent.com`, so a relative link in
+a `click` directive resolves against that origin rather than this repository,
+and whether an absolute one becomes a working link could not be observed from a
+terminal. This was tested rather than assumed —
+[the record](plans/0040-flow-docs/mermaid-click.txt) has the commands — and the
+answer was *unproven*, so no `click` directive ships. **The link map below is
+the navigation.**
+
+### The link map
+
+One row per node, and the artifact behind it. If a claim in the diagram looks
+wrong, this is how you get to the thing that settles it.
+
+| Node | Layer | The artifact behind it |
+|---|---|---|
+| METHOD.md | method | [method/METHOD.md](method/METHOD.md) |
+| PLAN-PROTOCOL.md | method | [PLAN-PROTOCOL.md](PLAN-PROTOCOL.md) |
+| decisions/ | method | [decisions/](decisions/) |
+| conformance suite | instruments | [evals/conformance/](evals/conformance/) |
+| functional oracle | instruments | [evals/functional/](evals/functional/) |
+| TF fixture 1 | instruments | [evals/tf/fixture/](evals/tf/fixture/) |
+| TF fixture 2 | instruments | [evals/tf/fixture2/](evals/tf/fixture2/) |
+| the comparators | instruments | [evals/functional/Compare-Graph.ps1](evals/functional/Compare-Graph.ps1) |
+| psmodule v1.2.0 | plugin | [.claude-plugin/plugin.json](.claude-plugin/plugin.json) |
+| /psmodule:build | plugin | [commands/build.md](commands/build.md) |
+| /psmodule:test | plugin | [commands/test.md](commands/test.md) |
+| new | plugin | [prompts/first-module.md](prompts/first-module.md) |
+| plan | plugin | [skills/powershell-module-plan/SKILL.md](skills/powershell-module-plan/SKILL.md) |
+| build | plugin | [commands/build.md](commands/build.md) |
+| test | plugin | [commands/test.md](commands/test.md) |
+| tidy | plugin | [skills/powershell-module-tidy/SKILL.md](skills/powershell-module-tidy/SKILL.md) |
+| release | plugin | [prompts/release.md](prompts/release.md) |
+| powershell-module-plan | plugin | [skills/powershell-module-plan/SKILL.md](skills/powershell-module-plan/SKILL.md) |
+| powershell-module-architect | plugin | [skills/powershell-module-architect/SKILL.md](skills/powershell-module-architect/SKILL.md) |
+| powershell-module-scaffold | plugin | [skills/powershell-module-scaffold/SKILL.md](skills/powershell-module-scaffold/SKILL.md) |
+| powershell-module-build | plugin | [skills/powershell-module-build/SKILL.md](skills/powershell-module-build/SKILL.md) |
+| powershell-module-docs | plugin | [skills/powershell-module-docs/SKILL.md](skills/powershell-module-docs/SKILL.md) |
+| powershell-module-ux | plugin | [skills/powershell-module-ux/SKILL.md](skills/powershell-module-ux/SKILL.md) |
+| powershell-module-analyzer | plugin | [skills/powershell-module-analyzer/SKILL.md](skills/powershell-module-analyzer/SKILL.md) |
+| powershell-module-test | plugin | [skills/powershell-module-test/SKILL.md](skills/powershell-module-test/SKILL.md) |
+| powershell-module-tidy | plugin | [skills/powershell-module-tidy/SKILL.md](skills/powershell-module-tidy/SKILL.md) |
+| powershell-module-deploy | plugin | [skills/powershell-module-deploy/SKILL.md](skills/powershell-module-deploy/SKILL.md) |
+| powershell-module-release | plugin | [skills/powershell-module-release/SKILL.md](skills/powershell-module-release/SKILL.md) |
+| azdo-rest | plugin | [skills/azdo-rest/SKILL.md](skills/azdo-rest/SKILL.md) |
+| azdo-pipeline-yaml-refs | plugin | [skills/azdo-pipeline-yaml-refs/SKILL.md](skills/azdo-pipeline-yaml-refs/SKILL.md) |
+| azdo-graph-assembly | plugin | [skills/azdo-graph-assembly/SKILL.md](skills/azdo-graph-assembly/SKILL.md) |
+| tf-hcl-parse | plugin | [skills/tf-hcl-parse/SKILL.md](skills/tf-hcl-parse/SKILL.md) |
+| tf-module-resolve | plugin | [skills/tf-module-resolve/SKILL.md](skills/tf-module-resolve/SKILL.md) |
+| tf-graph-assembly | plugin | [skills/tf-graph-assembly/SKILL.md](skills/tf-graph-assembly/SKILL.md) |
+| producer-contract | plugin | [skills/producer-contract/SKILL.md](skills/producer-contract/SKILL.md) |
+| task-tree-reporting | plugin | [skills/task-tree-reporting/SKILL.md](skills/task-tree-reporting/SKILL.md) |
+| your module | module | [docs/creating-an-agent/11-your-first-module.md](docs/creating-an-agent/11-your-first-module.md) |
+| PSAzureDevOpsGraph | module | [runs/006-plugin-on/README.md](runs/006-plugin-on/README.md) |
+| you | user | [prompts/README.md](prompts/README.md) |
+
+### Which rendering is authoritative
+
+[`docs/diagram/flow-graph.json`](docs/diagram/flow-graph.json) is the source.
+The Mermaid block above is a **hand-written mirror** of it, and the two are
+compared by node count, ids, labels and layer membership in this pass's
+[verify script](plans/0040-flow-docs/verify.ps1) — because a mirror nobody
+diffs is a second source of truth that drifts silently.
+
+[`docs/diagram/flow.html`](docs/diagram/flow.html) is the full-fidelity
+version: the same graph, interactive, with every node's *who / what / why* and
+the artifact path in its details panel. Open it from a clone —
+`docs/diagram/flow.html` in a browser — rather than from GitHub, which serves
+HTML as text.
+
+It is regenerated by
+[`tools/diagram/Build-Diagram.ps1`](tools/diagram/Build-Diagram.ps1), which
+renders through
+[PSGraphRenderToHtml](https://github.com/JerryBalmer1/PSGraphRenderToHtml) and
+[PSGraphRender](https://github.com/JerryBalmer1/PSGraphRender) **at their
+pinned tags**, `v0.1.0` and `v0.13.0`, materialised read-only with
+`git archive` so that neither sibling repository is touched. **This is the
+`producer-contract` skill eaten as dog food**: the graph above is validated
+against a schema another repository owns, by that repository's own battery,
+before it is allowed to render. Seven battery cases, green, on every build.
+
+**A pass that changes the flow re-runs `Build-Diagram.ps1` and re-mirrors the
+Mermaid.** Both, in the same commit. That obligation is recorded against
+item 19 in [the LEDGER](LEDGER.md), which is where this project keeps work it
+has accepted.
+
+---
+
 ## Creating a new agent, start here:
 
 Everything here was built by directing Claude, and the method is written down
 so you can do the same thing on your own domain. Start at
 [docs/creating-an-agent/00-start-here.md](docs/creating-an-agent/00-start-here.md)
-— eleven chapters, each one worked against a real pass, run or decision in this
+— twelve chapters, each one worked against a real pass, run or decision in this
 repository, including the mistakes.
 
 **Deciding whether this much testing is worth it?**
