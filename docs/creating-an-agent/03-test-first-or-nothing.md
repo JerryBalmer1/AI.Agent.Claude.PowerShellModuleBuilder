@@ -453,6 +453,71 @@ The generalisable form:
 
 ---
 
+## (f) When the thing you want to assert cannot be asserted
+
+Sometimes the property you care about has no checkable form, and the honest
+move is neither to skip it nor to quietly assert something weaker while
+claiming you asserted the real thing.
+
+The worked example is help on PowerShell classes.
+
+The standard says every public type is documented. The obvious assertion is
+"`Get-Help` returns something for this class". It cannot be written, because
+**PowerShell classes and enums support no comment-based help at all.** Not
+partially, not with a different keyword — a complete `.SYNOPSIS` block above a
+`class` produces nothing:
+
+```
+matches for 'ZzUniqueThing': 0
+typed lookup threw: HelpNotFoundException
+```
+
+That is the whole finding, and it was produced by running it rather than by
+recalling it, which matters because the block is *visually indistinguishable*
+from the working kind twenty lines away in the same file. Somebody writes one,
+it looks right, and no reader ever sees it.
+
+There are three responses and only one of them is honest.
+
+**Skip it.** The types go undocumented and nothing says so. The gap is invisible
+precisely where it is least recoverable — nobody discovers a missing rule.
+
+**Assert the weaker thing and describe it as the stronger.** Check that a
+comment block precedes the type, and call the assertion "classes are
+documented". This is the failure this chapter has been circling from a different
+angle: not a gate that cannot fail, but a gate that *can* fail while
+**measuring something other than what its name claims**. It is worse than the
+inert assertion, because an inert one at least does not lie about its subject —
+and it will be cited later, by someone who reads the name and not the body.
+
+**Assert the checkable equivalent, and say in the open that it is an
+equivalent.** That is what
+[`Help.Tests.ps1`](../../evals/conformance/Help.Tests.ps1) does. Two assertions
+stand in for the impossible one:
+
+- a doc comment block immediately precedes every class and enum — which is the
+  only documentation a reader *of the source* will ever get;
+- a module that defines types ships `about_<Module>` — which is the only
+  documentation a *user* will ever get.
+
+Together they cover both audiences, and neither pretends to be `Get-Help`. The
+skill says so in as many words, and so does the suite's own comment.
+
+The general rule, and it generalises well beyond PowerShell:
+
+> When a property cannot be asserted directly, name the equivalent you are
+> asserting instead, say what it does **not** cover, and put both in the
+> assertion's own text. An equivalent stated as an equivalent is evidence. An
+> equivalent presented as the real thing is a claim nobody can audit, and it
+> will be audited by being believed.
+
+The test of whether you have done this correctly is simple: read the assertion's
+name and its failure message, and ask whether someone who has never seen the
+code would come away believing something false. If they would, the name is
+wrong, not the assertion.
+
+---
+
 ## The operational rule
 
 METHOD.md turns all of the above into one thing you can actually do, for
