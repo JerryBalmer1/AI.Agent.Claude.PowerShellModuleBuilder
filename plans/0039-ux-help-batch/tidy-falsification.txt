@@ -1,0 +1,51 @@
+TIDY SWEEP FALSIFICATION — pass 0039
+Harness:   a0cd1f9 on pass-0039-ux-help-batch
+Target:    PSModuleGraph, fresh clone at C:/w39/ref
+Runner:    plans/0039-ux-help-batch/tidy-falsify.ps1
+Checks:    Naming, Parity, DeadFile  (PlanCurrency and Conformance excluded:
+           the first is falsified by its own four-outcome switch and the
+           reference has no docs/PLAN.md, the second is the conformance
+           suite's own protocol and is not re-falsified here)
+
+Known-good is re-asserted before and after EVERY row. A row whose restore
+leaves any rule firing is a hard stop, and so is a perturbation that changes
+no file: a probe that does not perturb reports 'does not fire' and proves
+nothing, which is the alarming answer nobody double-checks.
+
+BASELINE rules: (none)
+Id  Kind    Rule                          Fired Expected Pass Collateral
+--  ----    ----                          ----- -------- ---- ----------
+T1  BREAK   test-file-discoverable         True     True True 
+T2  CONTROL test-file-discoverable        False    False True 
+T3  BREAK   approved-verb-noun             True     True True 
+T4  CONTROL approved-verb-noun            False    False True 
+T5  BREAK   documented-unexported          True     True True 
+T6  CONTROL documented-unexported         False    False True 
+T7  BREAK   exported-undocumented          True     True True 
+T8  BREAK   unreferenced-private-function  True     True True 
+T9  CONTROL unreferenced-private-function False    False True 
+T10 CONTROL no-space-in-filename          False    False True 
+T11 BREAK   no-space-in-filename           True     True True 
+T12 CONTROL pascalcase-directory          False    False True 
+T13 BREAK   pascalcase-directory           True     True True 
+BREAKS: 7 / 7 red
+CONTROLS: 6 / 6 green
+
+WHAT THE FIRST RUN FOUND, recorded because it is the point of the exercise.
+T5 did NOT fire on its first run. The rule derived the module's command
+prefix from the module NAME, and this plugin's own convention is a command
+prefix that is not the module name - the reference is PSModuleGraph and its
+commands are Get-PSModule*. Every command the rule existed to catch was
+outside its own pattern. The derivation now groups the exported nouns and
+takes each group's longest common prefix, which yields {PSModule,
+Knowledge} for the reference. A rule nobody had broken would have shipped
+green and inert.
+
+Two further defects were found by running the sweep against the reference
+before any probe: the PascalCase rule failed en-US, a culture directory the
+build is REQUIRED to copy, and the space rule failed tests/fixtures/'res
+one', a fixture whose whole purpose is a hostile path. Both are now scoped
+rather than exempted - the space rule reads only .ps1/.psm1/.psd1, and the
+PascalCase rule skips the culture pattern the emitter itself uses. Scoping
+a rule to what it is about and exempting a directory from it are different
+acts, and only the second stops a check firing where it should.
