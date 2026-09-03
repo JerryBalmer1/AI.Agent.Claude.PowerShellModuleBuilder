@@ -1,0 +1,105 @@
+VERIFY RUN - pass 0041
+command: pwsh -NoProfile -File plans/0041-operator-ux/verify.ps1
+exit:    0
+run by:  the recovery session, against a fresh clone of the LANDED main,
+         not against the working tree - which is the whole point of the
+         script, and the reason it could not run before the pass landed.
+         See plan.md section 8 and deviation 14.
+
+Output verbatim below.
+
+VERIFY 0041 - operator experience and presentation
+  origin: https://github.com/JerryBalmer1/AI.Agent.Claude.PowerShellModuleBuilder.git
+  work:   C:\Users\jlbal\AppData\Local\Temp\verify-0041-4a3b3d41f7594c91bb6909e8d2c47829
+
+cloned harness at f5bca41
+
+1. README presentation invariants
+  [ok  ] zero untagged code fences - 0 bare ` line(s)
+  [ok  ] every tagged opener has a closing fence - 7 tagged opener(s), 7 closer(s)
+  [ok  ] the README has code blocks at all - 7 found
+  [ok  ] four shields.io badges - 4 found
+  [ok  ] every badge uses the same flat style - 4 of 4
+  [ok  ] the README embeds the hero
+  [ok  ] the hero is a real PNG by its magic bytes - 466625 bytes
+
+2. Mermaid layer colours against the declared palette
+  [ok  ] Mermaid and JSON agree on nodes, edges, layers and the five colours
+      nodes:  mermaid 39, json 39
+      edges:  mermaid 49, json 49
+      layers: mermaid 5, json 5
+      colours: mermaid 5 classDefs, json 5 palette entries
+      MERMAID AND JSON AGREE: same ids, same labels, same layer membership, same edges, same five layer colours, same colour class per node
+  [ok  ] five layers declared, five classDefs - palette 5, classDef 5
+  [ok  ] layer 'method' is #A99BF2 in both - mermaid #A99BF2
+  [ok  ] layer 'instruments' is #79D9A8 in both - mermaid #79D9A8
+  [ok  ] layer 'plugin' is #F2C14E in both - mermaid #F2C14E
+  [ok  ] layer 'module' is #7FC4F2 in both - mermaid #7FC4F2
+  [ok  ] layer 'user' is #F2A0BE in both - mermaid #F2A0BE
+  [ok  ] layer 'method' colour reaches flow.html
+  [ok  ] layer 'instruments' colour reaches flow.html
+  [ok  ] layer 'plugin' colour reaches flow.html
+  [ok  ] layer 'module' colour reaches flow.html
+  [ok  ] layer 'user' colour reaches flow.html
+  [ok  ] flow.html carries the tuned wheel zoom
+
+3. PSGraphRenderToHtml v0.1.1 - the ColorBy falsification trio, re-fired
+  PSGraphRender       v0.13.0  964d73a
+  PSGraphRenderToHtml v0.1.1   726c580
+  [ok  ] dropped value renders, retired values refuse naming both sides, control unchanged
+      COLORBY FALSIFICATION - LEDGER 50
+        PSGraphRenderToHtml v0.1.1  C:\Users\jlbal\AppData\Local\Temp\verify-0041-4a3b3d41f7594c91bb6909e8d2c47829\PSGraphRenderToHtml\src\PSGraphRenderToHtml\PSGraphRenderToHtml.psm1
+        PSGraphRender       v0.13.0  C:\Users\jlbal\AppData\Local\Temp\verify-0041-4a3b3d41f7594c91bb6909e8d2c47829\PSGraphRender\output\PSGraphRender\PSGraphRender.psm1
+        graph               C:\Users\jlbal\AppData\Local\Temp\verify-0041-4a3b3d41f7594c91bb6909e8d2c47829\PSGraphRenderToHtml\docs\samples\sample-graph.json
+        baseline ref        v0.1.0
+      
+      1. PREVIOUSLY DROPPED - blastRadius: refused by v0.1.0, drawn by the renderer
+         bound, and rendered 616393 characters
+         renderer warnings: 0
+         the setting reaches the document: 'blastRadius' occurs 3 times in it
+      
+      2. REFUSED, NAMING BOTH SIDES - scope and type, the values v0.1.0 accepted
+         scope: refused before any render happened
+            Cannot validate argument on parameter 'ColorBy'. -ColorBy 'scope' is not a value the renderer accepts. PSGraphRenderToHtml accepts exactly what PSGraphRender's cytoscape settings schema accepts, and that set is: structure, dependents, blastRadius, dependencies, reach. Up to v0.1.0 this module also accepted 'scope' and 'type'; PSGraphRender never did, so passing either produced a warning from the renderer and a silent fall back to 'structure'. To colour by a layer, name a colour per classification in -Theme's KindColor map, which is the channel the renderer actually reads.
+         type: refused before any render happened
+            Cannot validate argument on parameter 'ColorBy'. -ColorBy 'type' is not a value the renderer accepts. PSGraphRenderToHtml accepts exactly what PSGraphRender's cytoscape settings schema accepts, and that set is: structure, dependents, blastRadius, dependencies, reach. Up to v0.1.0 this module also accepted 'scope' and 'type'; PSGraphRender never did, so passing either produced a warning from the renderer and a silent fall back to 'structure'. To colour by a layer, name a colour per classification in -Theme's KindColor map, which is the channel the renderer actually reads.
+      
+         and forced past the validator, which is what v0.1.0 did every time:
+      WARNING: Setting 'ColorBy': 'scope' is not one of: structure, dependents, blastRadius, dependencies, reach. Using structure.
+         scope: renderer warnings 1
+            Setting 'ColorBy': 'scope' is not one of: structure, dependents, blastRadius, dependencies, reach. Using structure.
+      WARNING: Setting 'ColorBy': 'type' is not one of: structure, dependents, blastRadius, dependencies, reach. Using structure.
+         type: renderer warnings 1
+            Setting 'ColorBy': 'type' is not one of: structure, dependents, blastRadius, dependencies, reach. Using structure.
+      
+      3. CONTROL UNCHANGED - structure, against the PRE-FIX module
+         post-fix: 616391 characters, 0 warnings
+         baseline module: v0.1.0 from v0.1.0
+         pre-fix:  616391 characters, 0 warnings
+         identical apart from the generatedAt stamp
+         pre-fix refused blastRadius, which is the drop this pass removed
+      
+      FALSIFICATION: 3 of 3 - the dropped value now reaches the renderer unwarned, the values it never accepted refuse naming both sides, and the control is byte-identical to pre-fix
+
+4. Every link in every touched document, cold
+  [ok  ] no dead links - DEAD LINKS: 0
+  [ok  ] every skills-table row links its own SKILL.md - 19 rows
+
+5. UX records: shape, and the index against the files
+  [ok  ] at least six UX records - 6 found
+  [ok  ] UX-001-routing-signals.md has all four headings
+  [ok  ] UX-002-ends-with-tripwire.md has all four headings
+  [ok  ] UX-003-report-contract.md has all four headings
+  [ok  ] UX-004-heartbeats.md has all four headings
+  [ok  ] UX-005-local-handoff.md has all four headings
+  [ok  ] UX-006-presentation-standard.md has all four headings
+  [ok  ] the registry index names exactly the files present - index 6, on disk 6
+
+6. The installable surface is untouched since v1.2.0
+  [ok  ] commands/ unchanged since v1.2.0
+  [ok  ] .claude-plugin/ unchanged since v1.2.0
+  [ok  ] skills/ changed in exactly one file - skills/powershell-module-ux/SKILL.md
+  [ok  ] and that file is powershell-module-ux - skills/powershell-module-ux/SKILL.md
+  [ok  ] the plugin manifest still reads 1.2.0 - no harness release - 1.2.0
+
+VERIFY 0041: every check agrees
