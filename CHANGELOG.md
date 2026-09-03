@@ -9,6 +9,114 @@ Versions follow [semantic versioning](https://semver.org/) as described in
 [Versioning](README.md#versioning) — MAJOR when something you rely on breaks,
 MINOR when capability is added, PATCH for corrections.
 
+## 1.2.0 — 2026-09-02
+
+**MINOR: capability is added and nothing you rely on breaks.** Two new skills,
+five amended, a new block of help conformance assertions, and an optional
+settings file. No skill was removed or renamed, no command's contract changed,
+and no convention the conformance suite enforces was reversed.
+`git diff v1.1.1..v1.2.0 -- commands/` is empty.
+
+### Two new skills — nineteen now, from seventeen
+
+**`powershell-module-ux`** is about argument completion, and mostly about when
+*not* to add it. Three conditions a parameter has to meet before a completer
+earns its place; `[ValidateSet()]` versus `[ArgumentCompleter()]` versus a class
+implementing `IArgumentCompleter`, with a worked example of each; a ~200ms cost
+threshold for reaching for a session cache; and six guardrails on that cache
+stated as rules rather than advice. The third of them is absolute: **a completer
+never caches a secret, a credential, a token, or anything derived from one** —
+not in a variable, not on disk, not for the length of one session. It also says
+that a completer without a test does not ship, and shows the test, because
+completion is invisible to every other gate here.
+
+Every code example on that page was run before it was written down. The
+techniques are distilled from three [powershell.one](https://powershell.one)
+articles, each linked and each actually read; nothing is reproduced, and the one
+place the skill contradicts its source is marked as a deliberate departure.
+
+**`powershell-module-tidy`** is the pre-release sweep, as one verb. Naming and
+layout conformance, public surface versus documentation parity **in both
+directions** — the second direction, a README naming a command that does not
+exist, is the one hand-rolled versions leave out and the one that produces a bug
+report — dead-file detection, a `docs/PLAN.md` currency check that blocks a
+release when the plan has gone stale, and a final conformance run that refuses
+to bless while any Bucket-A item is open. It changes nothing; there is no `-Fix`
+switch, on purpose.
+
+### Five skills amended
+
+- **`powershell-module-analyzer`** gains the class-candidate rule: the same key
+  set emitted as `PSCustomObject` from three or more sites is surfaced *with its
+  four costs attached* — reload behaviour, `using module`, serialization
+  fidelity, mockability — and never applied for you. The counterexample ships
+  with it, because repeated shape is evidence of a schema at least as often as
+  it is evidence of a missing class.
+- **`powershell-module-architect`** gains the enumerator rule: every public
+  output type gets a no-argument `Get-<Noun>`. Singletons, contexts and computed
+  aggregates are the exception, declared in one line where the type is.
+- **`powershell-module-docs`** gains the house `.EXAMPLE` standard — parameters
+  at the top with aligned `=`, splatted through a `$params` hashtable,
+  `try`/`catch` with a real message, the result displayed, so an example can be
+  copied and edited rather than retyped. Full help is now the standard for
+  private functions as well as public, with `HelpMessage` on mandatory
+  parameters. And it says plainly that **PowerShell classes and enums support no
+  comment-based help at all** — a full help block above a class produces zero
+  `Get-Help` matches — so the standard asserts the checkable equivalent and says
+  out loud that it is an equivalent.
+- **`powershell-module-plan`** gains the master-plan obligation: every module
+  carries `docs/PLAN.md`, in plain language, written for a reader who will never
+  open the machinery, updated when a plan is added or a release is cut.
+- **`powershell-module-build`** documents the settings file below, including a
+  table of what each switch invalidates when it is flipped.
+
+### Help conformance — and a denominator that moved
+
+Eight new assertions in `evals/conformance/Help.Tests.ps1`, all tagged
+`HouseStyle`: help on every function public and private, `.PARAMETER` per
+declared parameter, examples counted against parameter sets with each named set
+demonstrated, a doc block before every class and enum, and an `about_` topic
+when a module ships types.
+
+**`cases-defined` moves from 33 to 41, and that is a boundary rather than an
+improvement.** Scores taken before this tag and after it are separate series and
+are not compared. Nothing earlier is restated or re-derived — the ladder's
+numbers stand exactly as measured, on the 33-case series, and the README says so
+above the table they are in. If a boundary were used to retire inconvenient
+figures it would be worse than no boundary at all.
+
+For what the new series looks like on a commit that predates it: run 006's final
+scores **38 / 41**, with three failures declared Bucket B and none fixed. The
+sort is worth reading — all twelve `at least one example` failures are exactly
+the twelve *private* functions, because the module was built to a docs skill that
+required help on the exported surface and said nothing about the rest.
+
+### An optional `psmodule.settings.psd1`
+
+Three enumerated keys at your repository root — `CoverageThreshold`,
+`ModuleProfile`, `CompletionCacheDefault` — resolved explicit parameter > file >
+built-in default. **An unknown key is a refusal that names it**, not a warning:
+`CoverageThresold = 90` would otherwise grade at 75 while the file on disk says
+90, with nothing in the output to disagree. A near-miss value is refused on the
+same terms rather than coerced.
+
+**The defaults are the measured configuration**, so a repository that ships no
+settings file is graded exactly the way every published run here was graded, and
+needs no decision from you. The values and where each came from are echoed into
+every score record.
+
+### One thing that was wrong and is now a hard stop
+
+While the second suite container was being added, it lost its discovery to a
+member access on an empty array — and **every one of its assertions vanished
+from the run while the score printed as entirely normal.** `cases-defined` is
+parsed from the suite's source and does not know a file failed to load, so the
+numerator and denominator shrank together. Pester reported `Container failed: 1`
+and nothing downstream read it.
+
+The runner now refuses to report a score at all when a container did not run,
+and writes no result file. Not run is not a pass.
+
 ## 1.1.1 — 2026-09-02
 
 **Nothing you install changes.** `skills/` and `commands/` are byte-identical to

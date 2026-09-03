@@ -35,15 +35,15 @@ useless exactly when you need it.
 
 Then paste these three inside **Claude Code**, not in a shell:
 
-    /plugin marketplace add JerryBalmer1/AI.Agent.Claude.PowerShellModuleBuilder@v1.1.1
+    /plugin marketplace add JerryBalmer1/AI.Agent.Claude.PowerShellModuleBuilder@v1.2.0
     /plugin install psmodule@psmodule-builder
     /psmodule:build
 
 The first adds this repository as a plugin marketplace, **pinned to the
-`v1.1.1` tag**. The pin is deliberate and is
+`v1.2.0` tag**. The pin is deliberate and is
 [decision 0013](decisions/0013-harness-release-tagging.md): `main` moves as work
 lands, and pinning means none of that reaches you until a release is tagged.
-Drop the `@v1.1.1` and you are tracking whatever `main` happens to be, which is
+Drop the `@v1.2.0` and you are tracking whatever `main` happens to be, which is
 not a release and is not what these measurements are about.
 
 The second installs the plugin from that marketplace. The third is the plugin
@@ -453,7 +453,7 @@ out.**
 ---
 
 <!-- TEMPLATE:replace — a plugin needs a table of what it contains and what
-     each part is for. These seventeen names, their prefixes and the two
+     each part is for. These nineteen names, their prefixes and the two
      findings noted against them are this project's. -->
 
 ## The skills
@@ -477,7 +477,9 @@ owns. Recorded for the operator to settle if a second cross-cutting skill appear
 | `powershell-module-build` | `build.ps1` and `<Name>.build.ps1` — InvokeBuild tasks, `ParseError` in the analyzer severity list, the coverage gate, exit-code discipline. **Carries F-1.** |
 | `powershell-module-test` | The Pester suite and the ordered five-layer runner that stops at the first failing layer. |
 | `powershell-module-analyzer` | AST-driven analysis that never runs the code it reads. |
-| `powershell-module-docs` | Comment-based help, `about_` topics and the culture directory the build must copy. |
+| `powershell-module-docs` | Comment-based help for public **and** private functions, the house `.EXAMPLE` standard, `about_` topics and the culture directory the build must copy. |
+| `powershell-module-ux` | Argument completion — when a parameter earns a completer, `ValidateSet` versus `[ArgumentCompleter]` versus `IArgumentCompleter`, the session cache and its guardrails. Added at v1.2.0. |
+| `powershell-module-tidy` | The pre-release sweep — naming, surface/docs parity both ways, dead files, `docs/PLAN.md` currency, and a refusal to bless with an open Bucket-A item. Added at v1.2.0. |
 | `powershell-module-deploy` | Staging and output layout; why `Publish-Module` is the operator's alone. |
 | `powershell-module-release` | Semver against a module surface, changelog and worklog conventions. |
 | `azdo-rest` | The Azure DevOps REST API, read-only. `$env:AZDO_PAT` and nothing else, ever. |
@@ -617,7 +619,7 @@ the scorer that first produced them. They did not move
 
 | Path | What |
 |---|---|
-| `skills/` | The plugin's seventeen skills |
+| `skills/` | The plugin's nineteen skills |
 | `commands/` | `/build` and `/test` |
 | `evals/conformance/` | The shape oracle: `Conformance.Tests.ps1`, its runner, the falsification record |
 | `evals/functional/` | The behaviour oracle: `BRIEF.md`, `fixture/`, the comparator, the seed |
