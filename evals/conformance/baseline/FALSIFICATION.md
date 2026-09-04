@@ -300,3 +300,79 @@ Not built now.
    `Parser::ParseFile` check and dies mid-row. Assign the value first. Cost one
    run and left the clone dirty, which is why step 1 of the protocol asserts
    cleanliness rather than assuming it.
+
+## Rows 18a-18e — Workspace composition (pass 0044)
+
+The assertion: **`Workspace composition.does not register PSModuleGraph as a
+folder`**, `HouseStyle`. A tracked `*.code-workspace` must not list the
+read-only reference among its folders — a reference in the editor's workspace is
+a writable working directory and its own instructions load into the session.
+
+Numbered from 18 rather than from 13. The table above ends at 12, and the note
+under it records that pass 0008 added five more rows for the build-file block
+which were never tabulated here; leaving 13-17 to them costs nothing and
+guarantees no collision.
+
+Driver: [`plans/0044-method-corrections/Test-WorkspaceFalsification.ps1`](../../../plans/0044-method-corrections/Test-WorkspaceFalsification.ps1).
+Each fixture is a **minimal module repository** built under `scratch/` at run
+time, not a bare directory — see 18e's note for why that is not incidental.
+
+| # | Break applied | Expected assertion | Outcome | Collateral reds | Notes |
+|---|---|---|---|---|---|
+| 18a | Workspace file registers `../PSModuleGraph` as a folder | does not register PSModuleGraph as a folder | Fires | — | passed 0, failed 1 |
+| 18b | **Restore.** Same file, that folder entry removed | does not register PSModuleGraph as a folder | **Correctly stays green** | — | passed 1, failed 0 |
+| 18c | **Control, scope.** Names `PSModuleGraph` in a `//` comment and in a settings string; registers only siblings | does not register PSModuleGraph as a folder | **Correctly stays green** | — | The row that made the assertion semantic instead of a text match |
+| 18d | **Control, segment.** Registers `../PSModuleGraphTools` | does not register PSModuleGraph as a folder | **Correctly stays green** | — | A sibling whose name merely starts with the reference's is not the reference |
+| 18e | **Control, absence.** No workspace file at all | does not register PSModuleGraph as a folder | **Zero cases — inapplicable** | — | Not a pass. See below. |
+
+All five behave as required; driver exit 0.
+
+**18c is the row that changed the assertion.** A text match for `PSModuleGraph`
+passes 18a and 18b and fails 18c, and an assertion that fails 18c fires on every
+file that *documents* the rule — including this one, `UX-007`, and the METHOD
+rule that motivates it. The assertion therefore parses the workspace file as
+JSONC and reads `folders[].path`, comparing path segments. Registration is a
+folder entry; a mention is not one.
+
+**18e is a control on the suite, not on the assertion.** Zero cases must report
+as inapplicable and must never be counted as a pass. Getting there exposed a
+Pester 6 behaviour worth writing down: **an empty `-ForEach` is a discovery
+error that fails the entire file**, not zero cases. Without
+`-AllowNullOrEmptyForEach` on this `It`, every target with no tracked workspace
+file — three of the four ecosystem repositories, and every gallery corpus
+package — would have taken the whole conformance suite down rather than
+reporting one assertion as inapplicable.
+
+**The first run of the driver reported ZERO CASES on all four rows, and it was
+wrong.** Discovery was failing on an unrelated assertion's empty `-ForEach`, and
+the driver could not tell "this assertion had nothing to check" from "the suite
+never ran". A driver that cannot separate those can report a green that means
+nothing — the same false-green that hazard 6 above exists to prevent, arriving
+from a new direction. The driver now fails loudly on a failed container, and
+that check is why 18e can be trusted.
+
+### The assertion against the real repositories
+
+Run once per repository, filtered to this block. Recorded because two of the
+five results are findings rather than passes.
+
+| Repository | Result | |
+|---|---|---|
+| PSAzureDevOpsGraph | zero cases | no tracked workspace file — inapplicable |
+| PSGraphRenderToHtml | zero cases | no tracked workspace file — inapplicable |
+| PSTerraformGraph | zero cases | no tracked workspace file — inapplicable |
+| PSGraphRender | **RED** | `PSGraphRender.code-workspace` registers `../PSModuleGraph` |
+| AI.Agent.Claude.PowerShellModuleBuilder | **cannot run** | the suite fails discovery against the harness |
+
+**PSGraphRender is a real violation and it is not repaired here.** The file has
+carried `../PSModuleGraph` since that repository's initial commit, and pass 0044
+holds the ecosystem repositories read-only. Never weaken an assertion because a
+target fails it: the finding goes to the operator, as LEDGER backlog 60.
+
+**The harness cannot be graded by its own suite.** `AI.Agent.Claude.PowerShellModuleBuilder`
+has no module manifest, so `$ExportedWithSource` and `$PublicFiles` are both
+empty and discovery fails on assertions this pass did not touch. The one
+repository whose `.code-workspace` produced the 0043 finding is therefore the
+one repository this assertion structurally cannot reach. Covered instead by a
+direct check in `plans/0044-method-corrections/verify.ps1`, and recorded as
+LEDGER backlog 61.

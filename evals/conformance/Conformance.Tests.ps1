@@ -127,6 +127,38 @@ BeforeDiscovery {
         $script:PublicFiles = @(Get-ChildItem -Path $PublicDir -Filter *.ps1 -File | Sort-Object Name)
     }
 
+    # Editor workspace files the repository PUBLISHES. Tracked, because an
+    # untracked .code-workspace is the operator's own business and never reaches
+    # anyone else; a committed one composes the workspace of every person who
+    # clones. Discovery does the tracked filter, so a repository with none
+    # produces zero cases and reports as inapplicable rather than as a pass.
+    $script:WorkspaceFiles = @()
+    $wsPaths = @()
+    if (Test-Path -LiteralPath (Join-Path $Target '.git')) {
+        $wsPaths = @(& git -C $Target ls-files '*.code-workspace' 2>$null)
+    }
+    if (-not $wsPaths) {
+        # No git: a downloaded or vendored tree. Present on disk is the best
+        # available proxy for published, and the same exclusions apply as for
+        # manifest discovery above.
+        $wsPaths = @(
+            Get-ChildItem -Path $Target -Filter *.code-workspace -File -Recurse -ErrorAction SilentlyContinue |
+                Where-Object {
+                    $_.FullName.Substring($Target.Length) -notmatch
+                        '[\\/](output|scratch|\.git|gallery|fixtures|node_modules)[\\/]'
+                } |
+                ForEach-Object { $_.FullName.Substring($Target.Length).TrimStart('\', '/') }
+        )
+    }
+    $script:WorkspaceFiles = @(
+        $wsPaths | Sort-Object -Unique | ForEach-Object {
+            [pscustomobject]@{
+                Rel  = $_
+                Full = Join-Path $Target $_
+            }
+        }
+    )
+
     $script:ManifestData = $null
     if ($Manifest) {
         try { $script:ManifestData = Import-PowerShellDataFile -LiteralPath $Manifest.FullName } catch { }
@@ -427,6 +459,65 @@ Describe 'Repository shape' -Tag 'Repository' {
             if ($calls | Where-Object { $_.GetCommandName() -eq $name }) { $invoked = $true; break }
         }
         $invoked | Should -BeTrue -Because 'an exported command no test ever calls is untested'
+    }
+}
+
+# HouseStyle, not Repository. "Does not register PSModuleGraph" is this
+# ecosystem's governance, not a property of module repositories in general, and
+# putting it on the Repository rung would be a claim the tag cannot support.
+#
+# Why it exists: PSModuleGraph is the read-only reference implementation, kept
+# out of the working set on purpose - a reference in the editor's workspace is a
+# writable working directory and its own instructions load into the session
+# (METHOD.md, Safety rails). Two sessions of pass 0043 reported that no file in
+# the repository registered it. A tracked .code-workspace did, and neither
+# session found it, because both looked for a directory on disk rather than for
+# the file that puts one there.
+Describe 'Workspace composition' -Tag 'HouseStyle' {
+
+    # -AllowNullOrEmptyForEach is load-bearing and not a convenience. Pester 6
+    # treats an empty -ForEach as a DISCOVERY ERROR that fails the whole file,
+    # not as zero cases: without this, every target with no tracked workspace
+    # file - three of the four ecosystem repositories, and every gallery corpus
+    # package - would take the entire conformance suite down rather than
+    # reporting this one assertion as inapplicable. Found by running the
+    # falsification driver, which reported ZERO CASES on all four fixtures while
+    # the real cause was discovery failing on an unrelated assertion.
+    It 'does not register PSModuleGraph as a folder: <_.Rel>' -ForEach $WorkspaceFiles -AllowNullOrEmptyForEach {
+        # Semantic, not a text match. The registration is a folder entry; a
+        # mention in a setting, a comment, or a path that merely contains the
+        # name is not one, and an assertion that fired on those would fire on
+        # the file that documents the rule. That distinction is the scope
+        # control in FALSIFICATION.md, row 18c.
+        $raw = Get-Content -LiteralPath $_.Full -Raw
+
+        # .code-workspace is JSONC: line comments are legal and ConvertFrom-Json
+        # rejects them. Strip only whole-line comments; a // inside a string
+        # would be a URL, and those are left alone.
+        $stripped = ($raw -split "`r?`n" | Where-Object { $_ -notmatch '^\s*//' }) -join "`n"
+
+        $doc = $null
+        try { $doc = $stripped | ConvertFrom-Json } catch { }
+        $doc | Should -Not -BeNullOrEmpty -Because "$($_.Rel) must parse as JSON before its folder list can be read"
+
+        $folders = @()
+        if ($doc.PSObject.Properties.Name -contains 'folders') {
+            $folders = @($doc.folders | ForEach-Object {
+                    if ($_.PSObject.Properties.Name -contains 'path') { $_.path }
+                })
+        }
+
+        # Segment-wise, so a sibling named PSModuleGraphTools does not match and
+        # a nested ../x/PSModuleGraph does.
+        $registered = @($folders | Where-Object {
+                @($_ -split '[\\/]') -contains 'PSModuleGraph'
+            })
+
+        $registered | Should -BeNullOrEmpty -Because (
+            "a tracked workspace file that registers PSModuleGraph puts the read-only " +
+            "reference into the working set of everyone who clones this repository, " +
+            "where it is a writable working directory whose own instructions load " +
+            "into the session; found $($registered -join ', ')")
     }
 }
 
