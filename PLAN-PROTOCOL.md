@@ -140,6 +140,57 @@ puts it one mistake away from being in the pass commit, and the pass commit
 is the record of what the pass did. That record is worth more than the
 convenience of not making a second commit.
 
+## The recovery phase
+
+A hard stop ends a pass. The next prompt then has to get the repositories from
+wherever the stop left them back to a state a pass can start from, and writing
+that as prose for a human to perform by hand wastes the one artifact the stopped
+session produced: it knew exactly what it had and had not done.
+
+So a hard-stop report **may** carry a recovery phase for its own re-issue — a
+numbered, machine-executable sequence placed ahead of Section 0, which the
+re-issued prompt runs before its preconditions. Five rules govern it.
+
+**It is idempotent, and every step is check-then-act.** The phase is pasted into
+whatever session comes next, at whatever state that session finds. A step reads
+the state first and skips itself when its work is already done, so a second run
+of the same file is a no-op that reports "nothing to do" rather than an error or
+a repeat. This is not a nicety: the phase's whole purpose is to be safe to run
+when nobody is certain what the previous session finished.
+
+**Operations already authorized by a standing decision are pre-ratified.** A
+recovery step that does what a committed decision already says to do needs no
+new approval — it is the decision being carried out, late.
+
+**Ruling-class operations are not.** Abandoning a pass, changing the composition
+of the workspace, anything adjacent to a ⛔ — these execute only under the
+operator's approval of the re-issue itself, and the phase says so at the step.
+The distinction is who decided, not how risky it looks: a pre-ratified step is
+one the operator has already ruled on, and a ruling-class step is one where
+running it *is* the ruling.
+
+**A one-time authorization is scoped to the file it appears in.** Where a
+recovery step needs an act that is otherwise never an agent action, the prompt
+grants it explicitly, once, for that act only, and restates that every other
+prohibition on the same object stays in force.
+
+**A session-unreachable step terminates the phase.** Anything baked in at launch
+— the session's working-directory list, its permissions, its model — cannot be
+changed by any prompt run inside that session. A phase reaching such a step does
+not attempt it, does not work around it, and does not continue past it: it
+prints the operator's remaining touches and ends with a **stop-and-relaunch**
+instruction, and the re-issued prompt is pasted into the fresh session. A phase
+that carried on here would be reporting success on a condition it cannot see.
+
+**Worked example — Phase R, pass 0043.** Six steps: state check, two commits,
+relocate a reference clone out of the workspace (the one-time authorization,
+move-not-copy, no git operation against the clone), a recovery state table, and
+R6, a session gate. First run: R1–R5 executed and R6 stopped the session dead,
+printing the two operator touches. Second run, in the fresh session: R1–R5 each
+found their work already done and skipped, R6 passed, and the pass proper began
+at Section 0. Both runs are recorded in that pass's plan, and the second run is
+the evidence that check-then-act was real rather than intended.
+
 ## Sync and handoff
 
 The two acts that bracket a pass. Both are about the state a pass finds the
