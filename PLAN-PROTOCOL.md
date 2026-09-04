@@ -244,7 +244,7 @@ If a token count is wanted it has to come from the host.
 
 ## Signals, reports and records
 
-The three conventions that govern how a pass talks to the operator. Each has a
+The four conventions that govern how a pass talks to the operator. Each has a
 numbered record in `docs/ux/` saying what went wrong without it.
 
 ### Routing signals and the tripwire
@@ -259,6 +259,38 @@ before anything runs. Shape is the kind of signal, color
 is the value, and the word always rides the marker. A
 block without a routing circle is asked about, never
 guessed at.
+
+### The five task signals
+
+Every step in a prompt carries one of five markers,
+and the word always rides the marker:
+
+- 🔴 **Hard stop.** Fails → stop, report, never
+  resolve.
+- 🟠 **Operator action.** Agent verifies, never
+  performs.
+- 🟢 **Agent task.**
+- 🔵 **Evidence gate.** Observed and recorded in
+  `plan.md` before the next step opens.
+- ⛔ **Never**, for the pass's whole duration.
+
+These are *task* signals and are distinct from the
+routing circle above, which says where a whole block
+goes. Three markers are common to both and mean
+different things — 🔴 is NEW SESSION in the routing
+circle and a hard stop here — so the disambiguator is
+position, not colour: the routing circle leads the
+block and appears once; task signals appear inline
+against steps. Never put a task signal on the routing
+line.
+
+The constraint the legend survived: the markers passed
+every grep and parse they met in passes 0043 and 0044,
+including a red-first acceptance test that matched them
+by Unicode code point and correctly reported four of
+five present and one absent. A convention that a
+checker cannot see is a convention that only holds
+while people are watching.
 
 ### The report contract
 

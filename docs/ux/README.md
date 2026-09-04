@@ -25,6 +25,7 @@ preferences.
 | [UX-004](UX-004-heartbeats.md) | `[n/N] <task>` heartbeats | a long silent run is indistinguishable from a hung one |
 | [UX-005](UX-005-local-handoff.md) | the `LOCAL STATE` table | "done" that needs four commands before you can see it is a different word |
 | [UX-006](UX-006-presentation-standard.md) | the presentation standard | a repository that grades other people's output shipped a front door nobody had graded |
+| [UX-007](UX-007-task-signals.md) | the five task signals — 🔴 🟠 🟢 🔵 ⛔ | a prompt is a flat list of sentences, and "stop", "verify only", "never" and "record this first" all read like "do this" |
 
 ## The shape
 
