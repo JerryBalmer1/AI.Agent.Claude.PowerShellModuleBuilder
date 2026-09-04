@@ -5,7 +5,33 @@ for counters and pins. Update it in the same commit as the work
 that changes it.
 
 ## Passes
-Last landed: **0041**. Next: the operator's. 0040 was the queued
+Last landed: **0043**. Next: the operator's. 0043 gave each of the four
+ecosystem repositories a committed `examples/` directory — real
+generated artifacts, not prose: 12 HTML reports, 12 screenshots, their
+checked-in inputs, and a paste-able command per row that regenerates
+the HTML. All four READMEs now lead with a screenshot and an Examples
+table. PSAzureDevOpsGraph took `v0.4.0`; the other three landed on
+`main` under decision 0010 without tags. **No module source changed in
+any repository.**
+
+Three things the pass found by building rather than reading. An
+explicit `-Options` object beats `graphrender.defaults.psd1` on *every*
+key, including ones the caller never named, because
+`New-GraphRenderOptions` returns a complete object rather than a patch —
+`examples/precedence/` now demonstrates it deliberately.
+`ConvertTo-GraphRenderViewModel` stamps `meta.generatedAt` from
+`UtcNow` and ignores the producer's own `graph.meta.generatedUtc`, so
+those reports are not byte-reproducible. And a node link in
+PSGraphRender can only ever be an editor scheme: `vsCodeUriFor`
+hardcodes `vscode://file/` and no setting names an alternative, which
+made the prompt's "https URLs into the repo on GitHub" requirement
+architecturally unsatisfiable. The operator struck the requirement
+rather than opening a renderer change inside a docs pass; it is logged
+in PSGraphRender's `docs/improvements.md` as large, wanting its own
+red-first iteration.
+
+0042 is consumed by decision 0016 and is not a frontier. 0040 was the
+queued
 diagram / prompts / flow-documents pass; it released nothing, touched
 no assertion, and left `cases-defined` at 41. The generalisation claim
 still has the number and the bound 0037 gave it; the two things that
@@ -330,8 +356,10 @@ same procedure and did not move, at either commit — which is what
 makes it the control for the repair. `plans/0033-honest-headline/rescore.txt`.
 
 ## Versions
-PSAzureDevOpsGraph: **v0.3.0** (docs-only minor, pass 0038, decision 0006;
-module code byte-identical to v0.2.0. Next touching plan: v0.4.0)
+PSAzureDevOpsGraph: **v0.4.0** (docs-and-artifacts minor, pass 0043,
+decision 0006; module code byte-identical to v0.2.0 still. Ships the
+ClaudeTesting graph as committed JSON, HTML and a screenshot. Next
+touching plan: v0.5.0)
 PSGraphRender: v0.13.0
 PSGraphRenderToHtml: **v0.1.3** (three patches in pass 0041: v0.1.1 aligns
 `-ColorBy` to the renderer's declared set and closes LEDGER 50; v0.1.2 and
