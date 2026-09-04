@@ -1,0 +1,42 @@
+
+VERIFY 0047 - link mode, re-derived from fresh clones.
+  target remote : https://github.com/JerryBalmer1/PSGraphRender.git
+  head ref      : main
+  base ref      : cd4857d (the pass base, NOT the v0.13.0 tag - see -BaseRef)
+
+  head = 3f2ec85, base = cd4857d (cd4857d)
+
+1. The two settings are declared as data, and the manifest selects on them.
+  [ok  ] LinkMode is an Enum of three modes defaulting to editor - Enum, default editor, values editor/hrefTemplate/none
+  [ok  ] LinkHrefTemplate is a String setting beside it
+  [ok  ] the manifest names files for all three modes - SlotsBySetting.LinkMode: editor, hrefTemplate, none
+
+2. The three modes render as configured.
+  [ok  ] editor constructs an editor URI and says so in CONFIG - CONFIG.LinkMode=editor, vscode://=True
+  [ok  ] hrefTemplate resolves four tokens and constructs no editor URI - tokens 4/4, vscode://=False
+  [ok  ] none constructs nothing and is still a report - vscode://=False, open action=False, document=True
+
+3. Acceptance C - an editor-mode document still matches the base, byte for byte.
+  [ok  ] the default document is unchanged outside CONFIG - byte-identical
+  [ok  ] CONFIG gained exactly the two link settings and moved nothing else - added: LinkHrefTemplate, LinkMode
+  [ok  ] the shipped default is editor, so nothing changes for an existing caller - default LinkMode=editor
+
+4. The committed examples regenerate, and the forge links resolve.
+  [ok  ] links/editor-links.html regenerates identically (LF, as .gitattributes stores it) - identical
+  [ok  ] links/forge-links.html regenerates identically (LF, as .gitattributes stores it) - identical
+  [ok  ] the forge example is hrefTemplate mode with a forge URL - hrefTemplate: https://github.com/JerryBalmer1/PSGraphRender/blob/main/{relativePath}#L{line}
+  [ok  ] the editor example is kept, demonstrating the preserved behaviour - LinkMode=editor
+
+5. Conformance at head is not below the base. Both measured here.
+     base: 66.27% over 166 case(s)
+     head: 66.27% over 166 case(s)
+  [ok  ] head conformance is not below base - 66.27 -> 66.27
+  [ok  ] no assertion that passed at base fails at head - none
+
+6. Nothing machine-identifying in what the pass committed.
+     44 file(s) changed since cd4857d
+  [ok  ] no drive path, home directory or username in any changed file - clean
+  [ok  ] no vscode:// carries a real path - 7 placeholder/doc form(s) only
+
+VERIFY 0047: PASS - every check re-derived and agreed.
+
