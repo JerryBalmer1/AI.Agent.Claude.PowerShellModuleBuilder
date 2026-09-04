@@ -13,9 +13,6 @@
 			"path": "../PSGraphRenderToHtml"
 		},
 		{
-			"path": "../PSModuleGraph"
-		},
-		{
 			"path": "../PSTerraformGraph"
 		}
 	],
