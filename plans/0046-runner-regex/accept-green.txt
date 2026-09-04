@@ -1,0 +1,357 @@
+
+ACCEPT 0046 - runner path-exclusion regex
+  instrument (harness): C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder
+  target remote:        https://github.com/JerryBalmer1/PSGraphRender.git
+
+  cloned: main @ cd4857d
+  [ok  ] planted output/PSGraphRender/PSGraphRender.psd1 - copy of the real manifest
+  [ok  ] planted scratch/Fake/Fake.psd1 - copy of the real manifest
+
+PATTERNS, extracted from source
+  [ok  ] exactly one exclusion literal in Invoke-Conformance.ps1 - found 1
+  [ok  ] two exclusion literals in Conformance.Tests.ps1 - found 2
+  runner: [\\/](output|scratch|\.git|gallery|fixtures|node_modules)[\\/]
+  suite:  [\\/](output|scratch|\.git|gallery|fixtures|node_modules)[\\/]
+
+B. ADMISSION DIRECTION - does the exclusion see a Windows path?
+
+Path                                     RunnerExcludes SuiteExcludes
+----                                     -------------- -------------
+\output\PSGraphRender\PSGraphRender.psd1           True          True
+\scratch\Fake\Fake.psd1                            True          True
+
+  [ok  ] runner pattern excludes '\output\PSGraphRender\PSGraphRender.psd1' - suite pattern excludes it: True
+  [ok  ] runner pattern excludes '\scratch\Fake\Fake.psd1' - suite pattern excludes it: True
+
+  candidate set under the RUNNER's pattern (2):
+    src\PSGraphRender\PSGraphRender.psd1
+    src\PSGraphRender\TemplateSets\cytoscape\vendor\vendor.psd1
+  candidate set under the SUITE's pattern (2):
+    src\PSGraphRender\PSGraphRender.psd1
+    src\PSGraphRender\TemplateSets\cytoscape\vendor\vendor.psd1
+
+  [ok  ] the planted scratch/ manifest is NOT a runner candidate - 2 candidates
+  [ok  ] the planted output/ manifest is NOT a runner candidate - 2 candidates
+  [ok  ] the runner and the suite agree on the candidate set - runner 2, suite 2
+
+A. REFUSAL DIRECTION - does the runner resolve the target unaided?
+Settings: CoverageThreshold=75 (default), ModuleProfile=script (default), CompletionCacheDefault=False (default)
+Pester v6.1.0
+
+Running tests from 2 files.
+
+Running tests from 'C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Conformance.Tests.ps1'
+Describing Manifest
+  [+] exists, and its base name matches its directory 92ms
+  [+] parses as PowerShell data 5ms
+  [+] declares a RootModule 11ms
+  [+] declares a ModuleVersion that parses as a version 20ms
+  [+] declares a GUID that parses as a GUID 11ms
+  [+] exports functions by explicit name, never by wildcard 6ms
+  [+] exports no cmdlets, variables, or aliases implicitly 15ms
+  [+] exports no cmdlets, variables, or aliases implicitly 4ms
+  [+] exports no cmdlets, variables, or aliases implicitly 4ms
+
+Describing Public surface
+  [+] defines every function the manifest exports somewhere in source 5ms
+  [+] gives Get-RenderTemplateSet comment-based help with a synopsis 61ms
+  [+] gives New-RenderDocument comment-based help with a synopsis 43ms
+  [+] gives New-RenderDocumentPath comment-based help with a synopsis 13ms
+  [+] gives Show-RenderDocument comment-based help with a synopsis 23ms
+
+Describing Repository shape
+  [+] has a build entrypoint at the repository root 9ms
+  [+] has analyzer settings at the repository root 9ms
+  [+] has a tests directory 7ms
+  [+] exercises the exported command Get-RenderTemplateSet somewhere in tests 229ms
+  [+] exercises the exported command New-RenderDocument somewhere in tests 21ms
+  [-] exercises the exported command New-RenderDocumentPath somewhere in tests 261ms
+   Expected $true, because an exported command no test ever calls is untested, but got $false.
+   at $invoked | Should -BeTrue -Because 'an exported command no test ever calls is untested', C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Conformance.Tests.ps1:461
+  [+] exercises the exported command Show-RenderDocument somewhere in tests 116ms
+
+Describing Workspace composition
+  [+] does not register PSModuleGraph as a folder: PSGraphRender.code-workspace 34ms
+
+Describing House style: source layout
+  [+] places source under src/PSGraphRender/ 8ms
+  [+] keeps Public/ flat 7ms
+  [+] defines exactly one function in Get-RenderTemplateSet.ps1, named for the file 28ms
+  [+] defines exactly one function in New-RenderDocument.ps1, named for the file 9ms
+  [+] defines exactly one function in New-RenderDocumentPath.ps1, named for the file 15ms
+  [+] defines exactly one function in Show-RenderDocument.ps1, named for the file 7ms
+  [+] agrees three ways: Public filenames, manifest exports, and their count 6ms
+  [+] declares the PowerShell editions it claims to support 5ms
+  [-] pins build dependencies only in Requirements.psd1 13ms
+   Expected $true, because Tools must state RequiredVersion or MinimumVersion, but got $false.
+   at $pinned | Should -BeTrue -Because "$key must state RequiredVersion or MinimumVersion", C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Conformance.Tests.ps1:578
+
+Describing House style: build file
+  [+] has a build file named PSGraphRender.build.ps1 6ms
+  [+] declares the task Clean 57ms
+  [+] declares the task Lint 39ms
+  [+] declares the task Build 40ms
+  [+] declares the task Test 49ms
+  [+] declares the task PreTag 31ms
+  [-] makes the default task Clean, Lint, Build, Test 74ms
+   Expected strings to be the same, but they were different.
+   Expected length: 21
+   Actual length:   38
+   Strings differ at index 0.
+   Expected: 'Clean,Lint,Build,Test'
+   But was:  '(@($script:CoreTasks) + 'TestBrowser')'
+              ^
+   at ($deps -join ',') | Should -Be 'Clean,Lint,Build,Test', C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Conformance.Tests.ps1:620
+  [+] excludes PreTag-tagged tests from the Test task 56ms
+  [+] throws rather than exits when tests fail 41ms
+  [+] disables Pester v5 assertion syntax 48ms
+  [+] measures coverage against the built psm1, not the source tree 77ms
+  [+] throws on coverage below target rather than only reporting it 59ms
+Filter 'Tag' set to ('Universal', 'Repository', 'HouseStyle').
+Filters selected 161 tests to run.
+
+Running tests from 'C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Help.Tests.ps1'
+Describing House style: help
+  [+] gives Import-RenderDataFile comment-based help with a synopsis 5ms
+  [+] gives Invoke-RenderConfigurationConstraint comment-based help with a synopsis 2ms
+  [+] gives Resolve-RenderConfiguration comment-based help with a synopsis 2ms
+  [+] gives Resolve-RenderTemplateSetPath comment-based help with a synopsis 2ms
+  [+] gives Get-RenderTemplateSetName comment-based help with a synopsis 2ms
+  [+] gives Test-RenderSettingValue comment-based help with a synopsis 2ms
+  [+] gives Get-RenderContractPath comment-based help with a synopsis 2ms
+  [+] gives Get-RenderContractVersion comment-based help with a synopsis 2ms
+  [+] gives Test-RenderViewModel comment-based help with a synopsis 2ms
+  [+] gives Resolve-RenderMeta comment-based help with a synopsis 2ms
+  [+] gives Assert-RenderContractVersion comment-based help with a synopsis 2ms
+  [+] gives ConvertTo-EscapedHtmlJson comment-based help with a synopsis 2ms
+  [+] gives ConvertTo-EscapedHtmlText comment-based help with a synopsis 2ms
+  [+] gives Get-RenderAsset comment-based help with a synopsis 2ms
+  [+] gives Get-RenderAssetPath comment-based help with a synopsis 2ms
+  [+] gives Resolve-RenderString comment-based help with a synopsis 2ms
+  [+] gives Get-HashtableValue comment-based help with a synopsis 4ms
+  [+] gives Get-VSCodeLauncher comment-based help with a synopsis 2ms
+  [+] gives Get-LoopbackResponse comment-based help with a synopsis 2ms
+  [+] gives Resolve-LoopbackDocumentUrl comment-based help with a synopsis 2ms
+  [+] gives Get-RenderTemplateSet comment-based help with a synopsis 2ms
+  [+] gives New-RenderDocument comment-based help with a synopsis 2ms
+  [+] gives New-RenderDocumentPath comment-based help with a synopsis 2ms
+  [+] gives Show-RenderDocument comment-based help with a synopsis 2ms
+  [+] gives Import-RenderDataFile a help description 5ms
+  [+] gives Invoke-RenderConfigurationConstraint a help description 2ms
+  [+] gives Resolve-RenderConfiguration a help description 3ms
+  [+] gives Resolve-RenderTemplateSetPath a help description 2ms
+  [-] gives Get-RenderTemplateSetName a help description 3ms
+   Expected $true, because src\PSGraphRender\Private\Config\Resolve-RenderTemplateSetPath.ps1:57 - .DESCRIPTION carries what a reader cannot infer from the signature, and a function whose description would be redundant has not been read by anyone but its author, but got $false.
+   at $_.HasDescription | Should -BeTrue -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Help.Tests.ps1:314
+  [+] gives Test-RenderSettingValue a help description 2ms
+  [-] gives Get-RenderContractPath a help description 3ms
+   Expected $true, because src\PSGraphRender\Private\Contract\Test-RenderViewModel.ps1:1 - .DESCRIPTION carries what a reader cannot infer from the signature, and a function whose description would be redundant has not been read by anyone but its author, but got $false.
+   at $_.HasDescription | Should -BeTrue -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Help.Tests.ps1:314
+  [+] gives Get-RenderContractVersion a help description 3ms
+  [+] gives Test-RenderViewModel a help description 3ms
+  [+] gives Resolve-RenderMeta a help description 2ms
+  [+] gives Assert-RenderContractVersion a help description 5ms
+  [+] gives ConvertTo-EscapedHtmlJson a help description 2ms
+  [-] gives ConvertTo-EscapedHtmlText a help description 4ms
+   Expected $true, because src\PSGraphRender\Private\Document\ConvertTo-EscapedHtmlText.ps1:1 - .DESCRIPTION carries what a reader cannot infer from the signature, and a function whose description would be redundant has not been read by anyone but its author, but got $false.
+   at $_.HasDescription | Should -BeTrue -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Help.Tests.ps1:314
+  [+] gives Get-RenderAsset a help description 2ms
+  [+] gives Get-RenderAssetPath a help description 2ms
+  [+] gives Resolve-RenderString a help description 2ms
+  [-] gives Get-HashtableValue a help description 2ms
+   Expected $true, because src\PSGraphRender\Private\Get-HashtableValue.ps1:1 - .DESCRIPTION carries what a reader cannot infer from the signature, and a function whose description would be redundant has not been read by anyone but its author, but got $false.
+   at $_.HasDescription | Should -BeTrue -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Help.Tests.ps1:314
+  [+] gives Get-VSCodeLauncher a help description 2ms
+  [+] gives Get-LoopbackResponse a help description 1ms
+  [+] gives Resolve-LoopbackDocumentUrl a help description 2ms
+  [+] gives Get-RenderTemplateSet a help description 2ms
+  [+] gives New-RenderDocument a help description 2ms
+  [+] gives New-RenderDocumentPath a help description 2ms
+  [+] gives Show-RenderDocument a help description 2ms
+  [-] gives Import-RenderDataFile at least one example 8ms
+   Expected the actual value to be greater than 0, because src\PSGraphRender\Private\Config\Import-RenderDataFile.ps1:1 - an example is the only part of help most readers read, but got 0.
+   at $_.ExampleCount | Should -BeGreaterThan 0 -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Help.Tests.ps1:320
+  [-] gives Invoke-RenderConfigurationConstraint at least one example 3ms
+   Expected the actual value to be greater than 0, because src\PSGraphRender\Private\Config\Invoke-RenderConfigurationConstraint.ps1:1 - an example is the only part of help most readers read, but got 0.
+   at $_.ExampleCount | Should -BeGreaterThan 0 -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Help.Tests.ps1:320
+  [-] gives Resolve-RenderConfiguration at least one example 6ms
+   Expected the actual value to be greater than 0, because src\PSGraphRender\Private\Config\Resolve-RenderConfiguration.ps1:1 - an example is the only part of help most readers read, but got 0.
+   at $_.ExampleCount | Should -BeGreaterThan 0 -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Help.Tests.ps1:320
+  [-] gives Resolve-RenderTemplateSetPath at least one example 4ms
+   Expected the actual value to be greater than 0, because src\PSGraphRender\Private\Config\Resolve-RenderTemplateSetPath.ps1:1 - an example is the only part of help most readers read, but got 0.
+   at $_.ExampleCount | Should -BeGreaterThan 0 -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Help.Tests.ps1:320
+  [-] gives Get-RenderTemplateSetName at least one example 6ms
+   Expected the actual value to be greater than 0, because src\PSGraphRender\Private\Config\Resolve-RenderTemplateSetPath.ps1:57 - an example is the only part of help most readers read, but got 0.
+   at $_.ExampleCount | Should -BeGreaterThan 0 -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Help.Tests.ps1:320
+  [-] gives Test-RenderSettingValue at least one example 3ms
+   Expected the actual value to be greater than 0, because src\PSGraphRender\Private\Config\Test-RenderSettingValue.ps1:1 - an example is the only part of help most readers read, but got 0.
+   at $_.ExampleCount | Should -BeGreaterThan 0 -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Help.Tests.ps1:320
+  [-] gives Get-RenderContractPath at least one example 7ms
+   Expected the actual value to be greater than 0, because src\PSGraphRender\Private\Contract\Test-RenderViewModel.ps1:1 - an example is the only part of help most readers read, but got 0.
+   at $_.ExampleCount | Should -BeGreaterThan 0 -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Help.Tests.ps1:320
+  [-] gives Get-RenderContractVersion at least one example 5ms
+   Expected the actual value to be greater than 0, because src\PSGraphRender\Private\Contract\Test-RenderViewModel.ps1:14 - an example is the only part of help most readers read, but got 0.
+   at $_.ExampleCount | Should -BeGreaterThan 0 -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Help.Tests.ps1:320
+  [-] gives Test-RenderViewModel at least one example 4ms
+   Expected the actual value to be greater than 0, because src\PSGraphRender\Private\Contract\Test-RenderViewModel.ps1:43 - an example is the only part of help most readers read, but got 0.
+   at $_.ExampleCount | Should -BeGreaterThan 0 -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Help.Tests.ps1:320
+  [-] gives Resolve-RenderMeta at least one example 3ms
+   Expected the actual value to be greater than 0, because src\PSGraphRender\Private\Contract\Test-RenderViewModel.ps1:106 - an example is the only part of help most readers read, but got 0.
+   at $_.ExampleCount | Should -BeGreaterThan 0 -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Help.Tests.ps1:320
+  [-] gives Assert-RenderContractVersion at least one example 6ms
+   Expected the actual value to be greater than 0, because src\PSGraphRender\Private\Contract\Test-RenderViewModel.ps1:181 - an example is the only part of help most readers read, but got 0.
+   at $_.ExampleCount | Should -BeGreaterThan 0 -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Help.Tests.ps1:320
+  [-] gives ConvertTo-EscapedHtmlJson at least one example 3ms
+   Expected the actual value to be greater than 0, because src\PSGraphRender\Private\Document\ConvertTo-EscapedHtmlJson.ps1:1 - an example is the only part of help most readers read, but got 0.
+   at $_.ExampleCount | Should -BeGreaterThan 0 -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Help.Tests.ps1:320
+  [-] gives ConvertTo-EscapedHtmlText at least one example 3ms
+   Expected the actual value to be greater than 0, because src\PSGraphRender\Private\Document\ConvertTo-EscapedHtmlText.ps1:1 - an example is the only part of help most readers read, but got 0.
+   at $_.ExampleCount | Should -BeGreaterThan 0 -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Help.Tests.ps1:320
+  [-] gives Get-RenderAsset at least one example 3ms
+   Expected the actual value to be greater than 0, because src\PSGraphRender\Private\Document\Get-RenderAsset.ps1:1 - an example is the only part of help most readers read, but got 0.
+   at $_.ExampleCount | Should -BeGreaterThan 0 -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Help.Tests.ps1:320
+  [-] gives Get-RenderAssetPath at least one example 3ms
+   Expected the actual value to be greater than 0, because src\PSGraphRender\Private\Document\Get-RenderAssetPath.ps1:1 - an example is the only part of help most readers read, but got 0.
+   at $_.ExampleCount | Should -BeGreaterThan 0 -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Help.Tests.ps1:320
+  [-] gives Resolve-RenderString at least one example 3ms
+   Expected the actual value to be greater than 0, because src\PSGraphRender\Private\Document\Resolve-RenderString.ps1:1 - an example is the only part of help most readers read, but got 0.
+   at $_.ExampleCount | Should -BeGreaterThan 0 -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Help.Tests.ps1:320
+  [-] gives Get-HashtableValue at least one example 3ms
+   Expected the actual value to be greater than 0, because src\PSGraphRender\Private\Get-HashtableValue.ps1:1 - an example is the only part of help most readers read, but got 0.
+   at $_.ExampleCount | Should -BeGreaterThan 0 -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Help.Tests.ps1:320
+  [-] gives Get-VSCodeLauncher at least one example 3ms
+   Expected the actual value to be greater than 0, because src\PSGraphRender\Private\Transport\Get-VSCodeLauncher.ps1:1 - an example is the only part of help most readers read, but got 0.
+   at $_.ExampleCount | Should -BeGreaterThan 0 -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Help.Tests.ps1:320
+  [-] gives Get-LoopbackResponse at least one example 3ms
+   Expected the actual value to be greater than 0, because src\PSGraphRender\Private\Transport\Resolve-LoopbackDocumentUrl.ps1:1 - an example is the only part of help most readers read, but got 0.
+   at $_.ExampleCount | Should -BeGreaterThan 0 -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Help.Tests.ps1:320
+  [-] gives Resolve-LoopbackDocumentUrl at least one example 5ms
+   Expected the actual value to be greater than 0, because src\PSGraphRender\Private\Transport\Resolve-LoopbackDocumentUrl.ps1:74 - an example is the only part of help most readers read, but got 0.
+   at $_.ExampleCount | Should -BeGreaterThan 0 -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Help.Tests.ps1:320
+  [-] gives Get-RenderTemplateSet at least one example 3ms
+   Expected the actual value to be greater than 0, because src\PSGraphRender\Public\Get-RenderTemplateSet.ps1:1 - an example is the only part of help most readers read, but got 0.
+   at $_.ExampleCount | Should -BeGreaterThan 0 -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Help.Tests.ps1:320
+  [+] gives New-RenderDocument at least one example 2ms
+  [-] gives New-RenderDocumentPath at least one example 3ms
+   Expected the actual value to be greater than 0, because src\PSGraphRender\Public\New-RenderDocumentPath.ps1:1 - an example is the only part of help most readers read, but got 0.
+   at $_.ExampleCount | Should -BeGreaterThan 0 -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Help.Tests.ps1:320
+  [-] gives Show-RenderDocument at least one example 3ms
+   Expected the actual value to be greater than 0, because src\PSGraphRender\Public\Show-RenderDocument.ps1:1 - an example is the only part of help most readers read, but got 0.
+   at $_.ExampleCount | Should -BeGreaterThan 0 -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Help.Tests.ps1:320
+  [-] gives Import-RenderDataFile at least as many examples as parameter sets 16ms
+   Expected the actual value to be greater than or equal to 1, because src\PSGraphRender\Private\Config\Import-RenderDataFile.ps1:1 - Import-RenderDataFile declares 0 named parameter set(s) [] and carries 0 example(s). A set added without an example is a set nobody knows exists, but got 0.
+   at $_.ExampleCount | Should -BeGreaterOrEqual $expected -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Help.Tests.ps1:326
+  [-] gives Invoke-RenderConfigurationConstraint at least as many examples as parameter sets 6ms
+   Expected the actual value to be greater than or equal to 1, because src\PSGraphRender\Private\Config\Invoke-RenderConfigurationConstraint.ps1:1 - Invoke-RenderConfigurationConstraint declares 0 named parameter set(s) [] and carries 0 example(s). A set added without an example is a set nobody knows exists, but got 0.
+   at $_.ExampleCount | Should -BeGreaterOrEqual $expected -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Help.Tests.ps1:326
+  [-] gives Resolve-RenderConfiguration at least as many examples as parameter sets 3ms
+   Expected the actual value to be greater than or equal to 1, because src\PSGraphRender\Private\Config\Resolve-RenderConfiguration.ps1:1 - Resolve-RenderConfiguration declares 0 named parameter set(s) [] and carries 0 example(s). A set added without an example is a set nobody knows exists, but got 0.
+   at $_.ExampleCount | Should -BeGreaterOrEqual $expected -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Help.Tests.ps1:326
+  [-] gives Resolve-RenderTemplateSetPath at least as many examples as parameter sets 19ms
+   Expected the actual value to be greater than or equal to 1, because src\PSGraphRender\Private\Config\Resolve-RenderTemplateSetPath.ps1:1 - Resolve-RenderTemplateSetPath declares 0 named parameter set(s) [] and carries 0 example(s). A set added without an example is a set nobody knows exists, but got 0.
+   at $_.ExampleCount | Should -BeGreaterOrEqual $expected -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Help.Tests.ps1:326
+  [-] gives Get-RenderTemplateSetName at least as many examples as parameter sets 17ms
+   Expected the actual value to be greater than or equal to 1, because src\PSGraphRender\Private\Config\Resolve-RenderTemplateSetPath.ps1:57 - Get-RenderTemplateSetName declares 0 named parameter set(s) [] and carries 0 example(s). A set added without an example is a set nobody knows exists, but got 0.
+   at $_.ExampleCount | Should -BeGreaterOrEqual $expected -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Help.Tests.ps1:326
+  [-] gives Test-RenderSettingValue at least as many examples as parameter sets 16ms
+   Expected the actual value to be greater than or equal to 1, because src\PSGraphRender\Private\Config\Test-RenderSettingValue.ps1:1 - Test-RenderSettingValue declares 0 named parameter set(s) [] and carries 0 example(s). A set added without an example is a set nobody knows exists, but got 0.
+   at $_.ExampleCount | Should -BeGreaterOrEqual $expected -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Help.Tests.ps1:326
+  [-] gives Get-RenderContractPath at least as many examples as parameter sets 3ms
+   Expected the actual value to be greater than or equal to 1, because src\PSGraphRender\Private\Contract\Test-RenderViewModel.ps1:1 - Get-RenderContractPath declares 0 named parameter set(s) [] and carries 0 example(s). A set added without an example is a set nobody knows exists, but got 0.
+   at $_.ExampleCount | Should -BeGreaterOrEqual $expected -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Help.Tests.ps1:326
+  [-] gives Get-RenderContractVersion at least as many examples as parameter sets 3ms
+   Expected the actual value to be greater than or equal to 1, because src\PSGraphRender\Private\Contract\Test-RenderViewModel.ps1:14 - Get-RenderContractVersion declares 0 named parameter set(s) [] and carries 0 example(s). A set added without an example is a set nobody knows exists, but got 0.
+   at $_.ExampleCount | Should -BeGreaterOrEqual $expected -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Help.Tests.ps1:326
+  [-] gives Test-RenderViewModel at least as many examples as parameter sets 3ms
+   Expected the actual value to be greater than or equal to 1, because src\PSGraphRender\Private\Contract\Test-RenderViewModel.ps1:43 - Test-RenderViewModel declares 0 named parameter set(s) [] and carries 0 example(s). A set added without an example is a set nobody knows exists, but got 0.
+   at $_.ExampleCount | Should -BeGreaterOrEqual $expected -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Help.Tests.ps1:326
+  [-] gives Resolve-RenderMeta at least as many examples as parameter sets 8ms
+   Expected the actual value to be greater than or equal to 1, because src\PSGraphRender\Private\Contract\Test-RenderViewModel.ps1:106 - Resolve-RenderMeta declares 0 named parameter set(s) [] and carries 0 example(s). A set added without an example is a set nobody knows exists, but got 0.
+   at $_.ExampleCount | Should -BeGreaterOrEqual $expected -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Help.Tests.ps1:326
+  [-] gives Assert-RenderContractVersion at least as many examples as parameter sets 3ms
+   Expected the actual value to be greater than or equal to 1, because src\PSGraphRender\Private\Contract\Test-RenderViewModel.ps1:181 - Assert-RenderContractVersion declares 0 named parameter set(s) [] and carries 0 example(s). A set added without an example is a set nobody knows exists, but got 0.
+   at $_.ExampleCount | Should -BeGreaterOrEqual $expected -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Help.Tests.ps1:326
+  [-] gives ConvertTo-EscapedHtmlJson at least as many examples as parameter sets 3ms
+   Expected the actual value to be greater than or equal to 1, because src\PSGraphRender\Private\Document\ConvertTo-EscapedHtmlJson.ps1:1 - ConvertTo-EscapedHtmlJson declares 0 named parameter set(s) [] and carries 0 example(s). A set added without an example is a set nobody knows exists, but got 0.
+   at $_.ExampleCount | Should -BeGreaterOrEqual $expected -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Help.Tests.ps1:326
+  [-] gives ConvertTo-EscapedHtmlText at least as many examples as parameter sets 11ms
+   Expected the actual value to be greater than or equal to 1, because src\PSGraphRender\Private\Document\ConvertTo-EscapedHtmlText.ps1:1 - ConvertTo-EscapedHtmlText declares 0 named parameter set(s) [] and carries 0 example(s). A set added without an example is a set nobody knows exists, but got 0.
+   at $_.ExampleCount | Should -BeGreaterOrEqual $expected -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Help.Tests.ps1:326
+  [-] gives Get-RenderAsset at least as many examples as parameter sets 3ms
+   Expected the actual value to be greater than or equal to 1, because src\PSGraphRender\Private\Document\Get-RenderAsset.ps1:1 - Get-RenderAsset declares 0 named parameter set(s) [] and carries 0 example(s). A set added without an example is a set nobody knows exists, but got 0.
+   at $_.ExampleCount | Should -BeGreaterOrEqual $expected -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Help.Tests.ps1:326
+  [-] gives Get-RenderAssetPath at least as many examples as parameter sets 3ms
+   Expected the actual value to be greater than or equal to 1, because src\PSGraphRender\Private\Document\Get-RenderAssetPath.ps1:1 - Get-RenderAssetPath declares 0 named parameter set(s) [] and carries 0 example(s). A set added without an example is a set nobody knows exists, but got 0.
+   at $_.ExampleCount | Should -BeGreaterOrEqual $expected -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Help.Tests.ps1:326
+  [-] gives Resolve-RenderString at least as many examples as parameter sets 3ms
+   Expected the actual value to be greater than or equal to 1, because src\PSGraphRender\Private\Document\Resolve-RenderString.ps1:1 - Resolve-RenderString declares 0 named parameter set(s) [] and carries 0 example(s). A set added without an example is a set nobody knows exists, but got 0.
+   at $_.ExampleCount | Should -BeGreaterOrEqual $expected -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Help.Tests.ps1:326
+  [-] gives Get-HashtableValue at least as many examples as parameter sets 3ms
+   Expected the actual value to be greater than or equal to 1, because src\PSGraphRender\Private\Get-HashtableValue.ps1:1 - Get-HashtableValue declares 0 named parameter set(s) [] and carries 0 example(s). A set added without an example is a set nobody knows exists, but got 0.
+   at $_.ExampleCount | Should -BeGreaterOrEqual $expected -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Help.Tests.ps1:326
+  [-] gives Get-VSCodeLauncher at least as many examples as parameter sets 3ms
+   Expected the actual value to be greater than or equal to 1, because src\PSGraphRender\Private\Transport\Get-VSCodeLauncher.ps1:1 - Get-VSCodeLauncher declares 0 named parameter set(s) [] and carries 0 example(s). A set added without an example is a set nobody knows exists, but got 0.
+   at $_.ExampleCount | Should -BeGreaterOrEqual $expected -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Help.Tests.ps1:326
+  [-] gives Get-LoopbackResponse at least as many examples as parameter sets 3ms
+   Expected the actual value to be greater than or equal to 1, because src\PSGraphRender\Private\Transport\Resolve-LoopbackDocumentUrl.ps1:1 - Get-LoopbackResponse declares 0 named parameter set(s) [] and carries 0 example(s). A set added without an example is a set nobody knows exists, but got 0.
+   at $_.ExampleCount | Should -BeGreaterOrEqual $expected -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Help.Tests.ps1:326
+  [-] gives Resolve-LoopbackDocumentUrl at least as many examples as parameter sets 3ms
+   Expected the actual value to be greater than or equal to 1, because src\PSGraphRender\Private\Transport\Resolve-LoopbackDocumentUrl.ps1:74 - Resolve-LoopbackDocumentUrl declares 0 named parameter set(s) [] and carries 0 example(s). A set added without an example is a set nobody knows exists, but got 0.
+   at $_.ExampleCount | Should -BeGreaterOrEqual $expected -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Help.Tests.ps1:326
+  [-] gives Get-RenderTemplateSet at least as many examples as parameter sets 3ms
+   Expected the actual value to be greater than or equal to 1, because src\PSGraphRender\Public\Get-RenderTemplateSet.ps1:1 - Get-RenderTemplateSet declares 0 named parameter set(s) [] and carries 0 example(s). A set added without an example is a set nobody knows exists, but got 0.
+   at $_.ExampleCount | Should -BeGreaterOrEqual $expected -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Help.Tests.ps1:326
+  [+] gives New-RenderDocument at least as many examples as parameter sets 2ms
+  [-] gives New-RenderDocumentPath at least as many examples as parameter sets 3ms
+   Expected the actual value to be greater than or equal to 1, because src\PSGraphRender\Public\New-RenderDocumentPath.ps1:1 - New-RenderDocumentPath declares 0 named parameter set(s) [] and carries 0 example(s). A set added without an example is a set nobody knows exists, but got 0.
+   at $_.ExampleCount | Should -BeGreaterOrEqual $expected -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Help.Tests.ps1:326
+  [-] gives Show-RenderDocument at least as many examples as parameter sets 3ms
+   Expected the actual value to be greater than or equal to 1, because src\PSGraphRender\Public\Show-RenderDocument.ps1:1 - Show-RenderDocument declares 0 named parameter set(s) [] and carries 0 example(s). A set added without an example is a set nobody knows exists, but got 0.
+   at $_.ExampleCount | Should -BeGreaterOrEqual $expected -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Help.Tests.ps1:326
+  [+] gives every parameter of Import-RenderDataFile a .PARAMETER entry 14ms
+  [+] gives every parameter of Invoke-RenderConfigurationConstraint a .PARAMETER entry 3ms
+  [+] gives every parameter of Resolve-RenderConfiguration a .PARAMETER entry 2ms
+  [+] gives every parameter of Resolve-RenderTemplateSetPath a .PARAMETER entry 2ms
+  [+] gives every parameter of Get-RenderTemplateSetName a .PARAMETER entry 2ms
+  [+] gives every parameter of Test-RenderSettingValue a .PARAMETER entry 2ms
+  [+] gives every parameter of Test-RenderViewModel a .PARAMETER entry 3ms
+  [+] gives every parameter of Resolve-RenderMeta a .PARAMETER entry 2ms
+  [+] gives every parameter of Assert-RenderContractVersion a .PARAMETER entry 3ms
+  [-] gives every parameter of ConvertTo-EscapedHtmlJson a .PARAMETER entry 8ms
+   Expected $null or empty, because src\PSGraphRender\Private\Document\ConvertTo-EscapedHtmlJson.ps1:1 - ConvertTo-EscapedHtmlJson declares parameter(s) with no .PARAMETER entry: InputObject, but got 'InputObject'.
+   at @($undocumented) | Should -BeNullOrEmpty -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Help.Tests.ps1:366
+  [-] gives every parameter of ConvertTo-EscapedHtmlText a .PARAMETER entry 4ms
+   Expected $null or empty, because src\PSGraphRender\Private\Document\ConvertTo-EscapedHtmlText.ps1:1 - ConvertTo-EscapedHtmlText declares parameter(s) with no .PARAMETER entry: Text, but got 'Text'.
+   at @($undocumented) | Should -BeNullOrEmpty -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Help.Tests.ps1:366
+  [+] gives every parameter of Get-RenderAsset a .PARAMETER entry 3ms
+  [+] gives every parameter of Get-RenderAssetPath a .PARAMETER entry 2ms
+  [+] gives every parameter of Resolve-RenderString a .PARAMETER entry 2ms
+  [-] gives every parameter of Get-HashtableValue a .PARAMETER entry 14ms
+   Expected $null or empty, because src\PSGraphRender\Private\Get-HashtableValue.ps1:1 - Get-HashtableValue declares parameter(s) with no .PARAMETER entry: InputObject, Key, Default, but got @('InputObject', 'Key', 'Default').
+   at @($undocumented) | Should -BeNullOrEmpty -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance\Help.Tests.ps1:366
+  [+] gives every parameter of Get-LoopbackResponse a .PARAMETER entry 4ms
+  [+] gives every parameter of Resolve-LoopbackDocumentUrl a .PARAMETER entry 3ms
+  [+] gives every parameter of Get-RenderTemplateSet a .PARAMETER entry 2ms
+  [+] gives every parameter of New-RenderDocument a .PARAMETER entry 2ms
+  [+] gives every parameter of New-RenderDocumentPath a .PARAMETER entry 2ms
+  [+] gives every parameter of Show-RenderDocument a .PARAMETER entry 2ms
+  [+] ships about_PSGraphRender when the module defines types 4ms
+Tests completed in 3.88s
+Tests Passed: 105, Failed: 56, Skipped: 0, Inconclusive: 0, NotRun: 6
+
+Conformance: 105/161 (65.22%) across 34 assertions  ->  C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\scratch\accept-0046\derive.json
+cases-defined: 36  (HouseStyle=23, Repository=4, Universal=9)   cases-run: 161
+  no refusal; the run completed
+
+  [ok  ] the runner does not refuse to resolve the planted clone - ran
+
+C. DENOMINATOR - CasesDefined, per-target and global
+  per-target (default tags): CasesDefined = 36  (HouseStyle=23, Repository=4, Universal=9)
+  per-target (default tags): CasesRun     = 161   Passed=105 Failed=56 ScorePct=65.22
+  global (all four tags):    CasesDefined = 42  (HouseStyle=23, Repository=4, RequiresBuild=6, Universal=9)
+  inventoried containers (2): Conformance.Tests.ps1, Help.Tests.ps1
+
+  [ok  ] the inventoried container set is Conformance.Tests.ps1 and Help.Tests.ps1 - Conformance.Tests.ps1, Help.Tests.ps1
+  [ok  ] the global denominator is at least the per-target one - global 42, per-target 36
+
+ACCEPT 0046: GREEN - every check agreed.

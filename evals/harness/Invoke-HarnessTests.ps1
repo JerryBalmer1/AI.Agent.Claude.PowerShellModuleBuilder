@@ -90,6 +90,19 @@ $broken = @($result.Containers | Where-Object { @($_.ErrorRecord).Count -gt 0 })
 $ran = $result.PassedCount + $result.FailedCount
 
 Write-Host ''
+
+# Per-Describe, on its own machine-readable line. A caller that wanted to know
+# WHICH check went red would otherwise have to scrape Pester's own output,
+# where a failure line carries the test name and not the block it belongs to -
+# so a probe asking 'did the polarity pair fail?' would read zero and report
+# the probe as not firing. That is the false 'does not fire' the falsification
+# protocol exists to detect, manufactured by its own bookkeeping.
+foreach ($group in ($result.Tests | Group-Object -Property { $_.Path[0] } | Sort-Object Name)) {
+    $p = @($group.Group | Where-Object { $_.Result -eq 'Passed' }).Count
+    $f = @($group.Group | Where-Object { $_.Result -eq 'Failed' }).Count
+    Write-Host "Describe=$($group.Name) Passed=$p Failed=$f"
+}
+
 Write-Host "Passed=$($result.PassedCount) Failed=$($result.FailedCount) Ran=$ran BrokenContainers=$($broken.Count)"
 foreach ($b in $broken) {
     Write-Host "  container failed: $(Split-Path -Leaf $b.Item.FullName): $(($b.ErrorRecord[0].Exception.Message -split "`n")[0])"

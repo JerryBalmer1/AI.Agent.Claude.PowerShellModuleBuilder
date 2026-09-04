@@ -1,0 +1,49 @@
+
+VERIFY 0046 - runner path-exclusion regex
+  repository:    C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder
+  target remote: https://github.com/JerryBalmer1/PSGraphRender.git
+  repair commit: a2d258a Pass 0046: the repair - one character class, matching the other three sites
+  repair base:   7bd3a6c   (SC1)
+  pass base:     13e1ea9   (SC2, SC3 - the state before the pass began)
+
+1. All four copies of the exclusion regex are one string, and it sees a backslash
+  [ok  ] four or more copies, exactly one distinct string - 4 copies, 1 distinct: Conformance.Tests.ps1:61, Conformance.Tests.ps1:148, Help.Tests.ps1:55, Invoke-Conformance.ps1:122
+  [ok  ] that string excludes a Windows-style path under scratch - [\\/](output|scratch|\.git|gallery|fixtures|node_modules)[\\/]
+  [ok  ] that string does not exclude a src/-side manifest - [\\/](output|scratch|\.git|gallery|fixtures|node_modules)[\\/]
+
+2. The harness's own tests, against the repository's conformance directory
+  Passed=93 Failed=0 Ran=93 BrokenContainers=0
+  [ok  ] harness tests exit 0 - exit 0, VERDICT=GREEN
+  [ok  ] the harness tests ran at all (not zero cases, no broken container) - Passed=93 Failed=0 Ran=93 BrokenContainers=0
+
+3. SC1 - the repair is one file, one line, the exclusion literal only
+  [ok  ] SC1: minimal repair diff - 1 file, +1/-1, the exclusion literal only
+
+4/6. A planted clone of PSGraphRender: denominator, and both defect directions
+  clone: main @ cd4857d, with output/ and scratch/ manifests planted
+  conformance directory at base: 15 file(s) materialised
+  base: CasesDefined=36 CasesRun=161
+  head: CasesDefined=36 CasesRun=161
+  [ok  ] SC2: CasesDefined unchanged between base and head - base 36, head 36
+  [ok  ] SC2: CasesRun unchanged between base and head - base 161, head 161
+  discovered containers (2): Conformance.Tests.ps1, Help.Tests.ps1
+  harness test files (1): ExclusionPattern.Tests.ps1
+  [ok  ] SC2: no file this pass added is in the discovered set - discovered: Conformance.Tests.ps1, Help.Tests.ps1
+  [ok  ] SC2: the discovered set is the two known containers - Conformance.Tests.ps1, Help.Tests.ps1
+  [ok  ] SC2: the harness tests exist and are not empty - 1 file(s)
+
+   both defect directions, base against head
+   base candidates (4): output\PSGraphRender\PSGraphRender.psd1; scratch\Fake\Fake.psd1; src\PSGraphRender\PSGraphRender.psd1; src\PSGraphRender\TemplateSets\cytoscape\vendor\vendor.psd1
+   head candidates (2): src\PSGraphRender\PSGraphRender.psd1; src\PSGraphRender\TemplateSets\cytoscape\vendor\vendor.psd1
+  [ok  ] refusal direction: the runner REFUSED at base - and the message named the src/ ambiguity
+  [ok  ] refusal direction: the runner resolves at head - no refusal
+  [ok  ] admission direction: the scratch/ plant WAS a candidate at base - 4 candidates at base
+  [ok  ] admission direction: the scratch/ plant is NOT a candidate at head - 2 candidates at head
+  [ok  ] admission direction: the output/ plant is NOT a candidate at head - 2 candidates at head
+
+5. SC3 - the plugin surface, untouched by this pass
+  [ok  ] SC3: this pass changed nothing under skills/, commands/, .claude-plugin/ - 0 file(s): 
+  for the record, v1.2.0..HEAD over the same paths: 1 file(s) - skills/powershell-module-ux/SKILL.md
+  that is LEDGER backlog 56 and predates this pass; see the comment in this script.
+
+VERIFY 0046: PASS - every check re-derived and agreed.

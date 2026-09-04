@@ -1,0 +1,7 @@
+Harness tests: ExclusionPattern.Tests.ps1
+Grading:       C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\conformance
+
+Describe=Path exclusion copies agree Passed=4 Failed=0
+Describe=Path exclusion polarity Passed=89 Failed=0
+Passed=93 Failed=0 Ran=93 BrokenContainers=0
+VERDICT=GREEN
