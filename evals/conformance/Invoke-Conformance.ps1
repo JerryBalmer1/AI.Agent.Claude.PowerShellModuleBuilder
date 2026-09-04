@@ -119,7 +119,7 @@ if (-not $ModuleName) {
             } |
             Where-Object {
                 $_.FullName.Substring($target.Length) -notmatch
-                    '[\/](output|scratch|\.git|gallery|fixtures|node_modules)[\/]'
+                    '[\\/](output|scratch|\.git|gallery|fixtures|node_modules)[\\/]'
             }
     )
 
