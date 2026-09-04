@@ -1,0 +1,30 @@
+# Machine paths in this capture are replaced with <harness>, <target>,
+# <scratch>, <temp> and <home>. Nothing else is edited. SC4 forbids a
+# drive-absolute path in anything this pass commits, and a console log
+# is something this pass commits.
+
+PASS 0048 - SECTION 4: spot-checks, both directions.
+
+SC3 - the expectation is not vacuous.
+    [ok  ] SC3 known-good: the shipped additions list is GREEN - Passed
+    [ok  ] SC3 known-bad: an EMPTIED additions list goes RED - Failed
+    [ok  ] SC3: the message names what actually arrived - Expected [Object[]] @() to be present in [Object[]] @('MenuCopyLink', 'MenuOpenLink', 'ReasonNoTemplate'), but they don't have the same number of items.
+
+SC4 - nothing machine-identifying in what this pass commits.
+  files this pass touches:
+    conformance-base.txt
+    observe-blindness.txt
+    observe.ps1
+    probes-run.txt
+    probes.ps1
+    spotchecks.ps1
+    test-task.txt
+    LinkMode.Tests.ps1
+  excluded as detectors: spotchecks.ps1
+    [ok  ] SC4: no machine identity in the pass's own files - clean over 7 file(s)
+    [ok  ] SC4: the detector carve-out excludes something that really does match - 4 hit(s) inside the excluded detector(s)
+    [ok  ] SC4: the carve-out is by exact name and leaves the pass's own files scanned - 7 scanned, 1 excluded, 8 touched
+    [ok  ] SC4 red demo: a planted drive path and vscode:// URI are caught - 3 hit(s): planted.md: drive path; planted.md: home dir; planted.md: vscode uri with a real path
+    [ok  ] SC4 known-good: a clean file produces no hit
+
+SECTION 4: PASS - every spot-check demonstrated red capability in both directions.

@@ -5,7 +5,45 @@ for counters and pins. Update it in the same commit as the work
 that changes it.
 
 ## Passes
-Last landed: **0047**. Next: the operator's. 0047 made a node link in
+Last landed: **0048**. Next: the operator's. 0048 closed **backlog 64**: the
+`STRINGS` block joined the byte gate in `tests/LinkMode.Tests.ps1`. That gate
+asserts an `editor`-mode document is byte-identical to the base's for the same
+payload, and `Get-DocumentCode` removed the whole `STRINGS` block before the
+comparison - so **every user-visible string in the renderer was invisible to the
+strongest check the repository has.** Compared now the way `CONFIG` already was:
+an existing key may not change value, only the three named additions are
+permitted, and those three are pinned by value as well as by name.
+`Get-DocumentCode` is unchanged, because widening it turns acceptance B red
+against correct work. Tests and `CHANGELOG.md` only; **no tag, no version bump**,
+`[Unreleased]`.
+
+**The red-first artifact was not a failing assertion - it was the existing suite
+passing while the thing it should catch had already happened.** A shipped
+string's value changed: GREEN. A key added: GREEN. Each mutation asserted to have
+reached the rendered document before either green was trusted, because a
+substitution that matched nothing produces a green that proves nothing.
+
+**Two probes came back disagreeing with the pass prompt, and both were right.**
+The first form of the gate - additions by name, existing keys by value, exactly
+as backlog 64 described it - could not see a changed `MenuOpenLink`: the value
+clause only speaks for keys present at base, and all three keys 0047 added are
+not. The three strings the entry was *about* were the only ones the new gate
+still could not see. Amended to pin them by value, mirroring the CONFIG case's
+`$head.LinkMode | Should-Be 'editor'`. Second, the prompt's scope control
+predicted a `theme.psd1` edit would turn the *body* comparison red; every theme
+value the page uses is emitted into `CONFIG`, which the comparison strips, so it
+turns *CONFIG* red instead. Split into two probes - theme to CONFIG, a script
+line to the body - which together assert that three checks partition the
+document rather than one check written three times. **Both were found by running
+the probes, not by reading the assertion**, which is the fifth consecutive pass
+to consume a finding from its own measurement.
+
+Conformance held exactly: **66.27% over 166 cases at base and at head**, measured
+at both commits inside the verify run rather than quoted, `CasesDefined` **42** at
+both ends - a **fourth** independent reproduction of backlog 63, whose pin still
+reads 41 and stays there.
+
+0047 made a node link in
 PSGraphRender **declared configuration** rather than a hardcoded scheme, and
 released it as **v0.14.0** - the first change to that repository's `src/`
 since the 0021 handoff. `LinkMode` is an Enum of `editor | hrefTemplate |
@@ -2103,7 +2141,7 @@ controls and corpus figures) was **not** touched and stays open.
 ### Added by pass 0047
 
 64. **The editor-mode byte control does not cover the STRINGS block.**
-    STANDING.
+    RESOLVED by pass 0048.
 
     `tests/LinkMode.Tests.ps1` in PSGraphRender asserts that an
     `editor`-mode document is byte-identical to the base's for the same
@@ -2126,6 +2164,74 @@ controls and corpus figures) was **not** touched and stays open.
     already touching that suite. The shape of the fix is known - compare
     STRINGS the way CONFIG is already compared, where an existing key may
     not change value and only additions are permitted.
+
+    **2026-09-04, pass 0048.** Closed in the shape this entry names. One
+    `It` beside the CONFIG one, in the same `Describe` and against the same
+    base document, because that document costs a clone plus a full build in
+    a child process and a second file would pay for it twice.
+    `Get-DocumentCode` is unchanged: widening it turns acceptance B's
+    `vscode://` assertion red against correct work.
+
+    The blindness was **observed before it was fixed**, which is what the
+    entry above could not do: with a shipped string's value changed and with
+    a key added, the existing comparisons came back GREEN both times, and
+    each mutation was asserted to have reached the rendered document before
+    either green was trusted.
+
+    **The pass's own probe found the first form of the fix insufficient.**
+    Written exactly as the entry describes - additions by name, existing keys
+    by value - a changed `MenuOpenLink` stayed green, because the value
+    clause can only speak for keys present at BASE and all three keys 0047
+    added are not. The three strings whose arrival this entry is about were
+    the only user-visible strings the new gate still could not see. The
+    additions are now pinned by value as well as by name, mirroring the
+    CONFIG case's `$head.LinkMode | Should-Be 'editor'` rather than
+    inventing anything. Found by running the probe, not by reading the
+    assertion.
+
+    **A second thing the probes corrected.** A `theme.psd1` value is not a
+    body change: every theme value the page uses is emitted into the
+    `CONFIG` block, which the byte comparison strips. So a theme edit turns
+    the CONFIG comparison red and leaves the body green. The scope control
+    is two probes - theme to CONFIG, a script line to the body - and
+    together they assert that three checks partition the document rather
+    than one check being written three times.
+
+    **What it still does not cover, and that is the question for the next
+    pass.** The gate is one document from one template set. `plain` ships
+    its own three-key `Config/strings.psd1` and has no acceptance-C document
+    at all. The question is not about `plain` - constraint `0002-t1` already
+    rules that its triviality is deliberate and is what makes it a control.
+    The question is about **n sets**: operator-complete item 2 brings a
+    third backend with its own strings, and a gate that has to be
+    hand-written per set is the one somebody forgets on the fourth. Whether
+    this comparison should generalise across template sets is logged here,
+    not taken.
+
+65. **The workspace-composition assertion cannot see a reference clone
+    inside a registered folder.** STANDING.
+
+    `evals/conformance/Conformance.Tests.ps1:486` checks the `folders`
+    entries of tracked `.code-workspace` files, and its own comment at lines
+    469-475 states the intent it serves: PSGraphRender's reference
+    implementation is "kept out of the working set on purpose", because a
+    reference in the editor's workspace is a writable working directory
+    whose own instructions load into the session.
+
+    The harness workspace file registers `"path": "."`. So a 74 MB clone
+    under `scratch/` with its own 18.9 KB `CLAUDE.md` was inside the working
+    set until the operator moved it on 2026-09-04 - its directory mtime read
+    2026-08-28, which dates the exposure but is not proof of it - and the
+    assertion is structurally incapable of seeing it.
+
+    The comment records that two sessions of pass 0043 "looked for a
+    directory on disk rather than for the file that puts one there". This is
+    the same defect inverted: a check on the file that registers a folder,
+    blind to a directory inside a folder already registered.
+
+    **STANDING, not fixed here.** Repairing it changes a conformance
+    assertion and therefore the denominator, which METHOD says wants its own
+    red-first iteration with cases-run stated at both ends.
 
 ### Numbering, reconciled by pass 0030
 
@@ -2212,10 +2318,20 @@ re-derive it:
   instrument the pass was using rather than in anything the pass wrote,
   and it was found by running that instrument rather than by reading it —
   the pattern 0035, 0036, 0039 and 0040 each recorded.
-- **64 was consumed by pass 0047**; **65 is the next free number.** 64 is a
+- **64 was consumed by pass 0047**; 65 was the next free number until 0048
+  took it. 64 is a
   gap in a gate the pass itself built, found while writing the deviation
   that describes it rather than by any instrument - the first entry in
-  five passes that no run turned up.
+  five passes that no run turned up. **64 was resolved by pass 0048** and
+  keeps its number where it is, amended by dated append rather than
+  rewritten.
+- **65 was consumed by pass 0048**; **66 is the next free number.** 0048
+  consumed one number for one finding and none for its own work. 65 is again a
+  defect in an instrument rather than in anything the pass wrote, and it is a
+  blind spot rather than a wrong answer - the assertion reports correctly on
+  what it looks at and cannot look at the place the thing was. The pass's own
+  two corrections were taken inside 64's entry rather than numbered, because
+  both are about the fix 64 names rather than about anything else.
 - **63 was consumed by pass 0046**; 64 was the next free number until 0047 **62
   was resolved by pass 0046** and keeps its number where it is, amended by
   dated append rather than rewritten — three corrections, one of them to
