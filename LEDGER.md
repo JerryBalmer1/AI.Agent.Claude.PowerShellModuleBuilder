@@ -5,7 +5,42 @@ for counters and pins. Update it in the same commit as the work
 that changes it.
 
 ## Passes
-Last landed: **0044**. Next: the operator's. 0044 wrote pass 0043's
+Last landed: **0045**. Next: the operator's. 0045 deleted one folder
+object from `PSGraphRender.code-workspace` — the `../PSModuleGraph`
+entry that had been there since that repository's initial commit — and
+closed backlog 60. One tracked file changed, in a commit of three
+removed lines and no added ones; `docs/HANDOFF.md` took the record in a
+second commit. No module source, no build, and **no tag**: a
+workspace-file edit is not semver material, on the 0038 precedent that a
+docs-and-config sync earns no minor.
+
+The pass is small and what it is worth is in the polarity. The assertion
+0044 added was observed **red against the real repository before the
+edit and green after**, with the suite's `CasesRun` unchanged at 161 and
+each of the other 33 score lines identical — so the green is a fact about
+the file rather than about an assertion that had quietly stopped being
+able to fail. `plans/0045-workspace-deregistration/verify.ps1` re-derives
+all of it from a fresh clone, measuring both case counts rather than
+pinning either, because the local tree carries an untracked `output/`
+that a clone does not and a pinned count would have reported the tree's
+shape. Its `-FailCheck` restores the entry in a scratch copy of the whole
+repository — a whole repository, because the assertion finds its subject
+with `git ls-files` and a lone file never reaches it — and shows the
+assertion going red again.
+
+**One finding, backlog 62, and it is in the instrument rather than in
+the work.** `Invoke-Conformance.ps1` writes its path-exclusion regex as
+`[\/]` where the suite writes `[\\/]`. Inside a character class that is
+an escaped forward slash and nothing else, so the runner's
+`output|scratch|gallery|fixtures` exclusion has never fired on a Windows
+path. It surfaced as the runner refusing to derive `-ModuleName` for
+`PSGraphRender`, having counted a manifest under `output/` as a second
+candidate named for the target. A refusal is the good direction, and it
+is luck: the same defect admits a `scratch/` or `gallery/` manifest into
+the candidate set, where rule F-8's own comment says the outcome is worse
+than grading nothing. Found by running the runner, not by reading it.
+
+0044 wrote pass 0043's
 corrections into the standing documents and the suite, and changed no
 module source anywhere. `method/METHOD.md` gained two rules — a named
 check counts only after its polarity is shown against a known-bad and a
@@ -1760,7 +1795,7 @@ controls and corpus figures) was **not** touched and stays open.
     will each be cited on their own.
 
 60. **`PSGraphRender.code-workspace` registers `../PSModuleGraph`, and
-    has since that repository's initial commit.** STANDING.
+    has since that repository's initial commit.** RESOLVED by pass 0045.
 
     Found by the assertion added as part of 59, on its first run against
     the real repositories — which is the strongest evidence available
@@ -1779,6 +1814,14 @@ controls and corpus figures) was **not** touched and stays open.
     clone to `scratch/`. So the registration is currently inert as well
     as wrong — which is exactly the state in which it survives another
     two sessions unnoticed.
+
+    **Repaired by pass 0045**, `PSGraphRender` commit `3973644`: the
+    folder object is deleted, `{ "path": "." }` and the `settings` block
+    are byte-identical, and the commit changes nothing else. The
+    assertion that found it was observed red against the real repository
+    before the edit and green after, with the suite's `CasesRun`
+    unchanged at 161 and no other score line moved. No tag was taken —
+    a workspace-file edit is not module semver material.
 
 61. **The conformance suite cannot grade the harness repository, and the
     one file that motivated assertion 59 lives there.** STANDING.
@@ -1806,6 +1849,43 @@ controls and corpus figures) was **not** touched and stays open.
     is the kind of quiet scope growth that makes a score incomparable
     across passes. It wants its own red-first iteration, with cases-run
     stated before and after.
+
+### Added by pass 0045
+
+62. **`Invoke-Conformance.ps1`'s path-exclusion regex is inert on
+    Windows.** STANDING.
+
+    `evals/conformance/Invoke-Conformance.ps1:122` excludes `output`,
+    `scratch`, `.git`, `gallery`, `fixtures` and `node_modules` from
+    manifest discovery with
+
+        '[\/](output|scratch|\.git|gallery|fixtures|node_modules)[\/]'
+
+    where `Conformance.Tests.ps1:61` and `:148` do the same job with
+    `[\\/]`. Inside a character class `\/` is an escaped forward slash and
+    nothing else, so the runner's version matches forward slashes only —
+    and every path it tests is a Windows path built by `Substring` on a
+    `FullName`. Demonstrated rather than asserted, in
+    `plans/0045-workspace-deregistration/plan.md` Deviation 2:
+    `\output\PSGraphRender\PSGraphRender.psd1` is excluded by the suite's
+    form and not by the runner's.
+
+    What it did to pass 0045: the runner counted
+    `output/PSGraphRender/PSGraphRender.psd1` as a second candidate named
+    for the target, decided it could not choose, and demanded
+    `-ModuleName` for a repository whose layout the suite itself resolves
+    unaided. That is a refusal rather than a wrong answer, which is the
+    good direction — but only because `output/` happened to hold a
+    manifest named for the target. The same defect admits a manifest
+    under `scratch/` or `gallery/` into the candidate set, where rule
+    F-8's own comment says the outcome is worse than grading nothing:
+    grading the wrong module silently.
+
+    Found by running the runner, not by reading it. Not repaired by 0045,
+    which may write to the harness for its records only; the fix is one
+    character and belongs with a red-first test of the runner's
+    discovery, because a one-character fix with no test is how the
+    divergence between these three regexes arose in the first place.
 
 ### Numbering, reconciled by pass 0030
 
@@ -1880,10 +1960,17 @@ re-derive it:
   passes on a null result. 40 was caught by scoring the oracle against
   itself, which is the control that exists for exactly that.
 
-- **59, 60 and 61 were consumed by pass 0044**; **62 is the next free
-  number.** 59 is the incorporation of 0043's corrections and is resolved;
-  60 and 61 are live findings, both produced by the assertion 59 added
-  rather than by reading anything.
+- **59, 60 and 61 were consumed by pass 0044**; 62 was the next free
+  number until 0045 took it. 59 is the incorporation of 0043's
+  corrections and is resolved; 60 and 61 are live findings, both produced
+  by the assertion 59 added rather than by reading anything. **60 was
+  resolved by pass 0045** and keeps its number where it is.
+- **62 was consumed by pass 0045**; **63 is the next free number.** 0045
+  consumed one number for one finding and none for its own work, which is
+  what a single-edit pass should look like. 62 is a defect in the
+  instrument the pass was using rather than in anything the pass wrote,
+  and it was found by running that instrument rather than by reading it —
+  the pattern 0035, 0036, 0039 and 0040 each recorded.
 
 Numbers are consumed, never reused and never renumbered — including the ones
 belonging to resolved items, which stay where they are so that a citation
