@@ -5,7 +5,63 @@ for counters and pins. Update it in the same commit as the work
 that changes it.
 
 ## Passes
-Last landed: **0045**. Next: the operator's. 0045 deleted one folder
+Last landed: **0046**. Next: the operator's. 0046 changed **one character**
+of executable behaviour — `evals/conformance/Invoke-Conformance.ps1:122`,
+`[\/]` to `[\\/]` — and closed backlog 62. Inside a character class `\/` is
+an escaped forward slash and nothing else, so the runner's exclusion of
+`output|scratch|.git|gallery|fixtures|node_modules` had never fired on a
+Windows path, and every path it tests is a Windows path. All four copies of
+that regex are now one byte-identical string. No module source, no build,
+**no tag**: the pass changed no installed file.
+
+**Both directions of the defect were observed red before the repair**, which
+is the part worth keeping. The refusal direction is the one 0045 hit and it
+is loud. The admission direction had never been seen: against a clone of
+PSGraphRender with `output/PSGraphRender/PSGraphRender.psd1` and
+`scratch/Fake/Fake.psd1` planted, the runner's candidate set held **four**
+manifests where the suite's held **two**, and the two extra were the plants.
+That is the door to grading the wrong module silently, which rule F-8's own
+comment in the runner calls worse than grading nothing.
+
+The larger half of the pass is **the tests whose absence let four copies of
+one regex drift**, in a new `evals/harness/` — the harness's own tests,
+which grade the instrument rather than any target. 93 cases: a polarity pair
+over every discovered site (Windows, POSIX and nested paths under each of the
+six excluded segments), substitution controls for `src/`-side and
+target-root manifests, five near-miss segment names as scope controls, and a
+copies-agree check that fails the next time any one copy is edited alone.
+Three falsification probes, all recorded: the pre-repair spelling turns 13
+cases red; **a semantically identical respelling of one site turns exactly
+one red and leaves polarity green**, which is what makes them two independent
+checks; and dropping the separators turns the scope controls red while every
+exclusion case stays green.
+
+**The placement is the load-bearing decision, and it was derived rather than
+assumed.** `Invoke-Conformance.ps1` inventories `*.Tests.ps1` in its own
+directory, non-recursively, and that count is `CasesDefined` — the
+denominator every conformance score is reported against. `evals/harness/` is
+outside it, `CasesDefined` is 36 per-target and 42 global at base and at
+head, and `verify.ps1 -FailCheck` measures what happens otherwise: a tagged
+container in that directory moves the denominator 36 → 37, and a copy of
+this pass's own test file makes the conformance runner **refuse to report a
+score at all**. Placement is the guard; the `Harness` tag is only the belt.
+
+`plans/0046-runner-regex/verify.ps1` re-derives all of it — six checks, five
+probes, exit 0 both plain and `-FailCheck` — from the repository and a fresh
+clone, measuring `CasesDefined` at base and head rather than pinning either.
+
+**Three findings, and one question for the operator.** Backlog 63 is new:
+the Pins section's `cases-defined: 41` is stale by one and has been since
+pass 0044 added the `Workspace composition` assertion; the measured figure is
+42, `HouseStyle` 23. Backlog 62's own text undercounted the sites as three
+and is corrected below by dated append. SC3's premise as written in the
+prompt is false and has been since pass 0041 — that is backlog 56, already
+recorded, and the **third consecutive prompt** to carry the stale form of
+this pin. The question: an untracked `PSGraphRender.code-workspace` appeared
+at the harness root mid-pass, which no part of this pass wrote; it has been
+left in place and reported, never resolved.
+
+0045 deleted one folder
 object from `PSGraphRender.code-workspace` — the `../PSModuleGraph`
 entry that had been there since that repository's initial commit — and
 closed backlog 60. One tracked file changed, in a commit of three
@@ -520,7 +576,10 @@ and moved main without updating this line, which is why it is
 worth re-reading rather than trusting.
 **cases-defined: 41** (new at 0039; was 33 from pass 0025 to pass 0038).
 Per tag: `HouseStyle` 22, `Universal` 9, `RequiresBuild` 6,
-`Repository` 4. The eight added are `evals/conformance/Help.Tests.ps1`,
+`Repository` 4. **⚠ This figure is stale by one and has been since pass
+0044 — see backlog 63.** Measured from a clone by pass 0046 at two
+commits: 42, with `HouseStyle` 23. The series-boundary claim below is
+unaffected; what is wrong is the number, not the boundary. The eight added are `evals/conformance/Help.Tests.ps1`,
 all `HouseStyle`; `Conformance.Tests.ps1` is untouched and no assertion
 was weakened, renamed or removed. **Scores either side of `v1.2.0` are
 separate series and are not compared** — see
@@ -1853,7 +1912,7 @@ controls and corpus figures) was **not** touched and stays open.
 ### Added by pass 0045
 
 62. **`Invoke-Conformance.ps1`'s path-exclusion regex is inert on
-    Windows.** STANDING.
+    Windows.** **RESOLVED by pass 0046.**
 
     `evals/conformance/Invoke-Conformance.ps1:122` excludes `output`,
     `scratch`, `.git`, `gallery`, `fixtures` and `node_modules` from
@@ -1886,6 +1945,62 @@ controls and corpus figures) was **not** touched and stays open.
     character and belongs with a red-first test of the runner's
     discovery, because a one-character fix with no test is how the
     divergence between these three regexes arose in the first place.
+
+    **Appended 2026-09-03 by pass 0046.** Three corrections and a
+    resolution. The text above is left as written, per the rule that a
+    numbered item is amended by append and never rewritten.
+
+    - **There are four copies, not three.** `Help.Tests.ps1:55` is a
+      third correct one, alongside `Conformance.Tests.ps1:61` and `:148`.
+      The item names two and says "these three regexes", counting the
+      broken one; the inventory is four sites in three files.
+    - **The refusal message names neither plant, and the causal chain has
+      two links.** The `output/` manifest surviving exclusion is what
+      makes `$suiteCanDecide` false; the runner then falls into its
+      `src/` rule and refuses because `src/` holds two manifests — the
+      module's own and `TemplateSets/cytoscape/vendor/vendor.psd1`, whose
+      base name equals its directory name. The item is right about the
+      cause and does not match the text of the refusal. Repairing the
+      regex makes `$suiteCanDecide` true and the `src/` block never runs,
+      so the vendored manifest is never reached and is not a defect.
+    - **The dangerous direction was observed, not merely argued.** With
+      `scratch/Fake/Fake.psd1` planted in a clone, the runner's candidate
+      set held four manifests and the suite's held two.
+      `plans/0046-runner-regex/accept-red.txt` records both sets.
+
+    Repaired at `Invoke-Conformance.ps1:122`; all four copies are now one
+    byte-identical string. The standing guard the item asked for is
+    `evals/harness/ExclusionPattern.Tests.ps1`, deliberately outside the
+    conformance inventory, with three falsification probes recorded in
+    `plans/0046-runner-regex/`.
+
+### Added by pass 0046
+
+63. **The Pins section's `cases-defined` figure is stale by one.**
+    STANDING.
+
+    The Pins section reads **cases-defined: 41** (new at 0039), per tag
+    `HouseStyle` 22, `Universal` 9, `RequiresBuild` 6, `Repository` 4.
+    Measured by pass 0046 at its base commit `13e1ea9` and at its head,
+    from a clone, with all four tags selected: it is **42**, with
+    `HouseStyle` **23**. The default three-tag figure is **36**, which is
+    what pass 0045 recorded and what 0046 re-derived twice.
+
+    Pass 0044 added the `Workspace composition` assertion — one
+    `HouseStyle` `It` — and did not move the pin. Nothing checks that a
+    pass which changes the assertion inventory updates the figure the
+    inventory is pinned at, which is backlog 44's shape one level down:
+    a measured result must name the sibling documents it stales, and
+    nothing enforces it.
+
+    **Not repaired by 0046.** The pin is not a number in isolation — it
+    carries a series boundary, and scores either side of `v1.2.0` are
+    declared incomparable against it. Moving it is a claim about which
+    scores may be compared with which, and that wants its own red-first
+    iteration with the affected documents enumerated, not a drive-by edit
+    inside a pass about a regex. What is cheap and worth doing there: a
+    check that re-derives `CasesDefined` from the suite and compares it
+    against the pinned figure, so the next drift is loud.
 
 ### Numbering, reconciled by pass 0030
 
@@ -1965,12 +2080,23 @@ re-derive it:
   corrections and is resolved; 60 and 61 are live findings, both produced
   by the assertion 59 added rather than by reading anything. **60 was
   resolved by pass 0045** and keeps its number where it is.
-- **62 was consumed by pass 0045**; **63 is the next free number.** 0045
+- **62 was consumed by pass 0045**; 63 was the next free number until 0046
+  took it. 0045
   consumed one number for one finding and none for its own work, which is
   what a single-edit pass should look like. 62 is a defect in the
   instrument the pass was using rather than in anything the pass wrote,
   and it was found by running that instrument rather than by reading it —
   the pattern 0035, 0036, 0039 and 0040 each recorded.
+- **63 was consumed by pass 0046**; **64 is the next free number.** **62
+  was resolved by pass 0046** and keeps its number where it is, amended by
+  dated append rather than rewritten — three corrections, one of them to
+  its own count of the sites. 63 is again a defect in the instrument
+  rather than in the pass's work, and again found by measuring rather than
+  by reading: the pass had to measure `CasesDefined` at two commits to
+  prove it had not moved it, and the pinned figure disagreed with both.
+  That is the fourth consecutive pass to consume a number for something
+  its own measurement turned up, and the second in a row where the finding
+  is in the bookkeeping around a number rather than in the number.
 
 Numbers are consumed, never reused and never renumbered — including the ones
 belonging to resolved items, which stay where they are so that a citation
