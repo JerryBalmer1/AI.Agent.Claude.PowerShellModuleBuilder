@@ -284,6 +284,30 @@ instructions go to a task file with a checklist the agent ticks.
 **PORTABLE.** A file a pass must create is either already committed or its
 full content appears verbatim in the prompt. There is no third channel.
 
+**PORTABLE.** Conventions come from the repository, never from recall. A prompt
+requirement that names a path, a version, a layout or a convention is derived
+from the repository at authoring time — read, at the moment of writing — and
+never recalled. This is the existing rule that every path, SHA, tag and branch
+is checked against the actual remotes, extended from state to convention: both
+failures have the same shape, a prompt asserting something about the repository
+that used to be true or was never true, and both surface at the worst moment,
+as a precondition failing or a pass building the wrong thing correctly.
+
+Pass 0043 supplied one of each. Its prompt placed the verify script at a
+top-level `verify/Verify-Pass0043.ps1`, a directory that has never existed here
+— every pass from 0011 onward puts it at `plans/<pass>/verify.ps1`, which is
+also the shape decision 0004 lists in its own artifacts. That is the convention
+half. Its prompt also named `v0.3.0` for a release in a repository whose
+`git tag` already answered `v0.3.0`; the pass took `v0.4.0`, the next unclaimed
+minor. That is the state half.
+
+The corollary matters more than the rule. When a prompt requirement and the
+repository disagree, the repository wins and the disagreement is a finding —
+inventing a directory, a numbering scheme or a version to satisfy a string in a
+prompt makes the prompt right and the repository wrong, which is backwards, and
+leaves behind a convention someone now has to find and remove. Amend to the
+convention that is actually there, and record what was asked in Deviations.
+
 **PORTABLE.** One journal entry per pass, written from that pass's
 artifacts, never from memory. Six fields: Asked, Done (with paths), Why
 (including what was rejected), Measured (citing an artifact, or "none"),
