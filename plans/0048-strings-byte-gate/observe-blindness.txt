@@ -1,0 +1,36 @@
+
+PASS 0048 - SECTION 2: the blindness, observed against the shipped suite.
+  repo     : c:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\PSGraphRender
+  head     : 3f2ec85 (main)
+  base sha : cd4857d  (acceptance C's, tests/LinkMode.Tests.ps1:286)
+
+base clone at cd4857d
+base document: 614905 bytes
+
+unmutated head document: 615075 bytes
+
+D3 - the mutation reached the rendered document (checked BEFORE any green is trusted).
+  [ok  ] D1: STRINGS block of the render differs from the unmutated render
+         expected      : MenuOpenLink changed value
+         keys added    : (none)
+         keys changed  : MenuOpenLink
+         MenuOpenLink : [Open Link] -> [MUTATED BY D1]
+  [ok  ] D2: STRINGS block of the render differs from the unmutated render
+         expected      : D2AddedKey present
+         keys added    : D2AddedKey
+         keys changed  : (none)
+
+D1 / D2 - the shipped acceptance-C comparisons, run against the base document.
+          GREEN here is the hole: a mutated shipped string changes nothing they can see.
+
+  D1 (changed value)     : GREEN - Should-BeNull passes
+  D2 (added key)         : GREEN - Should-BeNull passes
+  control (unmutated)    : GREEN - Should-BeNull passes
+
+For the record - STRINGS additions head(3f2ec85) over base(cd4857d), the three 0047 added:
+  added   : MenuCopyLink, MenuOpenLink, ReasonNoTemplate
+  removed : 
+  changed : (none)
+  counts  : base 78 keys, head 81 keys
+
+SECTION 2 observation complete.
