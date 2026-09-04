@@ -666,6 +666,15 @@ the prompt's F3 amendment directs — including inside `verify.ps1`, whose
 `-BaseRef` default was corrected from the tag to the SHA after the first draft
 used the tag out of habit.
 
+**11. The harness records landed on `main` directly, with no pass branch.**
+Passes 0044-0046 each used one. This pass did not, because R2 required the
+gitignore small to be committed "directly on harness `main`, pushed" before
+section 0's dirt check could pass — so the harness was already on `main` with a
+pushed commit before task 7 existed, and branching afterwards would have been a
+branch created to be fast-forwarded from. Task 8's "fast-forward both mains" is
+therefore a no-op on the harness side and a real fast-forward on PSGraphRender's.
+The ⛔ "never force" held on both.
+
 **10. Nothing was found that required a contract change**, so task 2's 🔴 never
 fired and no decision was raised. Recorded because the stop existing and not
 firing is itself the evidence that the tokens were checked first.
