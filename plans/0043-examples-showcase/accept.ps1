@@ -121,7 +121,17 @@ function Test-RelativeLink {
         if ($seg -eq '..') { if ($parts.Count -gt 0) { $parts.RemoveAt($parts.Count - 1) }; continue }
         $parts.Add($seg)
     }
-    return $Tracked.Contains(($parts -join '/'))
+    $resolved = $parts -join '/'
+    if ($Tracked.Contains($resolved)) { return $true }
+
+    # A link to a directory is legitimate markdown, and `git ls-files` lists no
+    # directories - only their contents. Treat it as resolving when the tree
+    # holds anything beneath it. Without this the checker fails a correct link.
+    $prefix = $resolved.TrimEnd('/') + '/'
+    foreach ($t in $Tracked) {
+        if ($t.StartsWith($prefix, [StringComparison]::OrdinalIgnoreCase)) { return $true }
+    }
+    return $false
 }
 
 Write-Host ''
