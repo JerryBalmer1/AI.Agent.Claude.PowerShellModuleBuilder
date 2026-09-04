@@ -1,0 +1,48 @@
+Harness tests: ExclusionPattern.Tests.ps1
+Grading:       C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\scratch\probe-0046\pre-repair\conformance
+
+Running tests from 1 files.
+[-] Path exclusion polarity.the pattern excludes what it names.Invoke-Conformance.ps1:122 excludes a Windows-style path under output 58ms
+ Expected regular expression '[\/](output|scratch|\.git|gallery|fixtures|node_modules)[\/]' to match '\output\Thing\Thing.psd1', because every path this pattern is applied to is a Windows path - it is built by .Substring() on a FileInfo.FullName - so a class that cannot see a backslash excludes nothing. '[\/]' is an escaped forward slash and NOTHING ELSE; the correct class is '[\\/]'. LEDGER backlog 62., but it did not match.
+ at "\$Segment\Thing\Thing.psd1" | Should -Match $Pattern -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\harness\ExclusionPattern.Tests.ps1:103
+[-] Path exclusion polarity.the pattern excludes what it names.Invoke-Conformance.ps1:122 excludes a Windows-style path under scratch 7ms
+ Expected regular expression '[\/](output|scratch|\.git|gallery|fixtures|node_modules)[\/]' to match '\scratch\Thing\Thing.psd1', because every path this pattern is applied to is a Windows path - it is built by .Substring() on a FileInfo.FullName - so a class that cannot see a backslash excludes nothing. '[\/]' is an escaped forward slash and NOTHING ELSE; the correct class is '[\\/]'. LEDGER backlog 62., but it did not match.
+ at "\$Segment\Thing\Thing.psd1" | Should -Match $Pattern -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\harness\ExclusionPattern.Tests.ps1:103
+[-] Path exclusion polarity.the pattern excludes what it names.Invoke-Conformance.ps1:122 excludes a Windows-style path under .git 7ms
+ Expected regular expression '[\/](output|scratch|\.git|gallery|fixtures|node_modules)[\/]' to match '\.git\Thing\Thing.psd1', because every path this pattern is applied to is a Windows path - it is built by .Substring() on a FileInfo.FullName - so a class that cannot see a backslash excludes nothing. '[\/]' is an escaped forward slash and NOTHING ELSE; the correct class is '[\\/]'. LEDGER backlog 62., but it did not match.
+ at "\$Segment\Thing\Thing.psd1" | Should -Match $Pattern -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\harness\ExclusionPattern.Tests.ps1:103
+[-] Path exclusion polarity.the pattern excludes what it names.Invoke-Conformance.ps1:122 excludes a Windows-style path under gallery 4ms
+ Expected regular expression '[\/](output|scratch|\.git|gallery|fixtures|node_modules)[\/]' to match '\gallery\Thing\Thing.psd1', because every path this pattern is applied to is a Windows path - it is built by .Substring() on a FileInfo.FullName - so a class that cannot see a backslash excludes nothing. '[\/]' is an escaped forward slash and NOTHING ELSE; the correct class is '[\\/]'. LEDGER backlog 62., but it did not match.
+ at "\$Segment\Thing\Thing.psd1" | Should -Match $Pattern -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\harness\ExclusionPattern.Tests.ps1:103
+[-] Path exclusion polarity.the pattern excludes what it names.Invoke-Conformance.ps1:122 excludes a Windows-style path under fixtures 4ms
+ Expected regular expression '[\/](output|scratch|\.git|gallery|fixtures|node_modules)[\/]' to match '\fixtures\Thing\Thing.psd1', because every path this pattern is applied to is a Windows path - it is built by .Substring() on a FileInfo.FullName - so a class that cannot see a backslash excludes nothing. '[\/]' is an escaped forward slash and NOTHING ELSE; the correct class is '[\\/]'. LEDGER backlog 62., but it did not match.
+ at "\$Segment\Thing\Thing.psd1" | Should -Match $Pattern -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\harness\ExclusionPattern.Tests.ps1:103
+[-] Path exclusion polarity.the pattern excludes what it names.Invoke-Conformance.ps1:122 excludes a Windows-style path under node_modules 5ms
+ Expected regular expression '[\/](output|scratch|\.git|gallery|fixtures|node_modules)[\/]' to match '\node_modules\Thing\Thing.psd1', because every path this pattern is applied to is a Windows path - it is built by .Substring() on a FileInfo.FullName - so a class that cannot see a backslash excludes nothing. '[\/]' is an escaped forward slash and NOTHING ELSE; the correct class is '[\\/]'. LEDGER backlog 62., but it did not match.
+ at "\$Segment\Thing\Thing.psd1" | Should -Match $Pattern -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\harness\ExclusionPattern.Tests.ps1:103
+[-] Path exclusion polarity.the pattern excludes what it names.Invoke-Conformance.ps1:122 excludes a nested path under output 4ms
+ Expected regular expression '[\/](output|scratch|\.git|gallery|fixtures|node_modules)[\/]' to match '\src\Thing\output\Thing\Thing.psd1', but it did not match.
+ at "\src\Thing\$Segment\Thing\Thing.psd1" | Should -Match $Pattern, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\harness\ExclusionPattern.Tests.ps1:120
+[-] Path exclusion polarity.the pattern excludes what it names.Invoke-Conformance.ps1:122 excludes a nested path under scratch 4ms
+ Expected regular expression '[\/](output|scratch|\.git|gallery|fixtures|node_modules)[\/]' to match '\src\Thing\scratch\Thing\Thing.psd1', but it did not match.
+ at "\src\Thing\$Segment\Thing\Thing.psd1" | Should -Match $Pattern, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\harness\ExclusionPattern.Tests.ps1:120
+[-] Path exclusion polarity.the pattern excludes what it names.Invoke-Conformance.ps1:122 excludes a nested path under .git 4ms
+ Expected regular expression '[\/](output|scratch|\.git|gallery|fixtures|node_modules)[\/]' to match '\src\Thing\.git\Thing\Thing.psd1', but it did not match.
+ at "\src\Thing\$Segment\Thing\Thing.psd1" | Should -Match $Pattern, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\harness\ExclusionPattern.Tests.ps1:120
+[-] Path exclusion polarity.the pattern excludes what it names.Invoke-Conformance.ps1:122 excludes a nested path under gallery 4ms
+ Expected regular expression '[\/](output|scratch|\.git|gallery|fixtures|node_modules)[\/]' to match '\src\Thing\gallery\Thing\Thing.psd1', but it did not match.
+ at "\src\Thing\$Segment\Thing\Thing.psd1" | Should -Match $Pattern, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\harness\ExclusionPattern.Tests.ps1:120
+[-] Path exclusion polarity.the pattern excludes what it names.Invoke-Conformance.ps1:122 excludes a nested path under fixtures 23ms
+ Expected regular expression '[\/](output|scratch|\.git|gallery|fixtures|node_modules)[\/]' to match '\src\Thing\fixtures\Thing\Thing.psd1', but it did not match.
+ at "\src\Thing\$Segment\Thing\Thing.psd1" | Should -Match $Pattern, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\harness\ExclusionPattern.Tests.ps1:120
+[-] Path exclusion polarity.the pattern excludes what it names.Invoke-Conformance.ps1:122 excludes a nested path under node_modules 4ms
+ Expected regular expression '[\/](output|scratch|\.git|gallery|fixtures|node_modules)[\/]' to match '\src\Thing\node_modules\Thing\Thing.psd1', but it did not match.
+ at "\src\Thing\$Segment\Thing\Thing.psd1" | Should -Match $Pattern, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\harness\ExclusionPattern.Tests.ps1:120
+[-] Path exclusion copies agree.all copies are one identical string 36ms
+ Expected 1, because four copies of one regex drifted here once already and nothing noticed. Sites: Conformance.Tests.ps1:61 = [\\/](output|scratch|\.git|gallery|fixtures|node_modules)[\\/] | Conformance.Tests.ps1:148 = [\\/](output|scratch|\.git|gallery|fixtures|node_modules)[\\/] | Help.Tests.ps1:55 = [\\/](output|scratch|\.git|gallery|fixtures|node_modules)[\\/] | Invoke-Conformance.ps1:122 = [\/](output|scratch|\.git|gallery|fixtures|node_modules)[\/], but got 2.
+ at $distinct.Count | Should -Be 1 -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\harness\ExclusionPattern.Tests.ps1:204
+Tests completed in 1.51s
+Tests Passed: 80, Failed: 13, Skipped: 0, Inconclusive: 0, NotRun: 0
+
+Passed=80 Failed=13 Ran=93 BrokenContainers=0
+VERDICT=RED

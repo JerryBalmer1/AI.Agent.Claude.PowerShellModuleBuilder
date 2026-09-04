@@ -1,0 +1,24 @@
+Harness tests: ExclusionPattern.Tests.ps1
+Grading:       C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\scratch\probe-0046\no-separators\conformance
+
+Running tests from 1 files.
+[-] Path exclusion polarity.the pattern matches whole path segments, not substrings.no site excludes a directory merely named outputs 29ms
+ Expected regular expression '(output|scratch|\.git|gallery|fixtures|node_modules)' to not match '\src\outputs\Thing\Thing.psd1', because 'outputs' is not one of the excluded segments, and Invoke-Conformance.ps1:122 says it is. The separators in the character classes are what make this a segment match rather than a substring match, but it did match.
+ at "\src\$Name\Thing\Thing.psd1" | Should -Not -Match $site.Pattern -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\harness\ExclusionPattern.Tests.ps1:151
+[-] Path exclusion polarity.the pattern matches whole path segments, not substrings.no site excludes a directory merely named scratchpad 6ms
+ Expected regular expression '(output|scratch|\.git|gallery|fixtures|node_modules)' to not match '\src\scratchpad\Thing\Thing.psd1', because 'scratchpad' is not one of the excluded segments, and Invoke-Conformance.ps1:122 says it is. The separators in the character classes are what make this a segment match rather than a substring match, but it did match.
+ at "\src\$Name\Thing\Thing.psd1" | Should -Not -Match $site.Pattern -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\harness\ExclusionPattern.Tests.ps1:151
+[-] Path exclusion polarity.the pattern matches whole path segments, not substrings.no site excludes a directory merely named myoutput 5ms
+ Expected regular expression '(output|scratch|\.git|gallery|fixtures|node_modules)' to not match '\src\myoutput\Thing\Thing.psd1', because 'myoutput' is not one of the excluded segments, and Invoke-Conformance.ps1:122 says it is. The separators in the character classes are what make this a segment match rather than a substring match, but it did match.
+ at "\src\$Name\Thing\Thing.psd1" | Should -Not -Match $site.Pattern -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\harness\ExclusionPattern.Tests.ps1:151
+[-] Path exclusion polarity.the pattern matches whole path segments, not substrings.no site excludes a directory merely named node_modules_backup 5ms
+ Expected regular expression '(output|scratch|\.git|gallery|fixtures|node_modules)' to not match '\src\node_modules_backup\Thing\Thing.psd1', because 'node_modules_backup' is not one of the excluded segments, and Invoke-Conformance.ps1:122 says it is. The separators in the character classes are what make this a segment match rather than a substring match, but it did match.
+ at "\src\$Name\Thing\Thing.psd1" | Should -Not -Match $site.Pattern -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\harness\ExclusionPattern.Tests.ps1:151
+[-] Path exclusion copies agree.all copies are one identical string 31ms
+ Expected 1, because four copies of one regex drifted here once already and nothing noticed. Sites: Conformance.Tests.ps1:61 = [\\/](output|scratch|\.git|gallery|fixtures|node_modules)[\\/] | Conformance.Tests.ps1:148 = [\\/](output|scratch|\.git|gallery|fixtures|node_modules)[\\/] | Help.Tests.ps1:55 = [\\/](output|scratch|\.git|gallery|fixtures|node_modules)[\\/] | Invoke-Conformance.ps1:122 = (output|scratch|\.git|gallery|fixtures|node_modules), but got 2.
+ at $distinct.Count | Should -Be 1 -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\harness\ExclusionPattern.Tests.ps1:204
+Tests completed in 1.34s
+Tests Passed: 88, Failed: 5, Skipped: 0, Inconclusive: 0, NotRun: 0
+
+Passed=88 Failed=5 Ran=93 BrokenContainers=0
+VERDICT=RED

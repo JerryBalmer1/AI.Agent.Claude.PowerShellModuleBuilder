@@ -1,0 +1,12 @@
+Harness tests: ExclusionPattern.Tests.ps1
+Grading:       C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\scratch\probe-0046\one-site\conformance
+
+Running tests from 1 files.
+[-] Path exclusion copies agree.all copies are one identical string 44ms
+ Expected 1, because four copies of one regex drifted here once already and nothing noticed. Sites: Conformance.Tests.ps1:61 = [/\\](output|scratch|\.git|gallery|fixtures|node_modules)[/\\] | Conformance.Tests.ps1:148 = [\\/](output|scratch|\.git|gallery|fixtures|node_modules)[\\/] | Help.Tests.ps1:55 = [\\/](output|scratch|\.git|gallery|fixtures|node_modules)[\\/] | Invoke-Conformance.ps1:122 = [\\/](output|scratch|\.git|gallery|fixtures|node_modules)[\\/], but got 2.
+ at $distinct.Count | Should -Be 1 -Because (, C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\evals\harness\ExclusionPattern.Tests.ps1:204
+Tests completed in 1.28s
+Tests Passed: 92, Failed: 1, Skipped: 0, Inconclusive: 0, NotRun: 0
+
+Passed=92 Failed=1 Ran=93 BrokenContainers=0
+VERDICT=RED
