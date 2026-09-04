@@ -11,6 +11,43 @@ The operator assigns NNNN in the prompt header. `plans/NNNN-<slug>/`,
 `journal/NNNN-<slug>.md` and the header all use it. The agent never invents
 a pass number. A prompt arriving without one is a stop.
 
+### The frontier is read from three sources, every pass
+
+Before anything else, the pass establishes what the last landed number actually
+is, from three independent sources:
+
+1. **LEDGER** — the `Last landed:` line.
+2. **The plans tree** — the highest `plans/NNNN-*` directory.
+3. **The journal tree** — the highest `journal/NNNN-*.md`.
+
+Two checks on what comes back, and they are different checks:
+
+- **Is the assigned number free?** A `plans/NNNN-*`, a `journal/NNNN-*`, a
+  LEDGER citation, or a `pass-NNNN-*` branch **in any workspace repository**
+  bearing the number the prompt assigned is a stop. Branches count because a
+  stranded pass branch is the one form of "already taken" that leaves nothing
+  in the working tree to notice.
+- **Do the three sources agree with each other?** A disagreement is a stop and a
+  finding, and it is reported rather than resolved inside the pass. Which source
+  is right is not always the majority: "landed" means a plan *and* a journal
+  entry, so the trees carry the fact and the LEDGER line carries a summary of
+  it. Record all three values in the plan either way, agreeing or not.
+
+The reason for three sources rather than the counter alone is that the counter
+is the one that drifts, and it drifts silently. Commit `b404734`, immediately
+before pass 0044, is a correction of exactly that: LEDGER read `Last landed:
+0040` while `git ls-tree origin/main` answered `plans/0041-operator-ux` and
+`journal/0041-operator-ux.md`. Nothing was wrong with the work; one line
+summarising it had fallen a pass behind, and any pass that had taken the counter
+at its word would have re-used a number that was already spent.
+
+The same disease reaches the backlog numbering, where it is worse because the
+numbers are cited. Pass 0031's prompt asked for a backlog item as "17"; 17 and
+18 were already taken by pass 0029, and it landed as 19 with its wording
+unchanged — recorded rather than silently renumbered, because a backlog item
+whose number moved is one somebody will cite wrongly later. Read the next free
+number off the file, never off the prompt.
+
 ## File supply
 
 A file a pass must create is either already committed to the repository, or its

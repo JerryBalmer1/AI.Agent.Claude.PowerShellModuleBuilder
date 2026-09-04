@@ -176,9 +176,16 @@ Test-Check 'PROTOCOL: legend records the constraint it survived' {
     return $true
 }
 
+# The prompt asked that this cite "the 0032 misnumbering". The repository has no
+# such record: the numbering collision is pass 0031's (a backlog item asked for
+# as 17 when 17 and 18 were taken, landed as 19), and the frontier drift this
+# precondition actually answers is commit b404734, where LEDGER read 0040 while
+# both trees read 0041. The check requires the citations that exist. See plan.md,
+# Deviation 3 - and METHOD.md, "Conventions come from the repository, never from
+# recall", which this pass wrote two commits earlier.
 Test-Check 'PROTOCOL: multi-source frontier precondition present' {
     if (-not $protocol) { return @($false, 'no file') }
-    foreach ($t in 'LEDGER', 'plans tree', 'journal tree', '0032') {
+    foreach ($t in 'LEDGER', 'plans tree', 'journal tree', 'b404734', '0031') {
         if ($protocol -notmatch [regex]::Escape($t)) { return @($false, "missing $t") }
     }
     return $true
