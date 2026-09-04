@@ -1,0 +1,206 @@
+Build TestLinkMode C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\PSGraphRender\PSGraphRender.build.ps1
+Task /TestLinkMode/Build/Clean
+Done /TestLinkMode/Build/Clean 00:00:00.0326582
+Task /TestLinkMode/Build
+  template sets: 2 backend(s), 43 file(s)
+  contract: 1 file(s)
+Built PSGraphRender -> C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\PSGraphRender\output\PSGraphRender
+Done /TestLinkMode/Build 00:00:00.2814269
+Task /TestLinkMode
+WARNING: Unknown setting 'LinkMode' was ignored. It is not in settings.schema.psd1.
+WARNING: Unknown setting 'LinkHrefTemplate' was ignored. It is not in settings.schema.psd1.
+WARNING: Unknown setting 'LinkMode' was ignored. It is not in settings.schema.psd1.
+WARNING: Unknown setting 'LinkMode' was ignored. It is not in settings.schema.psd1.
+WARNING: Unknown setting 'LinkHrefTemplate' was ignored. It is not in settings.schema.psd1.
+WARNING: Unknown setting 'LinkMode' was ignored. It is not in settings.schema.psd1.
+{
+  "viewport": {
+    "width": 1280,
+    "height": 900
+  },
+  "results": [
+    {
+      "case": "editor",
+      "ok": true,
+      "message": "",
+      "menu": [
+        {
+          "tag": "div",
+          "text": "Get-Thing",
+          "href": null,
+          "disabled": false
+        },
+        {
+          "tag": "a",
+          "text": "Open File Location",
+          "href": "vscode://file/C:/fixtures/LinkMode/src/Public/Get-Thing.ps1:12:1",
+          "disabled": false
+        },
+        {
+          "tag": "button",
+          "text": "Copy Editor Link",
+          "href": null,
+          "disabled": false
+        },
+        {
+          "tag": "button",
+          "text": "Copy Path",
+          "href": null,
+          "disabled": false
+        },
+        {
+          "tag": "button",
+          "text": "Diagnostics",
+          "href": null,
+          "disabled": false
+        }
+      ],
+      "dialogs": [],
+      "errors": [],
+      "hrefs": [
+        "vscode://file/C:/fixtures/LinkMode/src/Public/Get-Thing.ps1:12:1"
+      ]
+    },
+    {
+      "case": "hrefTemplate",
+      "ok": false,
+      "message": "expected every href to start with https://example.invalid/, got: vscode://file/C:/fixtures/LinkMode/src/Public/Get-Thing.ps1:12:1",
+      "menu": [
+        {
+          "tag": "div",
+          "text": "Get-Thing",
+          "href": null,
+          "disabled": false
+        },
+        {
+          "tag": "a",
+          "text": "Open File Location",
+          "href": "vscode://file/C:/fixtures/LinkMode/src/Public/Get-Thing.ps1:12:1",
+          "disabled": false
+        },
+        {
+          "tag": "button",
+          "text": "Copy Editor Link",
+          "href": null,
+          "disabled": false
+        },
+        {
+          "tag": "button",
+          "text": "Copy Path",
+          "href": null,
+          "disabled": false
+        },
+        {
+          "tag": "button",
+          "text": "Diagnostics",
+          "href": null,
+          "disabled": false
+        }
+      ],
+      "dialogs": [],
+      "errors": [],
+      "hrefs": [
+        "vscode://file/C:/fixtures/LinkMode/src/Public/Get-Thing.ps1:12:1"
+      ]
+    },
+    {
+      "case": "none",
+      "ok": false,
+      "message": "expected no link action, found 1: vscode://file/C:/fixtures/LinkMode/src/Public/Get-Thing.ps1:12:1",
+      "menu": [
+        {
+          "tag": "div",
+          "text": "Get-Thing",
+          "href": null,
+          "disabled": false
+        },
+        {
+          "tag": "a",
+          "text": "Open File Location",
+          "href": "vscode://file/C:/fixtures/LinkMode/src/Public/Get-Thing.ps1:12:1",
+          "disabled": false
+        },
+        {
+          "tag": "button",
+          "text": "Copy Editor Link",
+          "href": null,
+          "disabled": false
+        },
+        {
+          "tag": "button",
+          "text": "Copy Path",
+          "href": null,
+          "disabled": false
+        },
+        {
+          "tag": "button",
+          "text": "Diagnostics",
+          "href": null,
+          "disabled": false
+        }
+      ],
+      "dialogs": [],
+      "errors": [],
+      "hrefs": [
+        "vscode://file/C:/fixtures/LinkMode/src/Public/Get-Thing.ps1:12:1"
+      ]
+    },
+    {
+      "case": "injection",
+      "ok": false,
+      "message": "expected every href to start with https://example.invalid/, got: vscode://file/C:/fixtures/LinkMode/src/a%22b%3Cc%3E.ps1:1:1",
+      "menu": [
+        {
+          "tag": "div",
+          "text": "\"><script>alert(1)</script>",
+          "href": null,
+          "disabled": false
+        },
+        {
+          "tag": "a",
+          "text": "Open File Location",
+          "href": "vscode://file/C:/fixtures/LinkMode/src/a%22b%3Cc%3E.ps1:1:1",
+          "disabled": false
+        },
+        {
+          "tag": "button",
+          "text": "Copy Editor Link",
+          "href": null,
+          "disabled": false
+        },
+        {
+          "tag": "button",
+          "text": "Copy Path",
+          "href": null,
+          "disabled": false
+        },
+        {
+          "tag": "button",
+          "text": "Diagnostics",
+          "href": null,
+          "disabled": false
+        }
+      ],
+      "dialogs": [],
+      "errors": [],
+      "hrefs": [
+        "vscode://file/C:/fixtures/LinkMode/src/a%22b%3Cc%3E.ps1:1:1"
+      ]
+    }
+  ]
+}
+
+ERROR: The link-mode probe reported failures across 4 case(s).
+At C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\PSGraphRender\PSGraphRender.build.ps1:466 char:13
++             throw "The link-mode probe reported failures across $($ca …
++             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+At C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\PSGraphRender\PSGraphRender.build.ps1:364 char:1
++ task TestLinkMode Build, {
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~
+Build FAILED. 3 tasks, 1 errors, 0 warnings 00:00:08.9332048
+Exception: C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\PSGraphRender\PSGraphRender.build.ps1:466
+Line |
+ 466 |              throw "The link-mode probe reported failures across $($ca …
+     |              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     | The link-mode probe reported failures across 4 case(s).
+

@@ -1,0 +1,93 @@
+{
+  "viewport": {
+    "width": 1280,
+    "height": 900
+  },
+  "results": [
+    {
+      "case": "SC3-red-escaping-disabled",
+      "ok": false,
+      "message": "href carries an unencoded character: https://example.invalid/src/a%22b%3Cc%3E.ps1?l=\"><script>alert(1)</script>",
+      "menu": [
+        {
+          "tag": "div",
+          "text": "\"><script>alert(1)</script>",
+          "href": null,
+          "disabled": false
+        },
+        {
+          "tag": "a",
+          "text": "Open Link",
+          "href": "https://example.invalid/src/a%22b%3Cc%3E.ps1?l=\"><script>alert(1)</script>",
+          "disabled": false
+        },
+        {
+          "tag": "button",
+          "text": "Copy Link",
+          "href": null,
+          "disabled": false
+        },
+        {
+          "tag": "button",
+          "text": "Copy Path",
+          "href": null,
+          "disabled": false
+        },
+        {
+          "tag": "button",
+          "text": "Diagnostics",
+          "href": null,
+          "disabled": false
+        }
+      ],
+      "dialogs": [],
+      "errors": [],
+      "hrefs": [
+        "https://example.invalid/src/a%22b%3Cc%3E.ps1?l=\"><script>alert(1)</script>"
+      ]
+    },
+    {
+      "case": "SC4-red-editor-as-none",
+      "ok": false,
+      "message": "expected no link action, found 1: vscode://file/C:/fixtures/LinkMode/src/Public/Widget.ps1:12:1",
+      "menu": [
+        {
+          "tag": "div",
+          "text": "Widget",
+          "href": null,
+          "disabled": false
+        },
+        {
+          "tag": "a",
+          "text": "Open File Location",
+          "href": "vscode://file/C:/fixtures/LinkMode/src/Public/Widget.ps1:12:1",
+          "disabled": false
+        },
+        {
+          "tag": "button",
+          "text": "Copy Editor Link",
+          "href": null,
+          "disabled": false
+        },
+        {
+          "tag": "button",
+          "text": "Copy Path",
+          "href": null,
+          "disabled": false
+        },
+        {
+          "tag": "button",
+          "text": "Diagnostics",
+          "href": null,
+          "disabled": false
+        }
+      ],
+      "dialogs": [],
+      "errors": [],
+      "hrefs": [
+        "vscode://file/C:/fixtures/LinkMode/src/Public/Widget.ps1:12:1"
+      ]
+    }
+  ]
+}
+

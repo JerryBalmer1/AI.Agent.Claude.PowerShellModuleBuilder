@@ -1,0 +1,63 @@
+conformance-head
+  ScorePct     : 66.27
+  CasesRun     : 166
+  Passed/Failed: 110/56
+  CasesDefined : 42
+
+failures:
+  - House style: build file.makes the default task Clean, Lint, Build, Test
+  - House style: help.gives Assert-RenderContractVersion at least as many examples as parameter sets
+  - House style: help.gives Assert-RenderContractVersion at least one example
+  - House style: help.gives ConvertTo-EscapedHtmlJson at least as many examples as parameter sets
+  - House style: help.gives ConvertTo-EscapedHtmlJson at least one example
+  - House style: help.gives ConvertTo-EscapedHtmlText a help description
+  - House style: help.gives ConvertTo-EscapedHtmlText at least as many examples as parameter sets
+  - House style: help.gives ConvertTo-EscapedHtmlText at least one example
+  - House style: help.gives every parameter of ConvertTo-EscapedHtmlJson a .PARAMETER entry
+  - House style: help.gives every parameter of ConvertTo-EscapedHtmlText a .PARAMETER entry
+  - House style: help.gives every parameter of Get-HashtableValue a .PARAMETER entry
+  - House style: help.gives Get-HashtableValue a help description
+  - House style: help.gives Get-HashtableValue at least as many examples as parameter sets
+  - House style: help.gives Get-HashtableValue at least one example
+  - House style: help.gives Get-LoopbackResponse at least as many examples as parameter sets
+  - House style: help.gives Get-LoopbackResponse at least one example
+  - House style: help.gives Get-RenderAsset at least as many examples as parameter sets
+  - House style: help.gives Get-RenderAsset at least one example
+  - House style: help.gives Get-RenderAssetPath at least as many examples as parameter sets
+  - House style: help.gives Get-RenderAssetPath at least one example
+  - House style: help.gives Get-RenderContractPath a help description
+  - House style: help.gives Get-RenderContractPath at least as many examples as parameter sets
+  - House style: help.gives Get-RenderContractPath at least one example
+  - House style: help.gives Get-RenderContractVersion at least as many examples as parameter sets
+  - House style: help.gives Get-RenderContractVersion at least one example
+  - House style: help.gives Get-RenderTemplateSet at least as many examples as parameter sets
+  - House style: help.gives Get-RenderTemplateSet at least one example
+  - House style: help.gives Get-RenderTemplateSetName a help description
+  - House style: help.gives Get-RenderTemplateSetName at least as many examples as parameter sets
+  - House style: help.gives Get-RenderTemplateSetName at least one example
+  - House style: help.gives Get-VSCodeLauncher at least as many examples as parameter sets
+  - House style: help.gives Get-VSCodeLauncher at least one example
+  - House style: help.gives Import-RenderDataFile at least as many examples as parameter sets
+  - House style: help.gives Import-RenderDataFile at least one example
+  - House style: help.gives Invoke-RenderConfigurationConstraint at least as many examples as parameter sets
+  - House style: help.gives Invoke-RenderConfigurationConstraint at least one example
+  - House style: help.gives New-RenderDocumentPath at least as many examples as parameter sets
+  - House style: help.gives New-RenderDocumentPath at least one example
+  - House style: help.gives Resolve-LoopbackDocumentUrl at least as many examples as parameter sets
+  - House style: help.gives Resolve-LoopbackDocumentUrl at least one example
+  - House style: help.gives Resolve-RenderConfiguration at least as many examples as parameter sets
+  - House style: help.gives Resolve-RenderConfiguration at least one example
+  - House style: help.gives Resolve-RenderMeta at least as many examples as parameter sets
+  - House style: help.gives Resolve-RenderMeta at least one example
+  - House style: help.gives Resolve-RenderString at least as many examples as parameter sets
+  - House style: help.gives Resolve-RenderString at least one example
+  - House style: help.gives Resolve-RenderTemplateSetPath at least as many examples as parameter sets
+  - House style: help.gives Resolve-RenderTemplateSetPath at least one example
+  - House style: help.gives Show-RenderDocument at least as many examples as parameter sets
+  - House style: help.gives Show-RenderDocument at least one example
+  - House style: help.gives Test-RenderSettingValue at least as many examples as parameter sets
+  - House style: help.gives Test-RenderSettingValue at least one example
+  - House style: help.gives Test-RenderViewModel at least as many examples as parameter sets
+  - House style: help.gives Test-RenderViewModel at least one example
+  - House style: source layout.pins build dependencies only in Requirements.psd1
+  - Repository shape.exercises the exported command New-RenderDocumentPath somewhere in tests

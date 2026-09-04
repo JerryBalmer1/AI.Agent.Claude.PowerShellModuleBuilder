@@ -5,7 +5,86 @@ for counters and pins. Update it in the same commit as the work
 that changes it.
 
 ## Passes
-Last landed: **0046**. Next: the operator's. 0046 changed **one character**
+Last landed: **0047**. Next: the operator's. 0047 made a node link in
+PSGraphRender **declared configuration** rather than a hardcoded scheme, and
+released it as **v0.14.0** - the first change to that repository's `src/`
+since the 0021 handoff. `LinkMode` is an Enum of `editor | hrefTemplate |
+none` defaulting to `editor`, with `LinkHrefTemplate` beside it, both declared
+as data in `Config/settings.schema.psd1`. **No new validator type and no
+contract change**: `Enum` and `String` already existed, and every token
+resolves from a field the view model already carries - checked against
+`contract/viewmodel.schema.json` before any code was written, which is why
+task 2's cross-repo stop never fired.
+
+**The load-bearing decision was put to the operator rather than taken.**
+Acceptance B's carve-out - no `vscode://` beyond the renderer's static UI
+strings - is drawn precisely around the five `strings.psd1` messages and
+precisely outside the one live scheme literal in `editor-link.js`. A runtime
+branch leaves that literal in every shipped document, inert but present, and
+fails B as worded. The operator ruled for **render-time slot selection**: the
+acceptance's literal reading was achievable, so the implementation moved and
+no acceptance text changed. `SlotsBySetting` in `templateset.psd1` now chooses
+which files fill a slot, so a report carries one mode's code and not three.
+
+**The no-regression control is what shaped the refactor, and it is the part
+worth keeping.** An `editor`-mode document had to stay byte-identical to the
+base for the same payload, which forbids code *moving* within the assembled
+document - only into files re-inserted where it already sat. So the obvious
+design, each mode exporting its actions and `menu.js` doing a `concat`, was
+rejected: it changes bytes for no behavioural reason. `editor-link.js` split
+into `link/common.js` plus one file per mode, carved by script and asserted
+lossless before the original was deleted, and the menu entries, selection
+action and diagnostics row became slots at their existing positions. The
+result is a behaviour-preserving refactor **proved** byte for byte rather
+than argued.
+
+**A falsification probe disproved a claim the pass had written down.** P1b
+asserted that flipping the shipped default would slip past the byte
+comparison "because the mode is one value in one blob" - and the same
+sentence sat in a test comment. True of a runtime design, false of this one:
+assembly picks the files, so a flipped default moves the document body too.
+Both were corrected. The byte comparison is stronger than it was credited
+with being.
+
+**The browser gate caught the only defect that would have shipped.**
+`{relativePath}` first rendered as `src%2FPublic%2F...`; `encodeURIComponent`
+over a whole path escapes its separators, which is right for a query value
+and useless for a `/blob/main/{relativePath}` URL - the single case the
+feature exists for. Every PowerShell-side assertion was green at that moment.
+Only resolving a link in Chromium said the number was wrong.
+
+Conformance held exactly: **66.27% over 166 cases at base and at head**,
+measured at both commits inside the verify run rather than quoted, with no
+assertion that passed at base failing at head. `CasesDefined` is **42** at
+both ends, a third independent reproduction of backlog 63.
+
+Three gates the change opened holes in, all closed here: `node --check`
+rejected seven slot fragments (now declared by slot in `FragmentSlots`, not
+by listing paths); `Module.Quality` walked `Slots` only, so two of three
+modes would have shipped unasserted; and the producer-vocabulary check
+flagged a Verb-Noun name in one of the pass's own comments. All three were
+right. The second is the one worth remembering - it fails silently.
+
+The examples earn it. `examples/links/forge-links.html` is the report pass
+0043 wanted and had to stop short of: the same payload as `editor-links.html`
+with one setting different, and **live GitHub links from a committed file**.
+`hrefTemplate` never reads `meta.rootPath`, so the placeholder that keeps a
+machine path out of the repository stays exactly where 0043 put it.
+
+**The tag names the tip.** Verify green and falsified both ran against
+`3f2ec85` before the tag was applied, adopting the recorded cheap fix - so
+the tag-behind-tip pattern of 0033, 0034 and the 0046 stop report's F3 is
+broken this time. `plans/0047-link-mode/verify.ps1`: six checks, six probes,
+exit 0 plain and `-FailCheck`.
+
+The workspace-file question 0046 left open is **ruled and closed**: the
+operator's approval of the re-issue was the ruling, `*.code-workspace` is
+ignored in the harness (`eef6e80`, its own commit), and suite `d5a90b2` is
+unaffected by construction because it discovers with `git ls-files` and so
+constrains tracked files only. The harness's own tracked workspace file stays
+tracked, which is the correct outcome rather than an oversight.
+
+0046 changed **one character**
 of executable behaviour — `evals/conformance/Invoke-Conformance.ps1:122`,
 `[\/]` to `[\\/]` — and closed backlog 62. Inside a character class `\/` is
 an escaped forward slash and nothing else, so the runner's exclusion of
@@ -151,7 +230,14 @@ made the prompt's "https URLs into the repo on GitHub" requirement
 architecturally unsatisfiable. The operator struck the requirement
 rather than opening a renderer change inside a docs pass; it is logged
 in PSGraphRender's `docs/improvements.md` as large, wanting its own
-red-first iteration.
+red-first iteration. **RESOLVED by pass 0047** (2026-09-04, appended
+here rather than rewritten): `LinkMode` makes it configuration,
+`hrefTemplate` is exactly the "https URLs into the repo on GitHub" shape
+the prompt asked for, and `examples/links/forge-links.html` is that
+report with live links. The requirement was architecturally
+unsatisfiable when it was struck; it is satisfiable now, and striking it
+rather than forcing it is what made this a red-first iteration instead
+of a widening docs pass.
 
 0042 is consumed by decision 0016 and is not a frontier. 0040 was the
 queued
@@ -483,7 +569,11 @@ PSAzureDevOpsGraph: **v0.4.0** (docs-and-artifacts minor, pass 0043,
 decision 0006; module code byte-identical to v0.2.0 still. Ships the
 ClaudeTesting graph as committed JSON, HTML and a screenshot. Next
 touching plan: v0.5.0)
-PSGraphRender: v0.13.0
+PSGraphRender: **v0.14.0** (minor, pass 0047: link mode. No setting TYPE was
+added, but a setting was and the shipped template set changed, which is minor
+per that repository's own rule. Tagged `v0.14.0` on `3f2ec85`, which is the
+branch tip - verify ran before the tag rather than after. Next: the
+operator's)
 PSGraphRenderToHtml: **v0.1.3** (three patches in pass 0041: v0.1.1 aligns
 `-ColorBy` to the renderer's declared set and closes LEDGER 50; v0.1.2 and
 v0.1.3 each fix a defect found by trying to use the previous fix — LEDGER 54
@@ -2002,6 +2092,41 @@ controls and corpus figures) was **not** touched and stays open.
     check that re-derives `CasesDefined` from the suite and compares it
     against the pinned figure, so the next drift is loud.
 
+    **Third measurement, pass 0047 (2026-09-04).** Measured again at
+    `cd4857d` and at `3f2ec85`, all four tags, inside
+    `plans/0047-link-mode/verify.ps1`: **42** at both ends. Three
+    independent runs across two passes now disagree with the pin, and
+    none has moved it. Still STANDING for the reason 0046 gave - the pin
+    carries a series boundary, and moving it is a claim about which
+    scores may be compared with which.
+
+### Added by pass 0047
+
+64. **The editor-mode byte control does not cover the STRINGS block.**
+    STANDING.
+
+    `tests/LinkMode.Tests.ps1` in PSGraphRender asserts that an
+    `editor`-mode document is byte-identical to the base's for the same
+    payload - the strongest gate that repository has against a
+    refactor that claims to preserve behaviour and does not. It compares
+    the document with the `STRINGS` block removed, because acceptance B's
+    carve-out for `vscode://` prose is exactly that block and the same
+    helper serves both.
+
+    So a change to the renderer's own UI strings is invisible to the one
+    check that would otherwise catch it. Pass 0047 added three strings
+    (`MenuOpenLink`, `MenuCopyLink`, `ReasonNoTemplate`); they are
+    additive and no existing string changed, but **the control is not
+    what proves that** - it was checked by reading the diff, which is the
+    thing this gate exists to replace.
+
+    Found while writing the deviation that describes it rather than by a
+    failure, which is why it is logged and not fixed here: closing it is
+    a change to a suite in another repository, and it belongs to a pass
+    already touching that suite. The shape of the fix is known - compare
+    STRINGS the way CONFIG is already compared, where an existing key may
+    not change value and only additions are permitted.
+
 ### Numbering, reconciled by pass 0030
 
 Pass 0031 recorded a 17→19 drift and asked that numbers never move. This is
@@ -2087,7 +2212,11 @@ re-derive it:
   instrument the pass was using rather than in anything the pass wrote,
   and it was found by running that instrument rather than by reading it —
   the pattern 0035, 0036, 0039 and 0040 each recorded.
-- **63 was consumed by pass 0046**; **64 is the next free number.** **62
+- **64 was consumed by pass 0047**; **65 is the next free number.** 64 is a
+  gap in a gate the pass itself built, found while writing the deviation
+  that describes it rather than by any instrument - the first entry in
+  five passes that no run turned up.
+- **63 was consumed by pass 0046**; 64 was the next free number until 0047 **62
   was resolved by pass 0046** and keeps its number where it is, amended by
   dated append rather than rewritten — three corrections, one of them to
   its own count of the sites. 63 is again a defect in the instrument
