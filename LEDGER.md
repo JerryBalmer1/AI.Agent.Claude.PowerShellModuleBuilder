@@ -5,7 +5,7 @@ for counters and pins. Update it in the same commit as the work
 that changes it.
 
 ## Passes
-Last landed: **0040**. Next: the operator's. 0040 was the queued
+Last landed: **0041**. Next: the operator's. 0040 was the queued
 diagram / prompts / flow-documents pass; it released nothing, touched
 no assertion, and left `cases-defined` at 41. The generalisation claim
 still has the number and the bound 0037 gave it; the two things that
