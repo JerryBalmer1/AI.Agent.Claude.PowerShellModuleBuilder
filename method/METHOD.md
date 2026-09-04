@@ -205,6 +205,33 @@ artifacts, and neither substitutes for the other. Recorded as
 [decision 0015](../decisions/0015-falsifying-against-a-red-target.md), from the
 eight help assertions of pass 0039 that first hit it.
 
+**PORTABLE.** Named-check polarity. Every named check in a pass prompt — the
+one-off spot-checks included, not only the assertions and the verify script —
+is demonstrated red against a known-bad input and green against a known-good
+one before its first counted result. This is the discipline conformance
+assertions and verify scripts already carry, extended to everything that
+grades. The reason it has to cover the one-off checks is that they are the ones
+with no falsification row, no second reader, and no history: a spot-check whose
+polarity was never shown produces a number indistinguishable from the number a
+check incapable of failing would produce, and it produces it at the moment the
+pass is deciding whether it is done.
+
+Pass 0043 is the record. Three named checks shipped without polarity proof and
+all three were wrong in a way one known-bad and one known-good input would have
+caught in a minute. **SC2** was wrong twice: its path pattern matched the `p:/`
+inside every `http://` and the `e:/` inside every `vscode://`, reporting 18
+violations in each of six artifacts that were in fact clean, and its second
+clause required zero `vscode://` links in documents whose renderer emits no
+other scheme — about eight per page, five of them the renderer's own UI copy —
+so the clause was unsatisfiable against correct work. **SC4** compared variance
+across the whole image, where a blank canvas beside a populated sidebar still
+measures 68,521 bytes and 169 distinct colours; sampling the canvas region
+alone separates blank from drawn as 2 colours against 971. Note which way each
+failure points. Two would have gone red on good input and one green on bad, so
+no single-direction demonstration would have found all three; the rule needs
+both inputs because a check can fail in either direction and usually only one
+of them is visible from where the author is standing.
+
 ## Evidence discipline
 
 **PORTABLE.** Distinguish observed from inferred. Anything claimed from a
