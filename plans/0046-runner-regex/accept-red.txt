@@ -1,0 +1,61 @@
+
+ACCEPT 0046 - runner path-exclusion regex
+  instrument (harness): C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder
+  target remote:        https://github.com/JerryBalmer1/PSGraphRender.git
+
+  cloned: main @ cd4857d
+  [ok  ] planted output/PSGraphRender/PSGraphRender.psd1 - copy of the real manifest
+  [ok  ] planted scratch/Fake/Fake.psd1 - copy of the real manifest
+
+PATTERNS, extracted from source
+  [ok  ] exactly one exclusion literal in Invoke-Conformance.ps1 - found 1
+  [ok  ] two exclusion literals in Conformance.Tests.ps1 - found 2
+  runner: [\/](output|scratch|\.git|gallery|fixtures|node_modules)[\/]
+  suite:  [\\/](output|scratch|\.git|gallery|fixtures|node_modules)[\\/]
+
+B. ADMISSION DIRECTION - does the exclusion see a Windows path?
+
+Path                                     RunnerExcludes SuiteExcludes
+----                                     -------------- -------------
+\output\PSGraphRender\PSGraphRender.psd1          False          True
+\scratch\Fake\Fake.psd1                           False          True
+
+  [FAIL] runner pattern excludes '\output\PSGraphRender\PSGraphRender.psd1' - suite pattern excludes it: True
+  [FAIL] runner pattern excludes '\scratch\Fake\Fake.psd1' - suite pattern excludes it: True
+
+  candidate set under the RUNNER's pattern (4):
+    output\PSGraphRender\PSGraphRender.psd1
+    scratch\Fake\Fake.psd1
+    src\PSGraphRender\PSGraphRender.psd1
+    src\PSGraphRender\TemplateSets\cytoscape\vendor\vendor.psd1
+  candidate set under the SUITE's pattern (2):
+    src\PSGraphRender\PSGraphRender.psd1
+    src\PSGraphRender\TemplateSets\cytoscape\vendor\vendor.psd1
+
+  [FAIL] the planted scratch/ manifest is NOT a runner candidate - 4 candidates
+  [FAIL] the planted output/ manifest is NOT a runner candidate - 4 candidates
+  [FAIL] the runner and the suite agree on the candidate set - runner 4, suite 2
+
+A. REFUSAL DIRECTION - does the runner resolve the target unaided?
+Settings: CoverageThreshold=75 (default), ModuleProfile=script (default), CompletionCacheDefault=False (default)
+  REFUSED:
+    Cannot derive -ModuleName: 2 manifests under 'C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\scratch\accept-0046\PSGraphRender\src', none preferred. Candidates: src\PSGraphRender\PSGraphRender.psd1; src\PSGraphRender\TemplateSets\cytoscape\vendor\vendor.psd1. Pass -ModuleName to choose.
+
+  [FAIL] the runner does not refuse to resolve the planted clone - Cannot derive -ModuleName: 2 manifests under 'C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\scratch\accept-0046\PSGraphRender\src', none preferred. Candidates: src\PSGraphRender\PSGraphRender.psd1; src\PSGraphRender\TemplateSets\cytoscape\vendor\vendor.psd1. Pass -ModuleName to choose.
+
+C. DENOMINATOR - CasesDefined, per-target and global
+  per-target (default tags): CasesDefined = 36  (HouseStyle=23, Repository=4, Universal=9)
+  per-target (default tags): CasesRun     = 161   Passed=105 Failed=56 ScorePct=65.22
+  global (all four tags):    CasesDefined = 42  (HouseStyle=23, Repository=4, RequiresBuild=6, Universal=9)
+  inventoried containers (2): Conformance.Tests.ps1, Help.Tests.ps1
+
+  [ok  ] the inventoried container set is Conformance.Tests.ps1 and Help.Tests.ps1 - Conformance.Tests.ps1, Help.Tests.ps1
+  [ok  ] the global denominator is at least the per-target one - global 42, per-target 36
+
+ACCEPT 0046: RED - 6 check(s) disagreed:
+  - runner pattern excludes '\output\PSGraphRender\PSGraphRender.psd1' - suite pattern excludes it: True
+  - runner pattern excludes '\scratch\Fake\Fake.psd1' - suite pattern excludes it: True
+  - the planted scratch/ manifest is NOT a runner candidate - 4 candidates
+  - the planted output/ manifest is NOT a runner candidate - 4 candidates
+  - the runner and the suite agree on the candidate set - runner 4, suite 2
+  - the runner does not refuse to resolve the planted clone - Cannot derive -ModuleName: 2 manifests under 'C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\AI.Agent.Claude.PowerShellModuleBuilder\scratch\accept-0046\PSGraphRender\src', none preferred. Candidates: src\PSGraphRender\PSGraphRender.psd1; src\PSGraphRender\TemplateSets\cytoscape\vendor\vendor.psd1. Pass -ModuleName to choose.

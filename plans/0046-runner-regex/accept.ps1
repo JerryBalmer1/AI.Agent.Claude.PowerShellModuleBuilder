@@ -273,26 +273,49 @@ try {
     ''
 
     # -------------------------------------------------------- denominator
-    'C. DENOMINATOR - CasesDefined, global and against the planted clone'
+    #
+    # Two figures, and they are different claims.
+    #
+    # PER-TARGET is what a run of the default tag set against PSGraphRender
+    # reports - the denominator pass 0045 recorded as 36.
+    #
+    # GLOBAL is the whole inventory, every tag the runner accepts, which is the
+    # figure a new file inside evals/conformance/ would move. It is taken from
+    # the RUNNER rather than re-derived here: a second implementation of the
+    # inventory could disagree with the first, and then nothing makes them agree
+    # again.
+    'C. DENOMINATOR - CasesDefined, per-target and global'
     $resultC = Join-Path $work 'denominator.json'
     & $runner -Path $clone -ModuleName 'PSGraphRender' -ResultPath $resultC *> $null
     $d = Get-Content -LiteralPath $resultC -Raw | ConvertFrom-Json
     $perTag = @($d.CasesDefinedPerTag.PSObject.Properties | ForEach-Object { '{0}={1}' -f $_.Name, $_.Value }) -join ', '
-    "  PSGraphRender: CasesDefined = $($d.CasesDefined)  ($perTag)"
-    "  PSGraphRender: CasesRun     = $($d.CasesRun)   Passed=$($d.Passed) Failed=$($d.Failed) ScorePct=$($d.ScorePct)"
+    "  per-target (default tags): CasesDefined = $($d.CasesDefined)  ($perTag)"
+    "  per-target (default tags): CasesRun     = $($d.CasesRun)   Passed=$($d.Passed) Failed=$($d.Failed) ScorePct=$($d.ScorePct)"
 
-    # CasesDefined is target-independent by construction - it is parsed from the
-    # suite's own source and consults no file of the target. Measured against a
-    # second target rather than assumed, because that property is exactly what
-    # this pass must not break: a new test file inside the inventory scope would
-    # move it, and it would move it for every target at once.
     $resultG = Join-Path $work 'global.json'
-    & $runner -Path $RepoRoot -ModuleName 'PSGraphRender' -ResultPath $resultG *> $null
+    & $runner -Path $clone -ModuleName 'PSGraphRender' `
+        -Tag Universal, Repository, HouseStyle, RequiresBuild -ResultPath $resultG *> $null
     $g = Get-Content -LiteralPath $resultG -Raw | ConvertFrom-Json
-    "  harness itself: CasesDefined = $($g.CasesDefined)"
-    Assert-That -What 'CasesDefined is the same figure whatever the target' `
-        -Ok ($g.CasesDefined -eq $d.CasesDefined) `
-        -Detail "harness $($g.CasesDefined), PSGraphRender $($d.CasesDefined)"
+    $perTagG = @($g.CasesDefinedPerTag.PSObject.Properties | ForEach-Object { '{0}={1}' -f $_.Name, $_.Value }) -join ', '
+    "  global (all four tags):    CasesDefined = $($g.CasesDefined)  ($perTagG)"
+
+    # The inventoried set itself, printed. This is the scope the series guard is
+    # about: Invoke-Conformance.ps1 discovers *.Tests.ps1 in its OWN directory,
+    # not recursively, so a container is inventoried if and only if it sits
+    # directly in evals/conformance/. Pinned to the two that exist, because a
+    # third arriving there is precisely what must not happen this pass.
+    $inventoried = @(
+        Get-ChildItem -LiteralPath (Join-Path $RepoRoot 'evals/conformance') -Filter *.Tests.ps1 -File |
+            Sort-Object Name | ForEach-Object { $_.Name }
+    )
+    "  inventoried containers ($($inventoried.Count)): $($inventoried -join ', ')"
+    ''
+    Assert-That -What 'the inventoried container set is Conformance.Tests.ps1 and Help.Tests.ps1' `
+        -Ok (@(Compare-Object $inventoried @('Conformance.Tests.ps1', 'Help.Tests.ps1')).Count -eq 0) `
+        -Detail ($inventoried -join ', ')
+    Assert-That -What 'the global denominator is at least the per-target one' `
+        -Ok ($g.CasesDefined -ge $d.CasesDefined) `
+        -Detail "global $($g.CasesDefined), per-target $($d.CasesDefined)"
     ''
 }
 catch {
