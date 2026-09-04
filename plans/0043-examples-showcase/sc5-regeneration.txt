@@ -1,0 +1,34 @@
+# SC5 - regeneration from a fresh clone
+# Captured 2026-09-04T01:45:34Z.
+#
+# Method: clone each repository's pass-0043-examples branch fresh under
+# harness scratch/sc5, build the module where output/ is not committed, run
+# ONE regeneration command per repository, then compare the regenerated file
+# with the committed blob from that same clone (git show HEAD:<path>).
+#
+# Normalisation before hashing, and why each is needed:
+#   tr -d '\r'   .gitattributes normalises the repository to LF, so a file
+#                 written on Windows differs from its own blob by EOL alone.
+#   generatedAt   ConvertTo-GraphRenderViewModel stamps meta.generatedAt from
+#                 [DateTime]::UtcNow and ignores the producer's own
+#                 graph.meta.generatedUtc, so three of the four cannot be
+#                 byte-identical across runs. PSGraphRender has no timestamp
+#                 at all and matches byte-for-byte without this rule.
+#
+# Commands run, one per repository:
+#   PSGraphRender        examples/Build-Examples.ps1 -Only callflow
+#   PSGraphRenderToHtml  examples/Build-Examples.ps1 -Only explicit
+#   PSAzureDevOpsGraph   examples/Build-Examples.ps1 -Offline
+#   PSTerraformGraph     examples/Build-Examples.ps1 -Offline
+
+clones:
+  PSGraphRender @ c7f382fd7603aa90d715ba66a6796e0724877c49
+  PSGraphRenderToHtml @ 55deb2896a85aa9c7ae7e9afbbf2e93011b2342d
+  PSAzureDevOpsGraph @ 5551a20efeece2f1e39d7ab9335ad16b6164e135
+  PSTerraformGraph @ 0db7f1a7258b3fe56158b5fc6f3eb537f272d430
+
+results:
+MATCH   PSGraphRender  examples/layouts/callflow.html
+MATCH   PSGraphRenderToHtml  examples/precedence/explicit.html
+MATCH   PSAzureDevOpsGraph  examples/claudetesting.html
+MATCH   PSTerraformGraph  examples/claudetestingterraform.html

@@ -1,0 +1,83 @@
+# accept.ps1 - RED, before any example work
+#
+# Captured 2026-09-03, immediately after accept.ps1 was committed to
+# pass-0043-examples and before a single example artifact existed. This is the
+# red-first observation section 2 of the pass prompt required; the pass's own
+# sequencing gate makes any section-3 work before it a hard stop.
+#
+# Two of these 49 findings were the checker's fault rather than the tree's, and
+# both were fixed before any example was built:
+#
+#   * "README link does not resolve: docs/samples/" - a directory link is
+#     legitimate markdown and `git ls-files` lists no directories. The checker
+#     now treats a directory link as resolving when the tree holds anything
+#     beneath it.
+#
+#   * No repository tripped the "Examples precedes the internals" rule, because
+#     the internals pattern matched none of the actual headings in these four
+#     READMEs. The pattern was widened so the ordering check has teeth.
+#
+# The R-theme rows were later renamed dark/light -> default/contrast: theme.psd1
+# carries no page-background key, so a light/dark pair was not achievable and
+# the honest pair is two palettes. See Deviations in plan.md.
+
+=== PASS 0043 ACCEPTANCE ===
+workspace: C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder
+
+--- PSGraphRender ---
+--- PSGraphRenderToHtml ---
+--- PSAzureDevOpsGraph ---
+--- PSTerraformGraph ---
+
+ACCEPT: RED - 49 finding(s)
+  [PSGraphRender] R-layouts/foundation: input not committed (examples/input/ecosystem-viewmodel.json)
+  [PSGraphRender] R-layouts/foundation: html not committed (examples/layouts/foundation.html)
+  [PSGraphRender] R-layouts/foundation: png not committed (examples/layouts/foundation.png)
+  [PSGraphRender] R-layouts/testorder: input not committed (examples/input/ecosystem-viewmodel.json)
+  [PSGraphRender] R-layouts/testorder: html not committed (examples/layouts/testorder.html)
+  [PSGraphRender] R-layouts/testorder: png not committed (examples/layouts/testorder.png)
+  [PSGraphRender] R-layouts/callflow: input not committed (examples/input/ecosystem-viewmodel.json)
+  [PSGraphRender] R-layouts/callflow: html not committed (examples/layouts/callflow.html)
+  [PSGraphRender] R-layouts/callflow: png not committed (examples/layouts/callflow.png)
+  [PSGraphRender] R-theme/dark: input not committed (examples/input/ecosystem-viewmodel.json)
+  [PSGraphRender] R-theme/dark: html not committed (examples/theme/dark.html)
+  [PSGraphRender] R-theme/dark: png not committed (examples/theme/dark.png)
+  [PSGraphRender] R-theme/light: input not committed (examples/input/ecosystem-viewmodel.json)
+  [PSGraphRender] R-theme/light: html not committed (examples/theme/light.html)
+  [PSGraphRender] R-theme/light: png not committed (examples/theme/light.png)
+  [PSGraphRender] R-links: input not committed (examples/input/links-viewmodel.json)
+  [PSGraphRender] R-links: html not committed (examples/links/editor-links.html)
+  [PSGraphRender] R-links: png not committed (examples/links/editor-links.png)
+  [PSGraphRender] examples/README.md not committed
+  [PSGraphRender] README has no hero image resolving to a committed file
+  [PSGraphRender] README has no "## Examples" section
+  [PSGraphRender] README link does not resolve: docs/samples/
+  [PSGraphRenderToHtml] H-nesting: input not committed (examples/input/nested-graph.json)
+  [PSGraphRenderToHtml] H-nesting: html not committed (examples/nesting/nested.html)
+  [PSGraphRenderToHtml] H-nesting: png not committed (examples/nesting/nested.png)
+  [PSGraphRenderToHtml] H-precedence/builtins: input not committed (examples/input/precedence-graph.json)
+  [PSGraphRenderToHtml] H-precedence/builtins: html not committed (examples/precedence/builtins.html)
+  [PSGraphRenderToHtml] H-precedence/builtins: png not committed (examples/precedence/builtins.png)
+  [PSGraphRenderToHtml] H-precedence/file: input not committed (examples/input/precedence-graph.json)
+  [PSGraphRenderToHtml] H-precedence/file: html not committed (examples/precedence/file-defaults.html)
+  [PSGraphRenderToHtml] H-precedence/file: png not committed (examples/precedence/file-defaults.png)
+  [PSGraphRenderToHtml] H-precedence/explicit: input not committed (examples/input/precedence-graph.json)
+  [PSGraphRenderToHtml] H-precedence/explicit: html not committed (examples/precedence/explicit.html)
+  [PSGraphRenderToHtml] H-precedence/explicit: png not committed (examples/precedence/explicit.png)
+  [PSGraphRenderToHtml] examples/README.md not committed
+  [PSGraphRenderToHtml] README has no hero image resolving to a committed file
+  [PSGraphRenderToHtml] README has no "## Examples" section
+  [PSAzureDevOpsGraph] A-live: input not committed (examples/input/claudetesting-graph.json)
+  [PSAzureDevOpsGraph] A-live: html not committed (examples/claudetesting.html)
+  [PSAzureDevOpsGraph] A-live: png not committed (examples/claudetesting.png)
+  [PSAzureDevOpsGraph] examples/README.md not committed
+  [PSAzureDevOpsGraph] README has no hero image resolving to a committed file
+  [PSAzureDevOpsGraph] README has no "## Examples" section
+  [PSTerraformGraph] T-fixture: input not committed (examples/input/claudetestingterraform-graph.json)
+  [PSTerraformGraph] T-fixture: html not committed (examples/claudetestingterraform.html)
+  [PSTerraformGraph] T-fixture: png not committed (examples/claudetestingterraform.png)
+  [PSTerraformGraph] examples/README.md not committed
+  [PSTerraformGraph] README has no hero image resolving to a committed file
+  [PSTerraformGraph] README has no "## Examples" section
+
+exit: 1

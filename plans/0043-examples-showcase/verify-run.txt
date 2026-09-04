@@ -1,0 +1,79 @@
+
+=== VERIFY PASS 0043 ===
+workspace: C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder
+
+--- 1. commit pins (decision 0004) ---
+  PASS  PSGraphRender history contains the pinned commit c7f382f
+  PASS  PSGraphRenderToHtml history contains the pinned commit 55deb28
+  PASS  PSAzureDevOpsGraph history contains the pinned commit 5551a20
+  PASS  PSTerraformGraph history contains the pinned commit 0db7f1a
+
+--- 2. every matrix row, four artifacts each ---
+  PASS  PSGraphRender - all 16 artifacts present and non-empty
+  PASS  PSGraphRenderToHtml - all 12 artifacts present and non-empty
+  PASS  PSAzureDevOpsGraph - all 5 artifacts present and non-empty
+  PASS  PSTerraformGraph - all 4 artifacts present and non-empty
+
+--- 3. README: badge row, hero, Examples section ---
+  PASS  PSGraphRender README has a badge row in the first 12 lines
+  PASS  PSGraphRender README embeds its hero image (examples/layouts/foundation.png)
+  PASS  PSGraphRender hero file exists
+  PASS  PSGraphRender README has an Examples section
+  PASS  PSGraphRender README Examples precedes the internals
+  PASS  PSGraphRenderToHtml README has a badge row in the first 12 lines
+  PASS  PSGraphRenderToHtml README embeds its hero image (examples/nesting/nested.png)
+  PASS  PSGraphRenderToHtml hero file exists
+  PASS  PSGraphRenderToHtml README has an Examples section
+  PASS  PSGraphRenderToHtml README Examples precedes the internals
+  PASS  PSAzureDevOpsGraph README has a badge row in the first 12 lines
+  PASS  PSAzureDevOpsGraph README embeds its hero image (examples/claudetesting.png)
+  PASS  PSAzureDevOpsGraph hero file exists
+  PASS  PSAzureDevOpsGraph README has an Examples section
+  PASS  PSAzureDevOpsGraph README Examples precedes the internals
+  PASS  PSTerraformGraph README has a badge row in the first 12 lines
+  PASS  PSTerraformGraph README embeds its hero image (examples/claudetestingterraform.png)
+  PASS  PSTerraformGraph hero file exists
+  PASS  PSTerraformGraph README has an Examples section
+  PASS  PSTerraformGraph README Examples precedes the internals
+
+--- 4. SC2 machine paths, SC3 credential shapes ---
+  PASS  PSGraphRender SC2 - no drive-absolute paths in examples/ or README
+  PASS  PSGraphRender SC3 - no 84-character credential-shaped runs
+  PASS  PSGraphRenderToHtml SC2 - no drive-absolute paths in examples/ or README
+  PASS  PSGraphRenderToHtml SC3 - no 84-character credential-shaped runs
+  PASS  PSAzureDevOpsGraph SC2 - no drive-absolute paths in examples/ or README
+  PASS  PSAzureDevOpsGraph SC3 - no 84-character credential-shaped runs
+  PASS  PSTerraformGraph SC2 - no drive-absolute paths in examples/ or README
+  PASS  PSTerraformGraph SC3 - no 84-character credential-shaped runs
+
+--- 5. PSAzureDevOpsGraph tag and worklog ---
+  PASS  tag v0.4.0 exists
+  PASS  tag v0.4.0 is annotated
+  PASS  docs/worklog/v0.4.0.md exists
+
+--- 6. LEDGER counter matches the plans and journal trees ---
+  PASS  LEDGER states a Last landed number
+  PASS  LEDGER Last landed (0043) equals the plans tree frontier (0043)
+  PASS  LEDGER Last landed (0043) equals the journal tree frontier (0043)
+  PASS  LEDGER Last landed is this pass (0043)
+
+--- 7. accept.ps1 ---
+
+=== PASS 0043 ACCEPTANCE ===
+workspace: C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder
+
+--- PSGraphRender ---
+--- PSGraphRenderToHtml ---
+--- PSAzureDevOpsGraph ---
+--- PSTerraformGraph ---
+
+ACCEPT: GREEN - every matrix row committed, every README points at it.
+  PASS  accept.ps1 exits green
+
+--- 8. -FailCheck: the artifact check must go red ---
+        deleted from the copy: examples/layouts/foundation.png
+  FAIL  PSGraphRender (damaged scratch copy) - all 16 artifacts present and non-empty
+        missing: examples/layouts/foundation.png  empty: 
+  PASS  -FailCheck: a missing artifact is detected
+
+PASS 45   FAIL 0

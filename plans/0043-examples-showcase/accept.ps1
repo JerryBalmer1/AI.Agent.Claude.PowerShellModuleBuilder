@@ -50,8 +50,8 @@ $Matrix = [ordered]@{
             @{ Id = 'R-layouts/foundation'; Input = 'examples/input/ecosystem-viewmodel.json'; Html = 'examples/layouts/foundation.html'; Png = 'examples/layouts/foundation.png' }
             @{ Id = 'R-layouts/testorder'; Input = 'examples/input/ecosystem-viewmodel.json'; Html = 'examples/layouts/testorder.html'; Png = 'examples/layouts/testorder.png' }
             @{ Id = 'R-layouts/callflow'; Input = 'examples/input/ecosystem-viewmodel.json'; Html = 'examples/layouts/callflow.html'; Png = 'examples/layouts/callflow.png' }
-            @{ Id = 'R-theme/dark'; Input = 'examples/input/ecosystem-viewmodel.json'; Html = 'examples/theme/dark.html'; Png = 'examples/theme/dark.png' }
-            @{ Id = 'R-theme/light'; Input = 'examples/input/ecosystem-viewmodel.json'; Html = 'examples/theme/light.html'; Png = 'examples/theme/light.png' }
+            @{ Id = 'R-theme/default'; Input = 'examples/input/ecosystem-viewmodel.json'; Html = 'examples/theme/default.html'; Png = 'examples/theme/default.png' }
+            @{ Id = 'R-theme/contrast'; Input = 'examples/input/ecosystem-viewmodel.json'; Html = 'examples/theme/contrast.html'; Png = 'examples/theme/contrast.png' }
             @{ Id = 'R-links'; Input = 'examples/input/links-viewmodel.json'; Html = 'examples/links/editor-links.html'; Png = 'examples/links/editor-links.png' }
         )
     }
@@ -81,7 +81,8 @@ $Matrix = [ordered]@{
 # Headings that mean "internals". The Examples section must come before the
 # first of them: a reader who has to scroll past the architecture to find the
 # pictures has not been pointed at them within the first screen.
-$InternalsPattern = '^#{2,3}\s+.*(architect|internal|how it works|design|contract|development|testing|vendor)'
+$InternalsPattern = '^#{2,3}\s+.*(architect|internal|how it works|design|contract|development|testing|vendor|' +
+    'view model|backend|build|command|reasoning|repositor|option|schema|graph shape)'
 
 $failures = [System.Collections.Generic.List[string]]::new()
 function Add-Failure([string] $Repo, [string] $Text) {

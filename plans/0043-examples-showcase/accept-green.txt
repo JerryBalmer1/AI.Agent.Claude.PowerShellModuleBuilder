@@ -1,0 +1,29 @@
+# accept.ps1 - GREEN
+# Captured 2026-09-04T01:44:52Z after all example work landed.
+
+## 1. Against the working trees
+
+=== PASS 0043 ACCEPTANCE ===
+workspace: C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder
+
+--- PSGraphRender ---
+--- PSGraphRenderToHtml ---
+--- PSAzureDevOpsGraph ---
+--- PSTerraformGraph ---
+
+ACCEPT: GREEN - every matrix row committed, every README points at it.
+exit: 0
+
+## 2. Against FRESH CLONES of the four pass branches under scratch/sc5
+##    (SC6: every relative link resolves to a committed file, from a clone)
+
+=== PASS 0043 ACCEPTANCE ===
+workspace: c:/__Code/__AI.Agent.Claude.PowerShellModuleBuilder/scratch/sc5
+
+--- PSGraphRender ---
+--- PSGraphRenderToHtml ---
+--- PSAzureDevOpsGraph ---
+--- PSTerraformGraph ---
+
+ACCEPT: GREEN - every matrix row committed, every README points at it.
+exit: 0
