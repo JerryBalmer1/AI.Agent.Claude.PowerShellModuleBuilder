@@ -95,8 +95,13 @@ Test-Check 'METHOD.md is readable' { $null -ne $method }
 
 Test-Check 'METHOD: named-check polarity rule present' {
     if (-not $method) { return @($false, 'no file') }
-    $missing = @('known-bad', 'known-good', 'before its first counted result') |
-        Where-Object { $method -notmatch [regex]::Escape($_) }
+    # @() around the pipeline: under StrictMode a Where-Object that filters
+    # everything out yields $null, and $null.Count throws. The first run of this
+    # test reported both of these rules missing when both were present - a check
+    # failing in the direction the pass exists to catch, in the pass's own
+    # acceptance test. Recorded in plan.md, Deviation 5.
+    $missing = @(@('known-bad', 'known-good', 'before its first counted result') |
+            Where-Object { $method -notmatch [regex]::Escape($_) })
     if ($missing.Count) { return @($false, "missing phrase(s): $($missing -join '; ')") }
     return $true
 }
@@ -111,8 +116,8 @@ Test-Check 'METHOD: polarity rule cites SC2, SC4 and pass 0043' {
 
 Test-Check 'METHOD: conventions-from-the-repo rule present' {
     if (-not $method) { return @($false, 'no file') }
-    $missing = @('never recalled', 'authoring time') |
-        Where-Object { $method -notmatch [regex]::Escape($_) }
+    $missing = @(@('never recalled', 'authoring time') |
+            Where-Object { $method -notmatch [regex]::Escape($_) })
     if ($missing.Count) { return @($false, "missing phrase(s): $($missing -join '; ')") }
     return $true
 }

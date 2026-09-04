@@ -5,7 +5,39 @@ for counters and pins. Update it in the same commit as the work
 that changes it.
 
 ## Passes
-Last landed: **0043**. Next: the operator's. 0043 gave each of the four
+Last landed: **0044**. Next: the operator's. 0044 wrote pass 0043's
+corrections into the standing documents and the suite, and changed no
+module source anywhere. `method/METHOD.md` gained two rules — a named
+check counts only after its polarity is shown against a known-bad and a
+known-good input, and conventions come from the repository at authoring
+time rather than from recall. `PLAN-PROTOCOL.md` gained three: the five
+task signals (with `docs/ux/UX-007`), a three-source frontier
+precondition, and the recovery-phase pattern generalised from 0043's
+Phase R. The conformance suite gained one assertion, `Workspace
+composition`, with five falsification rows.
+
+**The assertion found a real violation on its first run against the
+real repositories.** `PSGraphRender.code-workspace` registers
+`../PSModuleGraph` and has since that repository's initial commit —
+backlog 60, unrepaired here because 0044 held the ecosystem
+repositories read-only. Two other things surfaced that were not about
+polarity. Pester 6 treats an empty `-ForEach` as a discovery error that
+fails the whole file rather than as zero cases, which is why the suite
+cannot run against the harness at all (backlog 61) — so the one
+`.code-workspace` that motivated the assertion is the one it cannot
+reach. And the pass's own falsification driver reported ZERO CASES on
+all four rows when the truth was that discovery had failed; a driver
+that cannot tell "nothing to check" from "never ran" can report a green
+that means nothing, and fixing that is what made row 18e worth having.
+
+The prompt for this pass supplied three requirements the repository
+contradicted, which is the failure its own new rules describe: METHOD
+has no rule numbering to number continuously from, the "0032
+misnumbering" it cited is 0031's and is about backlog numbers, and its
+precondition 3 read literally would have hard-stopped the pass on the
+finding it was commissioning. All three are in that pass's Deviations.
+
+0043 gave each of the four
 ecosystem repositories a committed `examples/` directory — real
 generated artifacts, not prose: 12 HTML reports, 12 screenshots, their
 checked-in inputs, and a paste-able command per row that regenerates
@@ -1694,6 +1726,87 @@ controls and corpus figures) was **not** touched and stays open.
     fencing it, and that workaround is recorded as deviation 16 of that
     plan rather than left to look like a formatting preference.
 
+### Added by pass 0044
+
+59. **The 0043 method corrections, incorporated.** RESOLVED by pass 0044.
+
+    Three standing documents now carry what 0043 learned the hard way.
+    One line each, cross-referenced to the origin:
+
+    - **`method/METHOD.md`, named-check polarity** — every named check in
+      a prompt, spot-checks included, is demonstrated red against a
+      known-bad input and green against a known-good one before its first
+      counted result. Origin: pass 0043 deviations 3, 4 and 5 — SC2 wrong
+      in two independent ways and SC4 unable to tell a drawn canvas from a
+      blank one.
+    - **`method/METHOD.md`, conventions from the repository** — a prompt
+      requirement naming a path, version, layout or convention is derived
+      from the repository at authoring time, never recalled. Origin: pass
+      0043 deviation 2, a verify-script directory that has never existed
+      here, and the `v0.3.0` collision that made the release land as
+      `v0.4.0`.
+    - **`evals/conformance/Conformance.Tests.ps1`, `Workspace
+      composition`** — a tracked workspace file must not register
+      PSModuleGraph as a folder, with falsification rows 18a-18e. Origin:
+      pass 0043, where two sessions reported that no repository file
+      registered PSModuleGraph while a tracked `.code-workspace` did.
+    - **`PLAN-PROTOCOL.md`** also gained the five task signals (with
+      `docs/ux/UX-007`), the three-source frontier precondition, and the
+      recovery-phase pattern generalised from 0043's Phase R.
+
+    Grouped under one number rather than four because the LEDGER's
+    numbers are what later passes cite, and what will be cited here is
+    "the 0043 corrections" — while 60 and 61 below are live findings that
+    will each be cited on their own.
+
+60. **`PSGraphRender.code-workspace` registers `../PSModuleGraph`, and
+    has since that repository's initial commit.** STANDING.
+
+    Found by the assertion added as part of 59, on its first run against
+    the real repositories — which is the strongest evidence available
+    that the assertion is not inert. `PSGraphRender` is the only one of
+    the five workspace repositories that goes red; the other three
+    ecosystem repositories have no tracked workspace file at all.
+
+    **Not repaired by 0044,** which holds the ecosystem repositories
+    read-only. Never weaken an assertion because a target fails it: this
+    is a finding and it goes to the operator. The fix is one folder entry
+    and is a one-line commit in `PSGraphRender` whenever a pass has that
+    repository writable.
+
+    Note what the file points at: `../PSModuleGraph`, a path that no
+    longer exists at the workspace root, because pass 0043 relocated the
+    clone to `scratch/`. So the registration is currently inert as well
+    as wrong — which is exactly the state in which it survives another
+    two sessions unnoticed.
+
+61. **The conformance suite cannot grade the harness repository, and the
+    one file that motivated assertion 59 lives there.** STANDING.
+
+    `AI.Agent.Claude.PowerShellModuleBuilder` has no module manifest, so
+    `$ExportedWithSource` and `$PublicFiles` are empty, and Pester 6
+    treats an empty `-ForEach` as a **discovery error that fails the
+    entire file** rather than as zero cases. The suite therefore does not
+    run against the harness at all — not partially, not with skips.
+
+    Two consequences, and the second is the uncomfortable one. Every
+    assertion in the suite is unreachable for the repository that hosts
+    it; and the `Workspace composition` assertion, whose motivating
+    defect was a harness `.code-workspace`, structurally cannot check the
+    harness. 0044 covered that one file with a direct check in
+    `plans/0044-method-corrections/verify.ps1` rather than leaving it
+    uncovered, but a plan artifact is frozen at its pass and is not a
+    standing guard.
+
+    The cheap half of the fix is `-AllowNullOrEmptyForEach` on the three
+    existing `-ForEach` assertions, which converts a whole-file discovery
+    failure into per-assertion zero-cases — the behaviour METHOD already
+    prescribes. **Not done by 0044:** the pass was scoped to one new
+    assertion, and changing three existing ones to make a fourth reachable
+    is the kind of quiet scope growth that makes a score incomparable
+    across passes. It wants its own red-first iteration, with cases-run
+    stated before and after.
+
 ### Numbering, reconciled by pass 0030
 
 Pass 0031 recorded a 17→19 drift and asked that numbers never move. This is
@@ -1766,6 +1879,11 @@ re-derive it:
   polluted by its own log line, and a gate shape the skill states that
   passes on a null result. 40 was caught by scoring the oracle against
   itself, which is the control that exists for exactly that.
+
+- **59, 60 and 61 were consumed by pass 0044**; **62 is the next free
+  number.** 59 is the incorporation of 0043's corrections and is resolved;
+  60 and 61 are live findings, both produced by the assertion 59 added
+  rather than by reading anything.
 
 Numbers are consumed, never reused and never renumbered — including the ones
 belonging to resolved items, which stay where they are so that a citation
