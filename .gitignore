@@ -8,3 +8,11 @@ conformance-result.json
 AzDoPAT.txt
 *.pat
 **/pat.txt
+
+# Editor workspace files. Operator-local composition: which sibling repositories
+# a session opens together is the operator's own business and never reaches
+# anyone who clones. A TRACKED one is different - it composes the workspace of
+# every clone, which is why the 'Workspace composition' assertion (d5a90b2)
+# discovers via `git ls-files` and constrains tracked files only. Ignoring these
+# keeps them out of that suite's scope by construction rather than by exemption.
+*.code-workspace
