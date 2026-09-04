@@ -1,0 +1,66 @@
+# Machine paths in this capture are replaced with <harness>, <target>,
+# <scratch>, <temp> and <home>. Nothing else is edited. SC4 forbids a
+# drive-absolute path in anything this pass commits, and a console log
+# is something this pass commits.
+
+VERIFY 0048 - STRINGS joins the byte gate, re-derived from fresh clones.
+  target remote : https://github.com/JerryBalmer1/PSGraphRender.git
+  head ref      : main
+  base ref      : 3f2ec85 (pass 0047's tip - NOT acceptance C's cd4857d)
+
+  head = 5501755, base = 3f2ec85
+
+1. The gate exists at head, is green, and did not exist at base.
+  [ok  ] the STRINGS gate exists at head - one It named for it
+  [ok  ] the STRINGS gate is green at head - Passed
+  [ok  ] the STRINGS gate did NOT exist at base - otherwise the pass added nothing and every green below is about the base
+
+2. Acceptances A, B and C are green at head - the pass broke nothing.
+  [ok  ] green: 'changes CONFIG only by adding the two link settings,' - Passed
+  [ok  ] green: 'renders identically to the base with linkMode absent' - Passed
+  [ok  ] green: 'renders identically to the base with linkMode set ex' - Passed
+  [ok  ] nothing in the link-mode suite is red at head - 22 case(s), 0 red
+
+3. The gate asserts the three additions BY NAME and BY VALUE.
+  [ok  ] the additions list names MenuCopyLink
+  [ok  ] the additions list names MenuOpenLink
+  [ok  ] the additions list names ReasonNoTemplate
+  [ok  ] acceptance C's base SHA is still cd4857d - re-baselining would empty the additions list and make the gate vacuous on the day it ships
+  [ok  ] Get-DocumentCode still carves out the STRINGS block - widening it would turn acceptance B red against correct work
+
+4. Falsification. Each probe mutates the head clone's BUILT template set,
+   proves the mutation reached the rendered document, and re-runs the suite.
+  [ok  ] P1: the mutation reached the rendered document - MenuOpenLink changed value
+  [ok  ] P1: a changed value goes RED - Failed
+  [ok  ] P1: the message names the key and both values
+  [ok  ] P2: the mutation reached the rendered document - an unexpected key is present
+  [ok  ] P2: an added key goes RED - Failed
+  [ok  ] P2: the message names the unexpected key
+  [ok  ] P3: the mutation reached the rendered document - a shipped key is gone
+  [ok  ] P3: a removed key goes RED - Failed
+  [ok  ] P3: caught by the value clause, naming the key
+  [ok  ] P4a: the mutation reached the rendered document - the change is in CONFIG, and STRINGS is untouched
+  [ok  ] P4a: a theme value leaves the STRINGS gate GREEN
+  [ok  ] P4a: and turns the CONFIG comparison RED
+  [ok  ] P4a: the body comparison stays GREEN (theme lives in CONFIG)
+  [ok  ] P4a: the body comparison stays GREEN (theme lives in CONFIG)
+  [ok  ] P4b: the mutation reached the rendered document - the marker is in the body, outside CONFIG and STRINGS
+  [ok  ] P4b: a body change leaves the STRINGS gate GREEN
+  [ok  ] P4b: and turns the body comparison RED
+  [ok  ] P4b: and turns the body comparison RED
+
+5. Conformance at head is not below base. Both ends measured here, not quoted.
+     base: 66.27% over 166 case(s), CasesDefined 42
+     head: 66.27% over 166 case(s), CasesDefined 42
+  [ok  ] head conformance is not below base - 66.27 -> 66.27
+  [ok  ] cases-run did not move - 166 -> 166
+  [ok  ] CasesDefined did not move - 42 -> 42 (the denominator; backlog 63 is about the PIN, not this figure)
+  [ok  ] no assertion that passed at base fails at head - none
+
+6. Nothing machine-identifying, and no tag was taken.
+  [ok  ] no machine identity in what the pass changed in the target - clean over 2 file(s)
+  [ok  ] no tag was taken by this pass - none
+  [ok  ] no version bump - 0.14.0 -> 0.14.0
+  [ok  ] no src/ change - tests and CHANGELOG only
+
+VERIFY 0048: PASS - every check re-derived and agreed.
