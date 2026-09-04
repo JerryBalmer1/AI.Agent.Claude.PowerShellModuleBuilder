@@ -5,7 +5,79 @@ for counters and pins. Update it in the same commit as the work
 that changes it.
 
 ## Passes
-Last landed: **0048**. Next: the operator's. 0048 closed **backlog 64**: the
+Last landed: **0049**. Next: the operator's. 0049 took **operator-complete item
+2** and released PSGraphRender **v0.15.0**: a third rendering backend,
+`forcegraph3d`, drawing the same contract 1.1.0 payload in three dimensions with
+a vendored `3d-force-graph`/three.js bundle.
+
+**The claim under test was never "a 3D view exists".** It is that *a template
+set is a rendering backend* - and `docs/constraints.md` says outright, as
+`0002-t1`, that the only backend carrying that claim so far is **trivial enough
+to prove less than it looks**: `plain` renders a table, asks configuration for
+nothing structural, and could not have inherited a Cytoscape assumption because
+it has never heard of Cytoscape. This one has a library, a canvas, its own
+vendoring question and all three link modes. **No `.ps1` under `src/` changed,
+`contract/` did not change, `index.psd1` is untouched, `cytoscape` is still the
+default, and both existing backends render byte-identically to base** - each
+asserted in the suite and re-derived from fresh clones in `verify.ps1`.
+
+**The pass's one hard stop was answered from the artifact rather than from the
+phrase "force-directed".** Whether the library REQUIRES positional input or
+COMPUTES it decides whether a 3D backend needs a coordinate field, which would
+be a contract change and therefore a decision nobody has made. Read out of the
+vendored bytes before a line of the backend was written: `fx`/`fy`/`fz` are
+consulted when a node states one, and `x`/`y`/`z` are **assigned** from a
+spherical phyllotaxis lattice when absent. Confirmed live - twelve nodes
+carrying only `id` and `name` came back with distinct three-dimensional
+coordinates. **It computes.** The improvements-log open decision about backends
+declaring required contract fields stays standing, annotated with the worked
+example against it rather than resolved.
+
+**Four defects in the new backend were found by running the page and looking at
+it, and none was visible in the source.** The library's tooltip inserts a
+*string* as markup and appends an *element* as itself, so a producer's label
+goes in as an element carrying it in `textContent`. Its layout stops on a
+fifteen-second timer, longer than any gate waits, so "fit the view when the
+layout settles" never fitted anything. It opened a 1280x900 canvas inside an
+859px box and never corrected it. And `#fg-notice` set `display`, which beats
+the user agent's `[hidden]{display:none}`, turning a hidden `inset: 0` element
+into an invisible sheet that swallowed every click on the canvas - **eighty-one
+grid clicks hit nothing** and a hunt through the camera code found nothing
+before `elementFromPoint` named it.
+
+**The first red found a defect in the acceptance itself.** One assertion went
+green against a template set that did not exist: property access on `$null`
+yields `$null`, `@($null)` has one element, and a count of 1 satisfied "greater
+than 0". A test that cannot go red for the thing it guards is not evidence.
+
+**The prompt's sequencing gate was not followed as written, and that is
+reported rather than smoothed over.** It asks for acceptance B's *meaningful*
+red against a scaffold - a set that draws but has no link wiring. No scaffold
+stage existed; the set was authored in one piece and went from absent-red to
+green. The meaningful reds were established afterwards by scratch mutation,
+which is this project's own method, but is evidence collected **after** the
+fact rather than before. Eight probes, each restored, each red for the right
+reason and with the message read rather than the colour.
+
+**`CanvasGrowth` was measured, not copied - and one measurement changed the
+layout rather than the number.** The floor is **2** against a thinnest observed
+**3.50**, where the reference backend's 4 sits below its own thinnest of 7.34:
+the same daylight, not the same digit. With the status bar floating over a
+full-bleed canvas the same payload rated **3.07** and the empty render was
+**9,252 bytes**, because the chrome was inside both screenshots; moved above the
+canvas, the empty render fell to **5,168** and the same payload rated **3.95**.
+Chrome over a canvas does not make a blank page look drawn - it makes a drawn
+page look less drawn, and the floor stops discriminating long before it stops
+passing. 3.50 is also the first measured value between 4 and 12.2, which thread
+`0006-t2` records as the gap that left the requirement untested against a sparse
+payload.
+
+Conformance held exactly: **66.27% over 166 cases at base and at head**,
+`CasesDefined` **42** at both ends, measured inside the verify run at both
+commits rather than quoted - a **fifth** consecutive reproduction of the figure
+backlog 63's pin still disagrees with.
+
+0048 closed **backlog 64**: the
 `STRINGS` block joined the byte gate in `tests/LinkMode.Tests.ps1`. That gate
 asserts an `editor`-mode document is byte-identical to the base's for the same
 payload, and `Get-DocumentCode` removed the whole `STRINGS` block before the
@@ -607,11 +679,12 @@ PSAzureDevOpsGraph: **v0.4.0** (docs-and-artifacts minor, pass 0043,
 decision 0006; module code byte-identical to v0.2.0 still. Ships the
 ClaudeTesting graph as committed JSON, HTML and a screenshot. Next
 touching plan: v0.5.0)
-PSGraphRender: **v0.14.0** (minor, pass 0047: link mode. No setting TYPE was
-added, but a setting was and the shipped template set changed, which is minor
-per that repository's own rule. Tagged `v0.14.0` on `3f2ec85`, which is the
-branch tip - verify ran before the tag rather than after. Next: the
-operator's)
+PSGraphRender: **v0.15.0** (minor, pass 0049: a third template set,
+`forcegraph3d`. A template set was added, which is minor per that repository's
+own rule; no setting TYPE and no build task are new, and the contract did not
+move. Tagged `v0.15.0` on `0d2c5df`, the branch tip - verify and all six
+falsification probes ran before the tag, the 0047-proven ordering. v0.14.0
+(pass 0047, link mode) is the release below it. Next: the operator's)
 PSGraphRenderToHtml: **v0.1.3** (three patches in pass 0041: v0.1.1 aligns
 `-ColorBy` to the renderer's declared set and closes LEDGER 50; v0.1.2 and
 v0.1.3 each fix a defect found by trying to use the previous fix — LEDGER 54
@@ -2232,6 +2305,33 @@ controls and corpus figures) was **not** touched and stays open.
     **STANDING, not fixed here.** Repairing it changes a conformance
     assertion and therefore the denominator, which METHOD says wants its own
     red-first iteration with cases-run stated at both ends.
+
+66. **The link probe names each backend's selectors in the build task, which
+    is the defect the Smoke block exists to remove.** STANDING.
+
+    `PSGraphRender.build.ps1`'s `TestLinkMode` carries a `$LINK_PROBE` map:
+    per backend, the element to click in, the button that opens its actions,
+    and the container they land in. `tests/browser/link-mode.cjs` reads them
+    off the job, so the *harness* stays backend-agnostic - but the map is a
+    second place a backend's shape is written down, and that is precisely
+    what `tests/browser/smoke.cjs` was rewritten to stop doing. Its own
+    comment states the rule: *"a harness naming '#c-nodes' would be a second
+    place this backend's shape is written down, somewhere other than this
+    backend."*
+
+    It belongs in each `templateset.psd1` beside `Smoke`. It is not there
+    because putting it there means editing
+    `TemplateSets/cytoscape/templateset.psd1`, and pass 0049's no-regression
+    control is that `cytoscape` does not move at all - the manifest edit
+    would not change the rendered document, but it would change a directory
+    the pass asserted was untouched, and weakening that assertion to fit is
+    the wrong trade to make in the pass that establishes it.
+
+    The task **throws by name** for a backend it declares modes for and
+    cannot reach, so a fourth backend cannot arrive with its link modes
+    silently unchecked. That is a guard against forgetting, not the fix.
+
+    Logged as **medium** in `PSGraphRender`'s `docs/improvements.md`.
 
 ### Numbering, reconciled by pass 0030
 
