@@ -1,0 +1,61 @@
+
+VERIFY 0049 - a third backend, re-derived from fresh clones.
+  target remote : https://github.com/JerryBalmer1/PSGraphRender.git
+  head ref      : main
+  base ref      : 5501755 (pass 0048's tip)
+
+  head = 0d2c5df, base = 5501755
+
+
+1. A backend is a directory: the set exists, is discovered, and cost no code.
+  [ok  ] forcegraph3d ships as a directory with a templateset.psd1
+  [ok  ] three backends ship, discovered rather than registered - cytoscape,forcegraph3d,plain
+  [ok  ] no .ps1 under src changed between base and head
+  [ok  ] the contract did not change
+  [ok  ] index.psd1, cytoscape/ and plain/ are untouched
+  [ok  ] cytoscape is still the default backend - cytoscape
+
+2. Acceptance A/B/C, run from the head clone.
+  [ok  ] every acceptance assertion passes at head - 27 assertion(s), 0 red: 
+  [ok  ] the suite actually contains 'renders cytoscape byte-identically to the base'
+  [ok  ] the suite actually contains 'renders plain byte-identically to the base'
+  [ok  ] the suite actually contains 'resolves every token cytoscape resolves'
+  [ok  ] the suite actually contains 'edits no .ps1 under src to add a backend'
+
+3. All three link modes, in the document the caller receives.
+  [ok  ] editor mode constructs the editor scheme
+  [ok  ] hrefTemplate mode does not
+  [ok  ] none mode constructs no URI at all
+  [ok  ] the reference resolver still declares five tokens to compare against - id, label, line, path, relativePath
+  [ok  ] the 3D backend resolves every one of them - missing: 
+
+4. Vendoring: provenance, hash, and one file rather than two.
+  [ok  ] the 3D backend vendors exactly one file - 3d-force-graph.min.js
+  [ok  ] 3d-force-graph.min.js matches its recorded integrity hash - 1.80.0, MIT
+  [ok  ] 3d-force-graph.min.js's URL pins the version the entry states - https://cdn.jsdelivr.net/npm/3d-force-graph@1.80.0/dist/3d-force-graph.min.js
+  [ok  ] three.js really is inside that one file - looked for the global three.js registers itself under, and its renderer
+  [ok  ] and the bundle asks for nothing at load time - no source map named and not shipped, unlike cytoscape-dagre
+
+5. The examples regenerate, and the seven that existed do not move.
+  [ok  ] a full example rebuild changes no committed example -  done.
+  [ok  ] the 3D example is committed with its picture
+
+6. Nothing committed names the machine that built it.
+  [ok  ] no drive path, home directory or real-path vscode URI in anything this pass added
+  [ok  ] and the grep read something, so its silence means something - 33 file(s) changed
+
+7. The page runs, and its links resolve, in a real browser with the network blocked.
+     browser harness: copied Playwright 1.49.1 from C:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\PSGraphRender
+  [ok  ] 7a. every backend and fixture came alive, nothing fetched - [92m  canvas forcegraph3d/ambiguous #fg: 23462 bytes drawn against 5168 empty - ratio 4.54, required 2[0m | [92m  canvas forcegraph3d/infrastructure #fg: 32288 bytes drawn against 5168 empty - ratio 6.25, required 2[0m | [92m  canvas forcegraph3d/sample-module #fg: 26732 bytes drawn against 5168 empty - ratio 5.17, required 2[0m | [92mBrowser: 9 page(s) came alive, network blocked, across 3 backend(s) and 3 fixture(s) at 1280x900@1x[0m
+  [ok  ] 7b. every link mode resolved as configured, in both backends that have them - [92mLink mode: 10 case(s) resolved as configured.[0m
+
+8. Conformance at head is not below base. Both ends measured here, not quoted.
+     base: 66.27% over 166 case(s), CasesDefined 42
+     head: 66.27% over 166 case(s), CasesDefined 42
+  [ok  ] head conformance is not below base - 66.27 -> 66.27
+  [ok  ] cases-run did not move - 166 -> 166
+  [ok  ] CasesDefined did not move - 42 -> 42 (the denominator; backlog 63 is about the PIN, not this figure)
+  [ok  ] no assertion that passed at base fails at head
+
+VERIFY 0049: every check passed.
+
