@@ -1,0 +1,49 @@
+# Machine paths in this capture are replaced with <harness>, <target>,
+# <scratch>, <temp> and <home>. Nothing else is edited. SC4 forbids a
+# drive-absolute path in anything this pass commits, and a console log
+# is something this pass commits.
+
+PASS 0048 - TASK 4: falsifying the STRINGS gate, in a scratch clone.
+  clone of : <target>
+  at       : 1683612
+  work     : <harness>\scratch\0048-probes
+
+
+P1 - a changed value goes RED, naming the key and both values
+    [ok  ] P1: the mutation reached the rendered document - MenuOpenLink now reads MUTATED BY P1 in the STRINGS block
+    [ok  ] P1: the STRINGS gate is RED - Failed
+    [ok  ] P1: the message names the key - named
+    [ok  ] P1: the message carries both values - Expected [string] 'Open Link', because added string 'MenuOpenLink' is pinned by value, not only by name, but got [string] 'MUTATED BY P1'.
+    [ok  ] P1: body comparison stays GREEN - 'renders identically to the base wi...' - Passed
+    [ok  ] P1: body comparison stays GREEN - 'renders identically to the base wi...' - Passed
+
+P2 - an added key goes RED, naming the unexpected key
+    [ok  ] P2: the mutation reached the rendered document - P2UnexpectedKey is present in the STRINGS block
+    [ok  ] P2: the STRINGS gate is RED - Failed
+    [ok  ] P2: the message names the unexpected key - named
+
+P3 - a removed key goes RED - and which clause catches it
+    [ok  ] P3: the mutation reached the rendered document - MenuCopyPath is gone from the STRINGS block
+    [ok  ] P3: the STRINGS gate is RED - Failed
+    [ok  ] P3: caught by the VALUE clause (a removed key reads null at head) - Expected [string] '"Copy Path"', because string 'MenuCopyPath' must be untouched, but got [string] 'null'.
+
+P4a - SCOPE: a theme value (outside STRINGS) leaves the gate GREEN and turns CONFIG RED
+    [ok  ] P4a: the mutation reached the rendered document - the document changed, the STRINGS block did not, and the change is inside CONFIG
+    [ok  ] P4a: the STRINGS gate stays GREEN - Passed
+    [ok  ] P4a: the CONFIG comparison goes RED - Failed
+    [ok  ] P4a: body comparison stays GREEN (theme lives in CONFIG) - 'renders identically to the base wi...' - Passed
+    [ok  ] P4a: body comparison stays GREEN (theme lives in CONFIG) - 'renders identically to the base wi...' - Passed
+
+P4b - SCOPE: a script line (in the compared body) leaves the gate GREEN and turns the BODY RED
+    [ok  ] P4b: the mutation reached the rendered document - the marker is in the document body, outside CONFIG and outside STRINGS
+    [ok  ] P4b: the STRINGS gate stays GREEN - Passed
+    [ok  ] P4b: body comparison goes RED - 'renders identically to the base wi...' - Failed
+    [ok  ] P4b: body comparison goes RED - 'renders identically to the base wi...' - Failed
+
+CONTROL - nothing mutated: the whole Describe is green.
+    [ok  ] control: 'changes STRINGS only by adding the three lin...' - Passed
+    [ok  ] control: 'changes CONFIG only by adding the two link s...' - Passed
+    [ok  ] control: 'renders identically to the base with linkMod...' - Passed
+    [ok  ] control: 'renders identically to the base with linkMod...' - Passed
+
+TASK 4: PASS - all four probes and the control behaved as the pass claims.

@@ -1,6 +1,10 @@
+# Machine paths in this capture are replaced with <harness>, <target>,
+# <scratch>, <temp> and <home>. Nothing else is edited. SC4 forbids a
+# drive-absolute path in anything this pass commits, and a console log
+# is something this pass commits.
 
 PASS 0048 - SECTION 2: the blindness, observed against the shipped suite.
-  repo     : c:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\PSGraphRender
+  repo     : <target>
   head     : 3f2ec85 (main)
   base sha : cd4857d  (acceptance C's, tests/LinkMode.Tests.ps1:286)
 

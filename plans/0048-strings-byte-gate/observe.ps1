@@ -14,7 +14,9 @@
 #>
 [CmdletBinding()]
 param(
-    [string] $Repo = 'c:\__Code\__AI.Agent.Claude.PowerShellModuleBuilder\PSGraphRender',
+    # Mandatory, with no default: a machine path baked into a committed
+    # artifact is exactly what SC4 exists to catch.
+    [Parameter(Mandatory)][string] $Repo,
     [Parameter(Mandatory)][string] $Work,
     [string] $BaseSha = 'cd4857d'
 )
