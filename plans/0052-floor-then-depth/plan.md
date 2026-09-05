@@ -350,3 +350,134 @@ exactly.
 The empty capture is what moves: 5,168 bytes flat against 339,574 with a
 vignette, a 66× difference in a picture of *nothing*. PNG cannot compress a
 gradient, and the denominator is the whole defect.
+
+## 4a. The operator stop, and the resume — 🔵
+
+The pass was stopped by its operator part-way through part 2, on observing
+uncommitted work. **The root cause is an authoring defect in the 0052
+prompt, not in the work:** its task spine was compressed and lost the
+explicit *"push after every task"* instruction that every prompt from 0047
+through 0051 carried. The resume prompt repaired the tree state and made
+the cadence a standing rule, landed in `PSGraphRender/docs/HANDOFF.md`.
+
+### State verification — recorded verbatim, 🔵
+
+Both repositories, before anything in the resume touched them.
+
+    $ git -C AI.Agent.Claude.PowerShellModuleBuilder rev-parse --abbrev-ref HEAD
+    pass-0052-floor-then-depth
+    $ git -C AI.Agent.Claude.PowerShellModuleBuilder status
+    On branch pass-0052-floor-then-depth
+    nothing to commit, working tree clean
+    $ git -C AI.Agent.Claude.PowerShellModuleBuilder log --oneline -5
+    c1dceef Pass 0052: the red - the canvas floor goes blind under a painted background
+    a9b6d40 Pass 0051: the verify run a later reader gets, against landed main
+    4bc5899 Pass 0051: plan, verify.ps1, LEDGER and journal
+    45af1e2 Pass 0050: the verify run a later reader gets, against landed main
+    46aa750 Pass 0050: plan, verify.ps1, LEDGER and journal
+    $ git -C AI.Agent.Claude.PowerShellModuleBuilder rev-parse --abbrev-ref --symbolic-full-name '@{u}'
+    fatal: no upstream configured for branch 'pass-0052-floor-then-depth'
+
+    $ git -C PSGraphRender rev-parse --abbrev-ref HEAD
+    pass-0052-floor-then-depth
+    $ git -C PSGraphRender log --oneline -5
+    efb6cee Pass 0052 part 1: the canvas floor becomes a difference, not a ratio
+    dba1f4d Pass 0051: docs, and the version to v0.16.0
+    2a81b11 Pass 0051: the variant catalogue, generated from its own table
+    cb14c9f Pass 0051: the look and the machinery, and a floor re-measured
+    d26b90a Pass 0051: the red acceptance, before any implementation
+    $ git -C PSGraphRender rev-parse --abbrev-ref --symbolic-full-name '@{u}'
+    fatal: no upstream configured for branch 'pass-0052-floor-then-depth'
+    $ git -C PSGraphRender status
+    On branch pass-0052-floor-then-depth
+    Changes not staged for commit:
+        modified:   PSGraphRender.build.ps1
+        modified:   src/PSGraphRender/TemplateSets/forcegraph3d/Config/settings.psd1
+        modified:   src/PSGraphRender/TemplateSets/forcegraph3d/Config/settings.schema.psd1
+        modified:   src/PSGraphRender/TemplateSets/forcegraph3d/Config/strings.psd1
+        modified:   src/PSGraphRender/TemplateSets/forcegraph3d/Config/theme.psd1
+        modified:   src/PSGraphRender/TemplateSets/forcegraph3d/partials/graph.html
+        modified:   src/PSGraphRender/TemplateSets/forcegraph3d/scripts/bootstrap.js
+        modified:   src/PSGraphRender/TemplateSets/forcegraph3d/scripts/graph.js
+        modified:   src/PSGraphRender/TemplateSets/forcegraph3d/scripts/labels.js
+        modified:   src/PSGraphRender/TemplateSets/forcegraph3d/scripts/scene.js
+        modified:   src/PSGraphRender/TemplateSets/forcegraph3d/scripts/shapes.js
+        modified:   src/PSGraphRender/TemplateSets/forcegraph3d/styles/base.css
+        modified:   src/PSGraphRender/TemplateSets/forcegraph3d/templateset.psd1
+        modified:   tests/ForceGraph3DLook.Tests.ps1
+        modified:   tests/browser/look.cjs
+    Untracked files:
+        claude-examples/
+        src/PSGraphRender/TemplateSets/forcegraph3d/scripts/panel.js
+        src/PSGraphRender/TemplateSets/forcegraph3d/styles/controls.css
+    $ git -C PSGraphRender diff --stat | tail -1
+     15 files changed, 1421 insertions(+), 69 deletions(-)
+
+**Agrees with the operator's stop report in every particular.** Fifteen
+modified files, two untracked source files and six untracked lab files is
+the "~23 working-tree changes" it named; the part-1 commit is present; both
+branches existed locally and neither was published. No foreign change, no
+unexpected branch, no divergence. Nothing to report under 🔴.
+
+### The 🟠 gate: the unsaved buffer
+
+`claude-examples/1rackcontainerbase.html` is **zero bytes** on disk, mtime
+`Sep 4 23:51` — the newest of the six lab files and the only empty one. Put
+to the operator, who answered that it had been saved. Re-read: still zero
+bytes, mtime unchanged.
+
+So it is **not committed**, and that is a ruling rather than an oversight. An
+empty file cannot be a design reference, and committing one under that label
+would be exactly the guessed attribution step 2's 🔴 exists to forbid. It
+stays untracked and untouched on disk; adding it later is one commit.
+
+### The partition, and its reasoning — 🔵
+
+The in-flight work was partitioned **from the diff content**, by reading each
+file's diff and assigning it to the task it implements. Every hunk was
+assignable; **nothing hit step 2's 🔴.** The whole of it is part 2 — part 1
+had already landed as `efb6cee`.
+
+| Commit | Task | Files |
+|---|---|---|
+| `bfc3a37` | pre-ruled step 1 | the five populated `claude-examples/` lab files |
+| `c3ce97c` | **6 + 7** — part 2a | `theme.psd1`, `shapes.js`, `scene.js` whole; the `Grid*` hunks of `settings.schema.psd1`; the rim hunk of `graph.js`; the grid cases of `build.ps1`; the `Grid*` rows and the `BaseRef` bump of `ForceGraph3DLook.Tests.ps1` |
+| `2ea178b` | **8** — part 2b | `graph.html`, `base.css`, `controls.css`, `panel.js`, `bootstrap.js`, `templateset.psd1`, `strings.psd1`, `settings.psd1`, `labels.js`, `look.cjs`; the `Controls`/`Focus` hunks of `settings.schema.psd1`; the panel machinery of `graph.js`; the panel cases of `build.ps1`; the Acceptance C block of `ForceGraph3DLook.Tests.ps1` |
+| `ccd342c` | the resume's own rule | `docs/HANDOFF.md` |
+
+**Why 6 and 7 share a commit rather than getting one each.** Task 7 is
+connector and particle values in `theme.psd1`; task 6's environment work is
+grid values in the same file. They are one file's data, and the prompt's own
+section 2a. Splitting them would have produced two commits whose only
+difference is which lines of one table moved.
+
+**Why four files were split by hunk and the rest were not.** `scene.js` and
+`graph.js` are woven together: `scene.js` renames `ringMaterial` to
+`rimMaterial` (task 6) and `graph.js` holds the call site, so those must land
+together; `graph.js`'s `publishLive` calls `panelState()` (task 8), which
+lives in `panel.js`, so *those* must land together too. Where a seam existed
+it was cut — the four files above carry their task-6 and task-8 additions in
+separable regions. Where cutting would have produced a commit that does not
+run, the file was kept whole and assigned to the task that needs it first.
+
+**How the split was made, and how it was checked.** Filtered patches applied
+to the *index* with `git apply --cached --recount`, so the working tree was
+never edited and no work could be lost to the surgery. After both commits, a
+byte-for-byte comparison of all seventeen files between `HEAD` and a
+pre-partition snapshot:
+
+    RESULT: the two commits reproduce the pre-partition tree exactly.
+
+`git status` afterwards carries the zero-byte lab file and nothing else.
+
+### Where the spine resumed, and which gates were re-run
+
+Every gate whose inputs the uncommitted work touched was re-run, because the
+work touched the defaults themselves: `Clean`, `Lint`, `LintJavaScript`,
+`Build`, `LintDocument`, `Test`. One test failed, and it is the right one:
+
+    [-] renders A0 identically to a no-overlay render of the shipped backend
+
+That is **task 9 not yet done**, stated by the suite rather than by memory:
+part 2 moved the default look and `A0` is still a picture of the old one. The
+spine resumed at task 9.
