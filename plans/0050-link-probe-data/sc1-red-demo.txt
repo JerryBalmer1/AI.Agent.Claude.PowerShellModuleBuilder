@@ -1,0 +1,14 @@
+SC1 RED DEMO - the same two greps at base 0d2c5df
+$ grep -n 'LINK_PROBE' PSGraphRender.build.ps1
+    527:        $LINK_PROBE = @{
+    554:                if (-not $LINK_PROBE.ContainsKey($backend.Name)) {
+    559:                        'node actions. Add an entry to $LINK_PROBE above; a backend the probe skips is a mode nobody checked.')
+    561:                [pscustomobject]@{ Name = $backend.Name; Probe = $LINK_PROBE[$backend.Name] }
+$ grep -n "'#cy'" tests/browser/link-mode.cjs
+    37:const DEFAULTS = { canvas: '#cy', menu: '#node-menu', button: 'right', ready: '#cy canvas', hover: 0 };
+
+SC1 GREEN - the same two greps at head
+$ grep -n 'LINK_PROBE' PSGraphRender.build.ps1
+    (nothing)
+$ grep -n "'#cy'" tests/browser/link-mode.cjs
+    (nothing)

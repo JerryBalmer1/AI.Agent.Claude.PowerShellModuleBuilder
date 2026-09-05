@@ -5,7 +5,55 @@ for counters and pins. Update it in the same commit as the work
 that changes it.
 
 ## Passes
-Last landed: **0049**. Next: the operator's. 0049 took **operator-complete item
+Last landed: **0050**. Next: the operator's. 0050 closed **backlog 66** and
+released PSGraphRender **v0.15.1**: the link probe moved out of the build task
+and into each backend's own `templateset.psd1`, as a `LinkProbe` block beside
+`Smoke`.
+
+**The entry undercounted its own defect, and that is the finding.** Backlog 66
+described a `$LINK_PROBE` map in `PSGraphRender.build.ps1` as *a second place a
+backend's shape is written down*. There were **three**.
+`tests/browser/link-mode.cjs` carried a `DEFAULTS` object holding cytoscape's
+canvas, menu, ready selector and mouse button as fallbacks for every backend, so
+a backend whose job omitted a field was silently driven against cytoscape's
+shape. The third copy surfaced because the acceptance derives the strings it
+forbids **from the manifests** rather than from the entry's description - a
+check written to the entry would have gone green over it. **An item written from
+one copy of a duplicate undercounts the duplicate**, and the fix is to derive the
+check from the data rather than from the report.
+
+**The strongest evidence is the probe that corrupts a value rather than removing
+one.** Every other falsification here deletes something a static check can see.
+P3 leaves the block present, complete and well-formed and makes it *wrong* -
+`Canvas = '#not-a-canvas'`. The Pester suite stays green, correctly, and the
+browser run goes red on `Cannot read properties of null (reading
+'boundingBox')`. Without that probe, every other check in the pass could have
+been green over a probe still driven by something other than the manifest.
+Presence is not consumption, and only a browser can tell them apart.
+
+**A fourth backend was demonstrated rather than argued.** A scratch copy of
+`cytoscape` under a fourth directory name failed the build **by name in two
+seconds, before a browser started**, when it declared link modes and no probe;
+the same directory with a `LinkProbe` block ran all five link-mode cases -
+fifteen in total. One data edit, no `.ps1`, no harness change. That is the
+`Smoke`-block claim extended to the second thing a backend has to tell a gate
+about itself.
+
+**Nothing rendered moved, and the version follows the repository's own written
+rule.** `Get-RenderTemplateSet` reads `Layout`, `Slots` and `SlotsBySetting` and
+nothing else, so a new top-level key is invisible to assembly; all three backends
+render byte-identically to `v0.15.0` from fresh clones, and the ten
+`TestLinkMode` cases are the same ten with the same resolved hrefs.
+`docs/HANDOFF.md` says **minor** when a template set, a setting type, a build
+task or a contract field is added and **patch** otherwise; none of the four was
+added, so **v0.15.1**.
+
+Conformance held exactly: **66.27% over 166 cases at base and at head**,
+`CasesDefined` **42** at both ends, measured inside the verify run at both
+commits rather than quoted - a **sixth** consecutive reproduction of the figure
+backlog 63's pin still disagrees with.
+
+0049 took **operator-complete item
 2** and released PSGraphRender **v0.15.0**: a third rendering backend,
 `forcegraph3d`, drawing the same contract 1.1.0 payload in three dimensions with
 a vendored `3d-force-graph`/three.js bundle.
@@ -679,12 +727,16 @@ PSAzureDevOpsGraph: **v0.4.0** (docs-and-artifacts minor, pass 0043,
 decision 0006; module code byte-identical to v0.2.0 still. Ships the
 ClaudeTesting graph as committed JSON, HTML and a screenshot. Next
 touching plan: v0.5.0)
-PSGraphRender: **v0.15.0** (minor, pass 0049: a third template set,
-`forcegraph3d`. A template set was added, which is minor per that repository's
-own rule; no setting TYPE and no build task are new, and the contract did not
-move. Tagged `v0.15.0` on `0d2c5df`, the branch tip - verify and all six
-falsification probes ran before the tag, the 0047-proven ordering. v0.14.0
-(pass 0047, link mode) is the release below it. Next: the operator's)
+PSGraphRender: **v0.15.1** (patch, pass 0050: the link probe becomes backend
+data. `LinkProbe` beside `Smoke` in each backend that declares link modes; the
+`$LINK_PROBE` map and the harness's `DEFAULTS` object both gone. PATCH by that
+repository's own rule as `docs/HANDOFF.md` states it - minor when a template
+set, a setting type, a build task or a contract field is added, and none of the
+four was; shipped manifests changed and no rendered byte did, asserted from
+fresh clones for all three backends. Tagged `v0.15.1` on `e7bbfca`, the branch
+tip - verify and all five falsification probes ran before the tag, the
+0047-proven ordering. v0.15.0 (pass 0049, `forcegraph3d`) is the release below
+it, tagged on `0d2c5df`. Next: the operator's)
 PSGraphRenderToHtml: **v0.1.3** (three patches in pass 0041: v0.1.1 aligns
 `-ColorBy` to the renderer's declared set and closes LEDGER 50; v0.1.2 and
 v0.1.3 each fix a defect found by trying to use the previous fix — LEDGER 54
@@ -2307,7 +2359,9 @@ controls and corpus figures) was **not** touched and stays open.
     red-first iteration with cases-run stated at both ends.
 
 66. **The link probe names each backend's selectors in the build task, which
-    is the defect the Smoke block exists to remove.** STANDING.
+    is the defect the Smoke block exists to remove.** **RESOLVED by pass 0050**
+    at PSGraphRender `v0.15.1` - and the count in the text below is wrong:
+    there were **three** copies, not two. See the closure after it.
 
     `PSGraphRender.build.ps1`'s `TestLinkMode` carries a `$LINK_PROBE` map:
     per backend, the element to click in, the button that opens its actions,
@@ -2332,6 +2386,30 @@ controls and corpus figures) was **not** touched and stays open.
     silently unchecked. That is a guard against forgetting, not the fix.
 
     Logged as **medium** in `PSGraphRender`'s `docs/improvements.md`.
+
+    **Closed by pass 0050.** `LinkProbe` sits beside `Smoke` in
+    `cytoscape/templateset.psd1` and `forcegraph3d/templateset.psd1`, and
+    reaches `tests/browser/link-mode.cjs` whole and verbatim exactly as
+    `Smoke` reaches `smoke.cjs` - PascalCase keys, one job field, absent
+    means failing by name. `$LINK_PROBE` is gone. `plain` declares no
+    `SlotsBySetting.LinkMode`, is skipped by discovery, and was not touched.
+
+    **What the entry got wrong.** It says *a second place*.
+    `tests/browser/link-mode.cjs` also carried
+    `DEFAULTS = { canvas: '#cy', menu: '#node-menu', button: 'right',
+    ready: '#cy canvas', hover: 0 }`, so cytoscape's shape was written down a
+    THIRD time and any backend whose job omitted a field was driven against
+    it. `Canvas`, `Menu`, `Button` and `Ready` are required now. Two fallbacks
+    remain and neither names anything: `Open` falls back to `Menu`, a
+    relationship between two fields the job did supply, and `Hover` to no
+    wait at all; `SETTLE_MS` stays as the harness's own floor, which is a wait
+    rather than a selector.
+
+    **The guard survives, inverted**, exactly as this entry asked that it be
+    kept: it fired for a backend absent from the map, it fires for a manifest
+    declaring link modes and no `LinkProbe`, and it names the manifest and the
+    missing key. Both directions demonstrated with a scratch backend - by name
+    in two seconds without one, five modes green with one.
 
 ### Numbering, reconciled by pass 0030
 

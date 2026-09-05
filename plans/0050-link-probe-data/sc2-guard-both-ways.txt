@@ -1,0 +1,19 @@
+SC2 - the guard driven both ways, from a clone at the pass tip.
+
+RED  (a scratch backend declaring SlotsBySetting.LinkMode and no LinkProbe):
+  ERROR: zzscratch declares link modes and no LinkProbe block in
+  <clone>/output/PSGraphRender/TemplateSets/zzscratch/templateset.psd1, so nothing
+  states how a browser reaches its node actions. Declare LinkProbe beside Smoke;
+  a backend the probe skips is a mode nobody checked.
+  Build FAILED. 3 tasks, 1 errors, 0 warnings 00:00:02.07 - before a browser started.
+
+GREEN (the same directory WITH a LinkProbe block):
+  link mode zzscratch/editor: vscode://file/C:/fixtures/LinkMode/src/Public/Get-Thing.ps1:12:1
+  link mode zzscratch/hrefTemplate: https://example.invalid/src/Public/Get-Thing.ps1
+  link mode zzscratch/none: (no link action)
+  link mode zzscratch/injection: https://example.invalid/src/a%22b%3Cc%3E.ps1?l=%22%3E%3Cscript%3Ealert(1)%3C%2Fscript%3E
+  link mode zzscratch/injection-template: https://example.invalid/src/a%22b%3Cc%3E.ps1?q="><script>alert(2)</script>&l=%22%3E%3Cscript%3Ealert(1)%3C%2Fscript%3E
+  Link mode: 15 case(s) resolved as configured.
+
+Fifteen cases from a data edit: no .ps1 changed, no harness changed. Both
+directions are re-derived in verify.ps1 check 5.

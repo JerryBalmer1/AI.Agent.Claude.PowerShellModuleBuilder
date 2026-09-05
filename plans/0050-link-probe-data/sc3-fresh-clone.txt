@@ -1,0 +1,6 @@
+tag = e7bbfca
+base = 0d2c5df
+SC3 - fresh clones, both ends, same payload:
+  cytoscape     IDENTICAL  CA49B6D8C275DD2B
+  forcegraph3d  IDENTICAL  3739940D9B7350AD
+  plain         IDENTICAL  07A6FDFB959FA8D2
