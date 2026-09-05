@@ -1,0 +1,103 @@
+
+VERIFY 0051 - the 3D backend's look as configuration, re-derived from fresh clones.
+  target remote : https://github.com/JerryBalmer1/PSGraphRender.git
+  head ref      : pass-0051-forcegraph3d-catalog
+  base ref      : e7bbfca (v0.15.1, pass 0050's tip)
+
+  head = dba1f4d, base = e7bbfca
+  NOTE: written against target v0.16.0 on harness branch pass-0051-forcegraph3d-catalog;
+        this head describes as v0.15.1-4-gdba1f4d. Decision 0004: reported, not edited forward.
+
+
+1. Every promised option is DECLARED: typed, defaulted, and in the file the
+   schema says it belongs in. The list is the PROMISE; the schema is the
+   answer. Deriving the list from the schema would ask it whether it
+   contains what it contains.
+     promised 7 behaviour + 19 appearance = 26
+     schema carries 48 entries at head, 22 at base
+  [ok  ] every promised option has a schema entry - all present
+  [ok  ] each is In the file the schema names for its kind - behaviour in Settings, appearance in Theme
+  [ok  ] each carries a Type and a Default - typed and defaulted
+  [ok  ] no schema TYPE was added - twenty-six settings, zero types - head types: Color, ColorMap, Enum, Integer, Number, String
+
+2. Every declared setting is CONSUMED somewhere. The inverse of check 1,
+   and the one that keeps a settings surface from becoming a list of
+   promises. Three places count, not one.
+  [ok  ] no declared setting is read by nothing - all 48 reached
+  [ok  ] every shipped value has a schema entry - 48 shipped values, all declared
+
+3. Acceptance A-E, run in the head clone. This is the pass's own suite and
+   it is run rather than quoted.
+     107 assertion(s)
+  [ok  ] acceptance A-E all green - no red
+  [ok  ] 0049 repair still asserted: builds the hover label as an ELEMENT - Passed
+  [ok  ] 0049 repair still asserted: still fits the view immediately as well as on settle - Passed
+  [ok  ] 0049 repair still asserted: still sizes the drawing buffer from the container - Passed
+  [ok  ] 0049 repair still asserted: still beats the user agent on - Passed
+
+4. The catalogue REGENERATES. Rebuilt from its own table in the clone and
+   compared with what is committed - the claim is that the page cannot
+   drift from the table, and the only way to check it is to regenerate.
+     19 variant(s) in 5 famil(ies): A, B, C, D, E
+  [ok  ] at least 16 variants across at least 5 families - 19 / 5
+  [ok  ] at least 3 members in every family - A=5 B=4 C=4 D=3 E=3
+  [ok  ] SC1 every variant is one overlay of DECLARED settings, nothing else - configuration only
+  [ok  ] A0 is the fixed origin and carries no overlay at all - 1 row(s), 0 key(s)
+  [ok  ] the committed catalogue page is what its table generates - 12298 char(s), identical after line-ending normalisation
+  [ok  ] every variant has a committed html, a committed png, and a place on the page - 38 artifact(s)
+  [ok  ] SC4 the catalogue page inlines no library and fetches nothing - 12298 bytes, no script tag, no absolute URL
+
+5. Nothing else moved. Byte comparisons against the base commit, by git,
+   rather than by a snapshot this script could take of a tree it changed.
+  [ok  ] cytoscape is byte-identical to base - unchanged
+  [ok  ] plain is byte-identical to base - unchanged
+  [ok  ] the default backend did not move - unchanged
+  [ok  ] no contract change - unchanged
+  [ok  ] no .ps1 or .psm1 under src/ was edited - a backend is still a directory - none
+  [ok  ] the module manifest changed only its version line - -    ModuleVersion        = '0.15.1' | +    ModuleVersion        = '0.16.0'
+  [ok  ] no file was vendored in this release - base: 3d-force-graph.min.js / head: 3d-force-graph.min.js
+  [ok  ] every vendored file still matches its recorded sha384 - 9 assertion(s) green
+
+6. The browser gates. Three of them now, and the third exists because
+   neither of the other two can see a look.
+  [ok  ] TestBrowser green across every backend and fixture - Browser: 9 page(s) came alive, network blocked, across 3 backend(s) and 3 fixture(s) at 1280x900@1x
+     cytoscape/ambiguous ratio 7.34 against 4413 empty, floor 4
+     cytoscape/infrastructure ratio 12.23 against 4413 empty, floor 4
+     cytoscape/sample-module ratio 12.29 against 4413 empty, floor 4
+     forcegraph3d/ambiguous ratio 10.24 against 5168 empty, floor 2.25
+     forcegraph3d/infrastructure ratio 6.05 against 5168 empty, floor 2.25
+     forcegraph3d/sample-module ratio 4.23 against 5168 empty, floor 2.25
+  [ok  ] the re-measured floor is met by every fixture with room to spare - thinnest 4.23 against floor 2.25
+  [ok  ] the canvas-growth floor was re-examined and moved - 2 -> 2.25
+  [ok  ] TestLinkMode green on the NEW default look, all three modes - Link mode: 10 case(s) resolved as configured.
+     look forcegraph3d/shapes-resolved: kinds=Function/Class/Enum/Script/Widget shapes=sphere/box/octahedron/cone items=6
+     look forcegraph3d/shapes-drawn: what=a kind-to-shape mapping against one shape for every kind bytesA=33840 bytesB=43212 identical=False
+     look forcegraph3d/metric-size-drawn: what=a declared metrics size key against uniform sizing bytesA=57196 bytesB=39572 identical=False
+     look forcegraph3d/glow-drawn: what=a glow at full strength against none bytesA=41220 bytesB=23264 identical=False
+     look forcegraph3d/live-zoom-speed: field=zoomSpeed live=0.35
+     look forcegraph3d/live-rotate-speed: field=rotateSpeed live=2
+     look forcegraph3d/live-particles: field=particleCount live=5
+     look forcegraph3d/live-button: field=nodeActionButton live=right
+     look forcegraph3d/live-fog-scales: field=fogDensity high=0.00798347864763715 low=0.00399173932381857 ratio=2
+     look forcegraph3d/hover-off: mode=0 highlighted=0 tooltip=
+     look forcegraph3d/hover-node: mode=node highlighted=1 tooltip=ThingEnum
+     look forcegraph3d/hover-neighbors: mode=neighbors highlighted=2 tooltip=ThingEnumEnum
+  [ok  ] TestLook green: shapes resolved, geometry drawn, settings consumed - 12 case(s)
+  [ok  ] SC3 the injection probes stay green on a high-glow variant too - Link mode: 10 case(s) resolved as configured.
+
+7. SC5 - nothing machine-identifying, across everything this pass touched
+   and across this script and its own records.
+     65 changed file(s) in the target
+  [ok  ] no drive path, home directory, username or real vscode:// anywhere - clean
+
+8. Conformance, measured at both ends here rather than quoted, against
+   BUILT trees - pass 0033's finding, and 0050 restated it.
+     base: 66.27% over 166 case(s), CasesDefined 42
+     head: 66.27% over 166 case(s), CasesDefined 42
+  [ok  ] head conformance is not below base - 66.27 -> 66.27
+  [ok  ] cases-run did not move - 166 -> 166
+  [ok  ] CasesDefined did not move - 42 -> 42 (the denominator)
+  [ok  ] no assertion that passed at base fails at head - none
+
+VERIFY 0051: every check passed.
+

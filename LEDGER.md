@@ -5,10 +5,49 @@ for counters and pins. Update it in the same commit as the work
 that changes it.
 
 ## Passes
-Last landed: **0050**. Next: the operator's. 0050 closed **backlog 66** and
-released PSGraphRender **v0.15.1**: the link probe moved out of the build task
-and into each backend's own `templateset.psd1`, as a `LinkProbe` block beside
-`Smoke`.
+Last landed: **0051**. Next: the operator's. 0051 was an **operator-prompted
+large item** - the first in this project's record - and released PSGraphRender
+**v0.16.0**: the 3D backend's appearance and interaction surface became
+twenty-six declared settings, a third browser gate, and a nineteen-variant
+catalogue generated from its own table.
+
+**The prettiest default lost to a gate, and that is the entry worth keeping.**
+`BackgroundStyle` shipped `vignette` until it was measured against the
+canvas-growth floor, which screenshots `#fg` and compares it with the SAME
+element in an EMPTY render. A gradient is in both pictures, so it does not move
+that ratio - it removes it: **3.79 to 1.05**. And not by degree: a gradient
+whose two colours differ by two steps per channel still cost 122,355 bytes of
+empty render and still scored **1.14**. PNG cannot compress a gradient, and
+every DOM assertion in the `Smoke` block passes just as happily over a blank
+rectangle. It ships `flat`; the environment is `B1` and `B2` in the catalogue,
+and the measurement is in `Config/theme.psd1` where someone changing the value
+will see it, so promoting it later is a decision rather than an inheritance.
+
+**The browser gate found two things on its first run and a DOM-only check would
+have gone green over one of them.** The hover count was always zero while the
+drawing was visibly highlighting: the tooltip published the hover state again,
+with no set, and landed after the handler that computed one. The DOM said what
+the page CLAIMED rather than what it did, which is exactly why the new gate
+reads pixels as well - two kinds of evidence, neither sufficient alone.
+
+**A check that fails against correct work is a defect in the check.** The fog
+case asserted equality and went red against a correct page reporting 0.00399
+where 0.004 was configured. Fog density is normalised by camera distance so one
+value means one appearance on any payload; no single reading can be compared to
+the setting. The fix was to assert the property that is actually true -
+proportionality across two documents - rather than to relax the number or drop
+the normalisation.
+
+**The constraint made the missing machinery visible.** `KindShape` maps a
+producer's classifications to shape names and wants to be a `ShapeMap` beside
+`ColorMap`. Adding a schema TYPE needs a validator under `src/`, and a backend
+is a directory, so it ships as a `String` grammar and the type is logged in
+`docs/improvements.md` as a proposal. Twenty-six settings, zero new types, zero
+`.ps1` edits - the largest test the data-only rule has had.
+
+0050 closed **backlog 66** and released PSGraphRender **v0.15.1**: the link
+probe moved out of the build task and into each backend's own
+`templateset.psd1`, as a `LinkProbe` block beside `Smoke`.
 
 **The entry undercounted its own defect, and that is the finding.** Backlog 66
 described a `$LINK_PROBE` map in `PSGraphRender.build.ps1` as *a second place a
@@ -727,7 +766,22 @@ PSAzureDevOpsGraph: **v0.4.0** (docs-and-artifacts minor, pass 0043,
 decision 0006; module code byte-identical to v0.2.0 still. Ships the
 ClaudeTesting graph as committed JSON, HTML and a screenshot. Next
 touching plan: v0.5.0)
-PSGraphRender: **v0.15.1** (patch, pass 0050: the link probe becomes backend
+PSGraphRender: **v0.16.0** (minor, pass 0051: the 3D backend's look becomes
+configuration. Twenty-six settings on `forcegraph3d` - geometry per
+classification with a declared fallback, size by any metric the payload carries,
+glow, fog, environment, particles, camera speed, hover mode, tooltip content,
+pointer button, label visibility - plus a third browser gate, `-Task TestLook`,
+driven by a `LookProbe` block each backend declares for itself. MINOR by that
+repository's own rule as `docs/HANDOFF.md` states it: minor when a template set,
+a setting type, a build task or a contract field is added, and two of the four
+fired. No contract change, no `.ps1` under `src/` edited, and cytoscape, plain
+and index.psd1 byte-identical to v0.15.1 - asserted from fresh clones by git
+rather than by a snapshot. Nothing was vendored: post-processing bloom is absent
+from `3d-force-graph@1.80.0` and adding it means a second copy of three.js in
+the page, so the glow is geometry. Tagged `v0.16.0` on `dba1f4d`, the branch tip
+- verify and all six falsification probes ran before the tag, the 0047-proven
+ordering. Next: the operator's)
+PSGraphRender: v0.15.1 (patch, pass 0050: the link probe becomes backend
 data. `LinkProbe` beside `Smoke` in each backend that declares link modes; the
 `$LINK_PROBE` map and the harness's `DEFAULTS` object both gone. PATCH by that
 repository's own rule as `docs/HANDOFF.md` states it - minor when a template
@@ -736,7 +790,7 @@ four was; shipped manifests changed and no rendered byte did, asserted from
 fresh clones for all three backends. Tagged `v0.15.1` on `e7bbfca`, the branch
 tip - verify and all five falsification probes ran before the tag, the
 0047-proven ordering. v0.15.0 (pass 0049, `forcegraph3d`) is the release below
-it, tagged on `0d2c5df`. Next: the operator's)
+it, tagged on `0d2c5df`.)
 PSGraphRenderToHtml: **v0.1.3** (three patches in pass 0041: v0.1.1 aligns
 `-ColorBy` to the renderer's declared set and closes LEDGER 50; v0.1.2 and
 v0.1.3 each fix a defect found by trying to use the previous fix — LEDGER 54
@@ -2410,6 +2464,79 @@ controls and corpus figures) was **not** touched and stays open.
     declaring link modes and no `LinkProbe`, and it names the manifest and the
     missing key. Both directions demonstrated with a scratch backend - by name
     in two seconds without one, five modes green with one.
+
+67. **A gradient background and the canvas-growth floor cannot both exist,
+    and nothing said so until it was measured.** **RAISED AND SETTLED by pass
+    0051** at PSGraphRender `v0.16.0`, in the only direction that keeps the
+    gate: `BackgroundStyle` ships `flat`.
+
+    The floor screenshots `#fg` and divides by the SAME element in an empty
+    render. Anything painted in that rectangle is in both numbers, and a
+    gradient is the worst possible case because PNG cannot compress one:
+    **flat 5,168 empty / 19,586 drawn / 3.79; gradient and vignette 313,384 /
+    329,766 / 1.05.** A gradient two steps per channel from flat still cost
+    122,355 bytes empty and still scored 1.14.
+
+    `styles/base.css` already carried the warning in prose - *"chrome over the
+    canvas does not make a blank page look drawn, but it makes a drawn page
+    look less drawn; the floor stops discriminating long before it stops
+    passing"* - measured for a status bar, at 3.07 against 3.95. **Nothing
+    turned that sentence into a check**, so the next thing painted in the
+    rectangle was found by running the gate and reading a 1.05 rather than by
+    the design refusing it.
+
+    **STANDING as a general question**, not for this backend: a ratio against
+    an empty render is undefined for any backend whose empty render is not
+    nearly blank, and there is no check that would notice a future one. The
+    fix is not obvious - a difference rather than a ratio changes what every
+    declared floor means - so it is logged rather than taken.
+
+68. **The catalogue's 26 MB of committed HTML is nineteen copies of one
+    vendored library.** **ACCEPTED by pass 0051**, measured rather than
+    assumed: the repository's pack grew 6.89 → 10.62 MiB, about 3.7 MB, because
+    nineteen documents that share a 1.3 MB inlined library delta against each
+    other almost perfectly.
+
+    Recorded because the on-disk figure is the one a reader meets first and it
+    is seven times the real cost. The same trade as the 126 KB → 607 KB
+    vendoring cost at v0.5.0 and the 1.4 MB 3D page: **stated where it can be
+    found rather than hidden**, in `examples/README.md`.
+
+    **What would make it a defect rather than a trade** is a second backend
+    growing a catalogue of its own, which would multiply by its own library
+    rather than share this one. Not a reason to act now.
+
+69. **`KindShape` is a `String` carrying a grammar, and should be a
+    `ShapeMap`.** **LOGGED by pass 0051**, deliberately not taken.
+
+    It maps a producer's classifications to shape names, which is precisely
+    what `ColorMap` is for colours. It ships as `kind=shape` pairs parsed in
+    the browser because **adding a schema TYPE needs a validator under
+    `src/PSGraphRender/Private/Config/`** and the pass was forbidden from
+    editing a `.ps1` - the repository's own comment at the `ColorList` case
+    states that distinction, and the constraint is the point.
+
+    **The cost is bounded and real**: values are validated a layer down instead
+    of at render time, so a typo degrades one classification silently rather
+    than warning by name the way every other mistyped setting does.
+
+    A `ShapeMap` would validate the VALUES against a shape vocabulary and never
+    the keys, for the same reason `ColorMap` never validates its keys. That is
+    a module change and therefore a proposal. Also in
+    `PSGraphRender/docs/improvements.md`.
+
+70. **A screenshot cannot photograph an interaction, and one family of the
+    catalogue is mostly captions.** **ACCEPTED by pass 0051.**
+
+    The D family varies zoom speed, rotate speed, hover mode, tooltip content
+    and pointer button. Three of those five do not appear in a still image at
+    all, and the catalogue says so on its own page rather than presenting five
+    near-identical pictures as though they showed something.
+
+    **The browser gate covers what the picture cannot** - `TestLook` asserts
+    each of them against the live object that consumes it - so the gap is in
+    the *catalogue's* evidence, not in the pass's. Logged because a later
+    catalogue for a backend with more interaction would have more of it.
 
 ### Numbering, reconciled by pass 0030
 
