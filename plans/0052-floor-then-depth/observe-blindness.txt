@@ -1,0 +1,38 @@
+{
+  "viewport": {
+    "width": 1280,
+    "height": 900
+  },
+  "deviceScaleFactor": 1,
+  "channelThreshold": 12,
+  "rows": [
+    {
+      "case": "forcegraph3d/flat",
+      "background": "flat",
+      "oldMetric": {
+        "drawnBytes": 22305,
+        "emptyBytes": 5168,
+        "ratio": 4.316
+      },
+      "newMetric": {
+        "changedPixels": 32518,
+        "totalPixels": 1103360,
+        "fraction": 0.0295
+      }
+    },
+    {
+      "case": "forcegraph3d/vignette",
+      "background": "vignette",
+      "oldMetric": {
+        "drawnBytes": 357729,
+        "emptyBytes": 339574,
+        "ratio": 1.053
+      },
+      "newMetric": {
+        "changedPixels": 28466,
+        "totalPixels": 1103360,
+        "fraction": 0.0258
+      }
+    }
+  ]
+}

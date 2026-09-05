@@ -1,0 +1,80 @@
+{
+  "viewport": {
+    "width": 1280,
+    "height": 900
+  },
+  "deviceScaleFactor": 1,
+  "channelThreshold": 12,
+  "cases": 6,
+  "failed": 0,
+  "rows": [
+    {
+      "case": "BackgroundStyle-flat",
+      "kind": "separate",
+      "note": "BackgroundStyle = flat",
+      "aBytes": 21897,
+      "bBytes": 5168,
+      "ratio": 4.237,
+      "fraction": 0.0294,
+      "floor": 0.015,
+      "ok": true
+    },
+    {
+      "case": "BackgroundStyle-gradient",
+      "kind": "separate",
+      "note": "BackgroundStyle = gradient",
+      "aBytes": 38688,
+      "bBytes": 16682,
+      "ratio": 2.319,
+      "fraction": 0.02933,
+      "floor": 0.015,
+      "ok": true
+    },
+    {
+      "case": "BackgroundStyle-vignette",
+      "kind": "separate",
+      "note": "BackgroundStyle = vignette",
+      "aBytes": 358021,
+      "bBytes": 339574,
+      "ratio": 1.054,
+      "fraction": 0.02914,
+      "floor": 0.015,
+      "ok": true
+    },
+    {
+      "case": "empty-against-itself",
+      "kind": "noise",
+      "note": "the same empty document, captured twice",
+      "aBytes": 5168,
+      "bBytes": 5168,
+      "ratio": 1,
+      "fraction": 0,
+      "floor": null,
+      "ok": true,
+      "ceiling": 0.0005
+    },
+    {
+      "case": "old-ratio-on-vignette",
+      "kind": "blind",
+      "note": "BackgroundStyle = vignette under the metric v0.16.0 shipped",
+      "aBytes": 357942,
+      "bBytes": 339574,
+      "ratio": 1.054,
+      "fraction": 0.02917,
+      "floor": null,
+      "ok": true,
+      "oldFloor": 2.25
+    },
+    {
+      "case": "corrupted-drawing",
+      "kind": "dark",
+      "note": "graph.js hands the library an empty payload; every DOM assertion still passes",
+      "aBytes": 5168,
+      "bBytes": 5168,
+      "ratio": 1,
+      "fraction": 0,
+      "floor": 0.015,
+      "ok": true
+    }
+  ]
+}
