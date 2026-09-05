@@ -1,0 +1,82 @@
+
+VERIFY 0050 - the link probe as backend data, re-derived from fresh clones.
+  target remote : https://github.com/JerryBalmer1/PSGraphRender.git
+  head ref      : main
+  base ref      : 0d2c5df (v0.15.0, pass 0049's tip)
+
+  head = e7bbfca, base = 0d2c5df
+
+
+1. Every backend with link modes declares how to reach them, and only those do.
+     backends: cytoscape, forcegraph3d, plain
+     with link modes: cytoscape, forcegraph3d
+  [ok  ] the rule has backends on both sides of it - 2 with, 1 without
+  [ok  ] every backend with link modes declares a LinkProbe - all of them
+  [ok  ] every LinkProbe carries Canvas, Menu, Button, Ready - complete
+  [ok  ] every declared button is one a browser can press - cytoscape=right, forcegraph3d=left
+  [ok  ] a backend with no link modes declares no probe - plain declare none, correctly
+  [ok  ] no backend declared a LinkProbe at base - none - so this is the change, not the status quo
+
+2. The selectors are written down once. By absence, at both ends.
+  [ok  ] no $LINK_PROBE in the build task at head
+  [ok  ] and it WAS there at base, so this check can fail - 4 occurrence(s) at 0d2c5df
+     18 literal(s) derived from the manifests, e.g. '#cy' "#cy" '#cy canvas'
+  [ok  ] the derived list is not empty - 18
+  [ok  ] the browser harness names no declared selector at head - none of them
+  [ok  ] and it DID at base, so this check can fail - '#cy', '#cy canvas', '#node-menu', 'right' at 0d2c5df
+  [ok  ] the DEFAULTS object is gone from the harness - present at base
+
+3. Nothing rendered moved. All three backends, byte-for-byte against base.
+  [ok  ] cytoscape renders byte-identically to 0d2c5df - 625921 vs 625921 char(s)
+  [ok  ] forcegraph3d renders byte-identically to 0d2c5df - 1359003 vs 1359003 char(s)
+  [ok  ] plain renders byte-identically to 0d2c5df - 21467 vs 21467 char(s)
+  [ok  ] the editor-mode byte gate is green and untouched (22 assertions) - all passed
+  [ok  ] the acceptance suite is green (9 assertions) - all passed
+
+4. The probe still probes, identically. The same cases, in a real browser.
+     browser harness (head): copied Playwright 1.49.1 from the sibling checkout
+     browser harness (base): copied Playwright 1.49.1 from the sibling checkout
+  [ok  ] TestLinkMode is green at head - Link mode: 10 case(s) resolved as configured.
+  [ok  ] and was green at base - Link mode: 10 case(s) resolved as configured.
+  [ok  ] the case inventory did not move - 10 case(s) at base, 10 at head
+       link mode cytoscape/editor: vscode://file/C:/fixtures/LinkMode/src/Public/Get-Thing.ps1:12:1
+       link mode cytoscape/hrefTemplate: https://example.invalid/src/Public/Get-Thing.ps1
+       link mode cytoscape/none: (no link action)
+       link mode cytoscape/injection: https://example.invalid/src/a%22b%3Cc%3E.ps1?l=%22%3E%3Cscript%3Ealert(1)%3C%2Fscript%3E
+       link mode cytoscape/injection-template: https://example.invalid/src/a%22b%3Cc%3E.ps1?q="><script>alert(2)</script>&l=%22%3E%3Cscript%3Ealert(1)%3C%2Fscript%3E
+       link mode forcegraph3d/editor: vscode://file/C:/fixtures/LinkMode/src/Public/Get-Thing.ps1:12:1
+       link mode forcegraph3d/hrefTemplate: https://example.invalid/src/Public/Get-Thing.ps1
+       link mode forcegraph3d/none: (no link action)
+       link mode forcegraph3d/injection: https://example.invalid/src/a%22b%3Cc%3E.ps1?l=%22%3E%3Cscript%3Ealert(1)%3C%2Fscript%3E
+       link mode forcegraph3d/injection-template: https://example.invalid/src/a%22b%3Cc%3E.ps1?q="><script>alert(2)</script>&l=%22%3E%3Cscript%3Ealert(1)%3C%2Fscript%3E
+
+5. The guard, driven both ways with a scratch backend.
+  [ok  ] the scratch backend declares link modes and no LinkProbe - LinkMode=True LinkProbe=False
+  [ok  ] a backend with modes and no probe fails the build BY NAME - names the backend, the manifest and the missing key
+  [ok  ] and the same backend WITH a probe is driven through every mode - 15 case(s) total, 5 of them zzscratch
+
+6. Nothing machine-identifying in what the pass committed.
+     9 file(s) changed since 0d2c5df
+       CHANGELOG.md
+       PSGraphRender.build.ps1
+       docs\HANDOFF.md
+       docs\improvements.md
+       src\PSGraphRender\PSGraphRender.psd1
+       src\PSGraphRender\TemplateSets\cytoscape\templateset.psd1
+       src\PSGraphRender\TemplateSets\forcegraph3d\templateset.psd1
+       tests\LinkProbe.Tests.ps1
+       tests\browser\link-mode.cjs
+  [ok  ] no drive path, home directory, username or real vscode:// in any changed file - clean
+
+7. Conformance, measured at both ends here rather than quoted.
+   This pass has no licence to change the inventory, so a moved denominator
+   is a failure and not a finding.
+     base: 66.27% over 166 case(s), CasesDefined 42
+     head: 66.27% over 166 case(s), CasesDefined 42
+  [ok  ] head conformance is not below base - 66.27 -> 66.27
+  [ok  ] cases-run did not move - 166 -> 166
+  [ok  ] CasesDefined did not move - 42 -> 42 (the denominator; backlog 63 is about the PIN, not this figure)
+  [ok  ] no assertion that passed at base fails at head - none
+
+VERIFY 0050: every check passed.
+
