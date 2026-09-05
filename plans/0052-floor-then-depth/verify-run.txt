@@ -1,0 +1,138 @@
+
+VERIFY 0052 - the floor learns to see, then the 3D view gets depth and menus.
+  target remote : https://github.com/JerryBalmer1/PSGraphRender.git
+  head ref      : pass-0052-floor-then-depth
+  base ref      : dba1f4d (v0.16.0, pass 0051's tip)
+
+  head = 50322cf, base = dba1f4d
+  NOTE: written against target v0.17.0 on harness branch pass-0052-floor-then-depth;
+        this head describes as v0.16.0-12-g50322cf. Decision 0004: reported, not edited forward.
+
+
+1. Every promised option is DECLARED: typed, defaulted, and in the file the
+   schema says it belongs in. The list is the PROMISE; the schema is the
+   answer. Deriving the list from the schema would ask it whether it
+   contains what it contains.
+     promised 6 behaviour + 8 appearance = 14
+     schema carries 62 entries at head, 48 at base
+  [ok  ] every promised option has a schema entry - all present
+  [ok  ] each is In the file the schema names for its kind - behaviour in Settings, appearance in Theme
+  [ok  ] each carries a Type and a Default - typed and defaulted
+  [ok  ] no v0.16.0 setting was dropped - all 48 still declared
+  [ok  ] every type the backend declares is one the MODULE already validates - head types: Boolean, Color, ColorMap, Enum, Integer, Number, String
+  [ok  ] and the validator that decides them is byte-identical to base - unchanged
+
+2. Every declared setting is CONSUMED somewhere, and every shipped value is
+   DECLARED. The two directions of the same claim, and the pair is what
+   keeps a settings surface from becoming a list of promises.
+  [ok  ] no declared setting is read by nothing - all 62 reached
+  [ok  ] every shipped value has a schema entry - 62 shipped values, all declared
+     the panel asks for 17 string(s); strings.psd1 ships 39
+  [ok  ] every string the panel asks for is one the backend ships - all present
+  [ok  ] every promised control is declared in the markup - 10 control(s)
+  [ok  ] and named by the script that wires it - all wired
+
+3. Acceptance A-E, run in the head clone. This is the pass's own suite and
+   it is run rather than quoted.
+     163 assertion(s)
+  [ok  ] acceptance A-E all green - no red
+  [ok  ] 0049 repair still asserted: builds the hover label as an ELEMENT - Passed
+  [ok  ] 0049 repair still asserted: still fits the view immediately as well as on settle - Passed
+  [ok  ] 0049 repair still asserted: still sizes the drawing buffer from the container - Passed
+  [ok  ] 0049 repair still asserted: still beats the user agent on - Passed
+  [ok  ] acceptance C asserts it: writes no user-visible word of its own into the markup - Passed
+  [ok  ] acceptance C asserts it: wires every control it declares - Passed
+  [ok  ] acceptance C asserts it: names no classification anywhere in the panel - Passed
+
+4. THE FLOOR IS A DIFFERENCE, NOT A RATIO - the first half of this pass and
+   the reason the second half could ship at all.
+     base declared CanvasGrowth #fg = 2.25
+  [ok  ] CanvasGrowth is GONE from the 3D backend, not left beside the new key - absent
+  [ok  ] and CanvasDelta declares the new floor in its place - #fg >= 0.015
+  [ok  ] cytoscape still gates on CanvasGrowth - the metric fits the backend - #cy >= 4
+
+5. The catalogue REGENERATES, and the promotion is visible in it.
+     22 variant(s) in 5 famil(ies): A, B, C, D, E
+  [ok  ] at least 16 variants across at least 5 families - 22 / 5
+  [ok  ] SC1 every variant is one overlay of DECLARED settings, nothing else - configuration only
+  [ok  ] A0 is the fixed origin and carries no overlay at all - 1 row(s), 0 key(s)
+  [ok  ] the previous default is preserved as a labelled variant - A5 carries 18 key(s)
+  [ok  ] E1 is retired rather than left as a duplicate of the default - labels: A0 A1 A2 A3 A4 A5 B1 B2 B3 B4 B5 B6 C1 C2 C3 C4 D1 D2 D3 D4 E2 E3
+  [ok  ] and its committed artifacts went with it - no E1.html, no E1.png
+  [ok  ] the environment family is in the catalogue - A5, B5, B6, E3
+  [ok  ] the committed catalogue page is what its table generates - 13972 char(s), identical after line-ending normalisation
+  [ok  ] every variant has a committed html, a committed png, and a place on the page - 44 artifact(s)
+  [ok  ] SC4 the catalogue page inlines no library and fetches nothing - 13972 bytes, no script tag, no absolute URL
+
+6. Nothing else moved. Byte comparisons against the base commit, by git,
+   rather than by a snapshot this script could take of a tree it changed.
+  [ok  ] cytoscape is byte-identical to base - unchanged
+  [ok  ] plain is byte-identical to base - unchanged
+  [ok  ] the default backend did not move - unchanged
+  [ok  ] no contract change - unchanged
+  [ok  ] no .ps1 or .psm1 under src/ was edited - a backend is still a directory - none
+  [ok  ] the module manifest changed only its version line - -    ModuleVersion        = '0.16.0' | +    ModuleVersion        = '0.17.0'
+  [ok  ] no file was vendored in this release - no second copy of three.js - base: 3d-force-graph.min.js / head: 3d-force-graph.min.js
+  [ok  ] every vendored file still matches its recorded sha384 - 9 assertion(s) green
+
+7. The browser gates, and the measurement that is this pass's whole point.
+  [ok  ] TestBrowser green across every backend and fixture - Browser: 9 page(s) came alive, network blocked, across 3 backend(s) and 3 fixture(s) at 1280x900@1x, changed-pixel threshold 12/255
+     cytoscape/ambiguous changed 0.1232 / byte-ratio 7.34 / gated on CanvasGrowth >= 4
+     cytoscape/infrastructure changed 0.2033 / byte-ratio 12.23 / gated on CanvasGrowth >= 4
+     cytoscape/sample-module changed 0.2549 / byte-ratio 12.29 / gated on CanvasGrowth >= 4
+     forcegraph3d/ambiguous changed 0.0638 / byte-ratio 1.2 / gated on CanvasDelta >= 0.015
+     forcegraph3d/infrastructure changed 0.0409 / byte-ratio 1.12 / gated on CanvasDelta >= 0.015
+     forcegraph3d/sample-module changed 0.0325 / byte-ratio 1.13 / gated on CanvasDelta >= 0.015
+  [ok  ] the gate reports BOTH metrics for every canvas, whichever one gated - 6 canvas measurement(s)
+  [ok  ] the 3D backend is gated on the DIFFERENCE metric - CanvasDelta
+  [ok  ] and cytoscape on the byte ratio - CanvasGrowth
+  [ok  ] the re-pinned floor is met by every fixture with room to spare - thinnest 0.0325 against floor 0.015 - 2.17x
+  [ok  ] the OLD metric would now FAIL the shipped default (ratio < 2.25) - worst byte ratio 1.12 against the v0.16.0 floor of 2.25, on a page every other gate calls green
+  [ok  ] the empty render is expensive in bytes and cheap in difference - empty capture 360736 bytes, and the difference metric is unmoved by it
+  [ok  ] TestLinkMode green on the NEW default look, all three modes - Link mode: 10 case(s) resolved as configured.
+     look forcegraph3d/shapes-resolved: kinds=Function/Class/Enum/Script/Widget shapes=sphere/box/octahedron/cone items=6
+     look forcegraph3d/shapes-drawn: what=a kind-to-shape mapping against one shape for every kind bytesA=555024 bytesB=557024 identical=False
+     look forcegraph3d/metric-size-drawn: what=a declared metrics size key against uniform sizing bytesA=535536 bytesB=554692 identical=False
+     look forcegraph3d/glow-drawn: what=a glow at full strength against none bytesA=537296 bytesB=547792 identical=False
+     look forcegraph3d/live-zoom-speed: field=zoomSpeed live=0.35
+     look forcegraph3d/live-rotate-speed: field=rotateSpeed live=2
+     look forcegraph3d/live-particles: field=particleCount live=5
+     look forcegraph3d/live-button: field=nodeActionButton live=right
+     look forcegraph3d/live-fog-scales: field=fogDensity high=0.0074721038257423 low=0.00373605191287115 ratio=2
+     look forcegraph3d/grid-drawn: what=an enclosure environment against none bytesA=725620 bytesB=504456 identical=False
+     look forcegraph3d/live-grid-meshes: field=gridMeshes live=0
+     look forcegraph3d/panel-open: controls=15 collapsed=False afterClick=True
+     look forcegraph3d/panel-collapsed: controls=15 collapsed=True afterClick=False
+     look forcegraph3d/control-zoom-speed: field=zoomSpeed before=0.9 after=2.4
+     look forcegraph3d/control-fog: field=fogDensity before=0.00149442076514846 after=0.00984826897778251
+     look forcegraph3d/control-grid: field=gridMeshes before=1 after=0
+     look forcegraph3d/control-glow: field=glowScale before=1 after=2.5
+     look forcegraph3d/control-labels: field=labelsVisible before=False after=True
+     look forcegraph3d/control-particles: field=particleCount before=3 after=0
+     look forcegraph3d/control-auto-rotate: field=autoRotate before=False after=True
+     look forcegraph3d/control-focus: field=focusOnClick before=True after=False
+     look forcegraph3d/filter-drops-nodes: field=visibleNodes before=6 after=5
+     look forcegraph3d/filter-drops-links: field=visibleLinks before=4 after=1
+     look forcegraph3d/hover-off: mode=0 highlighted=0 tooltip=
+     look forcegraph3d/hover-node: mode=node highlighted=1 tooltip=ThingEnum
+     look forcegraph3d/hover-neighbors: mode=neighbors highlighted=2 tooltip=ThingEnumEnum
+  [ok  ] TestLook green: environment drawn, panel wired, every control consumed - 26 case(s)
+  [ok  ] every case this pass added actually ran - 14 new case(s) present
+  [ok  ] SC3 the injection probes stay green on a high-glow enclosed variant too - Link mode: 10 case(s) resolved as configured.
+
+8. SC5 - nothing machine-identifying, across everything this pass touched
+   and across this script and its own records.
+     80 changed file(s) in the target
+  [ok  ] no drive path, home directory, username or real vscode:// anywhere - clean
+
+9. Conformance, measured at both ends here rather than quoted, against
+   BUILT trees - pass 0033's finding, and 0050 restated it.
+     base: 66.27% over 166 case(s), CasesDefined 42
+     head: 66.27% over 166 case(s), CasesDefined 42
+  [ok  ] head conformance is not below base - 66.27 -> 66.27
+  [ok  ] cases-run did not move - 166 -> 166
+  [ok  ] CasesDefined did not move - 42 -> 42 (the denominator)
+  [ok  ] no assertion that passed at base fails at head - none
+
+VERIFY 0052: every check passed.
+

@@ -410,3 +410,19 @@ split a copyable block with prose.
 Commit the plan and the verify script with the pass's work, and push to the
 pass branch. The repository is the record; a pasted report is a
 convenience.
+
+**Commit and push after every task, in every pass.** A task is not done until
+its commit is on the remote — not when the edit is made, not when the gate goes
+green. Work that lives only in a working tree is invisible to `git status` *as
+progress*: it is indistinguishable from work not started, and unrecoverable by
+anyone but the process holding it.
+
+This is here rather than in a prompt because a rule that lives only in prompts
+is repealed by the first prompt that forgets it. **No prompt's brevity overrides
+it, and a prompt that omits it has not repealed it.** Pass 0052 was stopped by
+its operator on twenty-three files of finished, unpushed work; the cause was an
+authoring defect, its task spine compressed past the line that says to push.
+Finding 73 in `LEDGER.md` carries the account, and `PSGraphRender/docs/HANDOFF.md`
+repeats the rule beside that repository's own commit conventions — repeated
+deliberately, because a pass targeting a different repository reads a different
+handoff and must still meet this.

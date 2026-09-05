@@ -481,3 +481,255 @@ work touched the defaults themselves: `Clean`, `Lint`, `LintJavaScript`,
 That is **task 9 not yet done**, stated by the suite rather than by memory:
 part 2 moved the default look and `A0` is still a picture of the old one. The
 spine resumed at task 9.
+
+## 5. Evidence per task
+
+| # | Task | Commit | Evidence |
+|---|---|---|---|
+| 1 | red first: the blindness observed | `c1dceef` (harness) | `observe-blindness.txt` - flat 4.316 / vignette **1.053** under the shipped metric, 0.0295 / 0.0258 under the proposed one. The 1.05 reproduces 0051's recorded figure exactly |
+| 2 | the repair: difference, not ratio | `efb6cee` | `smoke.cjs` compares the two screenshots that already existed in every run. Decoded in the open browser - the harness declares one dependency |
+| 3 | re-pin by measurement, both backends | `efb6cee`, `5b1b1e8` | three consecutive runs on the v0.16.0 look (thinnest 0.0271 = 1.81x) and three more on the default part 2 actually ships (thinnest 0.0324 = 2.16x). The floor stays at 0.015, pinned under the thinnest thing ever observed rather than raised to suit a richer default. `plain` declares no canvas and gains nothing |
+| 4 | the instrument proves itself both ways | verify check 7 | flat and vignette both separate; `CanvasDelta` gates the 3D backend, `CanvasGrowth` still gates cytoscape, and **both** numbers print for every canvas on every run |
+| 5 | 67's prose becomes a check | `efb6cee` | `base.css` says what is checked; `smoke.cjs` refuses a byte-ratio floor whose empty capture exceeds 0.05 PNG bytes per pixel - the check this finding said did not exist |
+| 6 | a grounded scene | `c3ce97c` | `GridStyle` none/floor/room + 7 theme values. Look case `grid-drawn` 725,960 vs 504,532 bytes, not identical; `live-grid-meshes` = 0 for `none` |
+| 7 | links visible by default | `c3ce97c` | edges `#6d8199` at 0.62 / width 1.4, particles 3 at 1.9 - theme data, one line overturnable |
+| 8 | the control panel | `2ea178b` | `panel-open` and `panel-collapsed` (15 controls, collapse clicked for real), eight `control-*` cases each driven through its own DOM events, `filter-drops-nodes` 6->5 and `filter-drops-links` 4->1 |
+| 9 | the default moves | `74010da` | A0 byte-identical to a no-overlay render, asserted; 22 variants in 5 families; `E1` retired, `A5` preserves the v0.16.0 default whole; `threed/forcegraph3d.html` regenerated |
+| - | the corrected claim | `39863ac` | finding 72: `room` rules its near wall across the graph, and three files said it could not |
+| - | docs and the version | `02bfc8e` | v0.17.0, MINOR by the HANDOFF trigger (setting types added). `Boolean` is the first one this backend declares and was already validated by the module, which is untouched |
+| - | the catalogue's own docs | `9fd02a1` | `examples/README.md` described nineteen variants and pointed at E1; the cost section re-measured rather than re-scaled |
+| - | the two floors documented | `10e17ad` | `development.md` described `CanvasGrowth` as the only floor; `render-architecture.md` gains a dated entry carrying the measurement |
+
+**Gate runs, all green:** default build 8 tasks / 0 errors; `TestLook` **26
+cases**; `TestLinkMode` **10 cases**; `PreTag` 9 tests.
+
+**Re-run after the resume, and which ones.** Every gate whose inputs the
+uncommitted work touched - which is all of them, because the work moved the
+defaults every other gate renders against: `Clean`, `Lint`, `LintJavaScript`,
+`Build`, `LintDocument`, `Test`, `TestBrowser`, then `TestLook`,
+`TestLinkMode` and `PreTag`. The first run had exactly one red - A0 no longer
+matching a no-overlay render - which is task 9 stated by the suite rather than
+from memory, and is where the spine resumed.
+
+## 6. Spot-checks — 🔵
+
+**SC1 — the instrument survives every shipped background.** The default ships
+`vignette` *and* a ruled floor, which is the case the old metric could not see
+at all. Measured on the product rather than on a demo, from the verify run:
+
+    forcegraph3d/sample-module  changed 0.0325 | byte-ratio 1.13 | CanvasDelta >= 0.015
+    forcegraph3d/infrastructure changed 0.0409 | byte-ratio 1.12 | CanvasDelta >= 0.015
+    forcegraph3d/ambiguous      changed 0.0638 | byte-ratio 1.20 | CanvasDelta >= 0.015
+
+**Red capability, and it is the strongest statement this pass can make:** the
+worst byte ratio is **1.12** against the floor of **2.25** that shipped at
+v0.16.0. The old gate would fail the product, on a page every other gate calls
+green. Asserted in verify check 7 rather than argued.
+
+**And the instrument was proved against its own failure modes before any of
+that**, in `spotcheck-floor-part1.txt` — six cases, zero failed:
+
+| case | kind | old ratio | new fraction |
+|---|---|---|---|
+| `BackgroundStyle = flat` | separates | 4.237 | 0.0294 |
+| `BackgroundStyle = gradient` | separates | 2.319 | 0.0293 |
+| `BackgroundStyle = vignette` | separates | **1.054** | 0.0291 |
+| the same empty document, captured twice | noise | 1.000 | **0.0000** |
+| vignette under the v0.16.0 metric | blind | 1.054 vs floor 2.25 | — |
+| `graph.js` handed an empty payload | dark | 1.000 | **0.0000** |
+
+The last two are what make the first three mean anything. **The metric reads
+0.0000 on a page that draws nothing while every DOM assertion still passes** —
+so it is discriminating rather than merely large — and it reads 0.0000 on the
+same picture twice, so the number is not noise. Meanwhile the drawn-vs-empty
+fraction barely moves across three backgrounds whose byte ratios span 4.24 to
+1.05.
+
+**SC2 — the panel is config-true.** `panel-open` and `panel-collapsed` are two
+documents rendered from `ShowControlPanel = 'open'` and `'collapsed'`, and each
+asserts the panel opened at the position its setting shipped - which is the half
+a presence check cannot make. `AutoRotate` is applied at render time from
+`Config` rather than left for the button, so a report built with
+`ShowControlPanel = 'none'` still honours it. Red demo: P3 below.
+
+**SC3 — the catalogue cannot drift.** Probes P1 and P2, both directions: a row
+removed from the table loses its card, a row added gains one, and a variant that
+reaches past configuration turns the acceptance assertion red.
+
+**SC4 — offline absolute.** `TestBrowser` reports *network blocked* across 3
+backends and 3 fixtures; `TestLinkMode` and `TestLook` the same; the catalogue
+page is 13,972 bytes with no `<script>` and no absolute URL. The panel adds no
+network path - every control writes to an object already in the page.
+
+**SC5 — nothing machine-identifying.** The hardened grep over every changed file
+and over this plan's own records: clean. Run separately over the operator's six
+lab files before they were committed: clean. Red demo: P6.
+
+**SC6 — `none` and `editor` modes keep their guarantees under the panel.**
+`TestLinkMode` green on the new default across all three modes and both
+backends, including both injection probes, and again on a high-glow enclosed
+variant (verify check 7). The panel introduces no link path the mode registry
+does not govern: it changes camera, materials and visibility, and touches no
+href.
+
+
+## 7. Verify — decision 0004, twice-run — 🔵
+
+`verify.ps1` re-derives every claim from **fresh clones of the remote**, never
+from this file: the settings inventory, the variant inventory, both canvas
+metrics, the look-gate case list, both conformance scores and `CasesDefined` are
+all measured in the run. Nine checks, six falsification probes.
+
+    VERIFY 0052: every check passed.
+
+**68 checks green, all six probes fired.** The record is
+`verify-failcheck.txt` (with probes, against the branch tip) and
+`verify-run.txt` (without, the run a later reader gets).
+
+What the probes established, each damaging the head clone and requiring a RED:
+
+| probe | damage | result |
+|---|---|---|
+| P1 | a variant overlay reaching past configuration | SC1 red, and the acceptance assertion with it |
+| P2 | a row removed from the table, then one added | the generated page follows in both directions |
+| **P3** | `LookProbe.Live` pointed at another real element | **every static check stays green; the browser goes red** — `nothing matched #fg-resolved, so no live value is reported` |
+| P4 | `CanvasDelta` raised to 0.90 | the smoke gate refuses all 9 cases |
+| P5 | markup assignment in the label path | SC3 red |
+| P6 | the known-bad fixture form in a committed file | SC5 red |
+
+**P3 is the one that matters**, and it is the 0050/0051 shape: a probe VALUE
+that is present, complete, well-formed and wrong. Nothing static can see it,
+because there is nothing statically wrong — only a browser can tell a
+declaration that is CARRIED from one that is CONSUMED. It is also the probe
+that silently damaged nothing on this verifier's first run; see finding 76.
+
+Two of this script's checks were wrong on their first run and are recorded
+rather than quietly fixed:
+
+- the type check compared the backend's schema types head-against-base and
+  called `Boolean` new. It asks the module's **validator** now, and separately
+  asserts the validator is byte-identical to base — which is the actual
+  constraint, since a type the module cannot validate needs a `.ps1` edit;
+- SC5's scan could not read the transcript it was being written into, because
+  `ReadAllText` opens for exclusive read. Finding 74.
+
+Conformance, measured at both ends rather than quoted: **66.27% over 166 cases,
+CasesDefined 42**, unmoved. SC5 clean across 80 changed files and this plan's
+own records.
+
+## Deviations
+
+1. **Task 3's cytoscape re-pin, reported not resolved.** The prompt asks for
+   cytoscape's floor to be re-pinned "in manifest comments"; the ⛔ list and
+   acceptance E both require `cytoscape` byte-identical to `dba1f4d`, which
+   `tests/ForceGraph3DLook.Tests.ps1:350` enforces as a `git diff` over the
+   whole directory. **The ⛔ was obeyed and the measurement taken anyway** —
+   cytoscape's ratios are printed on every run (7.34 / 12.23 / 12.29 against a
+   floor of 4) and `smoke.cjs` now measures the near-blank precondition that
+   metric depends on, which is the part of task 3 that could be done without
+   editing the directory.
+
+2. **Work in flight committed retroactively in reconstructed task shape.**
+   Forced by an operator stop; root cause the prompt's omitted cadence line.
+   The partition and its reasoning are recorded in full in section 4a, derived
+   from each file's diff content rather than from memory, and proved
+   byte-for-byte against a pre-partition snapshot. The commits say so in their
+   own messages rather than presenting themselves as having been written that
+   way. Filed as finding 73.
+
+3. **`git add -A` used once, path-scoped, against the repository's own
+   convention.** `PSGraphRender/docs/HANDOFF.md` says to stage path by path and
+   never `git add -A`. The part-2b commit staged with
+   `git add -A -- src tests PSGraphRender.build.ps1` after part-2a had taken
+   everything else, because at that point "the remainder" was the logical unit
+   and naming fourteen paths would have been a longer way to say it with more
+   room to miss one.
+
+   **Recorded rather than glossed.** The convention exists because `-A` picks up
+   what you did not look at, and the answer to that here is the byte-for-byte
+   snapshot comparison in section 4a — which is a stronger check than
+   path-by-path staging would have been, because it proves the *result* rather
+   than the care taken.
+
+4. **The zero-byte lab file was not committed**, against step 1 of the resume
+   prompt, which pre-ruled all six `claude-examples/` files as ratified design
+   references. `1rackcontainerbase.html` is 0 bytes; the operator was asked and
+   answered that it had been saved; a re-read found it still 0 bytes with an
+   unchanged mtime. An empty file cannot be a design reference, and committing
+   one under that label is the guessed attribution step 2's 🔴 forbids. Left
+   untracked and untouched on disk. **Reported, not resolved.**
+
+5. **`E1` was removed from the variant table**, which the prompt did not ask
+   for. Task 9 promotes E1's treatments to the default; it does not say what
+   becomes of the row. Left in place it would have been a second picture of
+   `A0`, and the table's own rule 4 — one caption saying what this changes
+   *from default* — cannot be written for a variant that changes nothing. The
+   coordinate is retired rather than reused, and the E-family comment says so,
+   so a citation written against `E1` still resolves to a meaning.
+
+6. **One finding was raised and deliberately not fixed inside the pass**
+   (finding 72, the enclosure's near wall). The prompt's size rules say the
+   operator prompted THIS large item and not its neighbours; culling the near
+   faces is a change to shipped geometry and wants a red of its own. What was
+   fixed is the *claim* — three files said the environment could never occlude
+   an item, and one of them is the material that does.
+
+## What went wrong, and what found it
+
+**The prompt stopped the pass.** Not the code — the instruction. Twenty-three
+files of finished work sat unpushed because the task spine had been compressed
+past the line that says to push. The operator found it by looking at
+`git status`, which is the only instrument that could: every gate was green,
+every file was correct, and nothing in the work itself was wrong. Finding 73,
+and the reason the rule now lives in `HANDOFF.md` instead of in prompts.
+
+**A shipped feature had never worked, and the catalogue had photographed it.**
+`ShowLabels = 'always'` drew nothing at v0.16.0. Two committed variants are
+pictures of the feature not happening, captioned as though it were. It was found
+by building the control panel, which vanished the same way — one disappearance
+is a puzzle, two with a common container is a cause. Finding 71.
+
+**A comment claimed what the code could not deliver, in this pass's own work.**
+The environment's material said it "never occludes an item"; `room` rules its
+near wall across the graph. Found by looking at `B5` rather than by any gate —
+which is the same way finding 67 was found a release earlier, and the reason
+this project keeps saying that a sentence doing a gate's job is a defect with a
+long fuse. Corrected in all three files that repeated it. Finding 72.
+
+**The floor's own record shipped with holes, and its guard was green over
+them.** Part 1 committed a re-measurement table as `__RM1__`..`__RM9__`, to be
+filled once part 2 had changed the default. The assertion that exists to catch
+an unexamined floor matched on `CanvasGrowth` and `v0.16.0` — a key part 1 had
+deleted and a version this release moved past — so it passed while both of its
+subjects were gone. Found by reading the manifest, not by any gate. Both halves
+derived now, a placeholder clause added, and all three falsified. Finding 75.
+
+**Two of six probes damaged nothing, and the verifier's first full run said so.**
+P3 replaced `Live = '#fg-live'` against a manifest that aligns it as
+`Live     = '#fg-live'`; P4 required `'#fg'` to start its line when it sits
+inside `CanvasDelta = @{ ... }`. Neither matched, so both gates were correctly
+green and both probes reported them as unfalsifiable. The framework's own rule
+caught it; reading the manifest is what identified the probe rather than the
+gate as the fault. `Edit-Damaged` now asserts the damage landed. Finding 76.
+
+**And the type check asked the wrong question.** It compared the backend's schema
+types at head against base and called `Boolean` a new type. `Boolean` is new to
+this backend and was already a validated case in the module's own
+`Test-RenderSettingValue.ps1`, untouched by this pass — so the check went red on
+correct work. It asks the validator now, and separately asserts the validator did
+not move.
+
+**The verifier threw on itself, twenty minutes into a run.** SC5's scan covers
+this script and its own records, which is the right scope - and its own records
+include the transcript the run is being written into. `ReadAllText` opens for
+exclusive read and the redirect holds the file open, so check 8 died after every
+browser gate had already passed. Fixed by reading through a shared `FileStream`
+rather than by narrowing the scan to make it pass. Pass 0051's verifier carries
+the same latent form and decision 0004 freezes it, so finding 74 records it
+against that script rather than editing it forward.
+
+**Four setters moved the scene without republishing `#fg-live`.** They shipped
+that way for the length of one test run, and the look gate named all four by
+name. That is what the gate is for, and it is recorded in the part-2b commit
+rather than smoothed over: a control that changes the scene and not the reported
+state reads exactly like a control that does nothing.

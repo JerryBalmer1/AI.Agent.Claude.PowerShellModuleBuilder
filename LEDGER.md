@@ -5,11 +5,43 @@ for counters and pins. Update it in the same commit as the work
 that changes it.
 
 ## Passes
-Last landed: **0051**. Next: the operator's. 0051 was an **operator-prompted
-large item** - the first in this project's record - and released PSGraphRender
-**v0.16.0**: the 3D backend's appearance and interaction surface became
-twenty-six declared settings, a third browser gate, and a nineteen-variant
-catalogue generated from its own table.
+Last landed: **0052**. Next: the operator's. 0052 was an **operator-prompted
+large item** - the second in this project's record - and released PSGraphRender
+**v0.17.0**: the canvas floor became a difference between two pictures instead
+of a ratio of their sizes, and then the 3D report got an environment, an in-page
+control panel, and the composed look as its default.
+
+**Two halves in one pass, in a hard order, and the order is the entry worth
+keeping.** The instrument was repaired before anything was built that would have
+blinded the old one. That is not a claim about tidiness and it was not taken on
+faith: the default this pass shipped scores a byte ratio of **1.13**, and the
+floor v0.16.0 used was **2.25**. The old gate would fail the product it ships,
+on a page every other gate calls green. This is the 0046-before-0047 pattern
+applied inside a single pass, and the second time this project has needed it.
+
+**Finding 67 was taken as work rather than shipped around a second time.** Pass
+0051 met it as a 1.05 reading and ruled `flat` to keep the gate; the standing
+half of that entry asked what to do about a ratio against an empty render that
+is not nearly blank. The answer is a changed-pixel fraction between the two
+pictures that already exist in every run, so a background is identical in both
+and cancels. `CanvasGrowth` is **gone** from the 3D backend rather than left
+beside the new key, and its absence is asserted - two floors on one selector is
+two answers to one question, and the stale one is the one nobody re-measures.
+
+**The second thing that needs a mechanism is what found the first one's bug.**
+`ShowLabels = 'always'` shipped at v0.16.0 and never drew a single label -
+`ForceGraph3D` empties the container it is handed, and the label layer was nested
+inside it. Two catalogue variants are pictures of the feature not happening,
+captioned as though it were. Nothing was lying; nothing was looking. It was found
+because the new control panel disappeared in exactly the same way - see finding
+71 below.
+
+**The pass was stopped by its own prompt, and that is finding 73.** The operator
+halted the run on twenty-three files of finished, unpushed work. The cause was an
+authoring defect - the prompt's task spine had been compressed and dropped the
+"push after every task" line every prompt from 0047 through 0051 carried. The
+rule now lives in `PSGraphRender/docs/HANDOFF.md` beside the other commit
+conventions, where a prompt's brevity cannot repeal it.
 
 **The prettiest default lost to a gate, and that is the entry worth keeping.**
 `BackgroundStyle` shipped `vignette` until it was measured against the
@@ -762,6 +794,27 @@ same procedure and did not move, at either commit — which is what
 makes it the control for the repair. `plans/0033-honest-headline/rescore.txt`.
 
 ## Versions
+PSGraphRender: **v0.17.0** (minor, pass 0052: the canvas floor learns to see
+through a painted background, and the 3D report gets depth, menus and its real
+default. Fourteen new settings on `forcegraph3d` - a `GridStyle` environment
+family built from the graph's own bounding box, an in-page control panel, and
+click-to-focus and auto-rotate as declared values - plus two new browser case
+kinds, `panel` and `control`, which drive a control through its own DOM events
+and read the result off the live scene. No schema type was added to the module:
+`Boolean` is the first one this backend declares and was already a validated
+case in `Private/Config/Test-RenderSettingValue.ps1`, which is byte-identical to
+base. MINOR by that repository's own rule as
+`docs/HANDOFF.md` states it: minor when a template set, a setting type, a build
+task or a contract field is added, and setting types fired. No contract change,
+no `.ps1` under `src/` edited, and cytoscape, plain and index.psd1
+byte-identical to v0.16.0 - asserted from fresh clones by git rather than by a
+snapshot. Nothing was vendored: the environment is quads built from vertices
+this repository owns, because the bundle draws every link as a cylinder and
+there is no `Line` constructor anywhere in the live scene to harvest. The
+catalogue is twenty-two variants; `E1` was promoted into `Config/` and its
+coordinate retired rather than reused, and `A5` preserves the v0.16.0 default
+whole. Verify and all six falsification probes ran before the tag, the
+0047-proven ordering. Next: the operator's)
 PSAzureDevOpsGraph: **v0.4.0** (docs-and-artifacts minor, pass 0043,
 decision 0006; module code byte-identical to v0.2.0 still. Ships the
 ClaudeTesting graph as committed JSON, HTML and a screenshot. Next
@@ -2468,7 +2521,9 @@ controls and corpus figures) was **not** touched and stays open.
 67. **A gradient background and the canvas-growth floor cannot both exist,
     and nothing said so until it was measured.** **RAISED AND SETTLED by pass
     0051** at PSGraphRender `v0.16.0`, in the only direction that keeps the
-    gate: `BackgroundStyle` ships `flat`.
+    gate: `BackgroundStyle` ships `flat`. **RESOLVED by pass 0052** at
+    `v0.17.0` - amended by dated append below rather than rewritten, so the
+    reasoning that kept `flat` for a release stays readable.
 
     The floor screenshots `#fg` and divides by the SAME element in an empty
     render. Anything painted in that rectangle is in both numbers, and a
@@ -2490,6 +2545,32 @@ controls and corpus figures) was **not** touched and stays open.
     nearly blank, and there is no check that would notice a future one. The
     fix is not obvious - a difference rather than a ratio changes what every
     declared floor means - so it is logged rather than taken.
+
+    **2026-09-05, pass 0052 — taken, and the standing question answered.** The
+    floor is a changed-pixel fraction between the drawn and empty screenshots,
+    which both already existed in every run and were never compared with each
+    other. A background is identical in both, so it contributes nothing and
+    cancels. Decoded in the browser that is already open rather than by a PNG
+    library: the harness declares one dependency and the whole claim is that it
+    needs no other.
+
+    **The general question is answered per backend rather than globally**, which
+    is what "a difference changes what every declared floor means" cost. The
+    3D backend moves to `CanvasDelta`; `cytoscape` keeps `CanvasGrowth`, because
+    an empty cytoscape render really is nearly blank - and `smoke.cjs` now
+    **measures that precondition** instead of assuming it, refusing a byte-ratio
+    floor whose empty capture exceeds 0.05 PNG bytes per pixel. That is the
+    check this entry said did not exist. Both numbers are computed and printed
+    for every canvas on every run whichever one gated, so the next floor is
+    re-pinned from measurement rather than from argument.
+
+    **The prose in `base.css` is gone, replaced by what is now checked** - which
+    was the other half of this entry, and the more expensive half. It had been a
+    sentence doing a gate's job since v0.15.0.
+
+    **What the fix is worth, measured on the product rather than on a demo:** the
+    default v0.17.0 ships scores a byte ratio of 1.13 against the 2.25 floor
+    v0.16.0 declared. The old gate would fail it.
 
 68. **The catalogue's 26 MB of committed HTML is nineteen copies of one
     vendored library.** **ACCEPTED by pass 0051**, measured rather than
@@ -2537,6 +2618,211 @@ controls and corpus figures) was **not** touched and stays open.
     each of them against the live object that consumes it - so the gap is in
     the *catalogue's* evidence, not in the pass's. Logged because a later
     catalogue for a backend with more interaction would have more of it.
+
+71. **`ShowLabels = 'always'` shipped at v0.16.0 and never drew a label.**
+    **RAISED AND RESOLVED by pass 0052.**
+
+    `ForceGraph3D` **empties the container it is handed**. `#fg-labels` was
+    nested inside `#fg`, so the layer was removed the moment the graph
+    initialised: `getElementById` returned null, `startLabels` returned
+    silently, and nothing anywhere reported a problem.
+
+    **Two committed catalogue variants are photographs of the feature not
+    happening**, captioned as though it were - `D3` ("Names always on") and
+    `E2`. A reader comparing the caption with the picture would have seen
+    nothing wrong, because the picture is of a correct-looking graph.
+
+    **The gate was not wrong; it was not looking.** `TestLook` shipped at 0051
+    with cases for shapes, size, glow, fog, zoom speed, rotate speed, particles
+    and pointer button, and none for labels. This is the shape finding 32 and
+    finding 65 both describe - an instrument reporting correctly on what it
+    looks at, and not looking where the thing was.
+
+    **Found by building the second feature that needed the same mechanism.** The
+    control panel is also drawn over the canvas, and it also vanished. One
+    disappearance is a puzzle; two with a common container is a cause. Fixed by
+    giving the library a container with nothing else in it (`#fg-stage`) so
+    everything drawn over the canvas is a sibling - which also keeps the smoke
+    gate's capture as exactly the drawing and no chrome.
+
+72. **The enclosure rules its near wall across the graph, and three files
+    claimed it could not.** **RAISED by pass 0052, deliberately not taken.**
+
+    `GridStyle = 'room'` encloses the graph on six sides. From any viewpoint
+    outside the box - which is every fitted view - the near wall is between the
+    camera and the items, and depth testing correctly draws its ruling across
+    them. `B5` in the catalogue is a picture of it.
+
+    **The claim that was false.** `scene.js`, `Config/theme.psd1` and
+    `settings.schema.psd1` all said the environment "never occludes an item: it
+    is a reference, and a reference that hides what it references is scenery."
+    `depthWrite: false` buys one real thing - the environment writes no depth,
+    so its quads never occlude each other and never hide an item *behind* them.
+    It does not and cannot buy "never in front".
+
+    **Corrected in all three places rather than one**, which is the same defect
+    class as 67 caught a release earlier: a comment doing a gate's job. It is
+    also the honest reason `floor` is the default.
+
+    **Not taken**, and the size rule is why. The fix is to cull the near faces,
+    which means giving six hand-built planes a consistent outward winding so
+    `side: 1` draws only the far half - shipped geometry, wanting a red of its
+    own rather than a ride on a pass prompted for something else. Also in
+    `PSGraphRender/docs/improvements.md`.
+
+73. **A pass prompt lost a standing instruction to its own compression, and
+    the operator paid for it.** **RAISED AND RESOLVED by pass 0052.**
+
+    The 0052 prompt's task spine was written compactly and dropped the explicit
+    **"commit and push after every task"** line that every prompt from 0047
+    through 0051 carried. The pass ran to twenty-three files of finished,
+    unpushed work before the operator stopped it.
+
+    **The defect is in the prompt, not in the work.** Nothing was lost - the
+    tree was intact and every change was still explainable from its own diff -
+    but a working tree is invisible to `git status` *as progress*, and finished
+    unpushed work is indistinguishable from work not started to anyone but the
+    process holding it.
+
+    **This is the fourth recorded instance of the same shape**: a rule that
+    lives only in prompts is repealed by the first prompt that forgets it. See
+    the precondition note at the foot of this file, where two consecutive
+    prompts carried a stale four-path pin.
+
+    **Resolved by moving the rule out of prompts, into BOTH places it has to
+    live.** `PLAN-PROTOCOL.md`'s own `## Commit` section is the governing one -
+    that file already said to push to the pass branch and never said *when*,
+    which is the ambiguity the compressed prompt fell through, and it binds a
+    pass whatever repository the pass targets. `PSGraphRender/docs/HANDOFF.md`
+    repeats it beside that repository's other commit conventions.
+
+    **Repeated deliberately rather than written once.** A pass against
+    `PSAzureDevOpsGraph` or `PSTerraformGraph` reads a different handoff and
+    would never see a rule that lived only in this one - which is finding 73's
+    own defect, one level up. Both copies state explicitly that **no prompt's
+    brevity overrides it** and that a prompt which omits it has not repealed
+    it.
+
+    **The recovery is itself recorded**, in `plans/0052-floor-then-depth/plan.md`
+    section 4a: the work was partitioned back into task-shaped commits from each
+    file's diff content rather than from memory of what was being done, the
+    partition's reasoning is written down, and the result was proved
+    byte-for-byte identical to a pre-partition snapshot.
+
+74. **A verify script's own SC5 scan cannot read the transcript it is being
+    written into.** **RAISED AND FIXED IN 0052'S OWN SCRIPT; STANDING against
+    0051's, which decision 0004 freezes.**
+
+    The machine-identity check scans everything the pass touched *and this
+    script and its own records*, which is the right scope - a verifier that
+    fails the check it verifies is a verifier nobody can leave switched on. Its
+    own records include the run transcript, and a run redirected to a file in
+    that directory holds that file open. `[System.IO.File]::ReadAllText` opens
+    for exclusive read and throws:
+
+        The process cannot access the file 'verify-failcheck.txt'
+        because it is being used by another process.
+
+    **Fixed in 0052's script** by reading through a `FileStream` opened with
+    `FileShare::ReadWrite`, so the file is still scanned rather than skipped -
+    skipping it would have narrowed the check to make it pass, which is the
+    move this project's own falsification rules exist to forbid.
+
+    **It bit after check 7 and before the probes**, so a run that had done
+    twenty minutes of browser work threw away its result. The first attempt of
+    0052's own verify run is what found it - the defect cannot be found by
+    reading, because the file it fails on does not exist until the run that
+    reads it.
+
+    **STANDING against pass 0051's verifier**, which carries the same
+    `ReadAllText` in the same scan. It did not fire there, and the difference is
+    only in how that run's output happened to be captured - so it is latent
+    rather than absent, and any later reader who runs
+    `plans/0051-forcegraph3d-catalog/verify.ps1` with `>` redirection into its
+    own directory will meet it. **Decision 0004 freezes a pass's verify script
+    at the commit that pushed it**, so it is recorded here rather than edited
+    forward. The workaround is to redirect somewhere else, or to use the 0052
+    form.
+
+75. **The assertion guarding the canvas floor's record went green over a key
+    that no longer existed, and the record it guarded shipped unfilled.**
+    **RAISED AND RESOLVED by pass 0052, against its own first half.**
+
+    Two halves of one failure, and the failure is that nobody was reading the
+    record.
+
+    **The record shipped with holes in it.** Part 1 wrote a re-measurement table
+    into `forcegraph3d/templateset.psd1` to be completed once part 2 had changed
+    the default, as `__RM1__` through `__RM9__`, and committed it that way. A
+    placeholder in a measurement is worse than no measurement, because it
+    occupies the space where a missing one would be noticed.
+
+    **And the assertion that exists to catch exactly this was green over it.**
+    `tests/ForceGraph3DLook.Tests.ps1` had an `It` called *"re-measured the
+    canvas-growth floor under the new look"*, matching the manifest text for
+    `CanvasGrowth` and for `v0.16.0`. Part 1 renamed that key to `CanvasDelta`
+    and removed it outright - so `CanvasGrowth` survived only inside the comment
+    explaining its removal, and `v0.16.0` survived as the label on a historical
+    table. **Both patterns went on matching while both of their subjects moved
+    out from under them.** That is the precise failure the assertion exists to
+    prevent, one release later and aimed at itself.
+
+    **Neither was found by an instrument.** They were found by reading the file
+    while chasing a different question. That is the third time in this pass -
+    see 71 and 72 - and the shape is consistent: **the gates in this repository
+    are good at what they were pointed at and blind to whether they are still
+    pointed at it.**
+
+    **Resolved by deriving both halves instead of writing them down.** The key
+    the assertion looks for is now whichever one the manifest actually gates the
+    backend on, and it fails if two gate one selector; the version is read from
+    the module manifest rather than typed. A third clause fails on any
+    placeholder token in the block, which is the part that had no guard at all.
+    Falsified in three directions and restored green after each.
+
+    **The general lesson, which is the part worth carrying:** an assertion that
+    names a constant is an assertion that can be orphaned by a rename, and it
+    fails silently in the safe-looking direction. Where a check can derive its
+    subject from the artifact, it should - the same argument that keeps
+    `LinkProbe.Button` equal to `settings.psd1`'s value rather than to the
+    string `'left'`.
+
+76. **Two falsification probes damaged nothing, and only the framework's own
+    rule noticed.** **RAISED AND RESOLVED by pass 0052 in its own verifier;
+    STANDING as a shape against every verifier written before it.**
+
+    A probe damages a clone and asserts a gate goes red. Two of pass 0052's six
+    were string replacements against text that had moved:
+
+    - P3 replaced `Live = '#fg-live'`, and the manifest **aligns its
+      assignments** - it says `Live     = '#fg-live'`.
+    - P4 required `'#fg'` to begin its line, and it does not: it sits inside
+      `CanvasDelta = @{ '#fg' = 0.015 }`.
+
+    Neither matched. The clone stayed pristine, the gate was correctly green,
+    and the probe reported the gate as unfalsifiable - **a false alarm that
+    looks exactly like the real thing it exists to find.**
+
+    **The framework caught it, and that is the entry worth keeping.** The rule
+    that "a probe which does NOT fail is reported as a failure" turned two
+    silent no-ops into two red lines in the summary. Without it both would have
+    passed as green probes over gates they never tested, which is strictly
+    worse than having no probe: it is a recorded claim that a gate was
+    falsified when it was not.
+
+    **But it caught them one layer too late to say why.** A red line saying
+    "the browser run did not go red" is indistinguishable from a genuinely
+    unfalsifiable gate; it took reading the manifest to find that the probe had
+    edited nothing. Resolved with `Edit-Damaged`, which performs the
+    replacement, **asserts the file actually changed**, and reports the probe's
+    own damage as the failure when it did not - so the message names the probe
+    rather than the gate.
+
+    **STANDING as a shape.** Every verifier from 0047 onward damages by
+    `.Replace` or `-replace` against literal text, and none of them asserts the
+    damage landed. They are all one whitespace change away from this. Decision
+    0004 freezes each at its own commit, so they are not edited forward; the
+    `Edit-Damaged` form is the one to copy from 0052 onward.
 
 ### Numbering, reconciled by pass 0030
 
@@ -2647,6 +2933,41 @@ re-derive it:
   That is the fourth consecutive pass to consume a number for something
   its own measurement turned up, and the second in a row where the finding
   is in the bookkeeping around a number rather than in the number.
+
+- **66 was consumed by pass 0049, and 67 to 70 by pass 0051**; **71 through 76
+  were consumed by pass 0052, and 77 is the next free number.** 0052 also
+  **resolved 67** - the entry it took as work - which keeps its number where it
+  is, amended by dated append rather than rewritten.
+
+  All three of 0052's numbers were found by the pass's own work rather than by
+  review, which is now the rule rather than the exception. 71 was found by
+  building a second feature that needed the same mechanism as a broken one, and
+  it is the first finding in this project's record where the defect had been
+  *photographed and committed* - two catalogue variants are pictures of a
+  feature not happening. 72 is the same defect class as 67 in a comment this
+  pass wrote itself, caught inside the pass by looking at the picture. And 73 is
+  a defect in the pass's own instruction rather than in anything the pass wrote
+  or ran - the first entry to be raised by an operator stop. 74 was found by the
+  verifier throwing on itself twenty minutes into a run, and is the fifth
+  consecutive pass to consume a number for a defect in an instrument rather than
+  in the work the instrument measures. 75 is the same class again and the
+  sharpest instance of it yet: an assertion still green while both of the
+  constants it matched on had been renamed out from under it.
+
+  76 is the sixth and the only one an instrument found unaided: the verifier's
+  own "a probe that does not fail is a failure" rule turned two probes that had
+  quietly edited nothing into two red lines. It is the clearest evidence in this
+  record that the falsification discipline pays for itself, and it also shows
+  its limit - the rule said the gate looked unfalsifiable, and finding out that
+  the PROBE was at fault still took reading the file.
+
+  **Four of 0052's six numbers - 71, 72, 73 and 75 - were found by a person
+  reading a file or an operator watching a terminal, rather than by anything
+  running.** Worth stating plainly,
+  because the four passes before this one each recorded the opposite lesson
+  (that measuring beats reading), and both are true: instruments find what they
+  are pointed at, and reading is what notices they are pointed at the wrong
+  thing.
 
 Numbers are consumed, never reused and never renumbered — including the ones
 belonging to resolved items, which stay where they are so that a citation
